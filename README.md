@@ -33,6 +33,10 @@
   - 轻量 wrapper，提供题面要求的可执行程序形式。
   - 如果当前目录存在 `.venv/bin/python`，会优先使用本地虚拟环境。
 
+- `error_analysis.py`
+  - 聚类结果误差分析脚本。
+  - 对比 `gold.csv` 和预测 `output.csv`，输出 gold bug fragmentation、predicted bucket purity、top FN bugs、top FP bucket pairs。
+
 - `requirements.txt`
   - Python 依赖列表，目前使用 `scikit-learn`。
 
@@ -159,6 +163,25 @@ python3 -m venv .venv
 ```
 
 输出文件行数应当等于输入 case 数加 1 行表头。
+
+## Error Analysis
+
+当 TNR 很高但 TPR 很低时，通常说明模型能把不同 bug 区分开，却没有把同一个 bug 的不同表现合并起来，也就是 false negative 多、golden bucket 被拆碎。可以用 `error_analysis.py` 定位具体问题：
+
+```bash
+python3 error_analysis.py \
+  --gold dataset/stage3_dataset_32bugs_640cases/gold.csv \
+  --pred /private/tmp/sklearn_stage3_final.csv \
+  --top 12 \
+  --out /private/tmp/stage3_error_analysis.md
+```
+
+报告包含：
+
+- `Gold Bug Fragmentation`：每个 golden bug 被拆到多少个预测 bucket、最大预测桶占比、贡献了多少 FN pairs。
+- `Predicted Bucket Purity`：每个预测 bucket 混入了多少个 golden bug、主导 bug 占比、贡献了多少 FP pairs。
+- `Top FN Bugs`：最严重的同源 case 拆分问题。
+- `Top FP Bucket Pairs`：同一个预测 bucket 中最严重的不同 bug 混合对。
 
 ## 已验证结果
 
