@@ -28,6 +28,7 @@
 
 - `regr_fail_bucketing.py`
   - 当前实现的 baseline 聚类程序。
+  - 支持 `simple` / `drain` parser 和 `kmeans` / `agglomerative` / `hdbscan` clustering backend。
 
 - `regr_fail_bucketing`
   - 轻量 wrapper，提供题面要求的可执行程序形式。
@@ -39,6 +40,9 @@
 
 - `requirements.txt`
   - Python 依赖列表，目前使用 `scikit-learn`。
+
+- `run_experiments.py`
+  - 本地 ablation 脚本，会在三个 bundled dataset 上跑 `simple+kmeans`、`simple+agglomerative`、`drain+kmeans`、`drain+agglomerative`。
 
 ## 赛题输入输出理解
 
@@ -114,11 +118,11 @@ trace_log,sim_log,regr_log
 input.csv
   -> 读取 sim.log / regr.log
   -> 选择高信号日志行
-  -> Drain-like 模板化
+  -> SimpleDrain 或 fixed-depth Drain 模板化
   -> case-level template/token/count 特征
   -> sklearn FeatureHasher
   -> sklearn TfidfTransformer
-  -> sklearn MiniBatchKMeans 聚类
+  -> sklearn MiniBatchKMeans 或 AgglomerativeClustering 聚类
   -> output.csv
 ```
 
@@ -134,6 +138,8 @@ input.csv
 - 行号前缀
 
 程序的日志解析部分使用 Python 标准库，向量化和聚类使用 `scikit-learn`。本地已经创建 `.venv` 并安装了 `scikit-learn`、`numpy`、`scipy`、`joblib` 等依赖。
+
+如果 `scikit-learn` 不存在，程序会打印 warning 到 stderr，并回退到标准库 hashing TF-IDF + k-means fallback，不会直接崩溃。
 
 如果需要重新安装依赖：
 
@@ -159,10 +165,40 @@ python3 -m venv .venv
 .venv/bin/python regr_fail_bucketing.py \
   --input dataset/stage3_dataset_32bugs_640cases/input.csv \
   --output /private/tmp/stage3_out.csv \
-  --k 32
+  --k 32 \
+  --parser drain \
+  --cluster agglomerative
 ```
 
 输出文件行数应当等于输入 case 数加 1 行表头。
+
+新增可调参数：
+
+- `--parser simple|drain`
+- `--cluster kmeans|agglomerative|hdbscan`
+- `--drain-depth <int>`
+- `--drain-st <float>`
+- `--drain-max-children <int>`
+- `--svd-dim <int>`
+
+默认配置为：
+
+```text
+--parser drain
+--cluster agglomerative
+--drain-depth 4
+--drain-st 0.45
+--drain-max-children 100
+--svd-dim 128
+```
+
+运行所有本地 ablation：
+
+```bash
+.venv/bin/python run_experiments.py \
+  --python .venv/bin/python \
+  --output-dir /private/tmp/regr_fail_bucketing_experiments
+```
 
 ## Error Analysis
 
@@ -187,17 +223,20 @@ python3 error_analysis.py \
 
 本地粗略验证结果：
 
-- `first_batch_dataset`
-  - 80 cases，`k=8`
-  - 输出行数正确。
-  - 当前 sklearn 版本运行时间约 `4.8s`。
-  - 当前 sklearn 版本 pairwise balanced accuracy 约为 `0.699`。
-
-- `stage3_dataset_32bugs_640cases`
-  - 640 cases，`k=32`
-  - 输出行数正确。
-  - 当前 sklearn 版本运行时间约 `4.0s`。
-  - 当前 sklearn 版本 pairwise balanced accuracy 约为 `0.653`。
+| dataset | parser | cluster | cases | k | pred clusters | BA | TPR | TNR | runtime_sec |
+|---|---|---|---:|---:|---:|---:|---:|---:|---:|
+| `first_batch_dataset` | simple | kmeans | 80 | 8 | 8 | 0.689663 | 0.536111 | 0.843214 | 1.409728 |
+| `first_batch_dataset` | simple | agglomerative | 80 | 8 | 8 | 0.698571 | 0.575000 | 0.822143 | 1.164829 |
+| `first_batch_dataset` | drain | kmeans | 80 | 8 | 8 | 0.702619 | 0.591667 | 0.813571 | 1.051285 |
+| `first_batch_dataset` | drain | agglomerative | 80 | 8 | 8 | 0.708988 | 0.608333 | 0.809643 | 1.185873 |
+| `stage2_dataset_working` | simple | kmeans | 240 | 16 | 16 | 0.632116 | 0.360714 | 0.903519 | 1.594883 |
+| `stage2_dataset_working` | simple | agglomerative | 240 | 16 | 16 | 0.666668 | 0.517262 | 0.816074 | 1.790626 |
+| `stage2_dataset_working` | drain | kmeans | 240 | 16 | 16 | 0.681008 | 0.536905 | 0.825111 | 1.574141 |
+| `stage2_dataset_working` | drain | agglomerative | 240 | 16 | 16 | 0.674378 | 0.528571 | 0.820185 | 1.766613 |
+| `stage3_dataset_32bugs_640cases` | simple | kmeans | 640 | 32 | 32 | 0.628117 | 0.370559 | 0.885675 | 2.846599 |
+| `stage3_dataset_32bugs_640cases` | simple | agglomerative | 640 | 32 | 32 | 0.690298 | 0.570066 | 0.810529 | 2.907587 |
+| `stage3_dataset_32bugs_640cases` | drain | kmeans | 640 | 32 | 32 | 0.679235 | 0.542599 | 0.815872 | 2.706069 |
+| `stage3_dataset_32bugs_640cases` | drain | agglomerative | 640 | 32 | 32 | 0.697875 | 0.608059 | 0.787692 | 2.902263 |
 
 这些分数只是当前轻量 baseline 的 sanity check，不代表最终可提交最优方案。
 

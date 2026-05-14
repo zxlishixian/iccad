@@ -1,40 +1,48 @@
 #!/usr/bin/env python3
-"""Baseline regression-failure bucketing.
+"""Regression-failure bucketing baseline with switchable parsers/backends.
 
 Pipeline:
-  input.csv -> sim.log/regr.log -> Drain-like templates -> sparse TF-IDF
-  -> sklearn MiniBatchKMeans -> output.csv
+  input.csv -> sim.log/regr.log -> SimpleDrain or fixed-depth Drain templates
+  -> case-level template/token/count features -> TF-IDF/hash vector
+  -> k-means or agglomerative clustering -> output.csv
 """
 
 from __future__ import annotations
 
 import argparse
 import csv
+import hashlib
+import math
 import os
+import random
 import re
 import sys
-from collections import Counter
+import time
+from collections import Counter, defaultdict
+from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Iterable, List, Sequence, Tuple
+from typing import Any, Dict, Iterable, List, Sequence, Tuple
 
 os.environ.setdefault("LOKY_MAX_CPU_COUNT", str(os.cpu_count() or 1))
 
+SKLEARN_AVAILABLE = True
 try:
-    from sklearn.cluster import MiniBatchKMeans
+    from sklearn.cluster import AgglomerativeClustering, MiniBatchKMeans
+    from sklearn.decomposition import TruncatedSVD
     from sklearn.feature_extraction import FeatureHasher
     from sklearn.feature_extraction.text import TfidfTransformer
-    from sklearn.preprocessing import normalize
-except ImportError as exc:
-    raise SystemExit(
-        "This implementation requires scikit-learn. Install it with "
-        "`python3 -m pip install scikit-learn` or package it with the submission."
-    ) from exc
+    from sklearn.preprocessing import Normalizer, normalize
+except ImportError:
+    SKLEARN_AVAILABLE = False
+    AgglomerativeClustering = MiniBatchKMeans = TruncatedSVD = None
+    FeatureHasher = TfidfTransformer = Normalizer = normalize = None
 
 
 HASH_DIM = 1 << 15
 MAX_LOG_BYTES = 256 * 1024
 MAX_SELECTED_LINES = 420
-RANDOM_SEED = 20260212
+RANDOM_SEED = 0
+WILDCARD = "<*>"
 
 SIGNAL_RE = re.compile(
     r"uvm_(?:fatal|error|warning)|cosim|mismatch|failed|passed|timeout|"
@@ -50,8 +58,16 @@ PATH_RE = re.compile(r"(?:/[^\s:]+)+")
 CASE_RE = re.compile(r"case[_-]?\d+", re.IGNORECASE)
 SEED_RE = re.compile(r"seed[_-]?\d+|\bsvseed\s+\d+\b", re.IGNORECASE)
 TIME_RE = re.compile(r"@\s*\d+")
-REG_RE = re.compile(r"\bx(?:[12]?\d|3[01])\b", re.IGNORECASE)
 LINE_NUM_RE = re.compile(r"^\s*(?:\[E\]\s*)?\d+:\s*")
+TOKEN_RE = re.compile(r"[a-z_][a-z0-9_./:+-]*|<[^>]+>|\[[a-z]\]")
+
+
+def warn(message: str) -> None:
+    print(f"warning: {message}", file=sys.stderr)
+
+
+def info(message: str) -> None:
+    print(message, file=sys.stderr)
 
 
 def read_csv_rows(input_csv: Path) -> Tuple[List[dict], List[str]]:
@@ -59,8 +75,6 @@ def read_csv_rows(input_csv: Path) -> Tuple[List[dict], List[str]]:
         reader = csv.DictReader(f)
         rows = list(reader)
         fieldnames = reader.fieldnames or []
-    if not rows:
-        return [], fieldnames
     return rows, fieldnames
 
 
@@ -149,16 +163,24 @@ def select_lines(text: str) -> List[str]:
     return chosen
 
 
-def template_line(line: str) -> str:
+def path_to_token(match: re.Match[str]) -> str:
+    raw = match.group(0)
+    base = raw.rstrip("/").rsplit("/", 1)[-1].lower()
+    if re.search(r"\.(svh?|v|log|tcl|bin)$", base):
+        return base
+    return "<path>"
+
+
+def normalize_log_line(line: str, preserve_basenames: bool) -> str:
+    """Normalize dynamic tokens while preserving useful EDA error vocabulary."""
     s = line.strip().lower()
     s = LINE_NUM_RE.sub("", s)
-    s = PATH_RE.sub("<path>", s)
+    s = PATH_RE.sub(path_to_token if preserve_basenames else "<path>", s)
     s = CASE_RE.sub("<case>", s)
     s = SEED_RE.sub("<seed>", s)
     s = TIME_RE.sub("@ <time>", s)
     s = HEX_RE.sub("<hex>", s)
     s = DEC_RE.sub("<num>", s)
-    s = REG_RE.sub("<reg>", s)
     s = re.sub(r"\b\d+\b", "<n>", s)
     s = re.sub(r"['\"]", "", s)
     s = re.sub(r"[^a-z0-9_+./:<>\[\]-]+", " ", s)
@@ -166,9 +188,175 @@ def template_line(line: str) -> str:
 
 
 def line_tokens(template: str) -> Iterable[str]:
-    for token in re.findall(r"[a-z_][a-z0-9_./:+-]*|<[^>]+>|\[[a-z]\]", template):
+    for token in TOKEN_RE.findall(template):
         if len(token) > 1:
             yield token
+
+
+@dataclass
+class LogCluster:
+    cluster_id: int
+    template_tokens: List[str]
+    size: int = 0
+
+
+@dataclass
+class DrainNode:
+    children: Dict[str, "DrainNode"] = field(default_factory=dict)
+    clusters: List[LogCluster] = field(default_factory=list)
+
+
+class SimpleDrainParser:
+    """Existing simple Drain-like parser: exact normalized line templates."""
+
+    def __init__(self) -> None:
+        self.template_to_id: Dict[str, int] = {}
+        self.clusters: Dict[int, LogCluster] = {}
+
+    def add_line(self, line: str) -> int:
+        tokens = self.tokenize(line)
+        template = " ".join(tokens)
+        if template not in self.template_to_id:
+            cluster_id = len(self.template_to_id)
+            self.template_to_id[template] = cluster_id
+            self.clusters[cluster_id] = LogCluster(cluster_id, tokens, 0)
+        cluster = self.clusters[self.template_to_id[template]]
+        cluster.size += 1
+        return cluster.cluster_id
+
+    def tokenize(self, line: str) -> List[str]:
+        return list(line_tokens(line))
+
+    def get_template(self, cluster_id: int) -> str:
+        cluster = self.clusters.get(cluster_id)
+        return " ".join(cluster.template_tokens) if cluster else ""
+
+    @property
+    def num_templates(self) -> int:
+        return len(self.clusters)
+
+
+class FixedDepthDrainParser:
+    def __init__(
+        self,
+        depth: int = 4,
+        sim_threshold: float = 0.45,
+        max_children: int = 100,
+    ) -> None:
+        self.depth = max(3, depth)
+        self.sim_threshold = sim_threshold
+        self.max_children = max_children
+        self.root = DrainNode()
+        self.clusters: Dict[int, LogCluster] = {}
+        self.clusters_by_length: Dict[int, List[LogCluster]] = defaultdict(list)
+
+    def add_line(self, line: str) -> int:
+        """Add one normalized log line and return template/cluster id."""
+        tokens = self.tokenize(line)
+        if not tokens:
+            tokens = ["<empty>"]
+        candidates = self.tree_search(tokens)
+        if not candidates:
+            candidates = self.clusters_by_length.get(len(tokens), [])
+        cluster = self.fast_match(candidates, tokens)
+        if cluster is not None:
+            cluster.template_tokens = self.merge_template(cluster.template_tokens, tokens)
+            cluster.size += 1
+            return cluster.cluster_id
+
+        cluster_id = len(self.clusters)
+        cluster = LogCluster(cluster_id=cluster_id, template_tokens=list(tokens), size=1)
+        self.clusters[cluster_id] = cluster
+        self.clusters_by_length[len(tokens)].append(cluster)
+        self.add_cluster_to_tree(cluster)
+        return cluster_id
+
+    def tokenize(self, line: str) -> List[str]:
+        return list(line_tokens(line))
+
+    def tree_search(self, tokens: List[str]) -> List[LogCluster]:
+        """Return candidate clusters from parse tree leaf."""
+        node = self.root.children.get(str(len(tokens)))
+        if not node:
+            return []
+        for depth_idx in range(min(self.depth - 2, len(tokens))):
+            token = tokens[depth_idx]
+            if token in node.children:
+                node = node.children[token]
+            elif WILDCARD in node.children:
+                node = node.children[WILDCARD]
+            else:
+                return []
+        return node.clusters
+
+    def add_cluster_to_tree(self, cluster: LogCluster) -> None:
+        tokens = cluster.template_tokens
+        node = self.root.children.setdefault(str(len(tokens)), DrainNode())
+        for depth_idx in range(min(self.depth - 2, len(tokens))):
+            token = tokens[depth_idx]
+            if token == WILDCARD or (len(node.children) >= self.max_children and token not in node.children):
+                key = WILDCARD
+            else:
+                key = token
+            node = node.children.setdefault(key, DrainNode())
+        node.clusters.append(cluster)
+
+    def fast_match(self, clusters: List[LogCluster], tokens: List[str]) -> LogCluster | None:
+        best_cluster = None
+        best_similarity = -1.0
+        best_wildcards = 10**9
+        best_size = -1
+        for cluster in clusters:
+            similarity, wildcard_count = self.sequence_distance(cluster.template_tokens, tokens)
+            if similarity < self.sim_threshold:
+                continue
+            key = (similarity, -wildcard_count, cluster.size)
+            best_key = (best_similarity, -best_wildcards, best_size)
+            if key > best_key:
+                best_cluster = cluster
+                best_similarity = similarity
+                best_wildcards = wildcard_count
+                best_size = cluster.size
+        return best_cluster
+
+    def sequence_distance(self, template_tokens: List[str], tokens: List[str]) -> Tuple[float, int]:
+        """
+        Return:
+          similarity: matched_token_count / len(tokens)
+          wildcard_count: number of <*> in template
+        """
+        if len(template_tokens) != len(tokens) or not tokens:
+            return 0.0, template_tokens.count(WILDCARD)
+        matched = 0
+        wildcard_count = 0
+        for tmpl, token in zip(template_tokens, tokens):
+            if tmpl == WILDCARD:
+                matched += 1
+                wildcard_count += 1
+            elif tmpl == token:
+                matched += 1
+        return matched / len(tokens), wildcard_count
+
+    def merge_template(self, old_template: List[str], tokens: List[str]) -> List[str]:
+        return [old if old == token else WILDCARD for old, token in zip(old_template, tokens)]
+
+    def get_template(self, cluster_id: int) -> str:
+        cluster = self.clusters.get(cluster_id)
+        return " ".join(cluster.template_tokens) if cluster else ""
+
+    @property
+    def num_templates(self) -> int:
+        return len(self.clusters)
+
+
+def make_parser(args: argparse.Namespace) -> SimpleDrainParser | FixedDepthDrainParser:
+    if args.parser == "drain":
+        return FixedDepthDrainParser(
+            depth=args.drain_depth,
+            sim_threshold=args.drain_st,
+            max_children=args.drain_max_children,
+        )
+    return SimpleDrainParser()
 
 
 def extract_status_features(prefix: str, text: str, feats: Counter) -> None:
@@ -181,6 +369,7 @@ def extract_status_features(prefix: str, text: str, feats: Counter) -> None:
     patterns = [
         ("reg_write_mismatch", r"register write data mismatch to\s+x\d+"),
         ("pc_mismatch", r"\bpc mismatch\b"),
+        ("sync_trap_mismatch", r"synchronous trap"),
         ("test_pass_verdict", r"risc-v uvm test passed"),
         ("test_fail_verdict", r"risc-v uvm test failed"),
         ("cosim_matched", r"co-simulation matched"),
@@ -205,69 +394,250 @@ def case_id_from_row(row: dict, idx: int, columns: Sequence[str]) -> str:
     return f"case_{idx + 1:06d}"
 
 
-def features_for_case(input_csv: Path, row: dict, idx: int, sim_col: str | None, regr_col: str | None) -> Counter:
-    feats: Counter = Counter()
-    used_cols = [c for c in (sim_col, regr_col) if c]
-    cid = case_id_from_row(row, idx, used_cols)
-    feats[f"case_shape:{re.sub(r'\\d', '0', cid)}"] += 1
+def collect_case_inputs(
+    input_csv: Path,
+    rows: Sequence[dict],
+    sim_col: str | None,
+    regr_col: str | None,
+    parser_kind: str,
+) -> Tuple[List[Counter], List[List[Tuple[str, str]]]]:
+    base_features: List[Counter] = []
+    normalized_lines: List[List[Tuple[str, str]]] = []
+    preserve_basenames = parser_kind == "drain"
 
-    for prefix, col in (("sim", sim_col), ("regr", regr_col)):
-        path = resolve_log_path(input_csv, row.get(col) if col else None)
-        text, status = read_log_sample(path)
-        feats[f"{prefix}:file_status:{status}"] += 3
-        if path is not None:
-            feats[f"{prefix}:basename:{path.name.lower()}"] += 1
-        extract_status_features(prefix, text, feats)
+    for idx, row in enumerate(rows):
+        feats: Counter = Counter()
+        lines_for_case: List[Tuple[str, str]] = []
+        used_cols = [c for c in (sim_col, regr_col) if c]
+        cid = case_id_from_row(row, idx, used_cols)
+        feats[f"case_shape:{re.sub(r'\\d', '0', cid)}"] += 1
 
-        for line in select_lines(text):
-            tmpl = template_line(line)
-            if not tmpl:
+        for prefix, col in (("sim", sim_col), ("regr", regr_col)):
+            path = resolve_log_path(input_csv, row.get(col) if col else None)
+            text, status = read_log_sample(path)
+            feats[f"{prefix}:file_status:{status}"] += 3
+            if path is not None:
+                feats[f"{prefix}:basename:{path.name.lower()}"] += 1
+            extract_status_features(prefix, text, feats)
+
+            for line in select_lines(text):
+                normalized_line = normalize_log_line(line, preserve_basenames=preserve_basenames)
+                if normalized_line:
+                    lines_for_case.append((prefix, normalized_line))
+
+        base_features.append(feats)
+        normalized_lines.append(lines_for_case)
+    return base_features, normalized_lines
+
+
+def build_feature_counters(
+    args: argparse.Namespace,
+    base_features: Sequence[Counter],
+    normalized_lines: Sequence[List[Tuple[str, str]]],
+) -> Tuple[List[Counter], int]:
+    parser = make_parser(args)
+    case_template_ids: List[List[Tuple[str, int]]] = []
+
+    for lines_for_case in normalized_lines:
+        ids_for_case = []
+        for prefix, normalized_line in lines_for_case:
+            template_id = parser.add_line(normalized_line)
+            ids_for_case.append((prefix, template_id))
+        case_template_ids.append(ids_for_case)
+
+    feature_counters: List[Counter] = []
+    for feats, ids_for_case in zip(base_features, case_template_ids):
+        out = Counter(feats)
+        out[f"parser:{args.parser}"] += 1
+        for prefix, template_id in ids_for_case:
+            template = parser.get_template(template_id)
+            if not template:
                 continue
-            feats[f"{prefix}:tmpl:{tmpl}"] += 2
-            toks = list(line_tokens(tmpl))
+            out[f"{prefix}:tmpl:{template}"] += 2
+            toks = list(line_tokens(template))
             for tok in toks:
-                feats[f"{prefix}:tok:{tok}"] += 1
+                out[f"{prefix}:tok:{tok}"] += 1
             for a, b in zip(toks, toks[1:]):
-                feats[f"{prefix}:bi:{a}_{b}"] += 1
-    return feats
+                out[f"{prefix}:bi:{a}_{b}"] += 1
+        feature_counters.append(out)
+    return feature_counters, parser.num_templates
 
 
-def vectorize_features(feature_counters: Sequence[Counter]):
-    """Build a sparse TF-IDF matrix using sklearn's hashing vectorizer stack."""
-    hasher = FeatureHasher(
-        n_features=HASH_DIM,
-        input_type="dict",
-        alternate_sign=False,
-    )
+def stable_hash(text: str, modulo: int = HASH_DIM) -> int:
+    digest = hashlib.blake2b(text.encode("utf-8", "ignore"), digest_size=8).digest()
+    return int.from_bytes(digest, "little") % modulo
+
+
+def fallback_vectorize_features(cases: Sequence[Counter]) -> List[Dict[int, float]]:
+    docs: List[Dict[int, float]] = []
+    df: Dict[int, int] = defaultdict(int)
+    for feats in cases:
+        hashed: Dict[int, float] = defaultdict(float)
+        for feat, cnt in feats.items():
+            hashed[stable_hash(feat)] += 1.0 + math.log1p(float(cnt))
+        docs.append(dict(hashed))
+        for idx in hashed:
+            df[idx] += 1
+
+    n = max(1, len(docs))
+    vectors: List[Dict[int, float]] = []
+    for doc in docs:
+        vec: Dict[int, float] = {}
+        norm = 0.0
+        for idx, val in doc.items():
+            idf = math.log((1.0 + n) / (1.0 + df[idx])) + 1.0
+            x = val * idf
+            vec[idx] = x
+            norm += x * x
+        scale = 1.0 / math.sqrt(norm) if norm else 1.0
+        vectors.append({idx: val * scale for idx, val in vec.items()})
+    return vectors
+
+
+def vectorize_features(feature_counters: Sequence[Counter]) -> Tuple[Any, Tuple[int, int], bool]:
+    if not SKLEARN_AVAILABLE:
+        vectors = fallback_vectorize_features(feature_counters)
+        return vectors, (len(vectors), HASH_DIM), False
+    hasher = FeatureHasher(n_features=HASH_DIM, input_type="dict", alternate_sign=False)
     counts = hasher.transform(feature_counters)
-    tfidf = TfidfTransformer(
-        norm="l2",
-        use_idf=True,
-        smooth_idf=True,
-        sublinear_tf=True,
-    )
+    tfidf = TfidfTransformer(norm="l2", use_idf=True, smooth_idf=True, sublinear_tf=True)
     matrix = tfidf.fit_transform(counts)
-    return normalize(matrix, norm="l2", copy=False)
+    matrix = normalize(matrix, norm="l2", copy=False)
+    return matrix, matrix.shape, True
 
 
-def cluster_vectors(matrix, k: int) -> List[int]:
-    n = matrix.shape[0]
+def sparse_dot(a: Dict[int, float], b: Dict[int, float]) -> float:
+    if len(a) > len(b):
+        a, b = b, a
+    return sum(v * b.get(i, 0.0) for i, v in a.items())
+
+
+def normalize_sparse_dict(vec: Dict[int, float]) -> Dict[int, float]:
+    norm = math.sqrt(sum(v * v for v in vec.values()))
+    if norm <= 0.0:
+        return {}
+    return {i: v / norm for i, v in vec.items() if v}
+
+
+def fallback_kmeans(vectors: Sequence[Dict[int, float]], k: int) -> List[int]:
+    n = len(vectors)
     if n == 0:
         return []
     k = max(1, min(k, n))
     if k == n:
         return list(range(n))
 
-    model = MiniBatchKMeans(
-        n_clusters=k,
-        init="k-means++",
-        n_init=3,
-        max_iter=40,
-        batch_size=max(256, min(n, k * 32)),
-        random_state=RANDOM_SEED,
-        reassignment_ratio=0.01,
-    )
-    return model.fit_predict(matrix).tolist()
+    centers = [dict(vectors[0])]
+    min_dist = [1.0 - max(0.0, sparse_dot(v, centers[0])) for v in vectors]
+    while len(centers) < k:
+        candidate = max(range(n), key=lambda i: (min_dist[i], -i))
+        centers.append(dict(vectors[candidate]))
+        for i, v in enumerate(vectors):
+            dist = 1.0 - max(0.0, sparse_dot(v, centers[-1]))
+            if dist < min_dist[i]:
+                min_dist[i] = dist
+
+    labels = [-1] * n
+    rng = random.Random(RANDOM_SEED)
+    for _ in range(14):
+        changed = False
+        for i, vec in enumerate(vectors):
+            best = max(range(k), key=lambda c: (sparse_dot(vec, centers[c]), -c))
+            if labels[i] != best:
+                labels[i] = best
+                changed = True
+
+        sums: List[Dict[int, float]] = [defaultdict(float) for _ in range(k)]
+        counts = [0] * k
+        for label, vec in zip(labels, vectors):
+            counts[label] += 1
+            for idx, val in vec.items():
+                sums[label][idx] += val
+        for c in range(k):
+            centers[c] = dict(vectors[rng.randrange(n)]) if counts[c] == 0 else normalize_sparse_dict(sums[c])
+        if not changed:
+            break
+    return labels
+
+
+def to_dense_or_reduced(X: Any, svd_dim: int) -> Any:
+    n_samples, n_features = X.shape
+    n_components = min(svd_dim, n_samples - 1, n_features - 1)
+    if n_components >= 2:
+        reduced = TruncatedSVD(n_components=n_components, random_state=RANDOM_SEED).fit_transform(X)
+        return Normalizer(copy=False).fit_transform(reduced)
+    return X.toarray() if hasattr(X, "toarray") else X
+
+
+def cluster_vectors(X: Any, k: int, method: str = "agglomerative", svd_dim: int = 128, sklearn_input: bool = True) -> List[int]:
+    n_samples = X.shape[0] if sklearn_input else len(X)
+    if n_samples == 0:
+        return []
+    k = max(1, min(k, n_samples))
+    if k == n_samples:
+        return list(range(n_samples))
+
+    if not SKLEARN_AVAILABLE or not sklearn_input:
+        if method != "kmeans":
+            warn(f"sklearn is unavailable; falling back from {method} to standard-library kmeans")
+        return fallback_kmeans(X, k)
+
+    if method == "kmeans":
+        model = MiniBatchKMeans(
+            n_clusters=k,
+            init="k-means++",
+            n_init=3,
+            max_iter=40,
+            batch_size=max(256, min(n_samples, k * 32)),
+            random_state=RANDOM_SEED,
+            reassignment_ratio=0.01,
+        )
+        return model.fit_predict(X).tolist()
+
+    if method == "hdbscan":
+        try:
+            import hdbscan  # type: ignore
+        except ImportError:
+            warn("hdbscan is unavailable; falling back to agglomerative")
+            return cluster_vectors(X, k, method="agglomerative", svd_dim=svd_dim, sklearn_input=sklearn_input)
+        reduced = to_dense_or_reduced(X, svd_dim)
+        min_cluster_size = max(2, n_samples // max(2, 2 * k))
+        model = hdbscan.HDBSCAN(min_cluster_size=min_cluster_size, min_samples=1, metric="euclidean")
+        labels = model.fit_predict(reduced).tolist()
+        next_label = max([label for label in labels if label >= 0], default=-1) + 1
+        out = []
+        for label in labels:
+            if label == -1:
+                out.append(next_label)
+                next_label += 1
+            else:
+                out.append(label)
+        return out
+
+    # TF-IDF/template features are sparse text-like vectors. Cosine average-linkage
+    # agglomerative clustering often works better than k-means for log bucketing
+    # because clusters may be non-spherical and uneven in size.
+    reduced = to_dense_or_reduced(X, svd_dim)
+    try:
+        try:
+            model = AgglomerativeClustering(n_clusters=k, metric="cosine", linkage="average")
+        except TypeError:
+            model = AgglomerativeClustering(n_clusters=k, affinity="cosine", linkage="average")
+        return model.fit_predict(reduced).tolist()
+    except Exception as exc:
+        warn(f"cosine agglomerative failed ({exc}); falling back to ward linkage")
+        model = AgglomerativeClustering(n_clusters=k, linkage="ward")
+        return model.fit_predict(reduced).tolist()
+
+
+def remap_labels(labels: Sequence[int]) -> List[int]:
+    mapping: Dict[int, int] = {}
+    out = []
+    for label in labels:
+        if label not in mapping:
+            mapping[label] = len(mapping)
+        out.append(mapping[label])
+    return out
 
 
 def write_output(path: Path, labels: Sequence[int]) -> None:
@@ -284,10 +654,22 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser.add_argument("--input", required=True, type=Path, help="Input CSV containing log paths.")
     parser.add_argument("--output", required=True, type=Path, help="Output CSV to write buckets.")
     parser.add_argument("--k", required=True, type=int, help="Number of requested buckets.")
+    parser.add_argument("--parser", choices=("simple", "drain"), default="drain", help="log template parser")
+    parser.add_argument(
+        "--cluster",
+        choices=("kmeans", "agglomerative", "hdbscan"),
+        default="agglomerative",
+        help="clustering backend",
+    )
+    parser.add_argument("--drain-depth", type=int, default=4, help="fixed-depth Drain tree depth")
+    parser.add_argument("--drain-st", type=float, default=0.45, help="Drain token similarity threshold")
+    parser.add_argument("--drain-max-children", type=int, default=100, help="Drain max children per tree node")
+    parser.add_argument("--svd-dim", type=int, default=128, help="SVD dimension before agglomerative/HDBSCAN")
     return parser.parse_args(argv)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    start = time.perf_counter()
     args = parse_args(argv or sys.argv[1:])
     input_csv = args.input.resolve()
     rows, fieldnames = read_csv_rows(input_csv)
@@ -300,13 +682,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     if sim_col is None and regr_col is None:
         raise SystemExit("input CSV must contain at least a sim.log or regr.log column")
 
-    feature_counters = [
-        features_for_case(input_csv, row, idx, sim_col, regr_col)
-        for idx, row in enumerate(rows)
-    ]
-    matrix = vectorize_features(feature_counters)
-    labels = cluster_vectors(matrix, args.k)
+    info(f"cases={len(rows)} parser={args.parser} cluster={args.cluster}")
+    base_features, normalized_lines = collect_case_inputs(input_csv, rows, sim_col, regr_col, args.parser)
+    feature_counters, template_count = build_feature_counters(args, base_features, normalized_lines)
+    X, shape, sklearn_input = vectorize_features(feature_counters)
+    info(f"templates={template_count} vector_shape={shape}")
+    labels = cluster_vectors(X, args.k, method=args.cluster, svd_dim=args.svd_dim, sklearn_input=sklearn_input)
+    labels = remap_labels(labels)
     write_output(args.output.resolve(), labels)
+    info(f"output_clusters={len(set(labels))} runtime_sec={time.perf_counter() - start:.3f}")
     return 0
 
 
