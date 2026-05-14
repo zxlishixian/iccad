@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run local parser/backend ablations on the three bundled datasets."""
+"""Run the main local baseline, with optional parser/backend ablations."""
 
 from __future__ import annotations
 
@@ -24,12 +24,8 @@ DATASETS = [
         32,
     ),
 ]
-COMBOS = [
-    ("simple", "kmeans"),
-    ("simple", "agglomerative"),
-    ("drain", "kmeans"),
-    ("drain", "agglomerative"),
-]
+DEFAULT_PARSERS = ["drain"]
+DEFAULT_CLUSTERS = ["agglomerative"]
 
 
 def pick_col(fieldnames: Sequence[str], names: Sequence[str], fallback: int = 0) -> str:
@@ -86,6 +82,7 @@ def run_one(
     cluster: str,
     cluster_factor: float,
     token_weights: Path | None,
+    token_weight_mode: str,
     output_dir: Path,
 ) -> dict:
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -107,6 +104,8 @@ def run_one(
         cluster,
         "--cluster-factor",
         str(cluster_factor),
+        "--token-weight-mode",
+        token_weight_mode,
     ]
     if token_weights:
         cmd.extend(["--token-weights", str(token_weights)])
@@ -121,7 +120,7 @@ def run_one(
             "cases": "",
             "k": k,
             "cluster_factor": cluster_factor,
-            "effective_k": "",
+            "token_weight_mode": token_weight_mode,
             "token_weights": str(token_weights) if token_weights else "",
             "num_pred_clusters": "",
             "BA": 0.0,
@@ -133,7 +132,6 @@ def run_one(
     gold = read_gold(gold_csv)
     pred = read_pred(pred_path)
     ba, tpr, tnr = pairwise_scores(gold, pred)
-    effective_k = max(1, min(len(gold), round(k * cluster_factor)))
     return {
         "dataset": dataset_name,
         "parser": parser,
@@ -141,7 +139,7 @@ def run_one(
         "cases": len(gold),
         "k": k,
         "cluster_factor": cluster_factor,
-        "effective_k": effective_k,
+        "token_weight_mode": token_weight_mode,
         "token_weights": str(token_weights) if token_weights else "",
         "num_pred_clusters": len(set(pred)),
         "BA": ba,
@@ -157,11 +155,11 @@ def print_table(rows: Sequence[dict]) -> None:
         "dataset",
         "parser",
         "cluster",
+        "cluster_factor",
+        "token_weight_mode",
+        "token_weights",
         "cases",
         "k",
-        "cluster_factor",
-        "effective_k",
-        "token_weights",
         "num_pred_clusters",
         "BA",
         "TPR",
@@ -185,6 +183,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--output-dir", type=Path, default=Path("/private/tmp/regr_fail_bucketing_experiments"))
     parser.add_argument("--python", default=sys.executable)
     parser.add_argument("--token-weights", type=Path)
+    parser.add_argument("--token-weight-mode", choices=("repeat", "none"), default="none")
     parser.add_argument("--cluster-factors", nargs="+", type=float, default=[1.0])
     parser.add_argument("--parsers", nargs="+", choices=("simple", "drain"))
     parser.add_argument("--clusters", nargs="+", choices=("kmeans", "agglomerative", "hdbscan"))
@@ -194,12 +193,9 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
 def main(argv: Sequence[str] | None = None) -> int:
     args = parse_args(argv)
     rows = []
-    if args.parsers or args.clusters:
-        parsers = args.parsers or ["simple", "drain"]
-        clusters = args.clusters or ["kmeans", "agglomerative"]
-        combos = [(parser_name, cluster_name) for parser_name in parsers for cluster_name in clusters]
-    else:
-        combos = COMBOS
+    parsers = args.parsers or DEFAULT_PARSERS
+    clusters = args.clusters or DEFAULT_CLUSTERS
+    combos = [(parser_name, cluster_name) for parser_name in parsers for cluster_name in clusters]
     for dataset_name, input_csv, gold_csv, k in DATASETS:
         for parser_name, cluster_name in combos:
             for cluster_factor in args.cluster_factors:
@@ -213,12 +209,14 @@ def main(argv: Sequence[str] | None = None) -> int:
                     cluster_name,
                     cluster_factor,
                     args.token_weights,
+                    args.token_weight_mode,
                     args.output_dir,
                 )
                 rows.append(row)
                 print(
                     f"done dataset={dataset_name} parser={parser_name} cluster={cluster_name} "
-                    f"cf={cluster_factor} BA={row['BA']:.6f} runtime={row['runtime_sec']:.3f}s",
+                    f"cf={cluster_factor} token_weight_mode={args.token_weight_mode} "
+                    f"BA={row['BA']:.6f} runtime={row['runtime_sec']:.3f}s",
                     file=sys.stderr,
                 )
     print_table(rows)

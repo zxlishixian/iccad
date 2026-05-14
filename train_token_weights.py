@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Train supervised token weights from local datasets.
+"""Experimental/research utility for supervised token weighting.
+
+Current validation showed that learned token weights did not consistently
+outperform the no-weight baseline, so they are not enabled by default.
 
 This script is the only place, together with evaluation scripts, where gold.csv
 is read. The official predictor regr_fail_bucketing.py only loads the produced

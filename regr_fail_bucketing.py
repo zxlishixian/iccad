@@ -65,7 +65,7 @@ PRIMARY_TOKEN_RE = re.compile(r"[^A-Za-z0-9_.:-]+")
 
 
 def warn(message: str) -> None:
-    print(f"warning: {message}", file=sys.stderr)
+    print(f"WARNING: {message}", file=sys.stderr)
 
 
 def info(message: str) -> None:
@@ -257,6 +257,8 @@ def extract_primary_signature(
     sim_lines: List[str],
     regr_lines: List[str],
 ) -> List[str]:
+    # Primary signature tokens are deterministic sim/regr failure summaries and
+    # are part of the default baseline. They do not require gold labels.
     del sim_info, regr_info
     tokens: List[str] = []
 
@@ -553,7 +555,7 @@ def build_feature_counters(
     base_features: Sequence[Counter],
     normalized_lines: Sequence[List[Tuple[str, str]]],
     token_weights: Dict[str, float] | None = None,
-    token_weight_mode: str = "repeat",
+    token_weight_mode: str = "none",
 ) -> Tuple[List[Counter], int]:
     parser = make_parser(args)
     case_template_ids: List[List[Tuple[str, int]]] = []
@@ -841,8 +843,14 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser.add_argument("--drain-max-children", type=int, default=100, help="Drain max children per tree node")
     parser.add_argument("--svd-dim", type=int, default=128, help="SVD dimension before agglomerative/HDBSCAN")
     parser.add_argument("--token-weights", type=Path, help="optional token_weights.json learned from training data")
-    parser.add_argument("--token-weight-mode", choices=("repeat", "none"), default="repeat")
+    parser.add_argument("--token-weight-mode", choices=("repeat", "none"), default="none")
     parser.add_argument("--cluster-factor", type=float, default=1.0, help="multiply requested k before clustering")
+    parser.add_argument(
+        "--postprocess",
+        choices=("none",),
+        default="none",
+        help="post-processing mode; reserved for future split_mixed support",
+    )
     return parser.parse_args(argv)
 
 
@@ -861,12 +869,20 @@ def main(argv: Sequence[str] | None = None) -> int:
         raise SystemExit("input CSV must contain at least a sim.log or regr.log column")
 
     effective_k = max(1, min(len(rows), round(args.k * args.cluster_factor)))
-    token_weights = load_token_weights(args.token_weights)
+    token_weights: Dict[str, float] = {}
+    token_weights_label = "None"
+    if args.token_weights and args.token_weight_mode == "none":
+        warn("--token-weights was provided but --token-weight-mode=none, token weights will be ignored.")
+    elif args.token_weights:
+        token_weights = load_token_weights(args.token_weights)
+        token_weights_label = str(args.token_weights)
+
     info(
-        f"cases={len(rows)} parser={args.parser} cluster={args.cluster} "
-        f"k={args.k} cluster_factor={args.cluster_factor} effective_k={effective_k} "
-        f"token_weights={len(token_weights)}"
+        f"[config] parser={args.parser} cluster={args.cluster} "
+        f"cluster_factor={args.cluster_factor} token_weight_mode={args.token_weight_mode} "
+        f"token_weights={token_weights_label}"
     )
+    info("[config] primary_signature=enabled")
     base_features, normalized_lines = collect_case_inputs(input_csv, rows, sim_col, regr_col, args.parser)
     feature_counters, template_count = build_feature_counters(
         args,
@@ -876,11 +892,13 @@ def main(argv: Sequence[str] | None = None) -> int:
         token_weight_mode=args.token_weight_mode,
     )
     X, shape, sklearn_input = vectorize_features(feature_counters)
-    info(f"templates={template_count} vector_shape={shape}")
+    info(f"[data] cases={len(rows)} templates={template_count} vector_shape={shape}")
+    info(f"[cluster] requested_k={args.k} effective_k={effective_k} method={args.cluster}")
     labels = cluster_vectors(X, effective_k, method=args.cluster, svd_dim=args.svd_dim, sklearn_input=sklearn_input)
     labels = remap_labels(labels)
     write_output(args.output.resolve(), labels)
-    info(f"output_clusters={len(set(labels))} runtime_sec={time.perf_counter() - start:.3f}")
+    # TODO: add split_mixed post-processing for large mixed clusters.
+    info(f"[output] buckets={len(set(labels))} path={args.output.resolve()} runtime_sec={time.perf_counter() - start:.3f}")
     return 0
 
 

@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Leave-one-dataset-out experiments for supervised token weights."""
+"""Experimental leave-one-dataset-out supervised token-weight experiments.
+
+These scripts are research utilities for supervised token weighting experiments.
+Current validation showed that learned token weights did not consistently
+outperform the no-weight baseline, so they are not enabled by default.
+"""
 
 from __future__ import annotations
 
@@ -56,6 +61,8 @@ def run_split(
         str(cluster_factor),
         "--token-weights",
         str(weights_path),
+        "--token-weight-mode",
+        "repeat",
     ]
     start = time.perf_counter()
     pred_proc = subprocess.run(pred_cmd, text=True, capture_output=True, check=False)
