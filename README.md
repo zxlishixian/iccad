@@ -31,6 +31,10 @@
 
 - `regr_fail_bucketing`
   - 轻量 wrapper，提供题面要求的可执行程序形式。
+  - 如果当前目录存在 `.venv/bin/python`，会优先使用本地虚拟环境。
+
+- `requirements.txt`
+  - Python 依赖列表，目前使用 `scikit-learn`。
 
 ## 赛题输入输出理解
 
@@ -96,7 +100,7 @@ trace_log,sim_log,regr_log
    - `[FAILED]: error seen in 'rtl_sim.log'`
    - PASS/FAILED 统计行
 
-6. 在完成上述阅读后，实现了一个不使用 `trace.log`、不调用 LLM、不引入重依赖的 baseline pipeline。
+6. 在完成上述阅读后，实现了一个不使用 `trace.log`、不调用 LLM、基于 `scikit-learn` 的 baseline pipeline。
 
 ## 当前 baseline 方法
 
@@ -108,8 +112,9 @@ input.csv
   -> 选择高信号日志行
   -> Drain-like 模板化
   -> case-level template/token/count 特征
-  -> 哈希稀疏 TF-IDF
-  -> cosine k-means 聚类
+  -> sklearn FeatureHasher
+  -> sklearn TfidfTransformer
+  -> sklearn MiniBatchKMeans 聚类
   -> output.csv
 ```
 
@@ -124,7 +129,14 @@ input.csv
 - 寄存器名
 - 行号前缀
 
-程序只使用 Python 标准库，方便在没有 `numpy`、`scipy`、`sklearn` 的环境里运行。
+程序的日志解析部分使用 Python 标准库，向量化和聚类使用 `scikit-learn`。本地已经创建 `.venv` 并安装了 `scikit-learn`、`numpy`、`scipy`、`joblib` 等依赖。
+
+如果需要重新安装依赖：
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements.txt
+```
 
 ## 使用方式
 
@@ -137,10 +149,10 @@ input.csv
   --k 8
 ```
 
-或者运行 Python 脚本：
+或者直接用本地虚拟环境运行 Python 脚本：
 
 ```bash
-python3 regr_fail_bucketing.py \
+.venv/bin/python regr_fail_bucketing.py \
   --input dataset/stage3_dataset_32bugs_640cases/input.csv \
   --output /private/tmp/stage3_out.csv \
   --k 32
@@ -155,13 +167,14 @@ python3 regr_fail_bucketing.py \
 - `first_batch_dataset`
   - 80 cases，`k=8`
   - 输出行数正确。
-  - pairwise balanced accuracy 约为 `0.723`。
+  - 当前 sklearn 版本运行时间约 `4.8s`。
+  - 当前 sklearn 版本 pairwise balanced accuracy 约为 `0.699`。
 
 - `stage3_dataset_32bugs_640cases`
   - 640 cases，`k=32`
   - 输出行数正确。
-  - 运行时间约 `7.4s`。
-  - pairwise balanced accuracy 约为 `0.697`。
+  - 当前 sklearn 版本运行时间约 `4.0s`。
+  - 当前 sklearn 版本 pairwise balanced accuracy 约为 `0.653`。
 
 这些分数只是当前轻量 baseline 的 sanity check，不代表最终可提交最优方案。
 
@@ -169,7 +182,7 @@ python3 regr_fail_bucketing.py \
 
 - 暂时没有使用 `trace.log`，因此没有利用逐指令执行轨迹中的行为模式。
 - 没有使用 LLM 或 embedding。
-- 没有使用 sklearn 等成熟聚类库，k-means 是标准库手写版本。
+- 当前使用的是通用文本特征和 `MiniBatchKMeans`，还没有针对硬件日志做强监督或半监督优化。
 - 主要依赖 `sim.log` / `regr.log` 中的文本症状，遇到同一 bug 多种表象或不同 bug 相似表象时容易混淆。
 - 当前没有做针对 `meta.csv` 或 `gold.csv` 的训练式特征学习；正式评测时也不应依赖答案文件。
 

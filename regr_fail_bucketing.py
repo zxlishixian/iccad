@@ -3,31 +3,37 @@
 
 Pipeline:
   input.csv -> sim.log/regr.log -> Drain-like templates -> sparse TF-IDF
-  -> cosine k-means -> output.csv
-
-The implementation intentionally uses only Python's standard library so it can
-run in a bare evaluation environment.
+  -> sklearn MiniBatchKMeans -> output.csv
 """
 
 from __future__ import annotations
 
 import argparse
 import csv
-import hashlib
-import math
 import os
-import random
 import re
 import sys
-from collections import Counter, defaultdict
+from collections import Counter
 from pathlib import Path
-from typing import Dict, Iterable, List, Sequence, Tuple
+from typing import Iterable, List, Sequence, Tuple
+
+os.environ.setdefault("LOKY_MAX_CPU_COUNT", str(os.cpu_count() or 1))
+
+try:
+    from sklearn.cluster import MiniBatchKMeans
+    from sklearn.feature_extraction import FeatureHasher
+    from sklearn.feature_extraction.text import TfidfTransformer
+    from sklearn.preprocessing import normalize
+except ImportError as exc:
+    raise SystemExit(
+        "This implementation requires scikit-learn. Install it with "
+        "`python3 -m pip install scikit-learn` or package it with the submission."
+    ) from exc
 
 
 HASH_DIM = 1 << 15
 MAX_LOG_BYTES = 256 * 1024
 MAX_SELECTED_LINES = 420
-KMEANS_ITERS = 14
 RANDOM_SEED = 20260212
 
 SIGNAL_RE = re.compile(
@@ -46,11 +52,6 @@ SEED_RE = re.compile(r"seed[_-]?\d+|\bsvseed\s+\d+\b", re.IGNORECASE)
 TIME_RE = re.compile(r"@\s*\d+")
 REG_RE = re.compile(r"\bx(?:[12]?\d|3[01])\b", re.IGNORECASE)
 LINE_NUM_RE = re.compile(r"^\s*(?:\[E\]\s*)?\d+:\s*")
-
-
-def stable_hash(text: str, modulo: int = HASH_DIM) -> int:
-    digest = hashlib.blake2b(text.encode("utf-8", "ignore"), digest_size=8).digest()
-    return int.from_bytes(digest, "little") % modulo
 
 
 def read_csv_rows(input_csv: Path) -> Tuple[List[dict], List[str]]:
@@ -231,101 +232,42 @@ def features_for_case(input_csv: Path, row: dict, idx: int, sim_col: str | None,
     return feats
 
 
-def hashed_tfidf(cases: Sequence[Counter]) -> List[Dict[int, float]]:
-    docs: List[Dict[int, float]] = []
-    df: Dict[int, int] = defaultdict(int)
-
-    for feats in cases:
-        hashed: Dict[int, float] = defaultdict(float)
-        for feat, cnt in feats.items():
-            idx = stable_hash(feat)
-            hashed[idx] += 1.0 + math.log1p(float(cnt))
-        docs.append(dict(hashed))
-        for idx in hashed:
-            df[idx] += 1
-
-    n = max(1, len(docs))
-    vectors: List[Dict[int, float]] = []
-    for doc in docs:
-        vec: Dict[int, float] = {}
-        norm = 0.0
-        for idx, val in doc.items():
-            idf = math.log((1.0 + n) / (1.0 + df[idx])) + 1.0
-            x = val * idf
-            vec[idx] = x
-            norm += x * x
-        scale = 1.0 / math.sqrt(norm) if norm else 1.0
-        vectors.append({idx: val * scale for idx, val in vec.items()})
-    return vectors
+def vectorize_features(feature_counters: Sequence[Counter]):
+    """Build a sparse TF-IDF matrix using sklearn's hashing vectorizer stack."""
+    hasher = FeatureHasher(
+        n_features=HASH_DIM,
+        input_type="dict",
+        alternate_sign=False,
+    )
+    counts = hasher.transform(feature_counters)
+    tfidf = TfidfTransformer(
+        norm="l2",
+        use_idf=True,
+        smooth_idf=True,
+        sublinear_tf=True,
+    )
+    matrix = tfidf.fit_transform(counts)
+    return normalize(matrix, norm="l2", copy=False)
 
 
-def dot(a: Dict[int, float], b: Dict[int, float]) -> float:
-    if len(a) > len(b):
-        a, b = b, a
-    return sum(v * b.get(i, 0.0) for i, v in a.items())
-
-
-def normalize_dense_sparse(vec: Dict[int, float]) -> Dict[int, float]:
-    norm = math.sqrt(sum(v * v for v in vec.values()))
-    if norm <= 0.0:
-        return {}
-    return {i: v / norm for i, v in vec.items() if v}
-
-
-def choose_initial_centers(vectors: Sequence[Dict[int, float]], k: int) -> List[Dict[int, float]]:
-    n = len(vectors)
-    if k >= n:
-        return [dict(v) for v in vectors]
-    centers = [dict(vectors[0])]
-    min_dist = [1.0 - max(0.0, dot(v, centers[0])) for v in vectors]
-    while len(centers) < k:
-        candidate = max(range(n), key=lambda i: (min_dist[i], -i))
-        centers.append(dict(vectors[candidate]))
-        for i, v in enumerate(vectors):
-            d = 1.0 - max(0.0, dot(v, centers[-1]))
-            if d < min_dist[i]:
-                min_dist[i] = d
-    return centers
-
-
-def cluster_vectors(vectors: Sequence[Dict[int, float]], k: int) -> List[int]:
-    n = len(vectors)
+def cluster_vectors(matrix, k: int) -> List[int]:
+    n = matrix.shape[0]
     if n == 0:
         return []
     k = max(1, min(k, n))
     if k == n:
         return list(range(n))
 
-    centers = choose_initial_centers(vectors, k)
-    labels = [-1] * n
-    rng = random.Random(RANDOM_SEED)
-
-    for _ in range(KMEANS_ITERS):
-        changed = False
-        for i, vec in enumerate(vectors):
-            best = max(range(k), key=lambda c: (dot(vec, centers[c]), -c))
-            if labels[i] != best:
-                labels[i] = best
-                changed = True
-
-        sums: List[Dict[int, float]] = [defaultdict(float) for _ in range(k)]
-        counts = [0] * k
-        for label, vec in zip(labels, vectors):
-            counts[label] += 1
-            acc = sums[label]
-            for idx, val in vec.items():
-                acc[idx] += val
-
-        for c in range(k):
-            if counts[c] == 0:
-                replacement = rng.randrange(n)
-                centers[c] = dict(vectors[replacement])
-            else:
-                centers[c] = normalize_dense_sparse(sums[c])
-
-        if not changed:
-            break
-    return labels
+    model = MiniBatchKMeans(
+        n_clusters=k,
+        init="k-means++",
+        n_init=3,
+        max_iter=40,
+        batch_size=max(256, min(n, k * 32)),
+        random_state=RANDOM_SEED,
+        reassignment_ratio=0.01,
+    )
+    return model.fit_predict(matrix).tolist()
 
 
 def write_output(path: Path, labels: Sequence[int]) -> None:
@@ -362,8 +304,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         features_for_case(input_csv, row, idx, sim_col, regr_col)
         for idx, row in enumerate(rows)
     ]
-    vectors = hashed_tfidf(feature_counters)
-    labels = cluster_vectors(vectors, args.k)
+    matrix = vectorize_features(feature_counters)
+    labels = cluster_vectors(matrix, args.k)
     write_output(args.output.resolve(), labels)
     return 0
 
