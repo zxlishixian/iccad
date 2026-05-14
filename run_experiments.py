@@ -84,10 +84,14 @@ def run_one(
     k: int,
     parser: str,
     cluster: str,
+    cluster_factor: float,
+    token_weights: Path | None,
     output_dir: Path,
 ) -> dict:
     output_dir.mkdir(parents=True, exist_ok=True)
-    pred_path = output_dir / f"{dataset_name}_{parser}_{cluster}.csv"
+    factor_name = str(cluster_factor).replace(".", "p")
+    weight_name = "weighted" if token_weights else "unweighted"
+    pred_path = output_dir / f"{dataset_name}_{parser}_{cluster}_cf{factor_name}_{weight_name}.csv"
     cmd = [
         python,
         "regr_fail_bucketing.py",
@@ -101,7 +105,11 @@ def run_one(
         parser,
         "--cluster",
         cluster,
+        "--cluster-factor",
+        str(cluster_factor),
     ]
+    if token_weights:
+        cmd.extend(["--token-weights", str(token_weights)])
     start = time.perf_counter()
     proc = subprocess.run(cmd, text=True, capture_output=True, check=False)
     runtime = time.perf_counter() - start
@@ -112,6 +120,9 @@ def run_one(
             "cluster": cluster,
             "cases": "",
             "k": k,
+            "cluster_factor": cluster_factor,
+            "effective_k": "",
+            "token_weights": str(token_weights) if token_weights else "",
             "num_pred_clusters": "",
             "BA": 0.0,
             "TPR": 0.0,
@@ -122,12 +133,16 @@ def run_one(
     gold = read_gold(gold_csv)
     pred = read_pred(pred_path)
     ba, tpr, tnr = pairwise_scores(gold, pred)
+    effective_k = max(1, min(len(gold), round(k * cluster_factor)))
     return {
         "dataset": dataset_name,
         "parser": parser,
         "cluster": cluster,
         "cases": len(gold),
         "k": k,
+        "cluster_factor": cluster_factor,
+        "effective_k": effective_k,
+        "token_weights": str(token_weights) if token_weights else "",
         "num_pred_clusters": len(set(pred)),
         "BA": ba,
         "TPR": tpr,
@@ -138,7 +153,21 @@ def run_one(
 
 
 def print_table(rows: Sequence[dict]) -> None:
-    header = ["dataset", "parser", "cluster", "cases", "k", "num_pred_clusters", "BA", "TPR", "TNR", "runtime_sec"]
+    header = [
+        "dataset",
+        "parser",
+        "cluster",
+        "cases",
+        "k",
+        "cluster_factor",
+        "effective_k",
+        "token_weights",
+        "num_pred_clusters",
+        "BA",
+        "TPR",
+        "TNR",
+        "runtime_sec",
+    ]
     print(",".join(header))
     for row in rows:
         values = []
@@ -155,21 +184,43 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run local bucketing ablations.")
     parser.add_argument("--output-dir", type=Path, default=Path("/private/tmp/regr_fail_bucketing_experiments"))
     parser.add_argument("--python", default=sys.executable)
+    parser.add_argument("--token-weights", type=Path)
+    parser.add_argument("--cluster-factors", nargs="+", type=float, default=[1.0])
+    parser.add_argument("--parsers", nargs="+", choices=("simple", "drain"))
+    parser.add_argument("--clusters", nargs="+", choices=("kmeans", "agglomerative", "hdbscan"))
     return parser.parse_args(argv)
 
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = parse_args(argv)
     rows = []
+    if args.parsers or args.clusters:
+        parsers = args.parsers or ["simple", "drain"]
+        clusters = args.clusters or ["kmeans", "agglomerative"]
+        combos = [(parser_name, cluster_name) for parser_name in parsers for cluster_name in clusters]
+    else:
+        combos = COMBOS
     for dataset_name, input_csv, gold_csv, k in DATASETS:
-        for parser_name, cluster_name in COMBOS:
-            row = run_one(args.python, dataset_name, input_csv, gold_csv, k, parser_name, cluster_name, args.output_dir)
-            rows.append(row)
-            print(
-                f"done dataset={dataset_name} parser={parser_name} cluster={cluster_name} "
-                f"BA={row['BA']:.6f} runtime={row['runtime_sec']:.3f}s",
-                file=sys.stderr,
-            )
+        for parser_name, cluster_name in combos:
+            for cluster_factor in args.cluster_factors:
+                row = run_one(
+                    args.python,
+                    dataset_name,
+                    input_csv,
+                    gold_csv,
+                    k,
+                    parser_name,
+                    cluster_name,
+                    cluster_factor,
+                    args.token_weights,
+                    args.output_dir,
+                )
+                rows.append(row)
+                print(
+                    f"done dataset={dataset_name} parser={parser_name} cluster={cluster_name} "
+                    f"cf={cluster_factor} BA={row['BA']:.6f} runtime={row['runtime_sec']:.3f}s",
+                    file=sys.stderr,
+                )
     print_table(rows)
     return 0
 

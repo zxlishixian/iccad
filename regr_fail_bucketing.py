@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import csv
 import hashlib
+import json
 import math
 import os
 import random
@@ -60,6 +61,7 @@ SEED_RE = re.compile(r"seed[_-]?\d+|\bsvseed\s+\d+\b", re.IGNORECASE)
 TIME_RE = re.compile(r"@\s*\d+")
 LINE_NUM_RE = re.compile(r"^\s*(?:\[E\]\s*)?\d+:\s*")
 TOKEN_RE = re.compile(r"[a-z_][a-z0-9_./:+-]*|<[^>]+>|\[[a-z]\]")
+PRIMARY_TOKEN_RE = re.compile(r"[^A-Za-z0-9_.:-]+")
 
 
 def warn(message: str) -> None:
@@ -191,6 +193,109 @@ def line_tokens(template: str) -> Iterable[str]:
     for token in TOKEN_RE.findall(template):
         if len(token) > 1:
             yield token
+
+
+def sanitize_primary_part(text: str, max_len: int = 120) -> str:
+    text = PATH_RE.sub(path_to_token, text)
+    text = HEX_RE.sub(" ", text)
+    text = DEC_RE.sub(" ", text)
+    text = re.sub(r"\b\d+\b", " ", text)
+    text = re.sub(r"\([^)]*\)", " ", text)
+    text = text.upper()
+    text = PRIMARY_TOKEN_RE.sub("_", text).strip("_")
+    text = re.sub(r"_+", "_", text)
+    return text[:max_len].strip("_") or "UNKNOWN"
+
+
+def sanitize_primary_token(*parts: str, max_len: int = 160) -> str:
+    token = "_".join(part.strip("_") for part in parts if part and part.strip("_"))
+    token = PRIMARY_TOKEN_RE.sub("_", token).strip("_")
+    token = re.sub(r"_+", "_", token)
+    return token[:max_len].strip("_") or "PRIMARY_UNKNOWN_FAILURE"
+
+
+def extract_sv_basename(line: str) -> str:
+    matches = re.findall(r"([^/\s:()]+\.svh?|[^/\s:()]+\.v)(?:\(\d+\))?", line, flags=re.IGNORECASE)
+    if matches:
+        return matches[-1]
+    path_matches = re.findall(r"(/[^\s:()]+(?:\.svh?|\.v))(?:\(\d+\))?", line, flags=re.IGNORECASE)
+    if path_matches:
+        return path_matches[-1].rsplit("/", 1)[-1]
+    return "unknown_source"
+
+
+def message_after_uvm_context(line: str) -> str:
+    # UVM messages usually place the human-readable reason after the final [component] tag.
+    if "]" in line:
+        return line.rsplit("]", 1)[-1].strip()
+    parts = line.split(":", 1)
+    return parts[-1].strip() if parts else line.strip()
+
+
+def extract_opcode_pair(lines: Sequence[str]) -> str | None:
+    ibex_op = None
+    spike_op = None
+    op_re = re.compile(r"\b(ibex|dut|rtl|spike|iss)\[\d+\]\s*:\s*pc\[[^\]]+\]\s+([a-z0-9.]+)", re.IGNORECASE)
+    for line in lines:
+        match = op_re.search(line)
+        if not match:
+            continue
+        side = match.group(1).lower()
+        op = match.group(2).lower()
+        if side in {"ibex", "dut", "rtl"} and ibex_op is None:
+            ibex_op = op
+        elif side in {"spike", "iss"} and spike_op is None:
+            spike_op = op
+    if ibex_op and spike_op:
+        return sanitize_primary_token("PRIMARY_REGR_OPPAIR", ibex_op, spike_op)
+    return None
+
+
+def extract_primary_signature(
+    sim_info: dict,
+    regr_info: dict,
+    sim_lines: List[str],
+    regr_lines: List[str],
+) -> List[str]:
+    del sim_info, regr_info
+    tokens: List[str] = []
+
+    for severity in ("UVM_FATAL", "UVM_ERROR"):
+        for line in sim_lines:
+            if severity not in line.upper():
+                continue
+            source = extract_sv_basename(line)
+            message = sanitize_primary_part(message_after_uvm_context(line))
+            tokens.append(sanitize_primary_token("PRIMARY", severity, source, message))
+            return tokens
+
+    joined_regr = "\n".join(regr_lines)
+    lower_regr = joined_regr.lower()
+    if "mismatch" in lower_regr:
+        if "pc mismatch" in lower_regr:
+            tokens.append("PRIMARY_REGR_PC_MISMATCH")
+        if "register write data mismatch" in lower_regr:
+            tokens.append("PRIMARY_REGR_REGISTER_WRITE_DATA_MISMATCH")
+        if "memory mismatch" in lower_regr or "store" in lower_regr and "mismatch" in lower_regr:
+            tokens.append("PRIMARY_REGR_MEMORY_MISMATCH")
+        if "instruction mismatch" in lower_regr or "retired" in lower_regr:
+            tokens.append("PRIMARY_REGR_INSTRUCTION_MISMATCH")
+        if "cosim mismatch" in lower_regr or "co-sim" in lower_regr:
+            tokens.append("PRIMARY_REGR_COSIM_MISMATCH")
+        if not tokens:
+            tokens.append("PRIMARY_REGR_MISMATCH_GENERIC")
+        op_pair = extract_opcode_pair(regr_lines)
+        if op_pair:
+            tokens.append(op_pair)
+        return tokens
+
+    for line in regr_lines + sim_lines:
+        upper = line.upper()
+        if "[FAILED]" in upper or "TEST FAILED" in upper or "FAILED" in upper:
+            reason = sanitize_primary_part(line)
+            return [sanitize_primary_token("PRIMARY_FAILED", reason)]
+
+    return ["PRIMARY_UNKNOWN_FAILURE"]
 
 
 @dataclass
@@ -408,6 +513,8 @@ def collect_case_inputs(
     for idx, row in enumerate(rows):
         feats: Counter = Counter()
         lines_for_case: List[Tuple[str, str]] = []
+        selected_by_prefix: Dict[str, List[str]] = {"sim": [], "regr": []}
+        info_by_prefix: Dict[str, dict] = {"sim": {}, "regr": {}}
         used_cols = [c for c in (sim_col, regr_col) if c]
         cid = case_id_from_row(row, idx, used_cols)
         feats[f"case_shape:{re.sub(r'\\d', '0', cid)}"] += 1
@@ -415,15 +522,26 @@ def collect_case_inputs(
         for prefix, col in (("sim", sim_col), ("regr", regr_col)):
             path = resolve_log_path(input_csv, row.get(col) if col else None)
             text, status = read_log_sample(path)
+            selected = select_lines(text)
+            selected_by_prefix[prefix] = selected
+            info_by_prefix[prefix] = {"path": str(path) if path else "", "status": status}
             feats[f"{prefix}:file_status:{status}"] += 3
             if path is not None:
                 feats[f"{prefix}:basename:{path.name.lower()}"] += 1
             extract_status_features(prefix, text, feats)
 
-            for line in select_lines(text):
+            for line in selected:
                 normalized_line = normalize_log_line(line, preserve_basenames=preserve_basenames)
                 if normalized_line:
                     lines_for_case.append((prefix, normalized_line))
+
+        for primary in extract_primary_signature(
+            info_by_prefix["sim"],
+            info_by_prefix["regr"],
+            selected_by_prefix["sim"],
+            selected_by_prefix["regr"],
+        ):
+            feats[primary] += 1
 
         base_features.append(feats)
         normalized_lines.append(lines_for_case)
@@ -434,6 +552,8 @@ def build_feature_counters(
     args: argparse.Namespace,
     base_features: Sequence[Counter],
     normalized_lines: Sequence[List[Tuple[str, str]]],
+    token_weights: Dict[str, float] | None = None,
+    token_weight_mode: str = "repeat",
 ) -> Tuple[List[Counter], int]:
     parser = make_parser(args)
     case_template_ids: List[List[Tuple[str, int]]] = []
@@ -459,8 +579,63 @@ def build_feature_counters(
                 out[f"{prefix}:tok:{tok}"] += 1
             for a, b in zip(toks, toks[1:]):
                 out[f"{prefix}:bi:{a}_{b}"] += 1
-        feature_counters.append(out)
+        feature_counters.append(apply_token_weights(out, token_weights or {}, token_weight_mode))
     return feature_counters, parser.num_templates
+
+
+def load_token_weights(path: str | Path | None) -> Dict[str, float]:
+    if not path:
+        return {}
+    try:
+        with Path(path).open(encoding="utf-8") as f:
+            data = json.load(f)
+    except OSError as exc:
+        warn(f"could not read token weights {path}: {exc}; continuing without learned weights")
+        return {}
+    weights = data.get("weights", data if isinstance(data, dict) else {})
+    out: Dict[str, float] = {}
+    if isinstance(weights, dict):
+        for token, weight in weights.items():
+            try:
+                out[str(token)] = float(weight)
+            except (TypeError, ValueError):
+                continue
+    return out
+
+
+def learned_repeat_count(weight: float) -> int:
+    if weight >= 4.0:
+        return 4
+    if weight >= 3.0:
+        return 3
+    if weight >= 2.0:
+        return 2
+    if weight >= 0.5:
+        return 1
+    return 0
+
+
+def token_repeat_count(token: str, weights: Dict[str, float], mode: str) -> int:
+    is_primary = token.startswith("PRIMARY_")
+    if mode == "none" or not weights:
+        return 4 if is_primary else 1
+    if token not in weights:
+        return 4 if is_primary else 1
+    repeat = learned_repeat_count(weights[token])
+    if is_primary:
+        return max(4, repeat)
+    return repeat
+
+
+def apply_token_weights(tokens: Counter, weights: Dict[str, float], mode: str) -> Counter:
+    if mode not in {"repeat", "none"}:
+        raise ValueError(f"unknown token weight mode: {mode}")
+    weighted: Counter = Counter()
+    for token, count in tokens.items():
+        repeat = token_repeat_count(str(token), weights, mode)
+        if repeat > 0:
+            weighted[token] += count * repeat
+    return weighted
 
 
 def stable_hash(text: str, modulo: int = HASH_DIM) -> int:
@@ -665,6 +840,9 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser.add_argument("--drain-st", type=float, default=0.45, help="Drain token similarity threshold")
     parser.add_argument("--drain-max-children", type=int, default=100, help="Drain max children per tree node")
     parser.add_argument("--svd-dim", type=int, default=128, help="SVD dimension before agglomerative/HDBSCAN")
+    parser.add_argument("--token-weights", type=Path, help="optional token_weights.json learned from training data")
+    parser.add_argument("--token-weight-mode", choices=("repeat", "none"), default="repeat")
+    parser.add_argument("--cluster-factor", type=float, default=1.0, help="multiply requested k before clustering")
     return parser.parse_args(argv)
 
 
@@ -682,12 +860,24 @@ def main(argv: Sequence[str] | None = None) -> int:
     if sim_col is None and regr_col is None:
         raise SystemExit("input CSV must contain at least a sim.log or regr.log column")
 
-    info(f"cases={len(rows)} parser={args.parser} cluster={args.cluster}")
+    effective_k = max(1, min(len(rows), round(args.k * args.cluster_factor)))
+    token_weights = load_token_weights(args.token_weights)
+    info(
+        f"cases={len(rows)} parser={args.parser} cluster={args.cluster} "
+        f"k={args.k} cluster_factor={args.cluster_factor} effective_k={effective_k} "
+        f"token_weights={len(token_weights)}"
+    )
     base_features, normalized_lines = collect_case_inputs(input_csv, rows, sim_col, regr_col, args.parser)
-    feature_counters, template_count = build_feature_counters(args, base_features, normalized_lines)
+    feature_counters, template_count = build_feature_counters(
+        args,
+        base_features,
+        normalized_lines,
+        token_weights=token_weights,
+        token_weight_mode=args.token_weight_mode,
+    )
     X, shape, sklearn_input = vectorize_features(feature_counters)
     info(f"templates={template_count} vector_shape={shape}")
-    labels = cluster_vectors(X, args.k, method=args.cluster, svd_dim=args.svd_dim, sklearn_input=sklearn_input)
+    labels = cluster_vectors(X, effective_k, method=args.cluster, svd_dim=args.svd_dim, sklearn_input=sklearn_input)
     labels = remap_labels(labels)
     write_output(args.output.resolve(), labels)
     info(f"output_clusters={len(set(labels))} runtime_sec={time.perf_counter() - start:.3f}")
