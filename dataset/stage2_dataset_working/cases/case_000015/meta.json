@@ -1,0 +1,9 @@
+{
+  "case_id": "case_000015",
+  "bug_id": "bug_001",
+  "group": "alu",
+  "family": "alu_add_sub_result_wrong",
+  "test": "riscv_rand_instr_test",
+  "seed": 2005,
+  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_first_batch/bug_001/riscv_rand_instr_test/seed_002005"
+}

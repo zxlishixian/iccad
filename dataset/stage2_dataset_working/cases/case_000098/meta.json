@@ -1,0 +1,9 @@
+{
+  "case_id": "case_000098",
+  "bug_id": "bug_010",
+  "group": "csr",
+  "family": "csr_op_set_clear_swap",
+  "test": "riscv_machine_mode_rand_test",
+  "seed": 608,
+  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_first_batch/bug_010/riscv_machine_mode_rand_test/seed_000608"
+}

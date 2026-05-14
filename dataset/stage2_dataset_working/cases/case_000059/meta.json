@@ -1,0 +1,9 @@
+{
+  "case_id": "case_000059",
+  "bug_id": "bug_005",
+  "group": "branch",
+  "family": "branch_condition_wrong",
+  "test": "riscv_rand_instr_test",
+  "seed": 2034,
+  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_first_batch/bug_005/riscv_rand_instr_test/seed_002034"
+}

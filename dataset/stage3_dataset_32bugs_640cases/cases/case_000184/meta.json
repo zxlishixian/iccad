@@ -1,0 +1,9 @@
+{
+  "case_id": "case_000184",
+  "bug_id": "bug_013",
+  "group": "jump",
+  "family": "jalr_target_base_wrong",
+  "test": "riscv_machine_mode_rand_test",
+  "seed": 814,
+  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_first_batch/bug_013/riscv_machine_mode_rand_test/seed_000814"
+}

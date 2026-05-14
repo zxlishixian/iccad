@@ -1,0 +1,9 @@
+{
+  "case_id": "case_000379",
+  "bug_id": "bug_022",
+  "group": "interrupt",
+  "family": "interrupt_enable_gate_wrong",
+  "test": "riscv_machine_mode_rand_test",
+  "seed": 4189,
+  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_first_batch/bug_022/riscv_machine_mode_rand_test/seed_004189"
+}

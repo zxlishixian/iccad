@@ -1,0 +1,9 @@
+{
+  "case_id": "case_000237",
+  "bug_id": "bug_015",
+  "group": "multdiv",
+  "family": "mul_operator_decode_wrong",
+  "test": "riscv_rand_instr_test",
+  "seed": 2112,
+  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_first_batch/bug_015/riscv_rand_instr_test/seed_002112"
+}

@@ -1,0 +1,3 @@
+Time	Cycle	PC	Insn	Decoded instruction	Register and memory contents
+           9691	       383	80000084	10670713	addi	x14,x14,262	 x14:0x00000000 x14=0x00000106
+           9711	       384	80000088	30171073	csrrw	x0,misa,x14	 x14:0x00000106  x0=0x00000000

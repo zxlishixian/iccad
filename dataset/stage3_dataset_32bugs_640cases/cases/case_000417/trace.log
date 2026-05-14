@@ -1,0 +1,2 @@
+Time	Cycle	PC	Insn	Decoded instruction	Register and memory contents
+           2396	        18	80000084	106f8f93	addi	x31,x31,262	 x31:0x00000000 x31=0x00000106

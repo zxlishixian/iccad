@@ -1,0 +1,9 @@
+{
+  "case_id": "case_000600",
+  "bug_id": "bug_033",
+  "group": "decode",
+  "family": "op_and_decode_wrong",
+  "test": "riscv_machine_mode_rand_test",
+  "seed": 4300,
+  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_first_batch/bug_033/riscv_machine_mode_rand_test/seed_004300"
+}

@@ -1,0 +1,9 @@
+{
+  "case_id": "case_000161",
+  "bug_id": "bug_014",
+  "group": "decode",
+  "family": "opimm_operand_b_mux_wrong",
+  "test": "riscv_rand_instr_test",
+  "seed": 2101,
+  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_first_batch/bug_014/riscv_rand_instr_test/seed_002101"
+}

@@ -1,0 +1,9 @@
+{
+  "case_id": "case_000609",
+  "bug_id": "bug_034",
+  "group": "alu",
+  "family": "alu_slt_unsigned_decode_wrong",
+  "test": "riscv_machine_mode_rand_test",
+  "seed": 3169,
+  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_first_batch/bug_034/riscv_machine_mode_rand_test/seed_003169"
+}

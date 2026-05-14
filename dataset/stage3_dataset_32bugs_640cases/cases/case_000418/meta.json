@@ -1,0 +1,9 @@
+{
+  "case_id": "case_000418",
+  "bug_id": "bug_024",
+  "group": "fetch",
+  "family": "fetch_pc_boot_offset_wrong",
+  "test": "riscv_machine_mode_rand_test",
+  "seed": 5006,
+  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_first_batch/bug_024/riscv_machine_mode_rand_test/seed_005006"
+}

@@ -1,0 +1,9 @@
+{
+  "case_id": "case_000336",
+  "bug_id": "bug_020",
+  "group": "loadstore",
+  "family": "load_halfword_lane_wrong",
+  "test": "riscv_machine_mode_rand_test",
+  "seed": 4166,
+  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_first_batch/bug_020/riscv_machine_mode_rand_test/seed_004166"
+}

@@ -1,0 +1,9 @@
+{
+  "case_id": "case_000269",
+  "bug_id": "bug_017",
+  "group": "loadstore",
+  "family": "load_byte_lane_wrong",
+  "test": "riscv_machine_mode_rand_test",
+  "seed": 879,
+  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_first_batch/bug_017/riscv_machine_mode_rand_test/seed_000879"
+}

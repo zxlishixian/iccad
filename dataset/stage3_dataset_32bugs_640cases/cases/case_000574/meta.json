@@ -1,0 +1,9 @@
+{
+  "case_id": "case_000574",
+  "bug_id": "bug_032",
+  "group": "csr",
+  "family": "csr_mstatus_mie_write_wrong",
+  "test": "riscv_machine_mode_rand_test",
+  "seed": 4284,
+  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_first_batch/bug_032/riscv_machine_mode_rand_test/seed_004284"
+}

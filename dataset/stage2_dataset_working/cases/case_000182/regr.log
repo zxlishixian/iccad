@@ -1,0 +1,35 @@
+0.00% PASS 0 PASSED, 1 FAILED
+riscv_machine_mode_rand_test.862: FAILED
+
+
+################################################################################
+# Details of failing tests
+################################################################################
+
+riscv_machine_mode_rand_test.862
+--------------------------------
+binary:          test.bin
+rtl_log:         rtl_sim.log
+rtl_trace:       trace_core_00000000.log
+iss_cosim_trace: spike_cosim_trace_core_00000000.log
+
+[FAILED]: error seen in 'rtl_sim.log'
+---------------*LOG-EXTRACT*----------------
+    65: UVM_INFO /home/meow/iccad/repos/ibex_work_016/dv/uvm/core_ibex/common/ibex_mem_intf_agent/ibex_mem_intf_response_seq_lib.sv(44) @ 2027: uvm_test_top.env.data_if_response_agent.sequencer@@data_intf_seq [uvm_test_top.env.data_if_response_agent.sequencer.data_intf_seq] is_dmem_seq: 0x1
+    66: UVM_INFO /home/meow/iccad/repos/ibex_work_016/dv/uvm/core_ibex/tests/core_ibex_new_seq_lib.sv(65) @ 2027: reporter@@fetch_enable_seq_h [fetch_enable_seq_h] Running the "InfiniteRuns" schedule for stimulus generation
+    67: core_ibex_tb_top.dut.u_ibex_tracer.unmblk2.unmblk1: Writing execution trace to /home/meow/iccad/dataset/raw_runs_first_batch/bug_016/riscv_machine_mode_rand_test/seed_000862/run/tests/riscv_machine_mode_rand_test.862/trace_core_00000000.log
+    68: 24257: Illegal instruction (hart 0) at PC 0x800e82cc: 0x00000000
+    69: 24277: Illegal instruction (hart 0) at PC 0x800e82cc: 0x00000000
+[E] 70: UVM_FATAL /home/meow/iccad/repos/ibex_work_016/dv/uvm/core_ibex/common/ibex_cosim_agent/ibex_cosim_scoreboard.sv(172) @ 24327: uvm_test_top.env.cosim_agent.scoreboard [uvm_test_top.env.cosim_agent.scoreboard] Cosim mismatch PC mismatch, DUT retired : 800e82cc , but the ISS retired: 800032d2
+    71: 
+    72: 
+    73: --- RISC-V UVM TEST FAILED ---
+    74: 
+--------------------------------------------
+
+
+
+################################################################################
+# Details of passing tests
+################################################################################
+No passing tests. Hmmmm...

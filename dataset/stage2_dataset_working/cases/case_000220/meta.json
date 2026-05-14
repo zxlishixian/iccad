@@ -1,0 +1,9 @@
+{
+  "case_id": "case_000220",
+  "bug_id": "bug_018",
+  "group": "csr",
+  "family": "mtvec_alignment_wrong",
+  "test": "riscv_machine_mode_rand_test",
+  "seed": 890,
+  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_first_batch/bug_018/riscv_machine_mode_rand_test/seed_000890"
+}

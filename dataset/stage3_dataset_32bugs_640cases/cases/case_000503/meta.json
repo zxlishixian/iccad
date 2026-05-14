@@ -1,0 +1,9 @@
+{
+  "case_id": "case_000503",
+  "bug_id": "bug_029",
+  "group": "csr",
+  "family": "csr_mepc_alignment_wrong",
+  "test": "riscv_machine_mode_rand_test",
+  "seed": 3103,
+  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_first_batch/bug_029/riscv_machine_mode_rand_test/seed_003103"
+}

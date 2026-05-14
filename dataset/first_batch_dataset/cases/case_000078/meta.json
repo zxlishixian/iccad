@@ -1,0 +1,9 @@
+{
+  "case_id": "case_000078",
+  "bug_id": "bug_011",
+  "group": "exception",
+  "family": "illegal_instr_trap_missing",
+  "test": "riscv_machine_mode_rand_test",
+  "seed": 708,
+  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_first_batch/bug_011/riscv_machine_mode_rand_test/seed_000708"
+}

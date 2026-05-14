@@ -1,0 +1,9 @@
+{
+  "case_id": "case_000443",
+  "bug_id": "bug_026",
+  "group": "multdiv",
+  "family": "divu_signedness_wrong",
+  "test": "riscv_machine_mode_rand_test",
+  "seed": 3073,
+  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_first_batch/bug_026/riscv_machine_mode_rand_test/seed_003073"
+}

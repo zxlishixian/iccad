@@ -1,0 +1,9 @@
+{
+  "case_id": "case_000178",
+  "bug_id": "bug_012",
+  "group": "pipeline",
+  "family": "forwarding_data_wrong",
+  "test": "riscv_rand_instr_test",
+  "seed": 2083,
+  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_first_batch/bug_012/riscv_rand_instr_test/seed_002083"
+}

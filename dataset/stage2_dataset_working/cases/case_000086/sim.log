@@ -1,0 +1,214 @@
+xrun(64): 23.09-s003: (c) Copyright 1995-2023 Cadence Design Systems, Inc.
+TOOL:	xrun(64)	23.09-s003: Started on May 08, 2026 at 08:36:57 EDT
+xrun
+	-64bit
+	-R
+	-xmlibdirpath /home/meow/iccad/dataset/raw_runs_first_batch/bug_009/riscv_rand_instr_test/seed_002051/build/tb
+	-licqueue
+	-svseed 2051
+	-svrnc rand_struct
+	-nokey
+	-l /home/meow/iccad/dataset/raw_runs_first_batch/bug_009/riscv_rand_instr_test/seed_002051/run/tests/riscv_rand_instr_test.2051/rtl_sim.log
+	+UVM_TESTNAME=core_ibex_base_test
+	+UVM_VERBOSITY=UVM_LOW
+	+bin=/home/meow/iccad/dataset/raw_runs_first_batch/bug_009/riscv_rand_instr_test/seed_002051/run/tests/riscv_rand_instr_test.2051/test.bin
+	+ibex_tracer_file_base=/home/meow/iccad/dataset/raw_runs_first_batch/bug_009/riscv_rand_instr_test/seed_002051/run/tests/riscv_rand_instr_test.2051/trace_core
+	+cosim_log_file=/home/meow/iccad/dataset/raw_runs_first_batch/bug_009/riscv_rand_instr_test/seed_002051/run/tests/riscv_rand_instr_test.2051/spike_cosim_trace_core_00000000.log
+	+signature_addr=8ffffffc
+	+test_timeout_s=1800
+
+   User defined plus("+") options:
+	+UVM_VERBOSITY=UVM_LOW
+	+bin=/home/meow/iccad/dataset/raw_runs_first_batch/bug_009/riscv_rand_instr_test/seed_002051/run/tests/riscv_rand_instr_test.2051/test.bin
+	+ibex_tracer_file_base=/home/meow/iccad/dataset/raw_runs_first_batch/bug_009/riscv_rand_instr_test/seed_002051/run/tests/riscv_rand_instr_test.2051/trace_core
+	+cosim_log_file=/home/meow/iccad/dataset/raw_runs_first_batch/bug_009/riscv_rand_instr_test/seed_002051/run/tests/riscv_rand_instr_test.2051/spike_cosim_trace_core_00000000.log
+	+signature_addr=8ffffffc
+	+test_timeout_s=1800
+
+Loading snapshot worklib.prim_secded_22_16_dec:sv .................... Done
+SVSEED set from command line: 2051
+xcelium> source /opt/cadence/XCELIUM2309/tools/xcelium/files/xmsimrc
+xcelium> source /opt/cadence/XCELIUM2309/tools/methodology/UVM/CDNS-1.2/additions/sv/files/tcl/uvm_sim.tcl
+xcelium> run
+UVM_INFO /opt/cadence/XCELIUM2309/tools/methodology/UVM/CDNS-1.2/sv/src/base/uvm_root.svh(412) @ 0: reporter [UVM/RELNOTES] 
+----------------------------------------------------------------
+CDNS-UVM-1.2 (23.09-s003)
+(C) 2007-2014 Mentor Graphics Corporation
+(C) 2007-2014 Cadence Design Systems, Inc.
+(C) 2006-2014 Synopsys, Inc.
+(C) 2011-2013 Cypress Semiconductor Corp.
+(C) 2013-2014 NVIDIA Corporation
+----------------------------------------------------------------
+
+  ***********       IMPORTANT RELEASE NOTES         ************
+
+  You are using a version of the UVM library that has been compiled
+  with `UVM_NO_DEPRECATED undefined.
+  See http://www.eda.org/svdb/view.php?id=3313 for more details.
+
+  You are using a version of the UVM library that has been compiled
+  with `UVM_OBJECT_DO_NOT_NEED_CONSTRUCTOR undefined.
+  See http://www.eda.org/svdb/view.php?id=3770 for more details.
+
+      (Specify +UVM_NO_RELNOTES to turn off this notice)
+
+UVM_INFO @ 0: reporter [RNTST] Running test core_ibex_base_test...
+SDI/Verilog Transaction Recording Facility Version 23.09-s003
+UVM_INFO /home/meow/iccad/repos/ibex_expand_test2/dv/uvm/core_ibex/tests/core_ibex_base_test.sv(265) @ 2021: uvm_test_top [uvm_test_top] Loading single test binary into memory now.
+UVM_INFO /home/meow/iccad/repos/ibex_expand_test2/dv/uvm/core_ibex/tests/core_ibex_base_test.sv(370) @ 2021: uvm_test_top [uvm_test_top] Test wall-clock timeout is set to : 1800s
+UVM_INFO /home/meow/iccad/repos/ibex_expand_test2/dv/uvm/core_ibex/tests/core_ibex_vseq.sv(50) @ 2021: uvm_test_top.env.vseqr@@vseq [uvm_test_top.env.vseqr.vseq] Enabling spurious responses for this test
+UVM_INFO /home/meow/iccad/repos/ibex_expand_test2/dv/uvm/core_ibex/tb/core_ibex_tb_top.sv(197) @ 2021: reporter [core_ibex_tb_top.unmblk2] Disabling assertions: core_ibex_tb_top.dut.u_ibex_top.u_ibex_core.NoMemResponseWithoutPendingAccess
+UVM_INFO /home/meow/iccad/repos/ibex_expand_test2/dv/uvm/core_ibex/tb/core_ibex_tb_top.sv(199) @ 2021: reporter [core_ibex_tb_top.unmblk3] Disabling assertions: core_ibex_tb_top.dut.u_ibex_top.MaxOutstandingDSideAccessesCorrect
+UVM_INFO /home/meow/iccad/repos/ibex_expand_test2/dv/uvm/core_ibex/tb/core_ibex_tb_top.sv(201) @ 2021: reporter [core_ibex_tb_top.unmblk4] Disabling assertions: core_ibex_tb_top.dut.u_ibex_top.PendingAccessTrackingCorrect
+UVM_INFO /home/meow/iccad/repos/ibex_expand_test2/dv/uvm/core_ibex/tb/core_ibex_tb_top.sv(206) @ 2021: reporter [core_ibex_tb_top.g_lockstep_assert_ctrl.unmblk1] Disabling assertions: core_ibex_tb_top.dut.u_ibex_top.gen_lockstep.u_ibex_lockstep.u_shadow_core.NoMemResponseWithoutPendingAccess
+UVM_INFO /home/meow/iccad/repos/ibex_expand_test2/dv/uvm/core_ibex/common/ibex_mem_intf_agent/ibex_mem_intf_response_seq_lib.sv(44) @ 2021: uvm_test_top.env.instr_if_response_agent.sequencer@@instr_intf_seq [uvm_test_top.env.instr_if_response_agent.sequencer.instr_intf_seq] is_dmem_seq: 0x0
+UVM_INFO /home/meow/iccad/repos/ibex_expand_test2/dv/uvm/core_ibex/common/ibex_mem_intf_agent/ibex_mem_intf_response_seq_lib.sv(44) @ 2021: uvm_test_top.env.data_if_response_agent.sequencer@@data_intf_seq [uvm_test_top.env.data_if_response_agent.sequencer.data_intf_seq] is_dmem_seq: 0x1
+UVM_INFO /home/meow/iccad/repos/ibex_expand_test2/dv/uvm/core_ibex/tests/core_ibex_new_seq_lib.sv(65) @ 2021: reporter@@fetch_enable_seq_h [fetch_enable_seq_h] Running the "InfiniteRuns" schedule for stimulus generation
+core_ibex_tb_top.dut.u_ibex_tracer.unmblk2.unmblk1: Writing execution trace to /home/meow/iccad/dataset/raw_runs_first_batch/bug_009/riscv_rand_instr_test/seed_002051/run/tests/riscv_rand_instr_test.2051/trace_core_00000000.log
+              161931: Illegal instruction (hart 0) at PC 0x80003c74: 0x7b2039f3
+              161951: Illegal instruction (hart 0) at PC 0x80003c74: 0x7b2039f3
+              227891: Illegal instruction (hart 0) at PC 0x8000411e: 0xf12c1ef3
+              227911: Illegal instruction (hart 0) at PC 0x8000411e: 0xf12c1ef3
+              259311: Illegal instruction (hart 0) at PC 0x80004186: 0x7b302073
+              259331: Illegal instruction (hart 0) at PC 0x80004186: 0x7b302073
+              317431: Illegal instruction (hart 0) at PC 0x800045d0: 0xf14f9573
+              317451: Illegal instruction (hart 0) at PC 0x800045d0: 0xf14f9573
+              363131: Illegal instruction (hart 0) at PC 0x80008780: 0x7b203673
+              363151: Illegal instruction (hart 0) at PC 0x80008780: 0x7b203673
+              385751: Illegal instruction (hart 0) at PC 0x8000a134: 0xf153bbf3
+              385771: Illegal instruction (hart 0) at PC 0x8000a134: 0xf153bbf3
+              416911: Illegal instruction (hart 0) at PC 0x8000a138: 0xf1491173
+              416931: Illegal instruction (hart 0) at PC 0x8000a138: 0xf1491173
+              437191: Illegal instruction (hart 0) at PC 0x8000a1a8: 0x7b0065f3
+              437211: Illegal instruction (hart 0) at PC 0x8000a1a8: 0x7b0065f3
+              469491: Illegal instruction (hart 0) at PC 0x8000a1ce: 0xf11c25f3
+              469511: Illegal instruction (hart 0) at PC 0x8000a1ce: 0xf11c25f3
+              506191: Illegal instruction (hart 0) at PC 0x8000a2de: 0xf14628f3
+              506211: Illegal instruction (hart 0) at PC 0x8000a2de: 0xf14628f3
+              547051: Illegal instruction (hart 0) at PC 0x800089c4: 0x7b1039f3
+              547071: Illegal instruction (hart 0) at PC 0x800089c4: 0x7b1039f3
+              572791: Illegal instruction (hart 0) at PC 0x8000a41a: 0xf145ea73
+              572811: Illegal instruction (hart 0) at PC 0x8000a41a: 0xf145ea73
+              620811: Illegal instruction (hart 0) at PC 0x8000a55c: 0xf15cd3f3
+              620831: Illegal instruction (hart 0) at PC 0x8000a55c: 0xf15cd3f3
+              666291: Illegal instruction (hart 0) at PC 0x8000a692: 0xf14f13f3
+              666311: Illegal instruction (hart 0) at PC 0x8000a692: 0xf14f13f3
+              728371: Illegal instruction (hart 0) at PC 0x8000ad80: 0x7b003373
+              728391: Illegal instruction (hart 0) at PC 0x8000ad80: 0x7b003373
+              787371: Illegal instruction (hart 0) at PC 0x8000b028: 0x7b1033f3
+              787391: Illegal instruction (hart 0) at PC 0x8000b028: 0x7b1033f3
+              833551: Illegal instruction (hart 0) at PC 0x8000b262: 0xf12dd073
+              833571: Illegal instruction (hart 0) at PC 0x8000b262: 0xf12dd073
+              865211: Illegal instruction (hart 0) at PC 0x8000b448: 0xf14b5a73
+              865231: Illegal instruction (hart 0) at PC 0x8000b448: 0xf14b5a73
+              900351: Illegal instruction (hart 0) at PC 0x8000b602: 0xf15aa4f3
+              900371: Illegal instruction (hart 0) at PC 0x8000b602: 0xf15aa4f3
+              954831: Illegal instruction (hart 0) at PC 0x8000880c: 0xf116d9f3
+              954851: Illegal instruction (hart 0) at PC 0x8000880c: 0xf116d9f3
+             1031531: Illegal instruction (hart 0) at PC 0x80004842: 0xf14fd673
+             1031551: Illegal instruction (hart 0) at PC 0x80004842: 0xf14fd673
+             1065871: Illegal instruction (hart 0) at PC 0x80004988: 0xf11896f3
+             1065891: Illegal instruction (hart 0) at PC 0x80004988: 0xf11896f3
+             1105811: Illegal instruction (hart 0) at PC 0x80004b12: 0x7b2069f3
+             1105831: Illegal instruction (hart 0) at PC 0x80004b12: 0x7b2069f3
+             1248471: Illegal instruction (hart 0) at PC 0x8000523c: 0xf12717f3
+             1248491: Illegal instruction (hart 0) at PC 0x8000523c: 0xf12717f3
+             1337191: Illegal instruction (hart 0) at PC 0x80005422: 0xf1409df3
+             1337211: Illegal instruction (hart 0) at PC 0x80005422: 0xf1409df3
+             1396511: Illegal instruction (hart 0) at PC 0x800054e8: 0x7b3070f3
+             1396531: Illegal instruction (hart 0) at PC 0x800054e8: 0x7b3070f3
+             1472831: Illegal instruction (hart 0) at PC 0x800056d8: 0xf11cd5f3
+             1472851: Illegal instruction (hart 0) at PC 0x800056d8: 0xf11cd5f3
+             1573971: Illegal instruction (hart 0) at PC 0x80005b0c: 0xf11e1273
+             1573991: Illegal instruction (hart 0) at PC 0x80005b0c: 0xf11e1273
+             1622991: Illegal instruction (hart 0) at PC 0x80005c1c: 0xf124d1f3
+             1623011: Illegal instruction (hart 0) at PC 0x80005c1c: 0xf124d1f3
+             1701511: Illegal instruction (hart 0) at PC 0x80005d1e: 0x7b307f73
+             1701531: Illegal instruction (hart 0) at PC 0x80005d1e: 0x7b307f73
+             1757331: Illegal instruction (hart 0) at PC 0x80005df6: 0xf146b073
+             1757351: Illegal instruction (hart 0) at PC 0x80005df6: 0xf146b073
+             1862931: Illegal instruction (hart 0) at PC 0x80006126: 0x7b3030f3
+             1862951: Illegal instruction (hart 0) at PC 0x80006126: 0x7b3030f3
+             1936951: Illegal instruction (hart 0) at PC 0x800061ca: 0x7b107673
+             1936971: Illegal instruction (hart 0) at PC 0x800061ca: 0x7b107673
+             2017931: Illegal instruction (hart 0) at PC 0x8000624e: 0xf12854f3
+             2017951: Illegal instruction (hart 0) at PC 0x8000624e: 0xf12854f3
+             2136431: Illegal instruction (hart 0) at PC 0x800065f6: 0xf1545d73
+             2136451: Illegal instruction (hart 0) at PC 0x800065f6: 0xf1545d73
+             2218891: Illegal instruction (hart 0) at PC 0x80006892: 0x7b2034f3
+             2218911: Illegal instruction (hart 0) at PC 0x80006892: 0x7b2034f3
+             2300651: Illegal instruction (hart 0) at PC 0x80006962: 0xf11b62f3
+             2300671: Illegal instruction (hart 0) at PC 0x80006962: 0xf11b62f3
+             2486851: Illegal instruction (hart 0) at PC 0x80007298: 0xf1412773
+             2486871: Illegal instruction (hart 0) at PC 0x80007298: 0xf1412773
+             2552711: Illegal instruction (hart 0) at PC 0x8000762c: 0xf124d9f3
+             2552731: Illegal instruction (hart 0) at PC 0x8000762c: 0xf124d9f3
+             2600331: Illegal instruction (hart 0) at PC 0x800077f0: 0x7b102673
+             2600351: Illegal instruction (hart 0) at PC 0x800077f0: 0x7b102673
+             2648951: Illegal instruction (hart 0) at PC 0x8000791a: 0x7b202cf3
+             2648971: Illegal instruction (hart 0) at PC 0x8000791a: 0x7b202cf3
+             2681951: Illegal instruction (hart 0) at PC 0x80007936: 0xf12b90f3
+             2681971: Illegal instruction (hart 0) at PC 0x80007936: 0xf12b90f3
+             2756671: Illegal instruction (hart 0) at PC 0x80007c5a: 0x7b107c73
+             2756691: Illegal instruction (hart 0) at PC 0x80007c5a: 0x7b107c73
+             2806391: Illegal instruction (hart 0) at PC 0x80007d50: 0xf12533f3
+             2806411: Illegal instruction (hart 0) at PC 0x80007d50: 0xf12533f3
+             2832691: Illegal instruction (hart 0) at PC 0x80007d70: 0xf130f773
+             2832711: Illegal instruction (hart 0) at PC 0x80007d70: 0xf130f773
+             2884971: Illegal instruction (hart 0) at PC 0x80008108: 0x7b102e73
+             2884991: Illegal instruction (hart 0) at PC 0x80008108: 0x7b102e73
+             2931091: Illegal instruction (hart 0) at PC 0x8000810c: 0x7b303573
+             2931111: Illegal instruction (hart 0) at PC 0x8000810c: 0x7b303573
+             3007751: Illegal instruction (hart 0) at PC 0x8000842c: 0xf124dc73
+             3007771: Illegal instruction (hart 0) at PC 0x8000842c: 0xf124dc73
+             3050271: Illegal instruction (hart 0) at PC 0x8000860e: 0x7b206373
+             3050291: Illegal instruction (hart 0) at PC 0x8000860e: 0x7b206373
+             3099751: Illegal instruction (hart 0) at PC 0x800086c0: 0xf15adcf3
+             3099771: Illegal instruction (hart 0) at PC 0x800086c0: 0xf15adcf3
+UVM_INFO /home/meow/iccad/repos/ibex_expand_test2/dv/uvm/core_ibex/tests/core_ibex_base_test.sv(338) @ 3129521: uvm_test_top [uvm_test_top] Test done due to RISCV-DV handshake (payload=TEST_PASS)
+UVM_INFO /opt/cadence/XCELIUM2309/tools/methodology/UVM/CDNS-1.2/sv/src/base/uvm_objection.svh(1271) @ 3189721: reporter [TEST_DONE] 'run' phase is ready to proceed to the 'extract' phase
+UVM_INFO /opt/cadence/XCELIUM2309/tools/methodology/UVM/CDNS-1.2/sv/src/base/uvm_objection.svh(1271) @ 3190721: reporter [TEST_DONE] 'run' phase is ready to proceed to the 'extract' phase
+UVM_INFO /home/meow/iccad/repos/ibex_expand_test2/dv/uvm/core_ibex/common/ibex_cosim_agent/ibex_cosim_scoreboard.sv(347) @ 3190721: uvm_test_top.env.cosim_agent.scoreboard [uvm_test_top.env.cosim_agent.scoreboard] Co-simulation matched      12013 instructions
+
+--- RISC-V UVM TEST PASSED ---
+
+UVM_INFO /opt/cadence/XCELIUM2309/tools/methodology/UVM/CDNS-1.2/sv/src/base/uvm_report_catcher.svh(705) @ 3190721: reporter [UVM/REPORT/CATCHER] 
+--- UVM Report catcher Summary ---
+
+
+Number of demoted UVM_FATAL reports  :    0
+Number of demoted UVM_ERROR reports  :    0
+Number of demoted UVM_WARNING reports:    0
+Number of caught UVM_FATAL reports   :    0
+Number of caught UVM_ERROR reports   :    0
+Number of caught UVM_WARNING reports :    0
+
+UVM_INFO /opt/cadence/XCELIUM2309/tools/methodology/UVM/CDNS-1.2/sv/src/base/uvm_report_server.svh(847) @ 3190721: reporter [UVM/REPORT/SERVER] 
+--- UVM Report Summary ---
+
+Quit count :     0 of     1
+** Report counts by severity
+UVM_INFO :   17
+UVM_WARNING :    0
+UVM_ERROR :    0
+UVM_FATAL :    0
+** Report counts by id
+[RNTST]     1
+[TEST_DONE]     2
+[UVM/RELNOTES]     1
+[UVM/REPORT/CATCHER]     1
+[core_ibex_tb_top.g_lockstep_assert_ctrl.unmblk1]     1
+[core_ibex_tb_top.unmblk2]     1
+[core_ibex_tb_top.unmblk3]     1
+[core_ibex_tb_top.unmblk4]     1
+[fetch_enable_seq_h]     1
+[uvm_test_top]     3
+[uvm_test_top.env.cosim_agent.scoreboard]     1
+[uvm_test_top.env.data_if_response_agent.sequencer.data_intf_seq]     1
+[uvm_test_top.env.instr_if_response_agent.sequencer.instr_intf_seq]     1
+[uvm_test_top.env.vseqr.vseq]     1
+
+Simulation complete via $finish(1) at time 3190721 NS + 62
+/opt/cadence/XCELIUM2309/tools/methodology/UVM/CDNS-1.2/sv/src/base/uvm_root.svh:543     $finish;
+xcelium> exit
+TOOL:	xrun(64)	23.09-s003: Exiting on May 08, 2026 at 08:37:33 EDT  (total: 00:00:36)

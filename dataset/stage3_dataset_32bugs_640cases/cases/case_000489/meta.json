@@ -1,0 +1,9 @@
+{
+  "case_id": "case_000489",
+  "bug_id": "bug_028",
+  "group": "loadstore",
+  "family": "load_word_alignment_wrong",
+  "test": "riscv_machine_mode_rand_test",
+  "seed": 3099,
+  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_first_batch/bug_028/riscv_machine_mode_rand_test/seed_003099"
+}

@@ -1,0 +1,9 @@
+{
+  "case_id": "case_000047",
+  "bug_id": "bug_008",
+  "group": "loadstore",
+  "family": "load_sign_extend_wrong",
+  "test": "riscv_machine_mode_rand_test",
+  "seed": 542,
+  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_first_batch/bug_008/riscv_machine_mode_rand_test/seed_000542"
+}

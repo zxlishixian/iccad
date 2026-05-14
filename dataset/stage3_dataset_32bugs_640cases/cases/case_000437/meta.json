@@ -1,0 +1,9 @@
+{
+  "case_id": "case_000437",
+  "bug_id": "bug_025",
+  "group": "multdiv",
+  "family": "div_operator_decode_wrong",
+  "test": "riscv_machine_mode_rand_test",
+  "seed": 5017,
+  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_first_batch/bug_025/riscv_machine_mode_rand_test/seed_005017"
+}

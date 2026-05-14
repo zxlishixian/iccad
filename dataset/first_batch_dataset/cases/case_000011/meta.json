@@ -1,0 +1,9 @@
+{
+  "case_id": "case_000011",
+  "bug_id": "bug_002",
+  "group": "alu",
+  "family": "alu_compare_signedness_wrong",
+  "test": "riscv_machine_mode_rand_test",
+  "seed": 111,
+  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_first_batch/bug_002/riscv_machine_mode_rand_test/seed_000111"
+}

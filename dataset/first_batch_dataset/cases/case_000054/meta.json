@@ -1,0 +1,9 @@
+{
+  "case_id": "case_000054",
+  "bug_id": "bug_009",
+  "group": "loadstore",
+  "family": "store_byte_enable_wrong",
+  "test": "riscv_machine_mode_rand_test",
+  "seed": 184,
+  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_first_batch/bug_009/riscv_machine_mode_rand_test/seed_000184"
+}
