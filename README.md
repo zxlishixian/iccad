@@ -1,0 +1,183 @@
+# EDA Regression Failure Bucketing Baseline
+
+这个项目文件夹用于处理一个 EDA/ICCAD 风格的回归失败聚类赛题：给定一批 Ibex RISC-V CPU 回归仿真的失败日志，自动把 case 分到若干个 bucket 中，使同一根因 bug 导致的失败尽量落在同一个 bucket。
+
+## 文件夹内容
+
+- `B_20260212.pdf`
+  - 赛题说明 PDF。
+  - 其中定义了输入输出格式、日志类型、benchmark 规模、运行时间限制和提交程序接口。
+
+- `dataset/`
+  - 本地样例数据集。
+  - 包含三个 benchmark 规模：
+    - `first_batch_dataset/`：80 cases，8 个 bug bucket。
+    - `stage2_dataset_working/`：240 cases，16 个 bug bucket。
+    - `stage3_dataset_32bugs_640cases/`：640 cases，32 个 bug bucket。
+  - 每个 benchmark 目录中包含：
+    - `input.csv`：待聚类输入，列为 `trace_log,sim_log,regr_log`。
+    - `gold.csv`：本地验证用答案，列为 `case_id,bug_id`。
+    - `meta.csv`：case 元信息，包括 bug、group、family、test、seed 等。
+    - `cases/case_xxxxxx/`：每个 case 的日志目录，包含 `sim.log`、`regr.log`、`trace.log`、`meta.json`。
+
+- `dataset/Ibex 数据集生成手册.md`
+  - 说明这些 Ibex 数据集如何生成。
+
+- `dataset/根因说明.md`
+  - 说明已经注入并运行过的 32 个 bug，以及它们所属的 group/family。
+
+- `regr_fail_bucketing.py`
+  - 当前实现的 baseline 聚类程序。
+
+- `regr_fail_bucketing`
+  - 轻量 wrapper，提供题面要求的可执行程序形式。
+
+## 赛题输入输出理解
+
+题面要求提交程序接口为：
+
+```bash
+regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
+```
+
+输入 CSV 每行对应一个 case，包含三个日志路径：
+
+- `trace.log`
+  - Ibex tracer 生成的逐指令 retire 日志。
+  - 当前 baseline 暂时不使用。
+
+- `sim.log`
+  - 仿真控制台日志，包含 Xcelium/VCS 启动信息、UVM 日志、`UVM_INFO`、`UVM_ERROR`、`UVM_FATAL`、测试通过/失败 verdict 等。
+
+- `regr.log`
+  - 回归报告摘要，包含 PASS/FAILED 统计、失败测试名、`rtl_sim.log` 摘要、mismatch 抽取等。
+
+输出 CSV 只需要一列：
+
+```csv
+bucket
+bucket_000
+bucket_001
+...
+```
+
+bucket ID 可以是任意字符串，评价时看 case 两两之间是否被正确判定为同桶或异桶，不要求 bucket 名字和 `bug_id` 一致。
+
+## 已经完成的工作
+
+1. 阅读了赛题 PDF，确认：
+   - 输入是三类日志路径 CSV。
+   - 输出是单列 bucket CSV。
+   - 接口是 `--input <input.csv> --output <output.csv> --k <k>`。
+   - benchmark 有不同规模，最大运行时间从 30s 到 300s 不等。
+   - 超时或运行失败的 benchmark 得分为 0。
+
+2. 阅读了 dataset 中的说明文档：
+   - `Ibex 数据集生成手册.md`
+   - `根因说明.md`
+
+3. 检查了 dataset 目录结构：
+   - 三档本地数据分别为 80、240、640 cases。
+   - 每个 benchmark 都按 `input.csv`、`gold.csv`、`meta.csv`、`cases/` 组织。
+
+4. 打开了小规模 benchmark 的 `input.csv`，确认实际列名为：
+
+```csv
+trace_log,sim_log,regr_log
+```
+
+5. 随机查看了多个 case 的 `sim.log` 和 `regr.log`，确认日志中常见高信号模式包括：
+   - `UVM_FATAL`
+   - `UVM_ERROR`
+   - `Cosim mismatch`
+   - `Register write data mismatch`
+   - `PC mismatch`
+   - `--- RISC-V UVM TEST FAILED ---`
+   - `[FAILED]: error seen in 'rtl_sim.log'`
+   - PASS/FAILED 统计行
+
+6. 在完成上述阅读后，实现了一个不使用 `trace.log`、不调用 LLM、不引入重依赖的 baseline pipeline。
+
+## 当前 baseline 方法
+
+当前程序流程：
+
+```text
+input.csv
+  -> 读取 sim.log / regr.log
+  -> 选择高信号日志行
+  -> Drain-like 模板化
+  -> case-level template/token/count 特征
+  -> 哈希稀疏 TF-IDF
+  -> cosine k-means 聚类
+  -> output.csv
+```
+
+模板化会归一化：
+
+- 绝对路径
+- case 编号
+- seed
+- 时间戳
+- 大整数
+- 十六进制地址/数据
+- 寄存器名
+- 行号前缀
+
+程序只使用 Python 标准库，方便在没有 `numpy`、`scipy`、`sklearn` 的环境里运行。
+
+## 使用方式
+
+直接运行 wrapper：
+
+```bash
+./regr_fail_bucketing \
+  --input dataset/first_batch_dataset/input.csv \
+  --output /private/tmp/first_out.csv \
+  --k 8
+```
+
+或者运行 Python 脚本：
+
+```bash
+python3 regr_fail_bucketing.py \
+  --input dataset/stage3_dataset_32bugs_640cases/input.csv \
+  --output /private/tmp/stage3_out.csv \
+  --k 32
+```
+
+输出文件行数应当等于输入 case 数加 1 行表头。
+
+## 已验证结果
+
+本地粗略验证结果：
+
+- `first_batch_dataset`
+  - 80 cases，`k=8`
+  - 输出行数正确。
+  - pairwise balanced accuracy 约为 `0.723`。
+
+- `stage3_dataset_32bugs_640cases`
+  - 640 cases，`k=32`
+  - 输出行数正确。
+  - 运行时间约 `7.4s`。
+  - pairwise balanced accuracy 约为 `0.697`。
+
+这些分数只是当前轻量 baseline 的 sanity check，不代表最终可提交最优方案。
+
+## 当前限制
+
+- 暂时没有使用 `trace.log`，因此没有利用逐指令执行轨迹中的行为模式。
+- 没有使用 LLM 或 embedding。
+- 没有使用 sklearn 等成熟聚类库，k-means 是标准库手写版本。
+- 主要依赖 `sim.log` / `regr.log` 中的文本症状，遇到同一 bug 多种表象或不同 bug 相似表象时容易混淆。
+- 当前没有做针对 `meta.csv` 或 `gold.csv` 的训练式特征学习；正式评测时也不应依赖答案文件。
+
+## 后续可改进方向
+
+- 加入 `trace.log` tail/head 特征，特别是失败前的 PC、指令类型、访存模式、寄存器写回模式。
+- 对 `UVM_FATAL`、`Cosim mismatch`、`Register write data mismatch`、`PC mismatch` 等错误类型做更细粒度解析。
+- 将 case 的第一处 mismatch 结构化，例如 mismatch 类型、寄存器编号、DUT/expected 值形态。
+- 对不同日志来源设置不同权重：`regr.log` 的失败摘要通常比仿真启动头部更重要。
+- 增加聚类后处理，例如合并过小簇、按近邻关系重新分配孤立 case。
+- 在允许依赖的环境中尝试 `sklearn` 的 `TfidfVectorizer`、`MiniBatchKMeans` 或层次聚类。
