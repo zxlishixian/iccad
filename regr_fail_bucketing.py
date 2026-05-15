@@ -1285,6 +1285,65 @@ def cache_key_for_llm_doc(model: str, doc: str) -> str:
     return digest
 
 
+async def _fetch_embeddings_openai(
+    client: Any,
+    model: str,
+    batch: List[Tuple[int, str, Path]],
+    timeout_sec: float,
+) -> None:
+    """OpenAI-compatible backend (Together AI, Fireworks, Ollama, etc.)."""
+    _ = timeout_sec
+    resp = await client.embeddings.create(model=model, input=[doc for _, doc, _ in batch])
+    ordered = sorted(resp.data, key=lambda item: getattr(item, "index", 0))
+    for (idx, _, path), item in zip(batch, ordered):
+        yield idx, list(item.embedding), path
+
+
+async def _fetch_embeddings_huggingface(
+    session: Any,
+    model: str,
+    api_key: str,
+    batch: List[Tuple[int, str, Path]],
+    timeout_sec: float,
+    max_retries: int = 3,
+) -> None:
+    """HuggingFace Serverless Inference API backend."""
+    import aiohttp
+    import asyncio as _asyncio
+    url = f"https://api-inference.huggingface.co/models/{model}"
+    headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+    payload: Any = {"inputs": [doc for _, doc, _ in batch]}
+    for attempt in range(max_retries):
+        try:
+            timeout = aiohttp.ClientTimeout(total=timeout_sec)
+            async with session.post(url, json=payload, headers=headers, timeout=timeout) as resp:
+                if resp.status == 503 or resp.status == 429:
+                    delay = min(2.0 ** (attempt + 1), 30.0)
+                    warn(f"HF API {resp.status} (attempt {attempt+1}/{max_retries}), retry in {delay:.0f}s")
+                    await _asyncio.sleep(delay)
+                    continue
+                data: Any = await resp.json()
+                if resp.status >= 400:
+                    raise RuntimeError(f"HF API error {resp.status}: {data}")
+            if isinstance(data, dict) and "error" in data:
+                raise RuntimeError(f"HF API returned error: {data['error']}")
+            if not isinstance(data, list):
+                raise RuntimeError(f"unexpected HF response type: {type(data)}")
+            for i, (idx, _, path) in enumerate(batch):
+                if i >= len(data):
+                    raise RuntimeError(f"HF response missing embedding for index {i}")
+                emb = data[i] if isinstance(data[i], list) else list(data[i])
+                yield idx, list(emb), path
+            return
+        except (aiohttp.ClientError, OSError, RuntimeError) as exc:
+            if attempt < max_retries - 1:
+                delay = min(2.0 ** (attempt + 1), 30.0)
+                warn(f"HF request failed ({exc}), retry in {delay:.0f}s")
+                await _asyncio.sleep(delay)
+            else:
+                raise RuntimeError(f"HF API failed after {max_retries} attempts: {exc}") from exc
+
+
 async def fetch_llm_embeddings_async(
     docs: Sequence[str],
     cfg: dict,
@@ -1292,13 +1351,11 @@ async def fetch_llm_embeddings_async(
     batch_size: int,
     timeout_sec: float,
 ) -> List[List[float]]:
-    try:
-        from openai import AsyncOpenAI  # type: ignore
-    except ImportError as exc:
-        raise RuntimeError("openai package is not installed") from exc
-
     cache_dir.mkdir(parents=True, exist_ok=True)
     model = cfg["model"]
+    base_url = cfg.get("base_url", "")
+    api_key = cfg.get("api_key", "")
+
     cached: Dict[int, List[float]] = {}
     missing: List[Tuple[int, str, Path]] = []
     for idx, doc in enumerate(docs):
@@ -1310,24 +1367,47 @@ async def fetch_llm_embeddings_async(
         except Exception:
             missing.append((idx, doc, path))
 
-    client = AsyncOpenAI(
-        api_key=cfg["api_key"],
-        base_url=cfg["base_url"],
-        timeout=timeout_sec,
-        max_retries=1,
-    )
-    for start in range(0, len(missing), batch_size):
-        batch = missing[start : start + batch_size]
-        resp = await client.embeddings.create(model=model, input=[doc for _, doc, _ in batch])
-        ordered = sorted(resp.data, key=lambda item: getattr(item, "index", 0))
-        for (idx, _, path), item in zip(batch, ordered):
-            emb = list(item.embedding)
-            cached[idx] = emb
-            try:
-                with path.open("w", encoding="utf-8") as f:
-                    json.dump({"model": model, "embedding": emb}, f)
-            except OSError:
-                pass
+    if not missing:
+        return [cached[idx] for idx in range(len(docs))]
+
+    is_hf = "huggingface" in base_url.lower()
+
+    if is_hf:
+        import aiohttp
+        async with aiohttp.ClientSession() as session:
+            for start in range(0, len(missing), batch_size):
+                batch = missing[start : start + batch_size]
+                async for idx, emb, path in _fetch_embeddings_huggingface(
+                    session, model, api_key, batch, timeout_sec
+                ):
+                    cached[idx] = emb
+                    try:
+                        with path.open("w", encoding="utf-8") as f:
+                            json.dump({"model": model, "embedding": emb}, f)
+                    except OSError:
+                        pass
+    else:
+        try:
+            from openai import AsyncOpenAI  # type: ignore
+        except ImportError as exc:
+            raise RuntimeError("openai package is not installed") from exc
+        client = AsyncOpenAI(
+            api_key=api_key,
+            base_url=base_url,
+            timeout=timeout_sec,
+            max_retries=1,
+        )
+        for start in range(0, len(missing), batch_size):
+            batch = missing[start : start + batch_size]
+            async for idx, emb, path in _fetch_embeddings_openai(
+                client, model, batch, timeout_sec
+            ):
+                cached[idx] = emb
+                try:
+                    with path.open("w", encoding="utf-8") as f:
+                        json.dump({"model": model, "embedding": emb}, f)
+                except OSError:
+                    pass
 
     return [cached[idx] for idx in range(len(docs))]
 
