@@ -61,23 +61,63 @@ def sample_pairs(
     labels: Sequence[str],
     negative_ratio: float,
     hard_negative_ratio: float,
+    hard_positive_ratio: float,
     max_positive_pairs: int,
+    max_positive_pairs_per_bug: int,
     max_train_pairs: int,
     random_state: int,
-) -> tuple[list[tuple[int, int]], np.ndarray]:
+) -> tuple[list[tuple[int, int]], np.ndarray, dict]:
     rng = random.Random(random_state)
     np_rng = np.random.default_rng(random_state)
     by_bug: dict[str, list[int]] = defaultdict(list)
     for idx, bug in enumerate(labels):
         by_bug[str(bug)].append(idx)
 
+    dense = np.vstack([feature.dense_vec for feature in features]).astype(np.float32) if features else np.zeros((0, 1), dtype=np.float32)
+    if len(dense):
+        norms = np.linalg.norm(dense, axis=1, keepdims=True)
+        dense = dense / np.maximum(norms, 1e-12)
+        sim = dense @ dense.T
+    else:
+        sim = np.zeros((0, 0), dtype=np.float32)
+
     positives: list[tuple[int, int]] = []
+    hard_positive_pool: list[tuple[float, tuple[int, int]]] = []
+    positive_pairs_by_bug: dict[str, int] = {}
     for indices in by_bug.values():
+        bug_pairs: list[tuple[int, int]] = []
         for pos, i in enumerate(indices):
             for j in indices[pos + 1 :]:
-                positives.append((i, j))
+                bug_pairs.append((i, j))
+                hard_positive_pool.append((float(sim[i, j]) if sim.size else 0.0, (i, j)))
+        if max_positive_pairs_per_bug > 0 and len(bug_pairs) > max_positive_pairs_per_bug:
+            bug_pairs = rng.sample(bug_pairs, max_positive_pairs_per_bug)
+        positives.extend(bug_pairs)
+        if indices:
+            positive_pairs_by_bug[str(labels[indices[0]])] = len(bug_pairs)
     if len(positives) > max_positive_pairs:
         positives = rng.sample(positives, max_positive_pairs)
+
+    # Oversample hard positives: same-bug pairs that are far apart in dense
+    # text space. These are exactly the pairs that low-TPR models tend to miss.
+    hard_positive_added = 0
+    if positives and hard_positive_ratio > 0:
+        pos_set_for_hard = {tuple(sorted(pair)) for pair in positives}
+        hard_positive_pool.sort(key=lambda item: item[0])
+        target_hard_pos = min(
+            int(round(len(positives) * hard_positive_ratio)),
+            max(0, max_train_pairs - len(positives)),
+        )
+        hard_candidates = [pair for _, pair in hard_positive_pool if tuple(sorted(pair)) in pos_set_for_hard]
+        if hard_candidates and target_hard_pos > 0:
+            repeats = []
+            while len(repeats) < target_hard_pos:
+                for pair in hard_candidates:
+                    repeats.append(pair)
+                    if len(repeats) >= target_hard_pos:
+                        break
+            positives.extend(repeats)
+            hard_positive_added = len(repeats)
 
     pos_set = {tuple(sorted(pair)) for pair in positives}
     target_neg = min(int(round(len(positives) * negative_ratio)), max(1, max_train_pairs - len(positives)))
@@ -86,15 +126,12 @@ def sample_pairs(
     neg_set: set[tuple[int, int]] = set()
 
     if target_hard > 0 and features:
-        dense = np.vstack([feature.dense_vec for feature in features]).astype(np.float32)
-        norms = np.linalg.norm(dense, axis=1, keepdims=True)
-        dense = dense / np.maximum(norms, 1e-12)
-        sim = dense @ dense.T
-        np.fill_diagonal(sim, -np.inf)
+        sim_for_neg = sim.copy()
+        np.fill_diagonal(sim_for_neg, -np.inf)
         top_k = min(32, max(1, len(features) - 1))
         for i in range(len(features)):
-            candidates = np.argpartition(-sim[i], min(top_k, len(features) - 1))[:top_k]
-            candidates = sorted(candidates, key=lambda j: sim[i, j], reverse=True)
+            candidates = np.argpartition(-sim_for_neg[i], min(top_k, len(features) - 1))[:top_k]
+            candidates = sorted(candidates, key=lambda j: sim_for_neg[i, j], reverse=True)
             for j in candidates:
                 if labels[i] == labels[j]:
                     continue
@@ -143,7 +180,14 @@ def sample_pairs(
         rng.shuffle(order)
         pairs = [pairs[idx] for idx in order]
         y = y[order]
-    return pairs, y.astype(np.float32, copy=False)
+    stats = {
+        "positive_pairs_selected": int((y == 1.0).sum()),
+        "negative_pairs_selected": int((y == 0.0).sum()),
+        "hard_positive_oversampled": hard_positive_added,
+        "hard_negative_pairs": min(len(negatives), target_hard),
+        "positive_pairs_by_bug": positive_pairs_by_bug,
+    }
+    return pairs, y.astype(np.float32, copy=False), stats
 
 
 def evaluate_validation_parts(model, val_parts: Sequence[dict], args: argparse.Namespace, device: str) -> dict:
@@ -160,6 +204,15 @@ def evaluate_validation_parts(model, val_parts: Sequence[dict], args: argparse.N
             batch_size=args.predict_batch_size,
             prob_bias=args.prob_bias,
             prob_temperature=args.prob_temperature,
+        )
+        prob = pf.calibrate_probability_matrix(
+            prob,
+            features,
+            primary_floor=args.pairwise_primary_floor,
+            op_pair_floor=args.pairwise_op_pair_floor,
+            mismatch_floor=args.pairwise_mismatch_floor,
+            conflict_penalty=args.pairwise_conflict_penalty,
+            cosine_gate=args.pairwise_mismatch_cosine_gate,
         )
         pred = cluster_from_probability(prob, part["k"])
         gold = read_gold(part["gold"])
@@ -212,14 +265,23 @@ def train(args: argparse.Namespace) -> dict:
     train_inputs, train_golds, val_parts = build_splits(args)
     train_features, _ = pf.build_case_features_for_inputs(train_inputs, parser="drain", svd_dim=args.svd_dim)
     train_labels = labels_for_inputs(train_inputs, train_golds)
-    pairs, y = sample_pairs(
+    pairs, y, pair_stats = sample_pairs(
         train_features,
         train_labels,
         negative_ratio=args.negative_ratio,
         hard_negative_ratio=args.hard_negative_ratio,
+        hard_positive_ratio=args.hard_positive_ratio,
         max_positive_pairs=args.max_positive_pairs,
+        max_positive_pairs_per_bug=args.max_positive_pairs_per_bug,
         max_train_pairs=args.max_train_pairs,
         random_state=args.random_state,
+    )
+    print(
+        "pair_sampling "
+        f"pairs={len(pairs)} pos={int((y == 1.0).sum())} neg={int((y == 0.0).sum())} "
+        f"hard_pos_extra={pair_stats['hard_positive_oversampled']} "
+        f"hard_neg={pair_stats['hard_negative_pairs']}",
+        file=sys.stderr,
     )
     X = pf.build_pair_feature_matrix(train_features, pairs)
     y_tensor = torch.from_numpy(y)
@@ -231,7 +293,7 @@ def train(args: argparse.Namespace) -> dict:
     model = pf.build_pairwise_mlp_model(input_dim, hidden_dims=args.hidden_dims, dropout=args.dropout).to(device)
     pos = float((y == 1.0).sum())
     neg = float((y == 0.0).sum())
-    pos_weight = torch.tensor([neg / max(pos, 1.0)], dtype=torch.float32, device=device)
+    pos_weight = torch.tensor([args.pos_weight_scale * neg / max(pos, 1.0)], dtype=torch.float32, device=device)
     loss_fn = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
     optimizer = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 
@@ -308,6 +370,12 @@ def train(args: argparse.Namespace) -> dict:
         "num_train_pairs": len(pairs),
         "num_positive_pairs": int((y == 1.0).sum()),
         "num_negative_pairs": int((y == 0.0).sum()),
+        "pair_sampling": pair_stats,
+        "pos_weight_scale": args.pos_weight_scale,
+        "pairwise_primary_floor": args.pairwise_primary_floor,
+        "pairwise_op_pair_floor": args.pairwise_op_pair_floor,
+        "pairwise_mismatch_floor": args.pairwise_mismatch_floor,
+        "pairwise_conflict_penalty": args.pairwise_conflict_penalty,
     }
     args.config_output.parent.mkdir(parents=True, exist_ok=True)
     args.config_output.write_text(json.dumps(config, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -327,10 +395,13 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--svd-dim", type=int, default=128)
     parser.add_argument("--hidden-dims", nargs="+", type=int, default=[256, 128])
     parser.add_argument("--dropout", type=float, default=0.2)
-    parser.add_argument("--negative-ratio", type=float, default=2.0)
+    parser.add_argument("--negative-ratio", type=float, default=1.5)
     parser.add_argument("--hard-negative-ratio", type=float, default=0.5)
+    parser.add_argument("--hard-positive-ratio", type=float, default=0.5)
     parser.add_argument("--max-positive-pairs", type=int, default=50000)
+    parser.add_argument("--max-positive-pairs-per-bug", type=int, default=4000)
     parser.add_argument("--max-train-pairs", type=int, default=300000)
+    parser.add_argument("--pos-weight-scale", type=float, default=1.2)
     parser.add_argument("--random-state", type=int, default=0)
     parser.add_argument("--early-stop-patience", type=int, default=8)
     parser.add_argument("--validation-mode", choices=("half_split",), default="half_split")
@@ -340,6 +411,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--predict-batch-size", type=int, default=100000)
     parser.add_argument("--prob-bias", type=float, default=0.0)
     parser.add_argument("--prob-temperature", type=float, default=1.0)
+    parser.add_argument("--pairwise-primary-floor", type=float, default=0.70)
+    parser.add_argument("--pairwise-op-pair-floor", type=float, default=0.65)
+    parser.add_argument("--pairwise-mismatch-floor", type=float, default=0.55)
+    parser.add_argument("--pairwise-conflict-penalty", type=float, default=0.05)
+    parser.add_argument("--pairwise-mismatch-cosine-gate", type=float, default=0.20)
     return parser.parse_args(argv)
 
 

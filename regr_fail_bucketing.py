@@ -876,6 +876,15 @@ def run_pairwise_mlp_backend(args: argparse.Namespace, input_csv: Path, effectiv
         prob_bias=args.prob_bias,
         prob_temperature=args.prob_temperature,
     )
+    prob = pf.calibrate_probability_matrix(
+        prob,
+        features,
+        primary_floor=args.pairwise_primary_floor,
+        op_pair_floor=args.pairwise_op_pair_floor,
+        mismatch_floor=args.pairwise_mismatch_floor,
+        conflict_penalty=args.pairwise_conflict_penalty,
+        cosine_gate=args.pairwise_mismatch_cosine_gate,
+    )
     distance = 1.0 - prob
     np.fill_diagonal(distance, 0.0)
     labels = cluster_precomputed_distance(distance, effective_k)
@@ -913,6 +922,11 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser.add_argument("--pairwise-batch-size", type=int, default=100000)
     parser.add_argument("--prob-bias", type=float, default=0.0)
     parser.add_argument("--prob-temperature", type=float, default=1.0)
+    parser.add_argument("--pairwise-primary-floor", type=float, default=0.70)
+    parser.add_argument("--pairwise-op-pair-floor", type=float, default=0.65)
+    parser.add_argument("--pairwise-mismatch-floor", type=float, default=0.55)
+    parser.add_argument("--pairwise-conflict-penalty", type=float, default=0.05)
+    parser.add_argument("--pairwise-mismatch-cosine-gate", type=float, default=0.20)
     parser.add_argument("--strict-pairwise", action="store_true")
     return parser.parse_args(argv)
 

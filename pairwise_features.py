@@ -27,7 +27,7 @@ except ImportError:  # pragma: no cover - pairwise MLP requires sklearn.
     Normalizer = None
 
 
-FEATURE_SCHEMA_VERSION = 1
+FEATURE_SCHEMA_VERSION = 2
 DEFAULT_DRAIN_DEPTH = 4
 DEFAULT_DRAIN_ST = 0.45
 DEFAULT_DRAIN_MAX_CHILDREN = 100
@@ -331,8 +331,31 @@ def _jaccard(a: set[str], b: set[str]) -> float:
     return len(a & b) / union if union else 0.0
 
 
+def _dice(a: set[str], b: set[str]) -> float:
+    denom = len(a) + len(b)
+    return (2.0 * len(a & b) / denom) if denom else 1.0
+
+
+def _containment(a: set[str], b: set[str]) -> tuple[float, float]:
+    inter = len(a & b)
+    min_size = min(len(a), len(b))
+    max_size = max(len(a), len(b))
+    return (
+        inter / min_size if min_size else 1.0,
+        inter / max_size if max_size else 1.0,
+    )
+
+
 def _same_nonempty(a: str, b: str) -> float:
     return 1.0 if a and b and a == b else 0.0
+
+
+def _same_bool(a: dict, b: dict, key: str) -> float:
+    return 1.0 if bool(a.get(key)) == bool(b.get(key)) else 0.0
+
+
+def _nonempty_conflict(a: str, b: str) -> float:
+    return 1.0 if a and b and a != b else 0.0
 
 
 def build_pair_feature_vector(a: CaseFeature, b: CaseFeature) -> np.ndarray:
@@ -345,18 +368,38 @@ def build_pair_feature_vector(a: CaseFeature, b: CaseFeature) -> np.ndarray:
     bn = float(np.linalg.norm(bv))
     cosine = dot / max(an * bn, 1e-12)
     euclidean = float(np.linalg.norm(av - bv))
+    l1_mean = float(np.mean(np.abs(av - bv)))
+    linf = float(np.max(np.abs(av - bv))) if av.size else 0.0
 
     ai = a.info
     bi = b.info
+    all_contain_min, all_contain_max = _containment(a.token_set, b.token_set)
+    sim_contain_min, sim_contain_max = _containment(a.sim_tokens, b.sim_tokens)
+    regr_contain_min, regr_contain_max = _containment(a.regr_tokens, b.regr_tokens)
+    primary_conflict = 1.0 if a.primary_tokens and b.primary_tokens and not (a.primary_tokens & b.primary_tokens) else 0.0
     scalar = np.asarray(
         [
             cosine,
             euclidean,
+            l1_mean,
+            linf,
             _jaccard(a.token_set, b.token_set),
+            _dice(a.token_set, b.token_set),
+            all_contain_min,
+            all_contain_max,
             _jaccard(a.primary_tokens, b.primary_tokens),
+            _dice(a.primary_tokens, b.primary_tokens),
+            primary_conflict,
             _jaccard(a.sim_tokens, b.sim_tokens),
+            _dice(a.sim_tokens, b.sim_tokens),
+            sim_contain_min,
+            sim_contain_max,
             _jaccard(a.regr_tokens, b.regr_tokens),
+            _dice(a.regr_tokens, b.regr_tokens),
+            regr_contain_min,
+            regr_contain_max,
             math.log1p(len(a.token_set & b.token_set)),
+            math.log1p(len(a.primary_tokens & b.primary_tokens)),
             _same_nonempty(ai.get("primary_signature", ""), bi.get("primary_signature", "")),
             _same_nonempty(ai.get("primary_type", ""), bi.get("primary_type", "")),
             _same_nonempty(ai.get("mismatch_type", ""), bi.get("mismatch_type", "")),
@@ -365,9 +408,14 @@ def build_pair_feature_vector(a: CaseFeature, b: CaseFeature) -> np.ndarray:
             _same_nonempty(ai.get("failed_reason", ""), bi.get("failed_reason", "")),
             _same_nonempty(ai.get("uvm_testname", ""), bi.get("uvm_testname", "")),
             _same_nonempty(ai.get("failed_test_name", ""), bi.get("failed_test_name", "")),
-            1.0 if bool(ai.get("has_uvm_fatal")) == bool(bi.get("has_uvm_fatal")) else 0.0,
-            1.0 if bool(ai.get("has_uvm_error")) == bool(bi.get("has_uvm_error")) else 0.0,
-            1.0 if bool(ai.get("has_regr_mismatch")) == bool(bi.get("has_regr_mismatch")) else 0.0,
+            _nonempty_conflict(ai.get("primary_signature", ""), bi.get("primary_signature", "")),
+            _nonempty_conflict(ai.get("mismatch_type", ""), bi.get("mismatch_type", "")),
+            _same_bool(ai, bi, "has_uvm_fatal"),
+            _same_bool(ai, bi, "has_uvm_error"),
+            _same_bool(ai, bi, "has_regr_mismatch"),
+            1.0 if bool(ai.get("has_uvm_fatal")) and bool(bi.get("has_uvm_fatal")) else 0.0,
+            1.0 if bool(ai.get("has_uvm_error")) and bool(bi.get("has_uvm_error")) else 0.0,
+            1.0 if bool(ai.get("has_regr_mismatch")) and bool(bi.get("has_regr_mismatch")) else 0.0,
             math.log1p(abs(int(ai.get("num_tokens", 0)) - int(bi.get("num_tokens", 0)))),
             math.log1p(min(int(ai.get("num_tokens", 0)), int(bi.get("num_tokens", 0)))),
             math.log1p(max(int(ai.get("num_tokens", 0)), int(bi.get("num_tokens", 0)))),
@@ -378,7 +426,7 @@ def build_pair_feature_vector(a: CaseFeature, b: CaseFeature) -> np.ndarray:
 
 
 def pair_feature_dim(dense_dim: int) -> int:
-    return 2 * dense_dim + 21
+    return 2 * dense_dim + 40
 
 
 def build_pair_feature_matrix(
@@ -468,3 +516,53 @@ def predict_probability_matrix(
                 flush()
     flush()
     return probs
+
+
+def _useful_primary(signature: str) -> bool:
+    return bool(signature) and signature != "PRIMARY_UNKNOWN_FAILURE"
+
+
+def calibrate_probability_matrix(
+    probs: np.ndarray,
+    features: list[CaseFeature],
+    primary_floor: float = 0.70,
+    op_pair_floor: float = 0.65,
+    mismatch_floor: float = 0.55,
+    conflict_penalty: float = 0.05,
+    cosine_gate: float = 0.20,
+) -> np.ndarray:
+    """Lightweight deterministic calibration for the experimental pairwise backend.
+
+    The learned MLP was under-merging on larger datasets. These floors only apply
+    to stable, label-free signatures extracted from sim/regr logs and are kept
+    configurable so validation can disable or tune them.
+    """
+    out = probs.astype(np.float32, copy=True)
+    n = len(features)
+    for i in range(n):
+        ai = features[i].info
+        av = features[i].dense_vec
+        for j in range(i + 1, n):
+            bj = features[j].info
+            bv = features[j].dense_vec
+            p = float(out[i, j])
+            a_sig = str(ai.get("primary_signature", ""))
+            b_sig = str(bj.get("primary_signature", ""))
+            if primary_floor > 0 and _useful_primary(a_sig) and a_sig == b_sig:
+                p = max(p, primary_floor)
+            a_op = str(ai.get("op_pair", ""))
+            b_op = str(bj.get("op_pair", ""))
+            if op_pair_floor > 0 and a_op and a_op == b_op:
+                p = max(p, op_pair_floor)
+            a_mismatch = str(ai.get("mismatch_type", ""))
+            b_mismatch = str(bj.get("mismatch_type", ""))
+            if mismatch_floor > 0 and a_mismatch and a_mismatch == b_mismatch:
+                denom = max(float(np.linalg.norm(av) * np.linalg.norm(bv)), 1e-12)
+                cosine = float(np.dot(av, bv) / denom)
+                if cosine >= cosine_gate:
+                    p = max(p, mismatch_floor)
+            if conflict_penalty > 0 and _useful_primary(a_sig) and _useful_primary(b_sig) and a_sig != b_sig:
+                p = max(0.0, p - conflict_penalty)
+            out[i, j] = p
+            out[j, i] = p
+    return out

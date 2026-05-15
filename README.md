@@ -235,7 +235,13 @@ P(case_i 和 case_j 是否属于同一个 bug bucket)
   --output models/pairwise_mlp.pt \
   --config-output models/pairwise_config.json \
   --device auto \
-  --epochs 50
+  --epochs 50 \
+  --batch-size 8192 \
+  --max-train-pairs 300000 \
+  --negative-ratio 1.5 \
+  --hard-positive-ratio 0.5 \
+  --hard-negative-ratio 0.5 \
+  --pos-weight-scale 1.2
 ```
 
 用 pairwise MLP 推理：
@@ -251,6 +257,17 @@ P(case_i 和 case_j 是否属于同一个 bug bucket)
   --pairwise-device cpu
 ```
 
+当前 pairwise 特征 schema 为 v2，新增了 token Dice/containment、hard-positive 友好的结构化冲突特征，以及轻量 probability calibration。校准默认只影响 `pairwise_mlp` 后端：
+
+```text
+--pairwise-primary-floor 0.70
+--pairwise-op-pair-floor 0.65
+--pairwise-mismatch-floor 0.55
+--pairwise-conflict-penalty 0.05
+```
+
+如果验证发现 TNR 下降，可以把这些 floor 调低，甚至设为 `0.0` 关闭。
+
 half-split 对照实验：
 
 ```bash
@@ -260,7 +277,9 @@ half-split 对照实验：
   --output-dir /tmp/pairwise_mlp_exp \
   --device auto \
   --epochs 10 \
-  --max-train-pairs 100000
+  --max-train-pairs 100000 \
+  --hard-positive-ratio 0.5 \
+  --pos-weight-scale 1.2
 ```
 
 This backend is experimental. The default submitted baseline remains `drain + agglomerative` unless validation shows stable gains.

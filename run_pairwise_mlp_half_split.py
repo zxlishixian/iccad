@@ -36,6 +36,7 @@ def run_predict(
     output_csv: Path,
     k: int,
     method: str,
+    args: argparse.Namespace,
     model_path: Path | None = None,
     config_path: Path | None = None,
 ) -> float:
@@ -50,7 +51,26 @@ def run_predict(
         str(k),
     ]
     if method == "pairwise_mlp":
-        cmd.extend(["--cluster", "pairwise_mlp", "--pairwise-model", str(model_path), "--pairwise-device", "cpu"])
+        cmd.extend(
+            [
+                "--cluster",
+                "pairwise_mlp",
+                "--pairwise-model",
+                str(model_path),
+                "--pairwise-device",
+                "cpu",
+                "--pairwise-primary-floor",
+                str(args.pairwise_primary_floor),
+                "--pairwise-op-pair-floor",
+                str(args.pairwise_op_pair_floor),
+                "--pairwise-mismatch-floor",
+                str(args.pairwise_mismatch_floor),
+                "--pairwise-conflict-penalty",
+                str(args.pairwise_conflict_penalty),
+                "--pairwise-mismatch-cosine-gate",
+                str(args.pairwise_mismatch_cosine_gate),
+            ]
+        )
         if config_path:
             cmd.extend(["--pairwise-config", str(config_path)])
     return run_cmd(cmd)
@@ -139,6 +159,24 @@ def run(args: argparse.Namespace) -> tuple[list[dict], list[dict]]:
             str(args.max_train_pairs),
             "--batch-size",
             str(args.batch_size),
+            "--negative-ratio",
+            str(args.negative_ratio),
+            "--hard-negative-ratio",
+            str(args.hard_negative_ratio),
+            "--hard-positive-ratio",
+            str(args.hard_positive_ratio),
+            "--pos-weight-scale",
+            str(args.pos_weight_scale),
+            "--pairwise-primary-floor",
+            str(args.pairwise_primary_floor),
+            "--pairwise-op-pair-floor",
+            str(args.pairwise_op_pair_floor),
+            "--pairwise-mismatch-floor",
+            str(args.pairwise_mismatch_floor),
+            "--pairwise-conflict-penalty",
+            str(args.pairwise_conflict_penalty),
+            "--pairwise-mismatch-cosine-gate",
+            str(args.pairwise_mismatch_cosine_gate),
             "--seeds",
             str(seed),
             "--combo",
@@ -166,6 +204,7 @@ def run(args: argparse.Namespace) -> tuple[list[dict], list[dict]]:
                     pred_path,
                     val_info["k"],
                     method,
+                    args,
                     model_path=model_path,
                     config_path=config_path,
                 )
@@ -209,6 +248,15 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--epochs", type=int, default=30)
     parser.add_argument("--max-train-pairs", type=int, default=100000)
     parser.add_argument("--batch-size", type=int, default=4096)
+    parser.add_argument("--negative-ratio", type=float, default=1.5)
+    parser.add_argument("--hard-negative-ratio", type=float, default=0.5)
+    parser.add_argument("--hard-positive-ratio", type=float, default=0.5)
+    parser.add_argument("--pos-weight-scale", type=float, default=1.2)
+    parser.add_argument("--pairwise-primary-floor", type=float, default=0.70)
+    parser.add_argument("--pairwise-op-pair-floor", type=float, default=0.65)
+    parser.add_argument("--pairwise-mismatch-floor", type=float, default=0.55)
+    parser.add_argument("--pairwise-conflict-penalty", type=float, default=0.05)
+    parser.add_argument("--pairwise-mismatch-cosine-gate", type=float, default=0.20)
     return parser.parse_args(argv)
 
 
