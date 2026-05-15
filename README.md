@@ -298,6 +298,46 @@ Supervised token weighting 已经实现并评估过。`repeat` / `conservative` 
 
 half-split 实验会把每个规模的数据集按 `bug_id` 分层拆成 `part1` / `part2`，枚举三个规模的 train/validation 组合。validation 仍然按每个 benchmark part 独立聚类和评估，更接近正式赛题。
 
+## Experimental: LLM Embedding Augmentation
+
+赛题允许使用 LLM APIs 做 log understanding 或 embedding，但网络延迟计入 runtime，且评测只运行一次，所以 LLM 默认关闭。当前实现只把 LLM 作为可选 embedding 增强，不让它直接决定 bucket：
+
+```text
+compressed case document
+-> official embedding endpoint
+-> concat with deterministic TF-IDF/SVD64 vector
+-> normalize
+-> AgglomerativeClustering
+```
+
+压缩文档只包含 `primary_signature`、高信号 Drain templates、flag/count/structured failure hints，不会把完整 `sim.log` / `regr.log` 发给 LLM。
+
+启用方式：
+
+```bash
+export LLM_MODEL_CONFIG="$(cat openai.yaml)"
+
+.venv/bin/python regr_fail_bucketing.py \
+  --input dataset/stage3_dataset_32bugs_640cases/input.csv \
+  --output /tmp/stage3_llm_embedding.csv \
+  --k 32 \
+  --llm-mode embedding \
+  --llm-weight 0.25 \
+  --llm-cache-dir /tmp/regr_fail_llm_cache
+```
+
+如果 `LLM_MODEL_CONFIG` 缺失、`openai` 未安装、API 超时或调用失败，程序会 warning 并自动 fallback 到 deterministic baseline。调试时可以加 `--strict-llm` 让失败直接返回非零。
+
+可用实验命令：
+
+```bash
+.venv/bin/python run_experiments.py \
+  --python .venv/bin/python \
+  --output-dir /tmp/llm_embedding_exp \
+  --llm-mode embedding \
+  --llm-weight 0.25
+```
+
 ## Experimental: Pairwise Same-Bug MLP
 
 新增的 pairwise MLP 后端直接学习：

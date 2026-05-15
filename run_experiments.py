@@ -86,6 +86,9 @@ def run_one(
     normalizer: str,
     line_mode: str,
     template_weighting: str,
+    llm_mode: str,
+    llm_weight: float,
+    llm_cache_dir: Path,
     token_weights: Path | None,
     token_weight_mode: str,
     output_dir: Path,
@@ -95,7 +98,7 @@ def run_one(
     weight_name = "weighted" if token_weights else "unweighted"
     pred_path = output_dir / (
         f"{dataset_name}_{parser}_{cluster}_{feature_level}_{normalizer}_{line_mode}_"
-        f"{template_weighting}_cf{factor_name}_{weight_name}.csv"
+        f"{template_weighting}_{llm_mode}_cf{factor_name}_{weight_name}.csv"
     )
     cmd = [
         python,
@@ -122,6 +125,12 @@ def run_one(
         line_mode,
         "--template-weighting",
         template_weighting,
+        "--llm-mode",
+        llm_mode,
+        "--llm-weight",
+        str(llm_weight),
+        "--llm-cache-dir",
+        str(llm_cache_dir),
         "--token-weight-mode",
         token_weight_mode,
     ]
@@ -140,6 +149,8 @@ def run_one(
             "normalizer": normalizer,
             "line_mode": line_mode,
             "template_weighting": template_weighting,
+            "llm_mode": llm_mode,
+            "llm_weight": llm_weight,
             "cases": "",
             "k": k,
             "cluster_factor": cluster_factor,
@@ -164,6 +175,8 @@ def run_one(
         "normalizer": normalizer,
         "line_mode": line_mode,
         "template_weighting": template_weighting,
+        "llm_mode": llm_mode,
+        "llm_weight": llm_weight,
         "cases": len(gold),
         "k": k,
         "cluster_factor": cluster_factor,
@@ -188,6 +201,8 @@ def print_table(rows: Sequence[dict]) -> None:
         "normalizer",
         "line_mode",
         "template_weighting",
+        "llm_mode",
+        "llm_weight",
         "cluster_factor",
         "token_weight_mode",
         "token_weights",
@@ -223,6 +238,9 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--normalizer", choices=("v1", "semantic"), default="v1")
     parser.add_argument("--line-mode", choices=("default", "signal_window"), default="default")
     parser.add_argument("--template-weighting", choices=("none", "quality"), default="quality")
+    parser.add_argument("--llm-mode", choices=("none", "embedding"), default="none")
+    parser.add_argument("--llm-weight", type=float, default=0.25)
+    parser.add_argument("--llm-cache-dir", type=Path, default=Path("/tmp/regr_fail_llm_cache"))
     parser.add_argument("--parsers", nargs="+", choices=("simple", "drain"))
     parser.add_argument("--clusters", nargs="+", choices=("kmeans", "agglomerative", "hdbscan"))
     return parser.parse_args(argv)
@@ -251,6 +269,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                     args.normalizer,
                     args.line_mode,
                     args.template_weighting,
+                    args.llm_mode,
+                    args.llm_weight,
+                    args.llm_cache_dir,
                     args.token_weights,
                     args.token_weight_mode,
                     args.output_dir,
@@ -260,7 +281,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     f"done dataset={dataset_name} parser={parser_name} cluster={cluster_name} "
                     f"feature_level={args.feature_level} normalizer={args.normalizer} "
                     f"line_mode={args.line_mode} template_weighting={args.template_weighting} cf={cluster_factor} "
-                    f"token_weight_mode={args.token_weight_mode} "
+                    f"llm_mode={args.llm_mode} token_weight_mode={args.token_weight_mode} "
                     f"BA={row['BA']:.6f} runtime={row['runtime_sec']:.3f}s",
                     file=sys.stderr,
                 )

@@ -10,6 +10,7 @@ Pipeline:
 from __future__ import annotations
 
 import argparse
+import asyncio
 import csv
 import hashlib
 import json
@@ -1069,7 +1070,14 @@ def to_dense_or_reduced(X: Any, svd_dim: int) -> Any:
     return X.toarray() if hasattr(X, "toarray") else X
 
 
-def cluster_vectors(X: Any, k: int, method: str = "agglomerative", svd_dim: int = 128, sklearn_input: bool = True) -> List[int]:
+def cluster_vectors(
+    X: Any,
+    k: int,
+    method: str = "agglomerative",
+    svd_dim: int = 128,
+    sklearn_input: bool = True,
+    pre_reduced: bool = False,
+) -> List[int]:
     n_samples = X.shape[0] if sklearn_input else len(X)
     if n_samples == 0:
         return []
@@ -1100,7 +1108,7 @@ def cluster_vectors(X: Any, k: int, method: str = "agglomerative", svd_dim: int 
         except ImportError:
             warn("hdbscan is unavailable; falling back to agglomerative")
             return cluster_vectors(X, k, method="agglomerative", svd_dim=svd_dim, sklearn_input=sklearn_input)
-        reduced = to_dense_or_reduced(X, svd_dim)
+        reduced = X if pre_reduced else to_dense_or_reduced(X, svd_dim)
         min_cluster_size = max(2, n_samples // max(2, 2 * k))
         model = hdbscan.HDBSCAN(min_cluster_size=min_cluster_size, min_samples=1, metric="euclidean")
         labels = model.fit_predict(reduced).tolist()
@@ -1117,7 +1125,7 @@ def cluster_vectors(X: Any, k: int, method: str = "agglomerative", svd_dim: int 
     # TF-IDF/template features are sparse text-like vectors. Cosine average-linkage
     # agglomerative clustering often works better than k-means for log bucketing
     # because clusters may be non-spherical and uneven in size.
-    reduced = to_dense_or_reduced(X, svd_dim)
+    reduced = X if pre_reduced else to_dense_or_reduced(X, svd_dim)
     try:
         try:
             model = AgglomerativeClustering(n_clusters=k, metric="cosine", linkage="average")
@@ -1147,6 +1155,230 @@ def write_output(path: Path, labels: Sequence[int]) -> None:
         writer.writerow(["bucket"])
         for label in labels:
             writer.writerow([f"bucket_{label:03d}"])
+
+
+def parse_llm_config_without_yaml(raw: str) -> dict:
+    """Small fallback parser for the contest's simple LLM_MODEL_CONFIG YAML."""
+    lines = raw.splitlines()
+    in_embedding = False
+    data: Dict[str, str] = {}
+    for line in lines:
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        indent = len(line) - len(line.lstrip())
+        stripped = line.strip()
+        if indent == 0 and stripped.startswith("embedding:"):
+            in_embedding = True
+            continue
+        if indent == 0 and stripped.endswith(":"):
+            in_embedding = False
+        if not in_embedding or ":" not in stripped:
+            continue
+        key, value = stripped.split(":", 1)
+        key = key.strip()
+        value = value.strip().strip("'\"“”")
+        if key in {"model_name", "api_key", "base_url", "model", "client_library"} and value:
+            data[key] = value
+    return {"embedding": {"model_name": data.get("model_name"), "config": data}}
+
+
+def load_llm_embedding_config() -> dict | None:
+    raw = os.getenv("LLM_MODEL_CONFIG")
+    if not raw:
+        return None
+    try:
+        import yaml  # type: ignore
+
+        cfg = yaml.safe_load(raw)
+    except ImportError:
+        cfg = parse_llm_config_without_yaml(raw)
+    except Exception as exc:
+        warn(f"could not parse LLM_MODEL_CONFIG ({exc}); LLM embeddings disabled")
+        return None
+    if not isinstance(cfg, dict):
+        return None
+    emb = cfg.get("embedding") or {}
+    if not isinstance(emb, dict):
+        return None
+    emb_cfg = emb.get("config") or {}
+    if not isinstance(emb_cfg, dict):
+        return None
+    model = emb_cfg.get("model") or emb.get("model_name")
+    api_key = emb_cfg.get("api_key")
+    base_url = emb_cfg.get("base_url")
+    if not model or not api_key or not base_url:
+        warn("LLM_MODEL_CONFIG is missing embedding.config model/api_key/base_url; LLM embeddings disabled")
+        return None
+    return {
+        "model": str(model),
+        "model_name": str(emb.get("model_name") or model),
+        "api_key": str(api_key),
+        "base_url": str(base_url),
+    }
+
+
+def llm_feature_priority(feature: str) -> int:
+    if feature.startswith("PRIMARY_"):
+        return 100
+    if ":tmpl:" in feature:
+        lower = feature.lower()
+        if any(
+            key in lower
+            for key in (
+                "uvm_fatal",
+                "uvm_error",
+                "cosim",
+                "mismatch",
+                "pc_mismatch",
+                "register_write",
+                "synchronous_trap",
+                "no_dret",
+                "illegal_instruction",
+            )
+        ):
+            return 90
+        return 50
+    if ":struct:" in feature or ":flag:" in feature:
+        return 75
+    if ":count:" in feature:
+        return 35
+    return 0
+
+
+def format_llm_feature(feature: str) -> str:
+    if feature.startswith("PRIMARY_"):
+        return f"primary_signature: {feature}"
+    if ":tmpl:" in feature:
+        prefix, template = feature.split(":tmpl:", 1)
+        return f"{prefix} drain_template: {template}"
+    if ":struct:" in feature:
+        prefix, value = feature.split(":struct:", 1)
+        return f"{prefix} structured: {value}"
+    if ":flag:" in feature:
+        prefix, value = feature.split(":flag:", 1)
+        return f"{prefix} flag: {value}"
+    if ":count:" in feature:
+        prefix, value = feature.split(":count:", 1)
+        return f"{prefix} count: {value}"
+    return feature
+
+
+def build_llm_case_documents(feature_counters: Sequence[Counter], max_features: int) -> List[str]:
+    docs: List[str] = []
+    for idx, feats in enumerate(feature_counters):
+        candidates = []
+        for feature, count in feats.items():
+            priority = llm_feature_priority(str(feature))
+            if priority <= 0:
+                continue
+            candidates.append((priority, float(count), str(feature)))
+        candidates.sort(key=lambda item: (-item[0], -item[1], item[2]))
+        lines = [f"case_index: {idx}", "task: regression failure bucketing case summary"]
+        for _, count, feature in candidates[:max_features]:
+            lines.append(f"{format_llm_feature(feature)} count={count:g}")
+        docs.append("\n".join(lines))
+    return docs
+
+
+def cache_key_for_llm_doc(model: str, doc: str) -> str:
+    digest = hashlib.blake2b(f"{model}\n{doc}".encode("utf-8", "ignore"), digest_size=16).hexdigest()
+    return digest
+
+
+async def fetch_llm_embeddings_async(
+    docs: Sequence[str],
+    cfg: dict,
+    cache_dir: Path,
+    batch_size: int,
+    timeout_sec: float,
+) -> List[List[float]]:
+    try:
+        from openai import AsyncOpenAI  # type: ignore
+    except ImportError as exc:
+        raise RuntimeError("openai package is not installed") from exc
+
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    model = cfg["model"]
+    cached: Dict[int, List[float]] = {}
+    missing: List[Tuple[int, str, Path]] = []
+    for idx, doc in enumerate(docs):
+        key = cache_key_for_llm_doc(model, doc)
+        path = cache_dir / f"{key}.json"
+        try:
+            with path.open(encoding="utf-8") as f:
+                cached[idx] = json.load(f)["embedding"]
+        except Exception:
+            missing.append((idx, doc, path))
+
+    client = AsyncOpenAI(
+        api_key=cfg["api_key"],
+        base_url=cfg["base_url"],
+        timeout=timeout_sec,
+        max_retries=1,
+    )
+    for start in range(0, len(missing), batch_size):
+        batch = missing[start : start + batch_size]
+        resp = await client.embeddings.create(model=model, input=[doc for _, doc, _ in batch])
+        ordered = sorted(resp.data, key=lambda item: getattr(item, "index", 0))
+        for (idx, _, path), item in zip(batch, ordered):
+            emb = list(item.embedding)
+            cached[idx] = emb
+            try:
+                with path.open("w", encoding="utf-8") as f:
+                    json.dump({"model": model, "embedding": emb}, f)
+            except OSError:
+                pass
+
+    return [cached[idx] for idx in range(len(docs))]
+
+
+def fetch_llm_embeddings(
+    docs: Sequence[str],
+    args: argparse.Namespace,
+) -> Tuple[Any, str]:
+    cfg = load_llm_embedding_config()
+    if cfg is None:
+        raise RuntimeError("LLM_MODEL_CONFIG is not set or has no valid embedding endpoint")
+    embeddings = asyncio.run(
+        fetch_llm_embeddings_async(
+            docs,
+            cfg,
+            cache_dir=args.llm_cache_dir,
+            batch_size=args.llm_batch_size,
+            timeout_sec=args.llm_timeout_sec,
+        )
+    )
+    return embeddings, cfg["model_name"]
+
+
+def augment_with_llm_embeddings(
+    X: Any,
+    feature_counters: Sequence[Counter],
+    args: argparse.Namespace,
+    sklearn_input: bool,
+) -> Tuple[Any, Tuple[int, int], bool]:
+    if not SKLEARN_AVAILABLE or not sklearn_input:
+        raise RuntimeError("LLM embedding augmentation requires scikit-learn vectorization")
+    try:
+        import numpy as np
+    except ImportError as exc:
+        raise RuntimeError("LLM embedding augmentation requires numpy") from exc
+
+    docs = build_llm_case_documents(feature_counters, max_features=args.llm_doc_max_features)
+    embeddings, model_name = fetch_llm_embeddings(docs, args)
+    base = to_dense_or_reduced(X, args.svd_dim)
+    base = Normalizer(copy=False).fit_transform(base)
+    llm = np.asarray(embeddings, dtype="float32")
+    if llm.ndim != 2 or llm.shape[0] != len(feature_counters):
+        raise RuntimeError(f"unexpected embedding matrix shape: {llm.shape}")
+    llm = Normalizer(copy=False).fit_transform(llm)
+    combined = np.concatenate([base, llm * float(args.llm_weight)], axis=1)
+    combined = Normalizer(copy=False).fit_transform(combined)
+    info(
+        f"[llm] mode=embedding model={model_name} docs={len(docs)} "
+        f"embedding_dim={llm.shape[1]} weight={args.llm_weight}"
+    )
+    return combined, combined.shape, True
 
 
 def cluster_precomputed_distance(distance: Any, k: int) -> List[int]:
@@ -1276,6 +1508,18 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser.add_argument("--pairwise-conflict-penalty", type=float, default=0.05)
     parser.add_argument("--pairwise-mismatch-cosine-gate", type=float, default=0.20)
     parser.add_argument("--strict-pairwise", action="store_true")
+    parser.add_argument(
+        "--llm-mode",
+        choices=("none", "embedding"),
+        default="none",
+        help="optional LLM-assisted embedding augmentation; defaults to disabled",
+    )
+    parser.add_argument("--llm-cache-dir", type=Path, default=Path("/tmp/regr_fail_llm_cache"))
+    parser.add_argument("--llm-batch-size", type=int, default=64)
+    parser.add_argument("--llm-timeout-sec", type=float, default=20.0)
+    parser.add_argument("--llm-weight", type=float, default=0.25)
+    parser.add_argument("--llm-doc-max-features", type=int, default=80)
+    parser.add_argument("--strict-llm", action="store_true", help="fail instead of fallback when LLM embedding fails")
     return parser.parse_args(argv)
 
 
@@ -1307,6 +1551,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         f"cluster_factor={args.cluster_factor} feature_level={args.feature_level} "
         f"normalizer={args.normalizer} line_mode={args.line_mode} "
         f"template_weighting={args.template_weighting} "
+        f"llm_mode={args.llm_mode} "
         f"token_weight_mode={args.token_weight_mode} "
         f"token_weights={token_weights_label}"
     )
@@ -1348,9 +1593,25 @@ def main(argv: Sequence[str] | None = None) -> int:
         token_weight_mode=args.token_weight_mode,
     )
     X, shape, sklearn_input = vectorize_features(feature_counters)
+    pre_reduced = False
+    if args.llm_mode == "embedding":
+        try:
+            X, shape, sklearn_input = augment_with_llm_embeddings(X, feature_counters, args, sklearn_input)
+            pre_reduced = True
+        except Exception as exc:
+            warn(f"LLM embedding augmentation failed ({exc}); falling back to deterministic baseline")
+            if args.strict_llm:
+                return 3
     info(f"[data] cases={len(rows)} templates={template_count} vector_shape={shape}")
     info(f"[cluster] requested_k={args.k} effective_k={effective_k} method={args.cluster}")
-    labels = cluster_vectors(X, effective_k, method=args.cluster, svd_dim=args.svd_dim, sklearn_input=sklearn_input)
+    labels = cluster_vectors(
+        X,
+        effective_k,
+        method=args.cluster,
+        svd_dim=args.svd_dim,
+        sklearn_input=sklearn_input,
+        pre_reduced=pre_reduced,
+    )
     labels = remap_labels(labels)
     write_output(args.output.resolve(), labels)
     # TODO: add split_mixed post-processing for large mixed clusters.

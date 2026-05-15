@@ -304,6 +304,12 @@ def run_predict(
         args.line_mode,
         "--template-weighting",
         args.template_weighting,
+        "--llm-mode",
+        args.llm_mode,
+        "--llm-weight",
+        str(args.llm_weight),
+        "--llm-cache-dir",
+        str(args.llm_cache_dir),
         "--token-weight-mode",
         "none" if weight_mode == "none" else "repeat",
     ]
@@ -332,6 +338,8 @@ def write_results_csv(path: Path, rows: Sequence[dict]) -> None:
         "normalizer",
         "line_mode",
         "template_weighting",
+        "llm_mode",
+        "llm_weight",
         "parser",
         "cluster",
         "k",
@@ -461,7 +469,9 @@ def run_experiments(args: argparse.Namespace) -> tuple[list[dict], list[dict]]:
                 for cluster_factor in args.cluster_factors:
                     factor_name = str(cluster_factor).replace(".", "p")
                     for name, train_part, val_part, val_info in val_infos:
-                        pred_path = preds_dir / f"{combo_key}_{weight_mode}_factor_{factor_name}_{name}_{val_part}.csv"
+                        pred_path = preds_dir / (
+                            f"{combo_key}_{weight_mode}_{args.llm_mode}_factor_{factor_name}_{name}_{val_part}.csv"
+                        )
                         runtime = run_predict(
                             args.python,
                             val_info["input"],
@@ -490,6 +500,8 @@ def run_experiments(args: argparse.Namespace) -> tuple[list[dict], list[dict]]:
                                 "normalizer": args.normalizer,
                                 "line_mode": args.line_mode,
                                 "template_weighting": args.template_weighting,
+                                "llm_mode": args.llm_mode,
+                                "llm_weight": args.llm_weight,
                                 "parser": args.parser,
                                 "cluster": args.cluster,
                                 "k": val_info["k"],
@@ -534,6 +546,9 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--normalizer", choices=("v1", "semantic"), default="v1")
     parser.add_argument("--line-mode", choices=("default", "signal_window"), default="default")
     parser.add_argument("--template-weighting", choices=("none", "quality"), default="quality")
+    parser.add_argument("--llm-mode", choices=("none", "embedding"), default="none")
+    parser.add_argument("--llm-weight", type=float, default=0.25)
+    parser.add_argument("--llm-cache-dir", type=Path, default=Path("/tmp/regr_fail_llm_cache"))
     parser.add_argument("--train-min-df", type=int, default=2)
     parser.add_argument("--max-weight", type=float, default=5.0)
     parser.add_argument("--min-weight", type=float, default=0.2)
