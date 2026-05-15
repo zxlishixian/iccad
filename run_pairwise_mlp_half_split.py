@@ -18,13 +18,16 @@ from run_experiments import pairwise_scores, read_gold, read_pred
 from run_half_split_experiments import DEFAULT_DATASETS, opposite_part, part_for_bit, stratified_half_split
 
 
+PROJECT_ROOT = Path(__file__).resolve().parent
+
+
 def dataset_name(path: Path) -> str:
     return path.name
 
 
 def run_cmd(cmd: list[str]) -> float:
     start = time.perf_counter()
-    proc = subprocess.run(cmd, text=True, capture_output=True, check=False)
+    proc = subprocess.run(cmd, text=True, capture_output=True, check=False, cwd=PROJECT_ROOT)
     runtime = time.perf_counter() - start
     if proc.returncode != 0:
         raise RuntimeError(proc.stderr or proc.stdout)
@@ -156,7 +159,7 @@ def print_summary(rows: Sequence[dict]) -> None:
 
 def run(args: argparse.Namespace) -> tuple[list[dict], list[dict]]:
     results = []
-    datasets = [Path(path) for path in args.datasets]
+    datasets = [Path(path).resolve() for path in args.datasets]
     for seed in args.seeds:
         combo = args.combo
         model_path = args.output_dir / "models" / f"seed_{seed}_combo_{combo:03b}_pairwise_mlp.pt"
