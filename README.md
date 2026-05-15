@@ -287,6 +287,22 @@ Pairwise MLP 架构也是可切换的：
 --architecture layernorm --hidden-dims 512 256 128 --dropout 0.30
 ```
 
+### Current Pairwise Findings
+
+截至当前实验，pairwise MLP 仍不能替换默认 baseline：
+
+- `v1/v2` 在 `first_batch` 上能超过 baseline，说明 pairwise learning 有信号。
+- `stage2/stage3` 上主要输在 TPR，同一 bug 的不同表现仍容易被拆开。
+- calibration search 不能稳定解决问题：无校准时 TPR 高但 TNR 崩，floor-based calibration 又会压低 TPR。
+- 下一轮重点改模型架构和训练目标，而不是继续手工调 calibration。
+
+当前建议实验顺序：
+
+1. `plain` 旧架构复现，作为对照。
+2. `layernorm` 中等深度模型，检查 normalization 是否改善跨规模泛化。
+3. `residual` 深模型，检查更大容量是否提升 stage3 TPR。
+4. 对最好的架构再做 calibration search，而不是对所有模型都先调 calibration。
+
 half-split 对照实验：
 
 ```bash
@@ -301,6 +317,52 @@ half-split 对照实验：
   --hidden-dims 512 512 256 256 128 \
   --hard-positive-ratio 0.5 \
   --pos-weight-scale 1.2
+```
+
+推荐下一轮架构 ablation：
+
+```bash
+# A. plain baseline, comparable with older checkpoints
+.venv/bin/python run_pairwise_mlp_half_split.py \
+  --python .venv/bin/python \
+  --seeds 0 \
+  --output-dir /tmp/pairwise_arch_plain \
+  --device auto \
+  --epochs 20 \
+  --max-train-pairs 300000 \
+  --batch-size 8192 \
+  --architecture plain \
+  --hidden-dims 256 128 \
+  --dropout 0.20 \
+  --pos-weight-scale 1.0
+
+# B. layernorm medium-depth model
+.venv/bin/python run_pairwise_mlp_half_split.py \
+  --python .venv/bin/python \
+  --seeds 0 \
+  --output-dir /tmp/pairwise_arch_layernorm \
+  --device auto \
+  --epochs 20 \
+  --max-train-pairs 300000 \
+  --batch-size 8192 \
+  --architecture layernorm \
+  --hidden-dims 512 256 128 \
+  --dropout 0.30 \
+  --pos-weight-scale 1.0
+
+# C. residual deep model
+.venv/bin/python run_pairwise_mlp_half_split.py \
+  --python .venv/bin/python \
+  --seeds 0 \
+  --output-dir /tmp/pairwise_arch_residual \
+  --device auto \
+  --epochs 20 \
+  --max-train-pairs 300000 \
+  --batch-size 8192 \
+  --architecture residual \
+  --hidden-dims 512 512 256 256 128 \
+  --dropout 0.25 \
+  --pos-weight-scale 1.0
 ```
 
 搜索 pairwise probability calibration：
@@ -363,6 +425,8 @@ python3 -m venv .venv
 
 ## Next Steps
 
-1. Add postprocess `split_mixed` for large mixed clusters using `primary_signature`.
-2. Add lightweight trace tail features instead of full trace processing.
-3. Keep supervised token weighting experimental unless a validation setup shows stable gains.
+1. Run architecture ablation: `plain` vs `layernorm` vs `residual`, prioritizing stage3 TPR and mean BA.
+2. Add focal loss or class-balanced loss if residual still over-merges or under-merges.
+3. Add stronger hard negatives: same mismatch type / similar primary type but different bug.
+4. Add postprocess `split_mixed` for large mixed clusters using `primary_signature`.
+5. Keep pairwise MLP experimental unless multi-seed validation shows stable gains over `drain + agglomerative`.
