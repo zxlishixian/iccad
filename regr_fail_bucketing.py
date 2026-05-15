@@ -1186,6 +1186,11 @@ def load_llm_embedding_config() -> dict | None:
     raw = os.getenv("LLM_MODEL_CONFIG")
     if not raw:
         return None
+    if raw.lstrip().startswith(("/", "./", "~")) or raw.rstrip().endswith((".yaml", ".yml")):
+        warn(
+            "LLM_MODEL_CONFIG looks like a file path, not YAML content. "
+            "Use: export LLM_MODEL_CONFIG=\"$(cat /path/to/config.yaml)\""
+        )
     try:
         import yaml  # type: ignore
 
@@ -1196,6 +1201,11 @@ def load_llm_embedding_config() -> dict | None:
         warn(f"could not parse LLM_MODEL_CONFIG ({exc}); LLM embeddings disabled")
         return None
     if not isinstance(cfg, dict):
+        warn(
+            "LLM_MODEL_CONFIG parsed as a plain value, not a YAML mapping. "
+            "Make sure the variable contains YAML content, not a file path. "
+            "Use: export LLM_MODEL_CONFIG=\"$(cat /path/to/config.yaml)\""
+        )
         return None
     emb = cfg.get("embedding") or {}
     if not isinstance(emb, dict):
@@ -1590,14 +1600,14 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser.add_argument("--strict-pairwise", action="store_true")
     parser.add_argument(
         "--llm-mode",
-        choices=("none", "embedding"),
+        choices=("none", "embedding", "auto"),
         default="none",
-        help="optional LLM-assisted embedding augmentation; defaults to disabled",
+        help="LLM embedding mode: none=disabled, embedding=enabled with fallback, auto=enabled if LLM_MODEL_CONFIG is valid",
     )
     parser.add_argument("--llm-cache-dir", type=Path, default=Path("/tmp/regr_fail_llm_cache"))
     parser.add_argument("--llm-batch-size", type=int, default=64)
     parser.add_argument("--llm-timeout-sec", type=float, default=20.0)
-    parser.add_argument("--llm-weight", type=float, default=0.25)
+    parser.add_argument("--llm-weight", type=float, default=4.0)
     parser.add_argument("--llm-doc-max-features", type=int, default=80)
     parser.add_argument("--strict-llm", action="store_true", help="fail instead of fallback when LLM embedding fails")
     return parser.parse_args(argv)
@@ -1674,7 +1684,14 @@ def main(argv: Sequence[str] | None = None) -> int:
     )
     X, shape, sklearn_input = vectorize_features(feature_counters)
     pre_reduced = False
-    if args.llm_mode == "embedding":
+    use_llm = args.llm_mode == "embedding"
+    if args.llm_mode == "auto":
+        if load_llm_embedding_config() is not None:
+            use_llm = True
+            info("[llm] mode=auto detected valid LLM_MODEL_CONFIG; enabling embedding augmentation")
+        else:
+            info("[llm] mode=auto no valid LLM_MODEL_CONFIG detected; running deterministic")
+    if use_llm:
         try:
             X, shape, sklearn_input = augment_with_llm_embeddings(X, feature_counters, args, sklearn_input)
             pre_reduced = True

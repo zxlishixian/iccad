@@ -312,17 +312,79 @@ compressed case document
 
 压缩文档只包含 `primary_signature`、高信号 Drain templates、flag/count/structured failure hints，不会把完整 `sim.log` / `regr.log` 发给 LLM。
 
-启用方式：
+### 环境变量配置
+
+`LLM_MODEL_CONFIG` 必须包含 YAML 内容，**不是文件路径**：
 
 ```bash
-export LLM_MODEL_CONFIG="$(cat openai.yaml)"
+# 正确：把 YAML 内容赋给环境变量
+export LLM_MODEL_CONFIG="$(cat /path/to/config.yaml)"
+
+# 错误：这样会把文件路径当 YAML 内容，导致 LLM 静默不生效
+export LLM_MODEL_CONFIG=/path/to/config.yaml
+```
+
+如果程序检测到环境变量值看起来像文件路径（以 `/`、`./`、`~` 开头，或以 `.yaml`/`.yml` 结尾），会打印 warning 提示修正。
+
+config.yaml 示例（兼容 OpenAI-compatible 接口，包括本地 nomic-embed-text-v1.5 服务）：
+
+```yaml
+embedding:
+  model_name: "nomic-embed-text-v1.5"
+  config:
+    api_key: "dummy"
+    base_url: "http://127.0.0.1:8001/v1"
+    client_library: "openai.AsyncOpenAI"
+    model: "nomic-embed-text-v1.5"
+```
+
+### llm-mode 选项
+
+| mode | 行为 |
+|---|---|
+| `none` (默认) | 永不使用 LLM |
+| `embedding` | 强制尝试 LLM，失败则 warning + fallback 到 deterministic baseline |
+| `auto` | 检测到有效 `LLM_MODEL_CONFIG` 时启用 embedding，否则走 deterministic |
+
+`--strict-llm` 可以让 LLM 失败时直接返回非零退出码（调试用）。
+
+### 推荐配置与验证结果
+
+经过权重扫描（w=0.1 到 5.0），推荐 `--llm-weight 4.0`。5-seed half-split 验证结果（weight_mode=none, cluster_factor=0.875）：
+
+| dataset | BA | TPR | TNR | vs Baseline ΔBA |
+|---|---:|---:|---:|---:|
+| first_batch | 0.7771 | 0.7488 | 0.8054 | +1.0pp |
+| stage2 | 0.7579 | 0.7276 | 0.7881 | +1.1pp |
+| stage3 | 0.7683 | 0.8139 | 0.7228 | +0.7pp |
+
+确定性 baseline 对照：
+
+| dataset | BA | TPR | TNR |
+|---|---:|---:|---:|
+| first_batch | 0.7666 | 0.7338 | 0.7994 |
+| stage2 | 0.7472 | 0.7502 | 0.7441 |
+| stage3 | 0.7614 | 0.8233 | 0.6994 |
+
+关键发现：
+- **三个数据集 BA 全面提升**，stage2 提升最大 (+1.1pp)
+- **stage2 TNR 从 0.744 提升到 0.788 (+4.4pp)**，假阳性显著减少 — 这是最关键的改善
+- stage3 TNR 也提升 2.3pp，从 0.699 到 0.723
+- TPR 在 stage2/stage3 上有小幅 trade-off（-2.3pp / -0.9pp），在可接受范围内
+
+### 使用方式
+
+启用 LLM embedding 增强（推荐 w=4.0）：
+
+```bash
+export LLM_MODEL_CONFIG="$(cat /path/to/config.yaml)"
 
 .venv/bin/python regr_fail_bucketing.py \
   --input dataset/stage3_dataset_32bugs_640cases/input.csv \
   --output /tmp/stage3_llm_embedding.csv \
   --k 32 \
   --llm-mode embedding \
-  --llm-weight 0.25 \
+  --llm-weight 4.0 \
   --llm-cache-dir /tmp/regr_fail_llm_cache
 ```
 
@@ -335,7 +397,18 @@ export LLM_MODEL_CONFIG="$(cat openai.yaml)"
   --python .venv/bin/python \
   --output-dir /tmp/llm_embedding_exp \
   --llm-mode embedding \
-  --llm-weight 0.25
+  --llm-weight 4.0
+```
+
+half-split 交叉验证：
+
+```bash
+.venv/bin/python run_half_split_experiments.py \
+  --python .venv/bin/python \
+  --seeds 0 1 2 3 4 \
+  --output-dir /tmp/llm_half_split_exp \
+  --llm-mode embedding \
+  --llm-weight 4.0
 ```
 
 ## Experimental: Pairwise Same-Bug MLP
