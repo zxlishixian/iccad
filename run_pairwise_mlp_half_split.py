@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import json
 import statistics
 import subprocess
 import sys
@@ -51,6 +52,7 @@ def run_predict(
         str(k),
     ]
     if method == "pairwise_mlp":
+        calibration = load_calibration(args.calibration_json)
         cmd.extend(
             [
                 "--cluster",
@@ -60,20 +62,37 @@ def run_predict(
                 "--pairwise-device",
                 "cpu",
                 "--pairwise-primary-floor",
-                str(args.pairwise_primary_floor),
+                str(calibration.get("primary_floor", args.pairwise_primary_floor)),
                 "--pairwise-op-pair-floor",
-                str(args.pairwise_op_pair_floor),
+                str(calibration.get("op_pair_floor", args.pairwise_op_pair_floor)),
                 "--pairwise-mismatch-floor",
-                str(args.pairwise_mismatch_floor),
+                str(calibration.get("mismatch_floor", args.pairwise_mismatch_floor)),
                 "--pairwise-conflict-penalty",
-                str(args.pairwise_conflict_penalty),
+                str(calibration.get("conflict_penalty", args.pairwise_conflict_penalty)),
                 "--pairwise-mismatch-cosine-gate",
-                str(args.pairwise_mismatch_cosine_gate),
+                str(calibration.get("mismatch_cosine_gate", args.pairwise_mismatch_cosine_gate)),
             ]
         )
         if config_path:
             cmd.extend(["--pairwise-config", str(config_path)])
     return run_cmd(cmd)
+
+
+def load_calibration(path: Path | None) -> dict:
+    if not path:
+        return {}
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except OSError:
+        return {}
+    calibration = {
+        "primary_floor": data.get("primary_floor", data.get("pairwise_primary_floor")),
+        "op_pair_floor": data.get("op_pair_floor", data.get("pairwise_op_pair_floor")),
+        "mismatch_floor": data.get("mismatch_floor", data.get("pairwise_mismatch_floor")),
+        "conflict_penalty": data.get("conflict_penalty", data.get("pairwise_conflict_penalty")),
+        "mismatch_cosine_gate": data.get("mismatch_cosine_gate", data.get("pairwise_mismatch_cosine_gate")),
+    }
+    return {key: value for key, value in calibration.items() if value is not None}
 
 
 def write_csv(path: Path, rows: Sequence[dict]) -> None:
@@ -257,6 +276,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--pairwise-mismatch-floor", type=float, default=0.55)
     parser.add_argument("--pairwise-conflict-penalty", type=float, default=0.05)
     parser.add_argument("--pairwise-mismatch-cosine-gate", type=float, default=0.20)
+    parser.add_argument("--calibration-json", type=Path, help="best_calibration.json from run_pairwise_calibration_search.py")
     return parser.parse_args(argv)
 
 

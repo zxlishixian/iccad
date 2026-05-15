@@ -282,6 +282,39 @@ half-split 对照实验：
   --pos-weight-scale 1.2
 ```
 
+搜索 pairwise probability calibration：
+
+```bash
+.venv/bin/python run_pairwise_calibration_search.py \
+  --model /tmp/pairwise_mlp_v2.pt \
+  --config /tmp/pairwise_config_v2.json \
+  --seed 0 \
+  --combo 0 \
+  --output-dir /tmp/pairwise_calib_search \
+  --device auto
+```
+
+脚本会输出：
+
+```text
+/tmp/pairwise_calib_search/calibration_results.csv
+/tmp/pairwise_calib_search/calibration_summary.csv
+/tmp/pairwise_calib_search/best_calibration.json
+```
+
+然后可以用搜索到的参数复跑 half-split：
+
+```bash
+.venv/bin/python run_pairwise_mlp_half_split.py \
+  --python .venv/bin/python \
+  --seeds 0 \
+  --output-dir /tmp/pairwise_mlp_calibrated_exp \
+  --device auto \
+  --epochs 10 \
+  --max-train-pairs 100000 \
+  --calibration-json /tmp/pairwise_calib_search/best_calibration.json
+```
+
 This backend is experimental. The default submitted baseline remains `drain + agglomerative` unless validation shows stable gains.
 
 ## Error Analysis
