@@ -159,7 +159,7 @@ def print_summary(rows: Sequence[dict]) -> None:
 
 def run(args: argparse.Namespace) -> tuple[list[dict], list[dict]]:
     results = []
-    datasets = [Path(path).resolve() for path in args.datasets]
+    datasets = [(PROJECT_ROOT / path).resolve() if not Path(path).is_absolute() else Path(path).resolve() for path in args.datasets]
     for seed in args.seeds:
         combo = args.combo
         model_path = args.output_dir / "models" / f"seed_{seed}_combo_{combo:03b}_pairwise_mlp.pt"
