@@ -826,6 +826,62 @@ def write_output(path: Path, labels: Sequence[int]) -> None:
             writer.writerow([f"bucket_{label:03d}"])
 
 
+def cluster_precomputed_distance(distance: Any, k: int) -> List[int]:
+    if not SKLEARN_AVAILABLE or AgglomerativeClustering is None:
+        raise RuntimeError("pairwise_mlp clustering requires scikit-learn")
+    n = distance.shape[0]
+    if n == 0:
+        return []
+    k = max(1, min(k, n))
+    if k == n:
+        return list(range(n))
+    try:
+        model = AgglomerativeClustering(n_clusters=k, metric="precomputed", linkage="average")
+    except TypeError:
+        model = AgglomerativeClustering(n_clusters=k, affinity="precomputed", linkage="average")
+    return model.fit_predict(distance).tolist()
+
+
+def run_pairwise_mlp_backend(args: argparse.Namespace, input_csv: Path, effective_k: int) -> tuple[List[int], int, tuple[int, int]]:
+    if not args.pairwise_model:
+        raise RuntimeError("--cluster pairwise_mlp requires --pairwise-model")
+    try:
+        import torch
+        import numpy as np
+        import pairwise_features as pf
+    except ImportError as exc:
+        raise RuntimeError(f"pairwise_mlp requires PyTorch, NumPy, and pairwise_features: {exc}") from exc
+
+    device = pf.resolve_torch_device(args.pairwise_device)
+    checkpoint = torch.load(args.pairwise_model, map_location=device, weights_only=False)
+    input_dim = int(checkpoint["input_dim"])
+    hidden_dims = checkpoint.get("hidden_dims", (256, 128))
+    dropout = float(checkpoint.get("dropout", 0.2))
+    svd_dim = int(checkpoint.get("svd_dim", args.svd_dim))
+    model = pf.build_pairwise_mlp_model(input_dim, hidden_dims=hidden_dims, dropout=dropout)
+    model.load_state_dict(checkpoint["state_dict"])
+
+    features, bundle = pf.build_case_features(
+        input_csv,
+        parser=args.parser,
+        svd_dim=svd_dim,
+        token_weights=args.token_weights if args.token_weight_mode != "none" else None,
+        token_weight_mode=args.token_weight_mode,
+    )
+    prob = pf.predict_probability_matrix(
+        model,
+        features,
+        device=device,
+        batch_size=args.pairwise_batch_size,
+        prob_bias=args.prob_bias,
+        prob_temperature=args.prob_temperature,
+    )
+    distance = 1.0 - prob
+    np.fill_diagonal(distance, 0.0)
+    labels = cluster_precomputed_distance(distance, effective_k)
+    return labels, bundle.template_count, prob.shape
+
+
 def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Bucket Ibex regression failures.")
     parser.add_argument("--input", required=True, type=Path, help="Input CSV containing log paths.")
@@ -834,7 +890,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser.add_argument("--parser", choices=("simple", "drain"), default="drain", help="log template parser")
     parser.add_argument(
         "--cluster",
-        choices=("kmeans", "agglomerative", "hdbscan"),
+        choices=("kmeans", "agglomerative", "hdbscan", "pairwise_mlp"),
         default="agglomerative",
         help="clustering backend",
     )
@@ -851,6 +907,13 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
         default="none",
         help="post-processing mode; reserved for future split_mixed support",
     )
+    parser.add_argument("--pairwise-model", type=Path, help="experimental pairwise_mlp checkpoint")
+    parser.add_argument("--pairwise-config", type=Path, help="optional pairwise_mlp config JSON")
+    parser.add_argument("--pairwise-device", choices=("auto", "cpu", "cuda"), default="auto")
+    parser.add_argument("--pairwise-batch-size", type=int, default=100000)
+    parser.add_argument("--prob-bias", type=float, default=0.0)
+    parser.add_argument("--prob-temperature", type=float, default=1.0)
+    parser.add_argument("--strict-pairwise", action="store_true")
     return parser.parse_args(argv)
 
 
@@ -883,6 +946,25 @@ def main(argv: Sequence[str] | None = None) -> int:
         f"token_weights={token_weights_label}"
     )
     info("[config] primary_signature=enabled")
+
+    if args.cluster == "pairwise_mlp":
+        try:
+            labels, template_count, prob_shape = run_pairwise_mlp_backend(args, input_csv, effective_k)
+            labels = remap_labels(labels)
+            info(f"[data] cases={len(rows)} templates={template_count} vector_shape={prob_shape}")
+            info(f"[cluster] requested_k={args.k} effective_k={effective_k} method=pairwise_mlp")
+            write_output(args.output.resolve(), labels)
+            info(
+                f"[output] buckets={len(set(labels))} path={args.output.resolve()} "
+                f"runtime_sec={time.perf_counter() - start:.3f}"
+            )
+            return 0
+        except Exception as exc:
+            warn(f"pairwise_mlp failed ({exc}); falling back to agglomerative")
+            if args.strict_pairwise:
+                return 2
+            args.cluster = "agglomerative"
+
     base_features, normalized_lines = collect_case_inputs(input_csv, rows, sim_col, regr_col, args.parser)
     feature_counters, template_count = build_feature_counters(
         args,

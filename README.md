@@ -210,6 +210,61 @@ Supervised token weighting 已经实现并评估过。`repeat` / `conservative` 
 
 half-split 实验会把每个规模的数据集按 `bug_id` 分层拆成 `part1` / `part2`，枚举三个规模的 train/validation 组合。validation 仍然按每个 benchmark part 独立聚类和评估，更接近正式赛题。
 
+## Experimental: Pairwise Same-Bug MLP
+
+新增的 pairwise MLP 后端直接学习：
+
+```text
+P(case_i 和 case_j 是否属于同一个 bug bucket)
+```
+
+这个方向和官方 pairwise balanced accuracy 更对齐，但当前仍是 experimental backend：
+
+- 只使用 `sim.log` 和 `regr.log`
+- 训练阶段读取本地 `gold.csv`
+- 推理阶段不读取 `gold.csv` / `meta.csv`
+- 默认 baseline 不依赖 PyTorch
+- 必须显式传 `--cluster pairwise_mlp` 才会 import/use torch
+- 训练可用 GPU，推理支持 CPU
+
+训练模型：
+
+```bash
+.venv/bin/python train_pairwise_mlp.py \
+  --datasets dataset/first_batch_dataset dataset/stage2_dataset_working dataset/stage3_dataset_32bugs_640cases \
+  --output models/pairwise_mlp.pt \
+  --config-output models/pairwise_config.json \
+  --device auto \
+  --epochs 50
+```
+
+用 pairwise MLP 推理：
+
+```bash
+.venv/bin/python regr_fail_bucketing.py \
+  --input dataset/stage3_dataset_32bugs_640cases/input.csv \
+  --output /tmp/stage3_pairwise.csv \
+  --k 32 \
+  --cluster pairwise_mlp \
+  --pairwise-model models/pairwise_mlp.pt \
+  --pairwise-config models/pairwise_config.json \
+  --pairwise-device cpu
+```
+
+half-split 对照实验：
+
+```bash
+.venv/bin/python run_pairwise_mlp_half_split.py \
+  --python .venv/bin/python \
+  --seeds 0 \
+  --output-dir /tmp/pairwise_mlp_exp \
+  --device auto \
+  --epochs 10 \
+  --max-train-pairs 100000
+```
+
+This backend is experimental. The default submitted baseline remains `drain + agglomerative` unless validation shows stable gains.
+
 ## Error Analysis
 
 当 TNR 高但 TPR 低时，通常说明不同 bug 容易分开，但同一 bug 的多种表现被拆碎。可以用：
