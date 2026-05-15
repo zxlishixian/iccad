@@ -290,7 +290,12 @@ def train(args: argparse.Namespace) -> dict:
     loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=True)
 
     input_dim = X.shape[1]
-    model = pf.build_pairwise_mlp_model(input_dim, hidden_dims=args.hidden_dims, dropout=args.dropout).to(device)
+    model = pf.build_pairwise_mlp_model(
+        input_dim,
+        hidden_dims=args.hidden_dims,
+        dropout=args.dropout,
+        architecture=args.architecture,
+    ).to(device)
     pos = float((y == 1.0).sum())
     neg = float((y == 0.0).sum())
     pos_weight = torch.tensor([args.pos_weight_scale * neg / max(pos, 1.0)], dtype=torch.float32, device=device)
@@ -347,6 +352,7 @@ def train(args: argparse.Namespace) -> dict:
             "input_dim": input_dim,
             "hidden_dims": list(args.hidden_dims),
             "dropout": args.dropout,
+            "architecture": args.architecture,
             "svd_dim": args.svd_dim,
             "feature_schema_version": pf.FEATURE_SCHEMA_VERSION,
         },
@@ -357,6 +363,7 @@ def train(args: argparse.Namespace) -> dict:
         "svd_dim": args.svd_dim,
         "hidden_dims": list(args.hidden_dims),
         "dropout": args.dropout,
+        "architecture": args.architecture,
         "feature_schema_version": pf.FEATURE_SCHEMA_VERSION,
         "training_datasets": [str(Path(path)) for path in args.datasets],
         "validation_mode": args.validation_mode,
@@ -393,8 +400,9 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--weight-decay", type=float, default=1e-4)
     parser.add_argument("--svd-dim", type=int, default=128)
-    parser.add_argument("--hidden-dims", nargs="+", type=int, default=[256, 128])
-    parser.add_argument("--dropout", type=float, default=0.2)
+    parser.add_argument("--architecture", choices=("plain", "layernorm", "residual"), default="residual")
+    parser.add_argument("--hidden-dims", nargs="+", type=int, default=[512, 512, 256, 256, 128])
+    parser.add_argument("--dropout", type=float, default=0.25)
     parser.add_argument("--negative-ratio", type=float, default=1.5)
     parser.add_argument("--hard-negative-ratio", type=float, default=0.5)
     parser.add_argument("--hard-positive-ratio", type=float, default=0.5)

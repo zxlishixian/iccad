@@ -444,9 +444,30 @@ def build_pair_feature_matrix(
     return matrix
 
 
-def build_pairwise_mlp_model(input_dim: int, hidden_dims: Sequence[int] = (256, 128), dropout: float = 0.2):
+def build_pairwise_mlp_model(
+    input_dim: int,
+    hidden_dims: Sequence[int] = (256, 128),
+    dropout: float = 0.2,
+    architecture: str = "plain",
+):
     import torch
     from torch import nn
+
+    class ResidualBlock(nn.Module):
+        def __init__(self, dim: int) -> None:
+            super().__init__()
+            self.net = nn.Sequential(
+                nn.Linear(dim, dim),
+                nn.LayerNorm(dim),
+                nn.GELU(),
+                nn.Dropout(float(dropout)),
+                nn.Linear(dim, dim),
+                nn.LayerNorm(dim),
+            )
+            self.out = nn.GELU()
+
+        def forward(self, x):  # type: ignore[no-untyped-def]
+            return self.out(x + self.net(x))
 
     class PairwiseMLP(nn.Module):
         def __init__(self) -> None:
@@ -455,6 +476,8 @@ def build_pairwise_mlp_model(input_dim: int, hidden_dims: Sequence[int] = (256, 
             prev = input_dim
             for hidden in hidden_dims:
                 layers.append(nn.Linear(prev, int(hidden)))
+                if architecture in {"layernorm", "residual"}:
+                    layers.append(nn.LayerNorm(int(hidden)))
                 layers.append(nn.ReLU())
                 layers.append(nn.Dropout(float(dropout)))
                 prev = int(hidden)
@@ -464,6 +487,39 @@ def build_pairwise_mlp_model(input_dim: int, hidden_dims: Sequence[int] = (256, 
         def forward(self, x):  # type: ignore[no-untyped-def]
             return self.net(x).squeeze(-1)
 
+    class ResidualPairwiseMLP(nn.Module):
+        def __init__(self) -> None:
+            super().__init__()
+            dims = [int(dim) for dim in hidden_dims] or [256, 256, 128]
+            layers: list[nn.Module] = [
+                nn.Linear(input_dim, dims[0]),
+                nn.LayerNorm(dims[0]),
+                nn.GELU(),
+                nn.Dropout(float(dropout)),
+            ]
+            prev = dims[0]
+            for hidden in dims[1:]:
+                hidden = int(hidden)
+                if hidden == prev:
+                    layers.append(ResidualBlock(hidden))
+                else:
+                    layers.extend(
+                        [
+                            nn.Linear(prev, hidden),
+                            nn.LayerNorm(hidden),
+                            nn.GELU(),
+                            nn.Dropout(float(dropout)),
+                        ]
+                    )
+                prev = hidden
+            layers.append(nn.Linear(prev, 1))
+            self.net = nn.Sequential(*layers)
+
+        def forward(self, x):  # type: ignore[no-untyped-def]
+            return self.net(x).squeeze(-1)
+
+    if architecture == "residual":
+        return ResidualPairwiseMLP()
     return PairwiseMLP()
 
 

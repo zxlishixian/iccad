@@ -857,8 +857,9 @@ def run_pairwise_mlp_backend(args: argparse.Namespace, input_csv: Path, effectiv
     input_dim = int(checkpoint["input_dim"])
     hidden_dims = checkpoint.get("hidden_dims", (256, 128))
     dropout = float(checkpoint.get("dropout", 0.2))
+    architecture = checkpoint.get("architecture", "plain")
     svd_dim = int(checkpoint.get("svd_dim", args.svd_dim))
-    model = pf.build_pairwise_mlp_model(input_dim, hidden_dims=hidden_dims, dropout=dropout)
+    model = pf.build_pairwise_mlp_model(input_dim, hidden_dims=hidden_dims, dropout=dropout, architecture=architecture)
     model.load_state_dict(checkpoint["state_dict"])
 
     features, bundle = pf.build_case_features(

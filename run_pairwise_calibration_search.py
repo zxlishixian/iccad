@@ -33,6 +33,7 @@ def load_model(model_path: Path, device: str):
         int(checkpoint["input_dim"]),
         hidden_dims=checkpoint.get("hidden_dims", (256, 128)),
         dropout=float(checkpoint.get("dropout", 0.2)),
+        architecture=checkpoint.get("architecture", "plain"),
     )
     model.load_state_dict(checkpoint["state_dict"])
     return model, checkpoint, device

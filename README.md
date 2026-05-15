@@ -238,6 +238,9 @@ P(case_i 和 case_j 是否属于同一个 bug bucket)
   --epochs 50 \
   --batch-size 8192 \
   --max-train-pairs 300000 \
+  --architecture residual \
+  --hidden-dims 512 512 256 256 128 \
+  --dropout 0.25 \
   --negative-ratio 1.5 \
   --hard-positive-ratio 0.5 \
   --hard-negative-ratio 0.5 \
@@ -268,6 +271,22 @@ P(case_i 和 case_j 是否属于同一个 bug bucket)
 
 如果验证发现 TNR 下降，可以把这些 floor 调低，甚至设为 `0.0` 关闭。
 
+Pairwise MLP 架构也是可切换的：
+
+```text
+--architecture plain      # 兼容最初的 2-layer MLP checkpoint
+--architecture layernorm  # plain MLP + LayerNorm
+--architecture residual   # 默认实验主线，更深的 residual MLP
+```
+
+`residual` 默认使用 `512 512 256 256 128`，重复维度会插入 residual block。旧模型 checkpoint 没有 `architecture` 字段时，推理会自动按 `plain` 加载，保持向后兼容。
+
+如果 residual 过拟合，可以尝试：
+
+```text
+--architecture layernorm --hidden-dims 512 256 128 --dropout 0.30
+```
+
 half-split 对照实验：
 
 ```bash
@@ -278,6 +297,8 @@ half-split 对照实验：
   --device auto \
   --epochs 10 \
   --max-train-pairs 100000 \
+  --architecture residual \
+  --hidden-dims 512 512 256 256 128 \
   --hard-positive-ratio 0.5 \
   --pos-weight-scale 1.2
 ```

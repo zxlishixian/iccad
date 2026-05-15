@@ -181,6 +181,12 @@ def run(args: argparse.Namespace) -> tuple[list[dict], list[dict]]:
             str(args.max_train_pairs),
             "--batch-size",
             str(args.batch_size),
+            "--architecture",
+            args.architecture,
+            "--hidden-dims",
+            *[str(dim) for dim in args.hidden_dims],
+            "--dropout",
+            str(args.dropout),
             "--negative-ratio",
             str(args.negative_ratio),
             "--hard-negative-ratio",
@@ -270,6 +276,9 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--epochs", type=int, default=30)
     parser.add_argument("--max-train-pairs", type=int, default=100000)
     parser.add_argument("--batch-size", type=int, default=4096)
+    parser.add_argument("--architecture", choices=("plain", "layernorm", "residual"), default="residual")
+    parser.add_argument("--hidden-dims", nargs="+", type=int, default=[512, 512, 256, 256, 128])
+    parser.add_argument("--dropout", type=float, default=0.25)
     parser.add_argument("--negative-ratio", type=float, default=1.5)
     parser.add_argument("--hard-negative-ratio", type=float, default=0.5)
     parser.add_argument("--hard-positive-ratio", type=float, default=0.5)
