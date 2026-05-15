@@ -13,7 +13,8 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 当前推荐默认配置是：
 
 ```text
-primary_signature + FixedDepthDrain + AgglomerativeClustering
+primary_signature + FixedDepthDrain + template quality weighting
++ TF-IDF/SVD64 + AgglomerativeClustering
 ```
 
 默认主线明确不做这些事：
@@ -30,7 +31,12 @@ primary_signature + FixedDepthDrain + AgglomerativeClustering
 ```text
 --parser drain
 --cluster agglomerative
---cluster-factor 1.0
+--feature-level baseline
+--normalizer v1
+--line-mode default
+--template-weighting quality
+--svd-dim 64
+--cluster-factor 0.875
 --token-weight-mode none
 ```
 
@@ -52,7 +58,12 @@ primary_signature + FixedDepthDrain + AgglomerativeClustering
   --k 32 \
   --parser drain \
   --cluster agglomerative \
-  --cluster-factor 1.0 \
+  --feature-level baseline \
+  --normalizer v1 \
+  --line-mode default \
+  --template-weighting quality \
+  --svd-dim 64 \
+  --cluster-factor 0.875 \
   --token-weight-mode none
 ```
 
@@ -110,7 +121,7 @@ bucket_001
 输出字段：
 
 ```text
-dataset, parser, cluster, cluster_factor, token_weight_mode, token_weights,
+dataset, parser, cluster, feature_level, svd_dim, cluster_factor, token_weight_mode, token_weights,
 cases, k, num_pred_clusters, BA, TPR, TNR, runtime_sec
 ```
 
@@ -124,6 +135,43 @@ cases, k, num_pred_clusters, BA, TPR, TNR, runtime_sec
   --clusters kmeans agglomerative hdbscan \
   --cluster-factors 1.0 1.25 1.5
 ```
+
+## Non-DL Vector-Space Tuning
+
+近期实验表明，直接堆更多结构化日志 token 容易提高 TNR 但伤害 TPR，导致同一 bug 被拆碎。当前更稳的非深度学习改进是：
+
+```text
+primary_signature + FixedDepthDrain
++ template quality weighting
++ TF-IDF -> SVD 64
++ AgglomerativeClustering with cluster_factor 0.875
+```
+
+关键点是保留 v1 normalizer 中的日志细节，但在 Drain 模板进入向量空间时进行质量加权：高权重保留 `UVM_FATAL`、`cosim mismatch`、`PC mismatch`、`register write data mismatch`、`synchronous trap` 等模板，跳过或弱化 `TEST FAILED`、`error seen in rtl_sim.log`、timeout setup、summary counter 等公共噪声模板。
+
+```bash
+.venv/bin/python regr_fail_bucketing.py \
+  --input dataset/stage3_dataset_32bugs_640cases/input.csv \
+  --output /tmp/stage3_quality_svd64_cf0875.csv \
+  --k 32 \
+  --svd-dim 64 \
+  --cluster-factor 0.875 \
+  --template-weighting quality
+```
+
+对应实验命令：
+
+```bash
+.venv/bin/python run_experiments.py \
+  --python .venv/bin/python \
+  --output-dir /private/tmp/non_dl_quality_svd64_cf0875 \
+  --feature-level baseline \
+  --svd-dim 64 \
+  --cluster-factors 0.875 \
+  --template-weighting quality
+```
+
+`--feature-level structured` 和 `--normalizer semantic` 作为 ablation 保留，包含 mismatch/event/register-class/op-pair 等确定性结构化特征和语义归一化；目前它们不作为推荐配置，因为本地验证中容易降低 TPR 或在 stage2 上丢失区分信号。
 
 ## 当前验证结果
 
@@ -139,6 +187,22 @@ cases, k, num_pred_clusters, BA, TPR, TNR, runtime_sec
 | stage2 | 0.740608 | 0.715476 | 0.765741 |
 | stage3 | 0.736150 | 0.849342 | 0.622959 |
 
+`svd_dim=64, cluster_factor=0.75, feature_level=baseline` 的非 DL tuning 结果：
+
+| dataset | BA | TPR | TNR |
+|---|---:|---:|---:|
+| first | 0.774107 | 0.775000 | 0.773214 |
+| stage2 | 0.756187 | 0.767262 | 0.745111 |
+| stage3 | 0.756242 | 0.771053 | 0.741431 |
+
+`svd_dim=64, cluster_factor=0.875, template_weighting=quality` 的 Drain-cleaning v2 结果：
+
+| dataset | BA | TPR | TNR |
+|---|---:|---:|---:|
+| first | 0.782083 | 0.791667 | 0.772500 |
+| stage2 | 0.765667 | 0.816667 | 0.714667 |
+| stage3 | 0.778823 | 0.847862 | 0.709783 |
+
 ### Half-Split Sanity Validation
 
 `weight_mode=none, cluster_factor=1.0` 的 sanity summary：
@@ -148,6 +212,30 @@ cases, k, num_pred_clusters, BA, TPR, TNR, runtime_sec
 | first | 0.744196 | 0.681250 | 0.807143 |
 | stage2 | 0.737854 | 0.681176 | 0.794533 |
 | stage3 | 0.745656 | 0.733681 | 0.757631 |
+
+`svd_dim=64, cluster_factor=0.75, feature_level=baseline` 的 seed=0 half-split sanity summary：
+
+| dataset | BA | TPR | TNR |
+|---|---:|---:|---:|
+| first | 0.762232 | 0.743750 | 0.780714 |
+| stage2 | 0.743751 | 0.707217 | 0.780285 |
+| stage3 | 0.762673 | 0.794792 | 0.730554 |
+
+`svd_dim=64, cluster_factor=0.875, template_weighting=quality` 的 seed=0 half-split sanity summary：
+
+| dataset | BA | TPR | TNR |
+|---|---:|---:|---:|
+| first | 0.768661 | 0.743750 | 0.793571 |
+| stage2 | 0.752593 | 0.757440 | 0.747745 |
+| stage3 | 0.768617 | 0.814583 | 0.722651 |
+
+同一配置的 5-seed half-split full validation summary：
+
+| dataset | mean_BA | std_BA | mean_TPR | mean_TNR | runs |
+|---|---:|---:|---:|---:|---:|
+| first | 0.766589 | 0.015168 | 0.733750 | 0.799429 | 40 |
+| stage2 | 0.747185 | 0.010046 | 0.750223 | 0.744147 | 40 |
+| stage3 | 0.761379 | 0.019138 | 0.823333 | 0.699425 | 40 |
 
 ### Partial Full Half-Split Trend
 
@@ -192,7 +280,7 @@ Supervised token weighting 已经实现并评估过。`repeat` / `conservative` 
 .venv/bin/python run_supervised_experiments.py \
   --python .venv/bin/python \
   --output-dir /tmp/supervised_exp \
-  --cluster-factors 1.0 1.25 1.5
+  --cluster-factors 0.875 1.0 1.25
 ```
 
 ```bash
@@ -203,7 +291,7 @@ Supervised token weighting 已经实现并评估过。`repeat` / `conservative` 
     dataset/stage2_dataset_working \
     dataset/stage3_dataset_32bugs_640cases \
   --seeds 0 1 2 3 4 \
-  --cluster-factors 1.0 1.25 1.5 \
+  --cluster-factors 0.875 1.0 1.25 \
   --weight-modes none repeat conservative blacklist \
   --output-dir /private/tmp/half_split_exp
 ```

@@ -294,6 +294,16 @@ def run_predict(
         args.cluster,
         "--cluster-factor",
         str(cluster_factor),
+        "--svd-dim",
+        str(args.svd_dim),
+        "--feature-level",
+        args.feature_level,
+        "--normalizer",
+        args.normalizer,
+        "--line-mode",
+        args.line_mode,
+        "--template-weighting",
+        args.template_weighting,
         "--token-weight-mode",
         "none" if weight_mode == "none" else "repeat",
     ]
@@ -317,6 +327,11 @@ def write_results_csv(path: Path, rows: Sequence[dict]) -> None:
         "val_part_for_dataset",
         "weight_mode",
         "cluster_factor",
+        "feature_level",
+        "svd_dim",
+        "normalizer",
+        "line_mode",
+        "template_weighting",
         "parser",
         "cluster",
         "k",
@@ -470,6 +485,11 @@ def run_experiments(args: argparse.Namespace) -> tuple[list[dict], list[dict]]:
                                 "val_part_for_dataset": val_part,
                                 "weight_mode": weight_mode,
                                 "cluster_factor": cluster_factor,
+                                "feature_level": args.feature_level,
+                                "svd_dim": args.svd_dim,
+                                "normalizer": args.normalizer,
+                                "line_mode": args.line_mode,
+                                "template_weighting": args.template_weighting,
                                 "parser": args.parser,
                                 "cluster": args.cluster,
                                 "k": val_info["k"],
@@ -500,7 +520,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--python", default=sys.executable)
     parser.add_argument("--datasets", nargs="+", type=Path, default=DEFAULT_DATASETS)
     parser.add_argument("--seeds", nargs="+", type=int, default=[0])
-    parser.add_argument("--cluster-factors", nargs="+", type=float, default=[1.0])
+    parser.add_argument("--cluster-factors", nargs="+", type=float, default=[0.875])
     parser.add_argument(
         "--weight-modes",
         nargs="+",
@@ -509,6 +529,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     )
     parser.add_argument("--parser", choices=("simple", "drain"), default="drain")
     parser.add_argument("--cluster", choices=("kmeans", "agglomerative", "hdbscan"), default="agglomerative")
+    parser.add_argument("--feature-level", choices=("baseline", "structured"), default="baseline")
+    parser.add_argument("--svd-dim", type=int, default=64)
+    parser.add_argument("--normalizer", choices=("v1", "semantic"), default="v1")
+    parser.add_argument("--line-mode", choices=("default", "signal_window"), default="default")
+    parser.add_argument("--template-weighting", choices=("none", "quality"), default="quality")
     parser.add_argument("--train-min-df", type=int, default=2)
     parser.add_argument("--max-weight", type=float, default=5.0)
     parser.add_argument("--min-weight", type=float, default=0.2)

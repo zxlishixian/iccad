@@ -62,6 +62,51 @@ TIME_RE = re.compile(r"@\s*\d+")
 LINE_NUM_RE = re.compile(r"^\s*(?:\[E\]\s*)?\d+:\s*")
 TOKEN_RE = re.compile(r"[a-z_][a-z0-9_./:+-]*|<[^>]+>|\[[a-z]\]")
 PRIMARY_TOKEN_RE = re.compile(r"[^A-Za-z0-9_.:-]+")
+SV_FILE_RE = re.compile(r"([^/\s:()]+\.svh?|[^/\s:()]+\.v)(?:\(\d+\))?", re.IGNORECASE)
+REG_RE = re.compile(r"\bx(?:[0-2]?\d|3[01])\b", re.IGNORECASE)
+CSR_RE = re.compile(
+    r"\b(?:mstatus|misa|medeleg|mideleg|mie|mtvec|mcounteren|mscratch|mepc|"
+    r"mcause|mtval|mip|dcsr|dpc|dscratch0?|dscratch1|sstatus|sie|stvec|"
+    r"sscratch|sepc|scause|stval|sip|satp)\b",
+    re.IGNORECASE,
+)
+PC_OP_RE = re.compile(r"\b(ibex|dut|rtl|spike|iss)\[\d+\]\s*:\s*pc\[[^\]]+\]\s+([a-z0-9.]+)", re.IGNORECASE)
+SIGNAL_LINE_RE = re.compile(
+    r"uvm_(?:fatal|error)|cosim|mismatch|failed|timeout|trap|exception|"
+    r"interrupt|illegal|register write|pc mismatch",
+    re.IGNORECASE,
+)
+STRUCT_TOKEN_STOPWORDS = {
+    "uvm_info",
+    "uvm_test_top",
+    "test",
+    "failed",
+    "passed",
+    "error",
+    "seen",
+    "rtl_sim.log",
+    "risc-v",
+    "uvm",
+    "fatal",
+    "cosim",
+    "mismatch",
+    "register",
+    "write",
+    "data",
+    "dut",
+    "expected",
+    "scoreboard",
+    "ibex_cosim_scoreboard.sv",
+    "core_ibex_base_test.sv",
+    "uvm_test_top.env.cosim_agent.scoreboard",
+    "<num>",
+    "<hex>",
+    "<n>",
+    "<time>",
+    "<path>",
+    "<seed>",
+    "<case>",
+}
 
 
 def warn(message: str) -> None:
@@ -137,7 +182,7 @@ def read_log_sample(path: Path | None) -> Tuple[str, str]:
     return data.decode("utf-8", "ignore"), "ok"
 
 
-def select_lines(text: str) -> List[str]:
+def select_lines(text: str, mode: str = "default") -> List[str]:
     if not text:
         return []
     lines = text.splitlines()
@@ -154,6 +199,18 @@ def select_lines(text: str) -> List[str]:
         if key not in seen:
             chosen.append(compact)
             seen.add(key)
+
+    if mode == "signal_window":
+        signal_indices = [idx for idx, line in enumerate(lines) if SIGNAL_RE.search(line)]
+        for idx in signal_indices:
+            for j in range(max(0, idx - 2), min(len(lines), idx + 3)):
+                add(lines[j])
+        if not signal_indices:
+            for line in lines[:30]:
+                add(line)
+            for line in lines[-50:]:
+                add(line)
+        return chosen
 
     for line in lines:
         if SIGNAL_RE.search(line):
@@ -181,6 +238,48 @@ def normalize_log_line(line: str, preserve_basenames: bool) -> str:
     s = CASE_RE.sub("<case>", s)
     s = SEED_RE.sub("<seed>", s)
     s = TIME_RE.sub("@ <time>", s)
+    s = HEX_RE.sub("<hex>", s)
+    s = DEC_RE.sub("<num>", s)
+    s = re.sub(r"\b\d+\b", "<n>", s)
+    s = re.sub(r"['\"]", "", s)
+    s = re.sub(r"[^a-z0-9_+./:<>\[\]-]+", " ", s)
+    return re.sub(r"\s+", " ", s).strip()
+
+
+def normalize_log_line_semantic(line: str, preserve_basenames: bool) -> str:
+    """Semantic normalization for Drain.
+
+    This keeps stable failure semantics while replacing volatile operands,
+    addresses, timestamps, case ids, and exact register ids with broader slots.
+    """
+    s = line.strip().lower()
+    s = LINE_NUM_RE.sub("", s)
+    s = PATH_RE.sub(path_to_token if preserve_basenames else "<path>", s)
+    s = CASE_RE.sub("<case>", s)
+    s = SEED_RE.sub("<seed>", s)
+    s = TIME_RE.sub("@ <time>", s)
+
+    phrase_rewrites = [
+        (r"register write data mismatch", "register_write_data_mismatch"),
+        (r"\bpc mismatch\b", "pc_mismatch"),
+        (r"\bcosim mismatch\b", "cosim_mismatch"),
+        (r"\bco-simulation matched\b", "cosim_matched"),
+        (r"\bsynchronous trap\b", "synchronous_trap"),
+        (r"\billegal instruction\b", "illegal_instruction"),
+        (r"\btest failed\b", "test_failed"),
+        (r"\btest passed\b", "test_passed"),
+        (r"\berror seen in\b", "error_seen_in"),
+        (r"\bno dret detected\b", "no_dret_detected"),
+        (r"\bprivilege mode switch\b", "privilege_mode_switch"),
+        (r"\btimeout period\b", "timeout_period"),
+    ]
+    for pattern, replacement in phrase_rewrites:
+        s = re.sub(pattern, replacement, s)
+
+    def reg_slot(match: re.Match[str]) -> str:
+        return f"<reg_{reg_class(match.group(0))}>"
+
+    s = REG_RE.sub(reg_slot, s)
     s = HEX_RE.sub("<hex>", s)
     s = DEC_RE.sub("<num>", s)
     s = re.sub(r"\b\d+\b", "<n>", s)
@@ -488,6 +587,168 @@ def extract_status_features(prefix: str, text: str, feats: Counter) -> None:
             feats[f"{prefix}:flag:{name}"] += 5
 
 
+def sanitize_feature_value(value: str, max_len: int = 96) -> str:
+    value = value.strip().lower()
+    value = re.sub(r"[^a-z0-9_.:+-]+", "_", value).strip("_")
+    value = re.sub(r"_+", "_", value)
+    return value[:max_len].strip("_")
+
+
+def reg_class(register: str) -> str:
+    try:
+        idx = int(register.lower().lstrip("x"))
+    except ValueError:
+        return "unknown"
+    if idx == 0:
+        return "zero"
+    if idx == 1:
+        return "ra"
+    if idx == 2:
+        return "sp"
+    if idx == 3:
+        return "gp"
+    if idx == 4:
+        return "tp"
+    if 5 <= idx <= 7 or 28 <= idx <= 31:
+        return "temp"
+    if 8 <= idx <= 9 or 18 <= idx <= 27:
+        return "saved"
+    if 10 <= idx <= 17:
+        return "arg"
+    return "unknown"
+
+
+def add_struct_feature(feats: Counter, prefix: str, name: str, value: str | None = None, weight: int = 1) -> None:
+    if value is None:
+        feats[f"{prefix}:struct:{name}"] += weight
+        return
+    cleaned = sanitize_feature_value(value)
+    if cleaned:
+        feats[f"{prefix}:struct:{name}:{cleaned}"] += weight
+
+
+def extract_failure_reason(line: str) -> str:
+    if "]" in line:
+        return line.rsplit("]", 1)[-1].strip()
+    if ":" in line:
+        return line.rsplit(":", 1)[-1].strip()
+    return line.strip()
+
+
+def extract_structured_line_tokens(prefix: str, line: str, feats: Counter, limit: int = 14) -> None:
+    normalized = normalize_log_line(line, preserve_basenames=True)
+    emitted = 0
+    for token in line_tokens(normalized):
+        if token in STRUCT_TOKEN_STOPWORDS or token.startswith("<"):
+            continue
+        if len(token) < 3 or token.isdigit():
+            continue
+        if REG_RE.fullmatch(token) or CSR_RE.fullmatch(token):
+            continue
+        add_struct_feature(feats, prefix, "sig_tok", token, weight=1)
+        emitted += 1
+        if emitted >= limit:
+            break
+
+
+def extract_structured_failure_features(prefix: str, text: str, selected: Sequence[str], feats: Counter) -> None:
+    """Add deterministic failure-semantics features from sim/regr logs only.
+
+    These features keep stable root-cause hints that Drain may wildcard away:
+    mismatch family, failing register class, CSR names, UVM source basename,
+    first opcode pair, and compact tokens from the first high-signal lines.
+    """
+    if not text and not selected:
+        return
+
+    lower_text = text.lower()
+    joined_selected = "\n".join(selected)
+    lower_selected = joined_selected.lower()
+
+    severity_seen = False
+    for severity in ("uvm_fatal", "uvm_error", "uvm_warning"):
+        if severity in lower_text:
+            add_struct_feature(feats, prefix, "uvm_severity", severity, weight=5 if severity != "uvm_warning" else 2)
+            severity_seen = True
+    if severity_seen:
+        for line in selected:
+            if re.search(r"uvm_(?:fatal|error|warning)", line, flags=re.IGNORECASE):
+                source = extract_sv_basename(line)
+                add_struct_feature(feats, prefix, "uvm_source", source, weight=1)
+                break
+
+    mismatch_patterns = [
+        ("pc_mismatch", r"\bpc mismatch\b"),
+        ("register_write_data_mismatch", r"register write data mismatch"),
+        ("sync_trap_mismatch", r"synchronous trap"),
+        ("memory_mismatch", r"memory mismatch|\bstore\b.*mismatch|\bload\b.*mismatch"),
+        ("instruction_mismatch", r"instruction mismatch|retired"),
+        ("cosim_mismatch", r"cosim mismatch|co-sim"),
+    ]
+    mismatch_hit = False
+    for name, pattern in mismatch_patterns:
+        if re.search(pattern, lower_text):
+            add_struct_feature(feats, prefix, "mismatch_type", name, weight=3)
+            mismatch_hit = True
+    if "mismatch" in lower_text and not mismatch_hit:
+        add_struct_feature(feats, prefix, "mismatch_type", "generic", weight=2)
+
+    for reg in sorted({m.group(0).lower() for m in REG_RE.finditer(joined_selected)}):
+        add_struct_feature(feats, prefix, "reg_class", reg_class(reg), weight=1)
+
+    reg_targets = re.findall(r"register write data mismatch to\s+(x(?:[0-2]?\d|3[01]))", joined_selected, flags=re.IGNORECASE)
+    for reg in sorted({r.lower() for r in reg_targets}):
+        add_struct_feature(feats, prefix, "mismatch_reg_class", reg_class(reg), weight=2)
+
+    for csr in sorted({m.group(0).lower() for m in CSR_RE.finditer(joined_selected)}):
+        add_struct_feature(feats, prefix, "csr", csr, weight=2)
+
+    trap_keywords = [
+        ("illegal_instruction", r"illegal instruction"),
+        ("instruction_access_fault", r"instruction access fault"),
+        ("load_access_fault", r"load access fault"),
+        ("store_access_fault", r"store access fault"),
+        ("ecall", r"\becall\b"),
+        ("ebreak", r"\bebreak\b|breakpoint"),
+        ("interrupt", r"interrupt"),
+        ("timeout", r"timeout"),
+        ("sync_trap", r"synchronous trap|\bsync trap\b"),
+        ("exception", r"exception"),
+    ]
+    for name, pattern in trap_keywords:
+        if re.search(pattern, lower_text):
+            add_struct_feature(feats, prefix, "event", name, weight=2)
+
+    side_ops: Dict[str, List[str]] = defaultdict(list)
+    for line in selected:
+        for side, op in PC_OP_RE.findall(line):
+            side_key = "dut" if side.lower() in {"ibex", "dut", "rtl"} else "iss"
+            op = op.lower()
+            side_ops[side_key].append(op)
+            add_struct_feature(feats, prefix, f"{side_key}_op", op, weight=1)
+    if side_ops.get("dut") and side_ops.get("iss"):
+        pair = f"{side_ops['dut'][0]}_{side_ops['iss'][0]}"
+        add_struct_feature(feats, prefix, "op_pair", pair, weight=3)
+
+    for source in sorted({m.group(1).lower() for m in SV_FILE_RE.finditer(joined_selected)}):
+        add_struct_feature(feats, prefix, "source_file", source, weight=1)
+
+    signal_lines = [line for line in selected if SIGNAL_LINE_RE.search(line)]
+    if signal_lines:
+        first = signal_lines[0]
+        if "uvm_fatal" in first.lower():
+            add_struct_feature(feats, prefix, "first_signal", "uvm_fatal", weight=3)
+        elif "uvm_error" in first.lower():
+            add_struct_feature(feats, prefix, "first_signal", "uvm_error", weight=3)
+        elif "mismatch" in first.lower():
+            add_struct_feature(feats, prefix, "first_signal", "mismatch", weight=3)
+        elif "failed" in first.lower():
+            add_struct_feature(feats, prefix, "first_signal", "failed", weight=2)
+
+    # Avoid adding arbitrary signal-line tokens here: in local validation those
+    # exact words improved TNR but fragmented same-bug buckets and hurt TPR.
+
+
 def case_id_from_row(row: dict, idx: int, columns: Sequence[str]) -> str:
     for col in columns:
         val = str(row.get(col, "") or "")
@@ -507,6 +768,9 @@ def collect_case_inputs(
     sim_col: str | None,
     regr_col: str | None,
     parser_kind: str,
+    feature_level: str = "baseline",
+    normalizer: str = "v1",
+    line_mode: str = "default",
 ) -> Tuple[List[Counter], List[List[Tuple[str, str]]]]:
     base_features: List[Counter] = []
     normalized_lines: List[List[Tuple[str, str]]] = []
@@ -524,16 +788,21 @@ def collect_case_inputs(
         for prefix, col in (("sim", sim_col), ("regr", regr_col)):
             path = resolve_log_path(input_csv, row.get(col) if col else None)
             text, status = read_log_sample(path)
-            selected = select_lines(text)
+            selected = select_lines(text, mode=line_mode)
             selected_by_prefix[prefix] = selected
             info_by_prefix[prefix] = {"path": str(path) if path else "", "status": status}
             feats[f"{prefix}:file_status:{status}"] += 3
             if path is not None:
                 feats[f"{prefix}:basename:{path.name.lower()}"] += 1
             extract_status_features(prefix, text, feats)
+            if feature_level == "structured":
+                extract_structured_failure_features(prefix, text, selected, feats)
 
             for line in selected:
-                normalized_line = normalize_log_line(line, preserve_basenames=preserve_basenames)
+                if normalizer == "semantic":
+                    normalized_line = normalize_log_line_semantic(line, preserve_basenames=preserve_basenames)
+                else:
+                    normalized_line = normalize_log_line(line, preserve_basenames=preserve_basenames)
                 if normalized_line:
                     lines_for_case.append((prefix, normalized_line))
 
@@ -550,6 +819,54 @@ def collect_case_inputs(
     return base_features, normalized_lines
 
 
+def template_feature_weights(template: str, mode: str) -> Tuple[int, int, int]:
+    """Return template/token/bigram weights for a Drain template."""
+    if mode != "quality":
+        return 2, 1, 1
+
+    t = template.lower()
+    low_signal = [
+        "wall-clock timeout is set",
+        "test_timeout_s",
+        "0.00 pass",
+        "passed <n> failed",
+        "error_seen_in rtl_sim.log",
+        "no failing tests",
+        "number of uvm_",
+        "demoted uvm_",
+        "caught uvm_",
+        "risc-v uvm test_failed",
+    ]
+    if any(pattern in t for pattern in low_signal):
+        return 0, 0, 0
+
+    high_signal = [
+        "uvm_fatal",
+        "uvm_error",
+        "cosim_mismatch",
+        "register_write_data_mismatch",
+        "pc_mismatch",
+        "synchronous_trap",
+        "no_dret_detected",
+        "privilege_mode_switch",
+        "illegal_instruction",
+    ]
+    medium_signal = [
+        "mismatch",
+        "trap",
+        "exception",
+        "interrupt",
+        "timeout_period",
+        "scoreboard",
+        "ibex_cosim_scoreboard.sv",
+    ]
+    if any(pattern in t for pattern in high_signal):
+        return 4, 2, 2
+    if any(pattern in t for pattern in medium_signal):
+        return 2, 1, 1
+    return 1, 0, 0
+
+
 def build_feature_counters(
     args: argparse.Namespace,
     base_features: Sequence[Counter],
@@ -558,6 +875,7 @@ def build_feature_counters(
     token_weight_mode: str = "none",
 ) -> Tuple[List[Counter], int]:
     parser = make_parser(args)
+    template_weighting = getattr(args, "template_weighting", "none")
     case_template_ids: List[List[Tuple[str, int]]] = []
 
     for lines_for_case in normalized_lines:
@@ -575,12 +893,17 @@ def build_feature_counters(
             template = parser.get_template(template_id)
             if not template:
                 continue
-            out[f"{prefix}:tmpl:{template}"] += 2
+            tmpl_weight, tok_weight, bi_weight = template_feature_weights(template, template_weighting)
+            if tmpl_weight <= 0 and tok_weight <= 0 and bi_weight <= 0:
+                continue
+            out[f"{prefix}:tmpl:{template}"] += tmpl_weight
             toks = list(line_tokens(template))
-            for tok in toks:
-                out[f"{prefix}:tok:{tok}"] += 1
-            for a, b in zip(toks, toks[1:]):
-                out[f"{prefix}:bi:{a}_{b}"] += 1
+            if tok_weight > 0:
+                for tok in toks:
+                    out[f"{prefix}:tok:{tok}"] += tok_weight
+            if bi_weight > 0:
+                for a, b in zip(toks, toks[1:]):
+                    out[f"{prefix}:bi:{a}_{b}"] += bi_weight
         feature_counters.append(apply_token_weights(out, token_weights or {}, token_weight_mode))
     return feature_counters, parser.num_templates
 
@@ -907,10 +1230,34 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser.add_argument("--drain-depth", type=int, default=4, help="fixed-depth Drain tree depth")
     parser.add_argument("--drain-st", type=float, default=0.45, help="Drain token similarity threshold")
     parser.add_argument("--drain-max-children", type=int, default=100, help="Drain max children per tree node")
-    parser.add_argument("--svd-dim", type=int, default=128, help="SVD dimension before agglomerative/HDBSCAN")
+    parser.add_argument("--svd-dim", type=int, default=64, help="SVD dimension before agglomerative/HDBSCAN")
+    parser.add_argument(
+        "--feature-level",
+        choices=("baseline", "structured"),
+        default="baseline",
+        help="feature extraction level; structured adds deterministic sim/regr failure semantics",
+    )
+    parser.add_argument(
+        "--normalizer",
+        choices=("v1", "semantic"),
+        default="v1",
+        help="log-line normalizer before Drain; semantic keeps stable failure slots and masks volatile details",
+    )
+    parser.add_argument(
+        "--line-mode",
+        choices=("default", "signal_window"),
+        default="default",
+        help="log line selection strategy before Drain",
+    )
+    parser.add_argument(
+        "--template-weighting",
+        choices=("none", "quality"),
+        default="quality",
+        help="quality-aware weighting/drop rules for Drain templates",
+    )
     parser.add_argument("--token-weights", type=Path, help="optional token_weights.json learned from training data")
     parser.add_argument("--token-weight-mode", choices=("repeat", "none"), default="none")
-    parser.add_argument("--cluster-factor", type=float, default=1.0, help="multiply requested k before clustering")
+    parser.add_argument("--cluster-factor", type=float, default=0.875, help="multiply requested k before clustering")
     parser.add_argument(
         "--postprocess",
         choices=("none",),
@@ -957,7 +1304,10 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     info(
         f"[config] parser={args.parser} cluster={args.cluster} "
-        f"cluster_factor={args.cluster_factor} token_weight_mode={args.token_weight_mode} "
+        f"cluster_factor={args.cluster_factor} feature_level={args.feature_level} "
+        f"normalizer={args.normalizer} line_mode={args.line_mode} "
+        f"template_weighting={args.template_weighting} "
+        f"token_weight_mode={args.token_weight_mode} "
         f"token_weights={token_weights_label}"
     )
     info("[config] primary_signature=enabled")
@@ -980,7 +1330,16 @@ def main(argv: Sequence[str] | None = None) -> int:
                 return 2
             args.cluster = "agglomerative"
 
-    base_features, normalized_lines = collect_case_inputs(input_csv, rows, sim_col, regr_col, args.parser)
+    base_features, normalized_lines = collect_case_inputs(
+        input_csv,
+        rows,
+        sim_col,
+        regr_col,
+        args.parser,
+        feature_level=args.feature_level,
+        normalizer=args.normalizer,
+        line_mode=args.line_mode,
+    )
     feature_counters, template_count = build_feature_counters(
         args,
         base_features,

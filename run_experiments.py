@@ -81,6 +81,11 @@ def run_one(
     parser: str,
     cluster: str,
     cluster_factor: float,
+    feature_level: str,
+    svd_dim: int,
+    normalizer: str,
+    line_mode: str,
+    template_weighting: str,
     token_weights: Path | None,
     token_weight_mode: str,
     output_dir: Path,
@@ -88,7 +93,10 @@ def run_one(
     output_dir.mkdir(parents=True, exist_ok=True)
     factor_name = str(cluster_factor).replace(".", "p")
     weight_name = "weighted" if token_weights else "unweighted"
-    pred_path = output_dir / f"{dataset_name}_{parser}_{cluster}_cf{factor_name}_{weight_name}.csv"
+    pred_path = output_dir / (
+        f"{dataset_name}_{parser}_{cluster}_{feature_level}_{normalizer}_{line_mode}_"
+        f"{template_weighting}_cf{factor_name}_{weight_name}.csv"
+    )
     cmd = [
         python,
         "regr_fail_bucketing.py",
@@ -104,6 +112,16 @@ def run_one(
         cluster,
         "--cluster-factor",
         str(cluster_factor),
+        "--feature-level",
+        feature_level,
+        "--svd-dim",
+        str(svd_dim),
+        "--normalizer",
+        normalizer,
+        "--line-mode",
+        line_mode,
+        "--template-weighting",
+        template_weighting,
         "--token-weight-mode",
         token_weight_mode,
     ]
@@ -117,6 +135,11 @@ def run_one(
             "dataset": dataset_name,
             "parser": parser,
             "cluster": cluster,
+            "feature_level": feature_level,
+            "svd_dim": svd_dim,
+            "normalizer": normalizer,
+            "line_mode": line_mode,
+            "template_weighting": template_weighting,
             "cases": "",
             "k": k,
             "cluster_factor": cluster_factor,
@@ -136,6 +159,11 @@ def run_one(
         "dataset": dataset_name,
         "parser": parser,
         "cluster": cluster,
+        "feature_level": feature_level,
+        "svd_dim": svd_dim,
+        "normalizer": normalizer,
+        "line_mode": line_mode,
+        "template_weighting": template_weighting,
         "cases": len(gold),
         "k": k,
         "cluster_factor": cluster_factor,
@@ -155,6 +183,11 @@ def print_table(rows: Sequence[dict]) -> None:
         "dataset",
         "parser",
         "cluster",
+        "feature_level",
+        "svd_dim",
+        "normalizer",
+        "line_mode",
+        "template_weighting",
         "cluster_factor",
         "token_weight_mode",
         "token_weights",
@@ -184,7 +217,12 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--python", default=sys.executable)
     parser.add_argument("--token-weights", type=Path)
     parser.add_argument("--token-weight-mode", choices=("repeat", "none"), default="none")
-    parser.add_argument("--cluster-factors", nargs="+", type=float, default=[1.0])
+    parser.add_argument("--cluster-factors", nargs="+", type=float, default=[0.875])
+    parser.add_argument("--feature-level", choices=("baseline", "structured"), default="baseline")
+    parser.add_argument("--svd-dim", type=int, default=64)
+    parser.add_argument("--normalizer", choices=("v1", "semantic"), default="v1")
+    parser.add_argument("--line-mode", choices=("default", "signal_window"), default="default")
+    parser.add_argument("--template-weighting", choices=("none", "quality"), default="quality")
     parser.add_argument("--parsers", nargs="+", choices=("simple", "drain"))
     parser.add_argument("--clusters", nargs="+", choices=("kmeans", "agglomerative", "hdbscan"))
     return parser.parse_args(argv)
@@ -208,6 +246,11 @@ def main(argv: Sequence[str] | None = None) -> int:
                     parser_name,
                     cluster_name,
                     cluster_factor,
+                    args.feature_level,
+                    args.svd_dim,
+                    args.normalizer,
+                    args.line_mode,
+                    args.template_weighting,
                     args.token_weights,
                     args.token_weight_mode,
                     args.output_dir,
@@ -215,7 +258,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                 rows.append(row)
                 print(
                     f"done dataset={dataset_name} parser={parser_name} cluster={cluster_name} "
-                    f"cf={cluster_factor} token_weight_mode={args.token_weight_mode} "
+                    f"feature_level={args.feature_level} normalizer={args.normalizer} "
+                    f"line_mode={args.line_mode} template_weighting={args.template_weighting} cf={cluster_factor} "
+                    f"token_weight_mode={args.token_weight_mode} "
                     f"BA={row['BA']:.6f} runtime={row['runtime_sec']:.3f}s",
                     file=sys.stderr,
                 )
