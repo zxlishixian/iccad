@@ -308,6 +308,12 @@ def run_predict(
         args.llm_mode,
         "--llm-weight",
         str(args.llm_weight),
+        "--llm-fusion",
+        args.llm_fusion,
+        "--llm-alpha",
+        str(args.llm_alpha),
+        "--llm-doc-style",
+        args.llm_doc_style,
         "--llm-cache-dir",
         str(args.llm_cache_dir),
         "--token-weight-mode",
@@ -340,6 +346,9 @@ def write_results_csv(path: Path, rows: Sequence[dict]) -> None:
         "template_weighting",
         "llm_mode",
         "llm_weight",
+        "llm_fusion",
+        "llm_alpha",
+        "llm_doc_style",
         "parser",
         "cluster",
         "k",
@@ -502,6 +511,9 @@ def run_experiments(args: argparse.Namespace) -> tuple[list[dict], list[dict]]:
                                 "template_weighting": args.template_weighting,
                                 "llm_mode": args.llm_mode,
                                 "llm_weight": args.llm_weight,
+                                "llm_fusion": args.llm_fusion,
+                                "llm_alpha": args.llm_alpha,
+                                "llm_doc_style": args.llm_doc_style,
                                 "parser": args.parser,
                                 "cluster": args.cluster,
                                 "k": val_info["k"],
@@ -548,6 +560,9 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--template-weighting", choices=("none", "quality"), default="quality")
     parser.add_argument("--llm-mode", choices=("none", "embedding", "auto"), default="none")
     parser.add_argument("--llm-weight", type=float, default=4.0)
+    parser.add_argument("--llm-fusion", choices=("concat", "similarity"), default="concat")
+    parser.add_argument("--llm-alpha", type=float, default=0.75)
+    parser.add_argument("--llm-doc-style", choices=("features", "summary"), default="features")
     parser.add_argument("--llm-cache-dir", type=Path, default=Path("/tmp/regr_fail_llm_cache"))
     parser.add_argument("--train-min-df", type=int, default=2)
     parser.add_argument("--max-weight", type=float, default=5.0)

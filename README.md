@@ -305,8 +305,7 @@ half-split 实验会把每个规模的数据集按 `bug_id` 分层拆成 `part1`
 ```text
 compressed case document
 -> official embedding endpoint
--> concat with deterministic TF-IDF/SVD64 vector
--> normalize
+-> concat with deterministic TF-IDF/SVD64 vector, or similarity-level fusion
 -> AgglomerativeClustering
 ```
 
@@ -347,6 +346,25 @@ embedding:
 | `auto` | 检测到有效 `LLM_MODEL_CONFIG` 时启用 embedding，否则走 deterministic |
 
 `--strict-llm` 可以让 LLM 失败时直接返回非零退出码（调试用）。
+
+### Fusion / Document Style Ablations
+
+当前稳定配置仍是 `--llm-fusion concat --llm-weight 4.0 --llm-doc-style features`。新增实验开关用于验证 LLM embedding 的使用方式：
+
+```text
+--llm-fusion concat|similarity
+--llm-alpha <float>
+--llm-doc-style features|summary
+```
+
+`concat` 会把 deterministic SVD64 vector 和 LLM embedding 拼接后归一化。`similarity` 会分别计算 deterministic cosine similarity 和 LLM cosine similarity，再融合：
+
+```text
+S = alpha * S_deterministic + (1 - alpha) * S_llm
+distance = 1 - S
+```
+
+`features` 使用当前 feature dump 风格文档；`summary` 使用更自然的 failure summary 文档，方便测试 embedding 模型是否更容易捕捉语义。
 
 ### 推荐配置与验证结果
 
@@ -397,7 +415,8 @@ export LLM_MODEL_CONFIG="$(cat /path/to/config.yaml)"
   --python .venv/bin/python \
   --output-dir /tmp/llm_embedding_exp \
   --llm-mode embedding \
-  --llm-weight 4.0
+  --llm-weight 4.0 \
+  --llm-fusion concat
 ```
 
 half-split 交叉验证：
@@ -408,7 +427,21 @@ half-split 交叉验证：
   --seeds 0 1 2 3 4 \
   --output-dir /tmp/llm_half_split_exp \
   --llm-mode embedding \
-  --llm-weight 4.0
+  --llm-weight 4.0 \
+  --llm-fusion concat
+```
+
+相似度融合实验示例：
+
+```bash
+.venv/bin/python run_half_split_experiments.py \
+  --python .venv/bin/python \
+  --seeds 0 1 2 \
+  --output-dir /tmp/llm_similarity_alpha075 \
+  --llm-mode embedding \
+  --llm-fusion similarity \
+  --llm-alpha 0.75 \
+  --llm-doc-style features
 ```
 
 ## Experimental: Pairwise Same-Bug MLP

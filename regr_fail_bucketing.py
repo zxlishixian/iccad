@@ -1273,7 +1273,7 @@ def format_llm_feature(feature: str) -> str:
     return feature
 
 
-def build_llm_case_documents(feature_counters: Sequence[Counter], max_features: int) -> List[str]:
+def build_llm_case_documents_features(feature_counters: Sequence[Counter], max_features: int) -> List[str]:
     docs: List[str] = []
     for idx, feats in enumerate(feature_counters):
         candidates = []
@@ -1288,6 +1288,56 @@ def build_llm_case_documents(feature_counters: Sequence[Counter], max_features: 
             lines.append(f"{format_llm_feature(feature)} count={count:g}")
         docs.append("\n".join(lines))
     return docs
+
+
+def build_llm_case_documents_summary(feature_counters: Sequence[Counter], max_features: int) -> List[str]:
+    docs: List[str] = []
+    for idx, feats in enumerate(feature_counters):
+        primary = []
+        templates = []
+        flags = []
+        structured = []
+        counts = []
+        for feature, count in feats.items():
+            text = str(feature)
+            item = (float(count), format_llm_feature(text))
+            if text.startswith("PRIMARY_"):
+                primary.append(item)
+            elif ":tmpl:" in text:
+                if llm_feature_priority(text) >= 80:
+                    templates.append(item)
+            elif ":flag:" in text:
+                flags.append(item)
+            elif ":struct:" in text:
+                structured.append(item)
+            elif ":count:" in text:
+                counts.append(item)
+
+        def top(items: List[Tuple[float, str]], limit: int) -> List[str]:
+            items.sort(key=lambda item: (-item[0], item[1]))
+            return [f"- {text} count={count:g}" for count, text in items[:limit]]
+
+        template_limit = max(6, max_features // 2)
+        lines = [
+            f"Case {idx} regression failure summary.",
+            "Use this text to compare whether two cases likely share the same root-cause design bug.",
+            "Primary signatures:",
+            *top(primary, 6),
+            "High-signal failure templates:",
+            *top(templates, template_limit),
+            "Failure flags and structured hints:",
+            *top(flags + structured, max(8, max_features // 4)),
+            "Compact counts:",
+            *top(counts, 8),
+        ]
+        docs.append("\n".join(line for line in lines if line.strip()))
+    return docs
+
+
+def build_llm_case_documents(feature_counters: Sequence[Counter], max_features: int, doc_style: str) -> List[str]:
+    if doc_style == "summary":
+        return build_llm_case_documents_summary(feature_counters, max_features)
+    return build_llm_case_documents_features(feature_counters, max_features)
 
 
 def cache_key_for_llm_doc(model: str, doc: str) -> str:
@@ -1454,7 +1504,11 @@ def augment_with_llm_embeddings(
     except ImportError as exc:
         raise RuntimeError("LLM embedding augmentation requires numpy") from exc
 
-    docs = build_llm_case_documents(feature_counters, max_features=args.llm_doc_max_features)
+    docs = build_llm_case_documents(
+        feature_counters,
+        max_features=args.llm_doc_max_features,
+        doc_style=args.llm_doc_style,
+    )
     embeddings, model_name = fetch_llm_embeddings(docs, args)
     base = to_dense_or_reduced(X, args.svd_dim)
     base = Normalizer(copy=False).fit_transform(base)
@@ -1466,9 +1520,53 @@ def augment_with_llm_embeddings(
     combined = Normalizer(copy=False).fit_transform(combined)
     info(
         f"[llm] mode=embedding model={model_name} docs={len(docs)} "
-        f"embedding_dim={llm.shape[1]} weight={args.llm_weight}"
+        f"embedding_dim={llm.shape[1]} fusion=concat doc_style={args.llm_doc_style} "
+        f"weight={args.llm_weight}"
     )
     return combined, combined.shape, True
+
+
+def cluster_with_llm_similarity_fusion(
+    X: Any,
+    feature_counters: Sequence[Counter],
+    args: argparse.Namespace,
+    effective_k: int,
+    sklearn_input: bool,
+) -> Tuple[List[int], Tuple[int, int]]:
+    if not SKLEARN_AVAILABLE or not sklearn_input:
+        raise RuntimeError("LLM similarity fusion requires scikit-learn vectorization")
+    try:
+        import numpy as np
+    except ImportError as exc:
+        raise RuntimeError("LLM similarity fusion requires numpy") from exc
+
+    docs = build_llm_case_documents(
+        feature_counters,
+        max_features=args.llm_doc_max_features,
+        doc_style=args.llm_doc_style,
+    )
+    embeddings, model_name = fetch_llm_embeddings(docs, args)
+    det = to_dense_or_reduced(X, args.svd_dim)
+    det = Normalizer(copy=False).fit_transform(det)
+    llm = np.asarray(embeddings, dtype="float32")
+    if llm.ndim != 2 or llm.shape[0] != len(feature_counters):
+        raise RuntimeError(f"unexpected embedding matrix shape: {llm.shape}")
+    llm = Normalizer(copy=False).fit_transform(llm)
+
+    det_sim = det @ det.T
+    llm_sim = llm @ llm.T
+    alpha = max(0.0, min(1.0, float(args.llm_alpha)))
+    sim = alpha * det_sim + (1.0 - alpha) * llm_sim
+    sim = np.clip(sim, -1.0, 1.0)
+    distance = 1.0 - sim
+    np.fill_diagonal(distance, 0.0)
+    info(
+        f"[llm] mode=embedding model={model_name} docs={len(docs)} "
+        f"embedding_dim={llm.shape[1]} fusion=similarity alpha={alpha} "
+        f"doc_style={args.llm_doc_style}"
+    )
+    labels = cluster_precomputed_distance(distance, effective_k)
+    return labels, distance.shape
 
 
 def cluster_precomputed_distance(distance: Any, k: int) -> List[int]:
@@ -1609,6 +1707,9 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser.add_argument("--llm-timeout-sec", type=float, default=20.0)
     parser.add_argument("--llm-weight", type=float, default=4.0)
     parser.add_argument("--llm-doc-max-features", type=int, default=80)
+    parser.add_argument("--llm-fusion", choices=("concat", "similarity"), default="concat")
+    parser.add_argument("--llm-alpha", type=float, default=0.75, help="deterministic similarity weight for --llm-fusion similarity")
+    parser.add_argument("--llm-doc-style", choices=("features", "summary"), default="features")
     parser.add_argument("--strict-llm", action="store_true", help="fail instead of fallback when LLM embedding fails")
     return parser.parse_args(argv)
 
@@ -1693,8 +1794,23 @@ def main(argv: Sequence[str] | None = None) -> int:
             info("[llm] mode=auto no valid LLM_MODEL_CONFIG detected; running deterministic")
     if use_llm:
         try:
-            X, shape, sklearn_input = augment_with_llm_embeddings(X, feature_counters, args, sklearn_input)
-            pre_reduced = True
+            if args.llm_fusion == "similarity":
+                labels, shape = cluster_with_llm_similarity_fusion(X, feature_counters, args, effective_k, sklearn_input)
+                labels = remap_labels(labels)
+                info(f"[data] cases={len(rows)} templates={template_count} vector_shape={shape}")
+                info(
+                    f"[cluster] requested_k={args.k} effective_k={effective_k} "
+                    f"method=llm_similarity+{args.cluster}"
+                )
+                write_output(args.output.resolve(), labels)
+                info(
+                    f"[output] buckets={len(set(labels))} path={args.output.resolve()} "
+                    f"runtime_sec={time.perf_counter() - start:.3f}"
+                )
+                return 0
+            else:
+                X, shape, sklearn_input = augment_with_llm_embeddings(X, feature_counters, args, sklearn_input)
+                pre_reduced = True
         except Exception as exc:
             warn(f"LLM embedding augmentation failed ({exc}); falling back to deterministic baseline")
             if args.strict_llm:

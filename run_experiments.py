@@ -88,6 +88,9 @@ def run_one(
     template_weighting: str,
     llm_mode: str,
     llm_weight: float,
+    llm_fusion: str,
+    llm_alpha: float,
+    llm_doc_style: str,
     llm_cache_dir: Path,
     token_weights: Path | None,
     token_weight_mode: str,
@@ -129,6 +132,12 @@ def run_one(
         llm_mode,
         "--llm-weight",
         str(llm_weight),
+        "--llm-fusion",
+        llm_fusion,
+        "--llm-alpha",
+        str(llm_alpha),
+        "--llm-doc-style",
+        llm_doc_style,
         "--llm-cache-dir",
         str(llm_cache_dir),
         "--token-weight-mode",
@@ -151,6 +160,9 @@ def run_one(
             "template_weighting": template_weighting,
             "llm_mode": llm_mode,
             "llm_weight": llm_weight,
+            "llm_fusion": llm_fusion,
+            "llm_alpha": llm_alpha,
+            "llm_doc_style": llm_doc_style,
             "cases": "",
             "k": k,
             "cluster_factor": cluster_factor,
@@ -177,6 +189,9 @@ def run_one(
         "template_weighting": template_weighting,
         "llm_mode": llm_mode,
         "llm_weight": llm_weight,
+        "llm_fusion": llm_fusion,
+        "llm_alpha": llm_alpha,
+        "llm_doc_style": llm_doc_style,
         "cases": len(gold),
         "k": k,
         "cluster_factor": cluster_factor,
@@ -203,6 +218,9 @@ def print_table(rows: Sequence[dict]) -> None:
         "template_weighting",
         "llm_mode",
         "llm_weight",
+        "llm_fusion",
+        "llm_alpha",
+        "llm_doc_style",
         "cluster_factor",
         "token_weight_mode",
         "token_weights",
@@ -240,6 +258,9 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--template-weighting", choices=("none", "quality"), default="quality")
     parser.add_argument("--llm-mode", choices=("none", "embedding", "auto"), default="none")
     parser.add_argument("--llm-weight", type=float, default=4.0)
+    parser.add_argument("--llm-fusion", choices=("concat", "similarity"), default="concat")
+    parser.add_argument("--llm-alpha", type=float, default=0.75)
+    parser.add_argument("--llm-doc-style", choices=("features", "summary"), default="features")
     parser.add_argument("--llm-cache-dir", type=Path, default=Path("/tmp/regr_fail_llm_cache"))
     parser.add_argument("--parsers", nargs="+", choices=("simple", "drain"))
     parser.add_argument("--clusters", nargs="+", choices=("kmeans", "agglomerative", "hdbscan"))
@@ -271,6 +292,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                     args.template_weighting,
                     args.llm_mode,
                     args.llm_weight,
+                    args.llm_fusion,
+                    args.llm_alpha,
+                    args.llm_doc_style,
                     args.llm_cache_dir,
                     args.token_weights,
                     args.token_weight_mode,
@@ -281,7 +305,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                     f"done dataset={dataset_name} parser={parser_name} cluster={cluster_name} "
                     f"feature_level={args.feature_level} normalizer={args.normalizer} "
                     f"line_mode={args.line_mode} template_weighting={args.template_weighting} cf={cluster_factor} "
-                    f"llm_mode={args.llm_mode} token_weight_mode={args.token_weight_mode} "
+                    f"llm_mode={args.llm_mode} llm_fusion={args.llm_fusion} "
+                    f"token_weight_mode={args.token_weight_mode} "
                     f"BA={row['BA']:.6f} runtime={row['runtime_sec']:.3f}s",
                     file=sys.stderr,
                 )
