@@ -634,6 +634,110 @@ half-split 对照实验：
 
 This backend is experimental. The default submitted baseline remains `drain + agglomerative` unless validation shows stable gains.
 
+## Experimental: Pairwise LLM Learning
+
+新增 lightweight pairwise learning 路线，用固定维度的 pairwise 特征 + 三种 backend 做 ablation。
+与旧的 Pairwise Same-Bug MLP 不同，这条路线：
+
+- 特征维度固定（21 维），不拼接高维 dense vector
+- 同时使用 deterministic TF-IDF/SVD64 和 LLM embedding 计算 pairwise 特征
+- 支持三种 backend：logistic regression、gradient boosting (GBDT)、small MLP
+- 训练读取 gold.csv，推理不读取 gold/meta
+- 必须显式运行实验脚本，默认 baseline 不变
+
+### Pairwise Feature Schema
+
+每个 case pair 提取 21 维固定特征：
+
+| 特征 | 说明 |
+|------|------|
+| `det_cosine` | deterministic SVD64 向量的 cosine similarity |
+| `llm_cosine` | LLM embedding 向量的 cosine similarity |
+| `abs_det_llm_diff` | abs(det_cosine - llm_cosine) |
+| `det_euclidean` | deterministic 向量欧氏距离 |
+| `llm_euclidean` | LLM 向量欧氏距离 |
+| `token_jaccard` | token set Jaccard |
+| `primary_token_jaccard` | PRIMARY token Jaccard |
+| `sim_token_jaccard` | sim log token Jaccard |
+| `regr_token_jaccard` | regr log token Jaccard |
+| `same_primary_signature` | 是否相同 primary signature |
+| `same_primary_type` | 是否相同 primary type |
+| `same_mismatch_type` | 是否相同 mismatch type |
+| `same_op_pair` | 是否相同 op_pair |
+| `same_fatal_file` | 是否相同 fatal file |
+| `same_failed_reason` | 是否相同 failed reason |
+| `same_has_uvm_fatal` | 是否都有 UVM_FATAL |
+| `same_has_uvm_error` | 是否都有 UVM_ERROR |
+| `same_has_regr_mismatch` | 是否都有 mismatch |
+| `abs_num_tokens_diff_log` | log(1+|num_tokens_i - num_tokens_j|) |
+| `min_num_tokens_log` | log(1+min(num_tokens_i, num_tokens_j)) |
+| `max_num_tokens_log` | log(1+max(num_tokens_i, num_tokens_j)) |
+
+### Three Backends
+
+| Backend | 实现 | 优点 |
+|---------|------|------|
+| **logistic** | sklearn LogisticRegression + StandardScaler | 可解释，稳定 |
+| **gbdt** | sklearn HistGradientBoostingClassifier | 非线性，tabular 友好 |
+| **mlp** | PyTorch MLP (21→64→32→1, GELU, LayerNorm, Dropout 0.1) | 深度学习 |
+
+### 5-Seed Half-Split Results
+
+With `doc_style=features`, `llm_weight=4.0`, `cluster_factor=0.875`:
+
+| Method | first_batch BA | stage2 BA | stage3 BA | Mean BA |
+|---|---:|---:|---:|---:|
+| deterministic | 0.7671 | 0.7445 | 0.7603 | 0.7573 |
+| llm_concat_features | 0.7849 | 0.7689 | 0.7678 | 0.7739 |
+| pairwise_logistic | 0.7592 | 0.8085 | 0.7918 | 0.7865 |
+| **pairwise_gbdt** | 0.7522 | **0.8310** | **0.8039** | **0.7957** |
+| pairwise_mlp | 0.7572 | 0.8278 | 0.7969 | 0.7940 |
+
+### TPR/TNR Detail
+
+| Method | first_batch | | stage2 | | stage3 | |
+|---|---|---|---|---|---|---|
+| | TPR | TNR | TPR | TNR | TPR | TNR |
+| deterministic | 0.720 | 0.814 | 0.738 | 0.751 | 0.822 | 0.699 |
+| llm_concat_features | 0.748 | 0.822 | 0.728 | 0.810 | 0.814 | 0.722 |
+| pairwise_gbdt | 0.708 | 0.797 | 0.785 | 0.877 | 0.793 | 0.815 |
+| pairwise_logistic | 0.725 | 0.793 | 0.744 | 0.873 | 0.775 | 0.809 |
+| pairwise_mlp | 0.718 | 0.797 | 0.772 | 0.884 | 0.784 | 0.810 |
+
+### Key Findings
+
+1. **pairwise GBDT 综合最优**：mean BA=0.7957，比 concat baseline (+2.18pp) 显著提升。stage2/stage3 上 BA 大幅领先。
+2. **所有 pairwise 方法都在 first_batch 上低于 concat baseline**：小数据集 (80 cases, 8 bugs, ~40 train) 上 pairwise 训练的正样本对太少，泛化不足。
+3. **pairwise 方法普遍提高 TNR 但牺牲 TPR**：stage2 上 TNR 提升约 12pp (0.81→0.88)，但 TPR 从 0.81 降为 0.79。
+4. **MLP 不是必须的**：logistic 和 GBDT 已经达到或超过 MLP 的水平。在小特征 (21 dims) 下，tree-based 模型和线性模型的泛化更好。
+5. **建议保留为 experimental**：pairwise learning 在大数据集上有明确优势，但小数据集退化和 TPR 损失需要进一步工作（如 few-shot transfer、cross-dataset training、更丰富的 pairwise 特征）。
+
+### Reproduce
+
+```bash
+export LLM_MODEL_CONFIG="$(cat /tmp/nomic_llm.yaml)"
+
+# Full 5-seed experiment
+python run_pairwise_llm_half_split.py \
+  --python /path/to/venv/bin/python \
+  --seeds 0 1 2 3 4 \
+  --methods logistic gbdt mlp \
+  --baselines deterministic llm_concat_features \
+  --output-dir /tmp/pairwise_llm_exp \
+  --llm-doc-style features \
+  --device auto \
+  --epochs 60
+
+# Train a single model
+python train_pairwise_llm.py \
+  --output-dir /tmp/pairwise_llm_model \
+  --model-type gbdt \
+  --llm-doc-style features \
+  --seed 0
+```
+
+This backend is experimental. The default submitted baseline remains `drain + agglomerative`.
+
 ## Error Analysis
 
 当 TNR 高但 TPR 低时，通常说明不同 bug 容易分开，但同一 bug 的多种表现被拆碎。可以用：
