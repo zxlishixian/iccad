@@ -998,6 +998,73 @@ python run_input_signal_calibration.py \
   --ensemble-temperatures 0.75 1.0 1.25
 ```
 
+
+### Stability and Postprocess Follow-Up
+
+A follow-up validation extended the calibrated global blend to seeds 5-9 and then summarized seeds 0-9. The model and ensemble artifacts for seeds 5-9 were trained with the same experimental settings; LLM logs confirmed `embedding_dim=768` for both features and summary embedding paths, with no fallback warning.
+
+| seeds | first_BA | stage2_BA | stage3_BA | mean_BA | stage2 TPR/TNR | stage3 TPR/TNR |
+|---|---:|---:|---:|---:|---|---|
+| 0-4 | 0.8798 | 0.8710 | 0.8564 | 0.8691 | 0.7881/0.9539 | 0.7383/0.9744 |
+| 5-9 | 0.8724 | 0.8403 | 0.8519 | 0.8548 | 0.7238/0.9567 | 0.7315/0.9722 |
+| 0-9 | 0.8761 | 0.8556 | 0.8541 | 0.8620 | 0.7560/0.9553 | 0.7349/0.9733 |
+
+The 5-9 split is lower than 0-4, mostly due to stage2 TPR, so the calibrated alpha/temperature is not perfectly stable. However, the 0-9 mean BA still remains above the previous uncalibrated dual blend (0.8573), rich_no_det (0.8056), and soft-voting ensemble (0.7990).
+
+Pairwise error analysis shows the remaining error profile is still mostly recall-limited:
+
+| dataset | BA | TPR | TNR | FN p50 | FP p50 | top fragmented bugs |
+|---|---:|---:|---:|---:|---:|---|
+| first_batch | 0.8761 | 0.8263 | 0.9260 | 0.7692 | 0.8412 | bug_001, bug_003, bug_002 |
+| stage2 | 0.8556 | 0.7560 | 0.9553 | 0.8168 | 0.8554 | bug_003, bug_002, bug_001 |
+| stage3 | 0.8541 | 0.7349 | 0.9733 | 0.8027 | 0.8254 | bug_002, bug_030, bug_003 |
+
+FN pairs often have high pair probability already, but naive merging is dangerous because many FP pairs also have high probability and share broad signatures such as `unknown_source`, `register_write_data_mismatch`, or `pc_mismatch`. The largest FP groups are adjacent-looking bug pairs such as stage2 `bug_018/bug_019`, `bug_012/bug_013`, and stage3 `bug_012/bug_013`, `bug_016/bug_031`, `bug_023/bug_024`.
+
+Experimental postprocess helpers were added:
+
+- `merge_close_buckets`: merge predicted buckets using top-k inter-bucket probability plus sim/regr-derived consistency checks.
+- `split_mixed_buckets`: split buckets by primary signature, op pair, mismatch type, or fatal file when there is clear internal structure.
+
+Seed=0 search showed aggressive merge raises TPR but destroys TNR; split is mostly no-op or hurts TPR. A representative 0-9 validation confirmed no postprocess beats the calibrated blend:
+
+| postprocess | first_BA | stage2_BA | stage3_BA | mean_BA | stage2 TPR/TNR | stage3 TPR/TNR |
+|---|---:|---:|---:|---:|---|---|
+| none | 0.8761 | 0.8556 | 0.8541 | 0.8620 | 0.7560/0.9553 | 0.7349/0.9733 |
+| split_mixed auto, min_bucket=6, min_group=3 | 0.8761 | 0.8535 | 0.8536 | 0.8611 | 0.7515/0.9556 | 0.7337/0.9735 |
+| merge_close p>=0.92, consistency>=0.95 | 0.8761 | 0.8536 | 0.8517 | 0.8605 | 0.7693/0.9379 | 0.7476/0.9558 |
+| merge_close p>=0.90, consistency>=0.95 | 0.8711 | 0.8485 | 0.8442 | 0.8546 | 0.8057/0.8914 | 0.7762/0.9121 |
+
+Recommendation: keep postprocess disabled for now. The current experimental best remains the calibrated global dual-input blend without postprocess. Future gains should come from better training/sampling or more discriminative input signals rather than a simple structural merge/split pass.
+
+Reproduce stability and postprocess checks:
+
+```bash
+export LLM_MODEL_CONFIG="$(cat /tmp/nomic_llm.yaml)"
+
+python run_input_signal_calibration.py \
+  --output-dir /tmp/calibrated_blend_stability_raw \
+  --seeds 0 1 2 3 4 5 6 7 8 9 \
+  --alphas 0.85 \
+  --rich-temperatures 0.75 \
+  --ensemble-temperatures 1.25
+
+python error_analysis_pairwise.py \
+  --output-dir /tmp/calibrated_blend_error_analysis \
+  --seeds 0 1 2 3 4 5 6 7 8 9
+
+python run_postprocess_experiments.py \
+  --output-dir /tmp/postprocess_top_0_9 \
+  --seeds 0 1 2 3 4 5 6 7 8 9 \
+  --postprocess merge_close split_mixed \
+  --merge-prob-thresholds 0.90 0.92 \
+  --merge-consistency-thresholds 0.95 \
+  --merge-conflict-maxes 0.05 \
+  --split-min-bucket-sizes 6 \
+  --split-min-group-sizes 3 \
+  --split-keys auto
+```
+
 ## Error Analysis
 
 当 TNR 高但 TPR 低时，通常说明不同 bug 容易分开，但同一 bug 的多种表现被拆碎。可以用：
@@ -1023,8 +1090,8 @@ python3 -m venv .venv
 
 ## Next Steps
 
-1. Keep `llm_dual_struct_det_summary_dim64` with global calibrated blend `alpha=0.85, rich_temp=0.75, ensemble_temp=1.25` as the current experimental best.
-2. Retest the dataset-size calibration policy on new data before relying on it; it reaches 0.8717 mean BA on the current half-split validation but may overfit these three datasets.
-3. Add stronger hard negatives: same mismatch type / similar primary type but different bug.
-4. Add postprocess `split_mixed` for large mixed clusters using `primary_signature`.
+1. Keep `llm_dual_struct_det_summary_dim64` with global calibrated blend `alpha=0.85, rich_temp=0.75, ensemble_temp=1.25` as the current experimental best, but report the 0-9 mean BA (0.8620) as the more conservative stability estimate.
+2. Do not enable the current lightweight postprocess by default; it did not beat no-postprocess in 0-9 validation.
+3. Add stronger hard negatives: same mismatch type / similar primary type but different bug, especially adjacent-looking bug pairs that dominate FP.
+4. Improve recall through training/sampling rather than naive bucket merge, because FN and FP probability distributions overlap.
 5. Keep all pairwise MLP routes experimental; default submitted baseline remains deterministic `drain + agglomerative`.
