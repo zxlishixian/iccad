@@ -809,7 +809,7 @@ For rich modes, Nomic/OpenAI-compatible embedding vectors are reduced with a tra
 New MLP options include:
 
 ```text
---feature-mode summary21|rich|rich_no_llm|rich_no_det
+--feature-mode summary21|rich|rich_no_llm|rich_no_det|llm_dual|llm_dual_struct|llm_dual_struct_det_summary
 --llm-reduce-dim 128
 --mlp-arch shallow|deep|residual
 --loss bce|focal
@@ -871,6 +871,88 @@ python run_rich_mlp_experiments.py \
   --weight-decay 1e-4
 ```
 
+
+### Input-Signal Upgrade: Dual LLM + Structured Signals
+
+The current best deep-learning route improves the input representation rather than making the network deeper. It keeps the residual MLP/focal-loss setup, but gives each pair two independently reduced LLM embedding channels:
+
+```text
+features-doc embedding relation: abs(f_i - f_j), f_i * f_j
+summary-doc embedding relation:  abs(s_i - s_j), s_i * s_j
+structured sim/regr signals and deterministic scalar summaries
+```
+
+This route is experimental and only runs through `train_pairwise_llm.py` / `run_input_signal_experiments.py`. The default `regr_fail_bucketing.py --input ... --output ... --k ...` baseline remains unchanged and does not read `gold.csv`, `meta.csv`, or `trace.log`.
+
+New input modes:
+
+| feature_mode | Pair input |
+|---|---|
+| `llm_dual` | two LLM relation blocks plus LLM cosine/distance scalars |
+| `llm_dual_struct` | `llm_dual` plus structured pair features from `sim.log` / `regr.log` |
+| `llm_dual_struct_det_summary` | `llm_dual_struct` plus deterministic scalar summaries; no deterministic vector relation |
+
+Structured signals include same/error-conflict checks for source file, UVM component, test name, mismatch type, op pair, Ibex/Spike opcode, register, PC region, primary signature/type, and UVM/regr failure flags. These are extracted from selected `sim.log` / `regr.log` lines only.
+
+Seed=0 input-signal search with real Nomic embeddings showed both channels active (`embedding_dim=768` for `doc_style=features` and `doc_style=summary`):
+
+| method | feature_mode | reduce_dim | blend_alpha | first_BA | stage2_BA | stage3_BA | mean_BA |
+|---|---|---:|---:|---:|---:|---:|---:|
+| rich_no_det_residual_focal | rich_no_det | 128 | - | 0.7080 | 0.8139 | 0.8060 | 0.7760 |
+| llm_dual_residual_focal | llm_dual | 128 | - | 0.8296 | 0.8778 | 0.8292 | 0.8455 |
+| llm_dual_struct_residual_focal | llm_dual_struct | 128 | - | 0.8764 | 0.8751 | 0.8050 | 0.8522 |
+| llm_dual_struct_det_summary | llm_dual_struct_det_summary | 128 | - | 0.8500 | 0.8499 | 0.8468 | 0.8489 |
+| llm_dual_struct_det_summary_dim64 | llm_dual_struct_det_summary | 64 | - | 0.9348 | 0.8523 | 0.8145 | 0.8672 |
+| llm_dual_struct_det_summary_dim256 | llm_dual_struct_det_summary | 256 | - | 0.7013 | 0.8213 | 0.7529 | 0.7585 |
+| llm_dual_struct_det_summary_dim64_blend_a0.50 | llm_dual_struct_det_summary | 64 | 0.50 | 0.7988 | 0.8863 | 0.8407 | 0.8419 |
+| llm_dual_struct_det_summary_dim64_blend_a0.75 | llm_dual_struct_det_summary | 64 | 0.75 | 0.8921 | 0.8673 | 0.8403 | 0.8666 |
+
+5-seed validation of the top configs:
+
+| method | feature_mode | reduce_dim | blend_alpha | first_BA | stage2_BA | stage3_BA | mean_BA | first TPR/TNR | stage2 TPR/TNR | stage3 TPR/TNR |
+|---|---|---:|---:|---:|---:|---:|---:|---|---|---|
+| llm_dual_struct_det_summary_dim64 | llm_dual_struct_det_summary | 64 | - | 0.8915 | 0.8491 | 0.8276 | 0.8561 | 0.8425/0.9406 | 0.7327/0.9654 | 0.6831/0.9722 |
+| llm_dual_struct_det_summary_dim64_blend_a0.50 | llm_dual_struct_det_summary | 64 | 0.50 | 0.7770 | 0.8672 | 0.8417 | 0.8287 | 0.7300/0.8240 | 0.8250/0.9095 | 0.7711/0.9123 |
+| **llm_dual_struct_det_summary_dim64_blend_a0.75** | `llm_dual_struct_det_summary` | 64 | 0.75 | **0.8469** | **0.8741** | **0.8510** | **0.8573** | 0.7900/0.9037 | 0.8101/0.9381 | 0.7446/0.9574 |
+| llm_dual_struct_det_summary_residual_focal | llm_dual_struct_det_summary | 128 | - | 0.8914 | 0.8314 | 0.8227 | 0.8485 | 0.8500/0.9329 | 0.7042/0.9586 | 0.6765/0.9690 |
+
+Compared with prior candidates:
+
+| Method | first_BA | stage2_BA | stage3_BA | Mean BA |
+|---|---:|---:|---:|---:|
+| soft voting ensemble (0.20/0.40/0.40) | 0.7649 | 0.8279 | 0.8043 | 0.7990 |
+| rich_no_det_residual_focal | 0.7901 | 0.8154 | 0.8113 | 0.8056 |
+| **dual input + ensemble blend alpha=0.75** | **0.8469** | **0.8741** | **0.8510** | **0.8573** |
+
+Conclusion: dual LLM input signals are a clear improvement over the single-embedding `rich_no_det` route and over the previous soft-voting ensemble. The current experimental best is `llm_dual_struct_det_summary_dim64` blended with the existing pairwise ensemble at `alpha=0.75`; it improves both stage2 and stage3 while also raising mean BA. Keep it experimental because it depends on LLM embeddings and trained sidecar reducers/models.
+
+Reproduce:
+
+```bash
+export LLM_MODEL_CONFIG="$(cat /tmp/nomic_llm.yaml)"
+
+python run_input_signal_experiments.py \
+  --output-dir /tmp/input_signal_5seed_top \
+  --seeds 0 1 2 3 4 \
+  --configs llm_dual_struct_det_summary_dim64 llm_dual_struct_det_summary_residual_focal \
+  --blend-with-ensemble \
+  --blend-configs llm_dual_struct_det_summary_dim64 \
+  --blend-alphas 0.5 0.75 \
+  --epochs 30 \
+  --batch-size 8192 \
+  --max-train-pairs 300000 \
+  --negative-ratio 2.0 \
+  --hard-negative-ratio 0.5 \
+  --hard-positive-ratio 0.5 \
+  --early-stop-patience 8 \
+  --llm-reduce-dim 128 \
+  --dropout 0.2 \
+  --lr 1e-3 \
+  --weight-decay 1e-4 \
+  --ensemble-model-dir /tmp/pairwise_llm_exp_full/models \
+  --ensemble-split-root /tmp/pairwise_llm_exp_full/splits
+```
+
 ## Error Analysis
 
 当 TNR 高但 TPR 低时，通常说明不同 bug 容易分开，但同一 bug 的多种表现被拆碎。可以用：
@@ -896,8 +978,8 @@ python3 -m venv .venv
 
 ## Next Steps
 
-1. Tune rich MLP calibration to recover TPR on stage2 while preserving the stage3 gain from `rich_no_det_residual_focal`.
-2. Try probability calibration or cluster-distance temperature for rich models, since current rich variants are high-TNR/low-TPR.
+1. Keep `llm_dual_struct_det_summary_dim64_blend_a0.75` as the current experimental best and validate it on any new large benchmark.
+2. Explore blend calibration per dataset size, since alpha=0.5 maximizes stage2 TPR while alpha=0.75 gives the best mean/stage3 balance.
 3. Add stronger hard negatives: same mismatch type / similar primary type but different bug.
 4. Add postprocess `split_mixed` for large mixed clusters using `primary_signature`.
-5. Keep pairwise MLP experimental; default submitted baseline remains deterministic `drain + agglomerative`.
+5. Keep all pairwise MLP routes experimental; default submitted baseline remains deterministic `drain + agglomerative`.

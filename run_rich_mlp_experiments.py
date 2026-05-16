@@ -33,6 +33,9 @@ CONFIGS: dict[str, dict[str, str]] = {
     "rich_no_det_deep_focal": {"feature_mode": "rich_no_det", "mlp_arch": "deep", "loss": "focal"},
     "rich_no_llm_residual_focal": {"feature_mode": "rich_no_llm", "mlp_arch": "residual", "loss": "focal"},
     "rich_no_det_residual_focal": {"feature_mode": "rich_no_det", "mlp_arch": "residual", "loss": "focal"},
+    "llm_dual_residual_focal": {"feature_mode": "llm_dual", "mlp_arch": "residual", "loss": "focal"},
+    "llm_dual_struct_residual_focal": {"feature_mode": "llm_dual_struct", "mlp_arch": "residual", "loss": "focal"},
+    "llm_dual_struct_det_summary_residual_focal": {"feature_mode": "llm_dual_struct_det_summary", "mlp_arch": "residual", "loss": "focal"},
 }
 
 DEFAULT_SEARCH = [

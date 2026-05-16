@@ -133,7 +133,11 @@ def main() -> int:
     parser.add_argument("--seeds", nargs="+", type=int, default=[0])
     parser.add_argument("--combo", type=int, default=0)
     parser.add_argument("--methods", nargs="+", choices=("logistic", "gbdt", "mlp"), default=["logistic", "gbdt", "mlp"])
-    parser.add_argument("--feature-mode", choices=("summary21", "rich", "rich_no_llm", "rich_no_det"), default="summary21")
+    parser.add_argument(
+        "--feature-mode",
+        choices=("summary21", "rich", "rich_no_llm", "rich_no_det", "llm_dual", "llm_dual_struct", "llm_dual_struct_det_summary"),
+        default="summary21",
+    )
     parser.add_argument("--llm-reduce-dim", type=int, default=128)
     parser.add_argument("--mlp-arch", choices=("shallow", "deep", "residual"), default="shallow")
     parser.add_argument("--loss", choices=("bce", "focal"), default="bce")

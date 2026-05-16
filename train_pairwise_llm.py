@@ -190,6 +190,7 @@ def train(args: argparse.Namespace) -> dict:
         llm_mode="embedding" if args.use_llm else "none",
         llm_doc_style=args.llm_doc_style,
         llm_cache_dir=args.llm_cache_dir,
+        llm_dual=args.feature_mode in plf.DUAL_FEATURE_MODES,
     )
     all_features: list[plf.LLMCaseFeature] = []
     all_labels: list[str] = []
@@ -208,13 +209,19 @@ def train(args: argparse.Namespace) -> dict:
         raise RuntimeError(f"feature/label mismatch: {len(all_features)} vs {len(all_labels)}")
 
     llm_reducer = None
-    if args.feature_mode in {"rich", "rich_no_det"} and args.llm_reduce_dim > 0:
+    llm_summary_reducer = None
+    if args.feature_mode in ({"rich", "rich_no_det"} | plf.DUAL_FEATURE_MODES) and args.llm_reduce_dim > 0:
         llm_reducer = plf.fit_llm_reducer(
             all_features, args.llm_reduce_dim, random_state=args.random_state
         )
+        if args.feature_mode in plf.DUAL_FEATURE_MODES:
+            llm_summary_reducer = plf.fit_llm_summary_reducer(
+                all_features, args.llm_reduce_dim, random_state=args.random_state
+            )
         print(
             f"[features] llm_reduce_dim={args.llm_reduce_dim} "
-            f"reducer={'none' if llm_reducer is None else type(llm_reducer).__name__}",
+            f"features_reducer={'none' if llm_reducer is None else type(llm_reducer).__name__} "
+            f"summary_reducer={'none' if llm_summary_reducer is None else type(llm_summary_reducer).__name__}",
             file=sys.stderr,
         )
 
@@ -273,8 +280,9 @@ def train(args: argparse.Namespace) -> dict:
         raise ValueError(f"unknown model_type: {args.model_type}")
     model_pkg.update({
         "feature_mode": args.feature_mode,
-        "llm_reduce_dim": args.llm_reduce_dim if args.feature_mode in {"rich", "rich_no_det"} else 0,
+        "llm_reduce_dim": args.llm_reduce_dim if args.feature_mode in ({"rich", "rich_no_det"} | plf.DUAL_FEATURE_MODES) else 0,
         "llm_reducer": llm_reducer,
+        "llm_summary_reducer": llm_summary_reducer,
         "svd_dim": args.svd_dim,
     })
     train_time = time.perf_counter() - train_time
@@ -348,7 +356,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     p.add_argument("--output-dir", type=Path, required=True)
     p.add_argument("--model-type", choices=("logistic", "gbdt", "mlp"), default="logistic")
     p.add_argument("--model-tag", default="", help="optional filename tag for saved model/config")
-    p.add_argument("--feature-mode", choices=("summary21", "rich", "rich_no_llm", "rich_no_det"), default="summary21")
+    p.add_argument(
+        "--feature-mode",
+        choices=("summary21", "rich", "rich_no_llm", "rich_no_det", "llm_dual", "llm_dual_struct", "llm_dual_struct_det_summary"),
+        default="summary21",
+    )
     p.add_argument("--llm-reduce-dim", type=int, default=128)
     p.add_argument("--mlp-arch", choices=("shallow", "deep", "residual"), default="shallow")
     p.add_argument("--loss", choices=("bce", "focal"), default="bce")

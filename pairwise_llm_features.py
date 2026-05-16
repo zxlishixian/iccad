@@ -13,6 +13,7 @@ import argparse
 import json
 import math
 import os
+import re
 import sys
 from collections import Counter
 from dataclasses import dataclass
@@ -31,6 +32,8 @@ class LLMCaseFeature:
     det_vec: np.ndarray
     llm_vec: np.ndarray
     llm_vec_reduced: np.ndarray | None
+    llm_summary_vec: np.ndarray
+    llm_summary_vec_reduced: np.ndarray | None
     tokens: list[str]
     token_set: set[str]
     primary_tokens: set[str]
@@ -48,6 +51,16 @@ class LLMCaseFeature:
             return self.llm_vec_reduced
         return self.llm_vec
 
+    @property
+    def has_llm_summary(self) -> bool:
+        return self.llm_summary_vec.size > 0
+
+    @property
+    def effective_llm_summary_vec(self) -> np.ndarray:
+        if self.llm_summary_vec_reduced is not None:
+            return self.llm_summary_vec_reduced
+        return self.llm_summary_vec
+
 
 def _make_llm_args(
     llm_mode: str = "embedding",
@@ -60,6 +73,7 @@ def _make_llm_args(
     llm_batch_size: int = 64,
     llm_timeout_sec: float = 20.0,
     svd_dim: int = 64,
+    llm_dual: bool = False,
 ) -> argparse.Namespace:
     return argparse.Namespace(
         llm_mode=llm_mode,
@@ -73,6 +87,7 @@ def _make_llm_args(
         llm_timeout_sec=llm_timeout_sec,
         svd_dim=svd_dim,
         parser="drain",
+        llm_dual=llm_dual,
     )
 
 
@@ -94,6 +109,201 @@ def fetch_llm_embeddings_for_counters(
     return llm_mat, model_name
 
 
+
+UVM_COMPONENT_RE = re.compile(r"\[([^\]]*(?:uvm_test_top|env|agent|scoreboard|driver|monitor)[^\]]*)\]", re.IGNORECASE)
+PC_VALUE_RE = re.compile(r"\bpc\[(0x[0-9a-fA-F]+|[0-9a-fA-F]{6,})\]", re.IGNORECASE)
+REG_TARGET_RE = re.compile(r"register write data mismatch to\s+(x(?:[0-2]?\d|3[01]))", re.IGNORECASE)
+
+
+def _first_nonempty(*values: str) -> str:
+    for value in values:
+        if value:
+            return value
+    return ""
+
+
+def _pc_region(value: str) -> str:
+    value = value.lower().strip()
+    if not value:
+        return ""
+    if value.startswith("0x"):
+        hex_digits = value[2:]
+    else:
+        hex_digits = value
+    if len(hex_digits) < 3:
+        return value
+    return "0x" + hex_digits[: max(3, min(5, len(hex_digits)))]
+
+
+def _extract_rich_case_info(sim_lines: Sequence[str], regr_lines: Sequence[str], primary_tokens: Sequence[str]) -> dict:
+    joined_sim = "\n".join(sim_lines)
+    joined_regr = "\n".join(regr_lines)
+    joined_all = joined_sim + "\n" + joined_regr
+    lower_all = joined_all.lower()
+
+    error_source_file = ""
+    fatal_file = ""
+    uvm_component = ""
+    failed_reason = ""
+    for line in list(sim_lines) + list(regr_lines):
+        lower = line.lower()
+        if not error_source_file and re.search(r"uvm_(?:fatal|error|warning)|mismatch|failed|timeout", lower):
+            error_source_file = rfb.extract_sv_basename(line)
+        if not fatal_file and re.search(r"uvm_(?:fatal|error)", lower):
+            fatal_file = rfb.extract_sv_basename(line)
+            failed_reason = rfb.sanitize_primary_part(rfb.message_after_uvm_context(line))
+        if not uvm_component:
+            match = UVM_COMPONENT_RE.search(line)
+            if match:
+                uvm_component = rfb.sanitize_feature_value(match.group(1), max_len=120)
+    if not failed_reason:
+        for line in list(regr_lines) + list(sim_lines):
+            if "failed" in line.lower():
+                failed_reason = rfb.sanitize_primary_part(line)
+                break
+
+    ibex_opcode = ""
+    spike_opcode = ""
+    op_pair = ""
+    for line in list(regr_lines) + list(sim_lines):
+        for side, op in rfb.PC_OP_RE.findall(line):
+            side_l = side.lower()
+            op_l = op.lower()
+            if side_l in {"ibex", "dut", "rtl"} and not ibex_opcode:
+                ibex_opcode = op_l
+            elif side_l in {"spike", "iss"} and not spike_opcode:
+                spike_opcode = op_l
+    if ibex_opcode and spike_opcode:
+        op_pair = rfb.sanitize_primary_token("PRIMARY_REGR_OPPAIR", ibex_opcode, spike_opcode)
+
+    register_name = ""
+    reg_match = REG_TARGET_RE.search(joined_all)
+    if reg_match:
+        register_name = reg_match.group(1).lower()
+    else:
+        reg_match = rfb.REG_RE.search(joined_all)
+        if reg_match:
+            register_name = reg_match.group(0).lower()
+
+    pc_region = ""
+    pc_match = PC_VALUE_RE.search(joined_all)
+    if pc_match:
+        pc_region = _pc_region(pc_match.group(1))
+
+    mismatch_type = ""
+    mismatch_patterns = [
+        ("pc_mismatch", r"\bpc mismatch\b"),
+        ("register_write_data_mismatch", r"register write data mismatch"),
+        ("sync_trap_mismatch", r"synchronous trap"),
+        ("memory_mismatch", r"memory mismatch|\bstore\b.*mismatch|\bload\b.*mismatch"),
+        ("instruction_mismatch", r"instruction mismatch|retired"),
+        ("cosim_mismatch", r"cosim mismatch|co-sim"),
+    ]
+    for name, pattern in mismatch_patterns:
+        if re.search(pattern, lower_all):
+            mismatch_type = name
+            break
+    if not mismatch_type and "mismatch" in lower_all:
+        mismatch_type = "generic_mismatch"
+
+    primary_signature = primary_tokens[0] if primary_tokens else "PRIMARY_UNKNOWN_FAILURE"
+    return {
+        "has_uvm_fatal": "UVM_FATAL" in joined_sim.upper(),
+        "has_uvm_error": "UVM_ERROR" in joined_sim.upper(),
+        "has_regr_mismatch": "mismatch" in joined_regr.lower(),
+        "primary_type": _primary_type_from_tokens(primary_tokens),
+        "primary_signature": primary_signature,
+        "mismatch_type": mismatch_type,
+        "op_pair": _first_nonempty(op_pair, _op_pair_from_tokens(primary_tokens)),
+        "fatal_file": fatal_file,
+        "error_source_file": error_source_file,
+        "uvm_component": uvm_component,
+        "failed_reason": failed_reason,
+        "uvm_testname": _extract_test_name_from_lines(sim_lines),
+        "failed_test_name": _extract_failed_test_name_from_lines(regr_lines),
+        "ibex_opcode": ibex_opcode,
+        "spike_opcode": spike_opcode,
+        "register_name": register_name,
+        "pc_region": pc_region,
+    }
+
+
+def _extract_test_name_from_lines(lines: Sequence[str]) -> str:
+    patterns = [
+        r"\btest(?:name)?\s*[=:]\s*([A-Za-z0-9_.:+-]+)",
+        r"\brunning\s+test\s+([A-Za-z0-9_.:+-]+)",
+        r"\bTEST\s+([A-Za-z0-9_.:+-]+)",
+    ]
+    joined = "\n".join(lines)
+    for pattern in patterns:
+        match = re.search(pattern, joined, flags=re.IGNORECASE)
+        if match:
+            return match.group(1)
+    return ""
+
+
+def _extract_failed_test_name_from_lines(lines: Sequence[str]) -> str:
+    for line in lines:
+        if "failed" not in line.lower():
+            continue
+        match = re.search(r"([A-Za-z0-9_.:+-]+)\s*(?:\[[^\]]+\])?\s*(?:FAILED|failed)", line)
+        if match:
+            return match.group(1)
+    return ""
+
+
+def _primary_type_from_tokens(primary_tokens: Sequence[str]) -> str:
+    if not primary_tokens:
+        return ""
+    token = primary_tokens[0]
+    if token.startswith("PRIMARY_UVM_FATAL"):
+        return "UVM_FATAL"
+    if token.startswith("PRIMARY_UVM_ERROR"):
+        return "UVM_ERROR"
+    if token.startswith("PRIMARY_REGR"):
+        return "REGR_MISMATCH"
+    if token.startswith("PRIMARY_FAILED"):
+        return "FAILED"
+    return token
+
+
+def _op_pair_from_tokens(primary_tokens: Sequence[str]) -> str:
+    for token in primary_tokens:
+        if token.startswith("PRIMARY_REGR_OPPAIR_"):
+            return token
+    return ""
+
+
+def collect_rich_infos(input_csvs: Sequence[Path], parser: str) -> list[dict]:
+    del parser
+    rich_infos: list[dict] = []
+    for input_csv in input_csvs:
+        rows, fields = rfb.read_csv_rows(input_csv)
+        sim_col = rfb.pick_column(fields, "sim")
+        regr_col = rfb.pick_column(fields, "regr")
+        for row in rows:
+            selected_by_prefix: dict[str, list[str]] = {"sim": [], "regr": []}
+            info_by_prefix: dict[str, dict] = {"sim": {}, "regr": {}}
+            for prefix, col in (("sim", sim_col), ("regr", regr_col)):
+                path = rfb.resolve_log_path(input_csv, row.get(col) if col else None)
+                text, status = rfb.read_log_sample(path)
+                selected_by_prefix[prefix] = rfb.select_lines(text)
+                info_by_prefix[prefix] = {"path": str(path) if path else "", "status": status}
+            primary_tokens = rfb.extract_primary_signature(
+                info_by_prefix["sim"],
+                info_by_prefix["regr"],
+                selected_by_prefix["sim"],
+                selected_by_prefix["regr"],
+            )
+            rich_infos.append(
+                _extract_rich_case_info(
+                    selected_by_prefix["sim"],
+                    selected_by_prefix["regr"],
+                    primary_tokens,
+                )
+            )
+    return rich_infos
+
 def build_llm_case_features_for_inputs(
     input_csvs: Sequence[str | Path],
     parser: str = "drain",
@@ -112,8 +322,10 @@ def build_llm_case_features_for_inputs(
         parser=parser,
         svd_dim=svd_dim,
     )
+    rich_infos = collect_rich_infos(resolved_inputs, parser)
 
     llm_vecs: list[np.ndarray] = []
+    llm_summary_vecs: list[np.ndarray] = []
     model_name = ""
     if llm_args is not None and rfb.load_llm_embedding_config() is not None:
         # Re-extract feature counters to build LLM documents
@@ -132,35 +344,65 @@ def build_llm_case_features_for_inputs(
             token_weight_mode="none",
         )
         try:
-            llm_mat, model_name = fetch_llm_embeddings_for_counters(feature_counters, llm_args)
-            for i in range(len(det_features)):
-                llm_vecs.append(llm_mat[i].astype(np.float32, copy=False))
-            print(
-                f"[llm_features] model={model_name} embedding_dim={llm_mat.shape[1]} "
-                f"docs={len(feature_counters)} doc_style={llm_args.llm_doc_style}",
-                file=sys.stderr,
-            )
+            if getattr(llm_args, "llm_dual", False):
+                features_args = argparse.Namespace(**vars(llm_args))
+                features_args.llm_doc_style = "features"
+                summary_args = argparse.Namespace(**vars(llm_args))
+                summary_args.llm_doc_style = "summary"
+                llm_mat, model_name = fetch_llm_embeddings_for_counters(feature_counters, features_args)
+                summary_mat, summary_model_name = fetch_llm_embeddings_for_counters(feature_counters, summary_args)
+                for i in range(len(det_features)):
+                    llm_vecs.append(llm_mat[i].astype(np.float32, copy=False))
+                    llm_summary_vecs.append(summary_mat[i].astype(np.float32, copy=False))
+                print(
+                    f"[llm_features] model={model_name} embedding_dim={llm_mat.shape[1]} "
+                    f"docs={len(feature_counters)} doc_style=features",
+                    file=sys.stderr,
+                )
+                print(
+                    f"[llm_summary] model={summary_model_name} embedding_dim={summary_mat.shape[1]} "
+                    f"docs={len(feature_counters)} doc_style=summary",
+                    file=sys.stderr,
+                )
+            else:
+                llm_mat, model_name = fetch_llm_embeddings_for_counters(feature_counters, llm_args)
+                for i in range(len(det_features)):
+                    llm_vecs.append(llm_mat[i].astype(np.float32, copy=False))
+                    llm_summary_vecs.append(np.zeros(0, dtype=np.float32))
+                print(
+                    f"[llm_features] model={model_name} embedding_dim={llm_mat.shape[1]} "
+                    f"docs={len(feature_counters)} doc_style={llm_args.llm_doc_style}",
+                    file=sys.stderr,
+                )
         except Exception as exc:
             print(f"[llm_features] LLM fetch failed ({exc}); using zero llm_vec", file=sys.stderr)
             llm_vecs = [np.zeros(0, dtype=np.float32) for _ in det_features]
+            llm_summary_vecs = [np.zeros(0, dtype=np.float32) for _ in det_features]
     else:
         print("[llm_features] LLM disabled; using zero llm_vec", file=sys.stderr)
         llm_vecs = [np.zeros(0, dtype=np.float32) for _ in det_features]
+        llm_summary_vecs = [np.zeros(0, dtype=np.float32) for _ in det_features]
 
     result: list[LLMCaseFeature] = []
-    for det_feat, llm_vec in zip(det_features, llm_vecs):
+    for det_feat, llm_vec, llm_summary_vec, rich_info in zip(det_features, llm_vecs, llm_summary_vecs, rich_infos):
+        info = dict(det_feat.info)
+        for key, value in rich_info.items():
+            if value or key not in info:
+                info[key] = value
         result.append(
             LLMCaseFeature(
                 case_id=det_feat.case_id,
                 det_vec=det_feat.dense_vec.astype(np.float32, copy=False),
                 llm_vec=llm_vec,
                 llm_vec_reduced=None,
+                llm_summary_vec=llm_summary_vec,
+                llm_summary_vec_reduced=None,
                 tokens=list(det_feat.tokens),
                 token_set=det_feat.token_set,
                 primary_tokens=det_feat.primary_tokens,
                 sim_tokens=det_feat.sim_tokens,
                 regr_tokens=det_feat.regr_tokens,
-                info=dict(det_feat.info),
+                info=info,
             )
         )
     return result, bundle
@@ -191,24 +433,16 @@ def _pad_or_trim(matrix: np.ndarray, dim: int) -> np.ndarray:
     return matrix
 
 
-def fit_llm_reducer(
-    features: list[LLMCaseFeature],
+def _fit_reducer_for_matrix(
+    matrix: np.ndarray,
     reduce_dim: int,
     random_state: int = 0,
-) -> Any:
-    """Fit a train-only dimensionality reducer for LLM vectors and mutate features.
-
-    The reducer is intentionally external to torch checkpoints; save_model_pkg
-    writes it into a sidecar preprocessor pickle for MLP models.
-    """
-    if reduce_dim <= 0 or not features or not features[0].has_llm:
-        for feat in features:
-            feat.llm_vec_reduced = np.zeros(0, dtype=np.float32)
-        return None
-    llm = np.vstack([feat.llm_vec for feat in features]).astype(np.float32)
-    n_components = min(int(reduce_dim), llm.shape[0] - 1, llm.shape[1] - 1)
+) -> tuple[Any, np.ndarray]:
+    if reduce_dim <= 0 or matrix.size == 0:
+        return None, np.zeros((matrix.shape[0], 0), dtype=np.float32)
+    n_components = min(int(reduce_dim), matrix.shape[0] - 1, matrix.shape[1] - 1)
     if n_components < 2:
-        transformed = llm[:, : min(llm.shape[1], max(1, int(reduce_dim)))]
+        transformed = matrix[:, : min(matrix.shape[1], max(1, int(reduce_dim)))]
         reducer = None
     else:
         from sklearn.decomposition import TruncatedSVD
@@ -221,10 +455,51 @@ def fit_llm_reducer(
                 ("norm", Normalizer(copy=False)),
             ]
         )
-        transformed = reducer.fit_transform(llm)
-    transformed = _pad_or_trim(transformed, int(reduce_dim))
+        transformed = reducer.fit_transform(matrix)
+    return reducer, _pad_or_trim(transformed, int(reduce_dim))
+
+
+def _apply_reducer_to_matrix(matrix: np.ndarray, reducer: Any, reduce_dim: int) -> np.ndarray:
+    if reduce_dim <= 0 or matrix.size == 0:
+        return np.zeros((matrix.shape[0], 0), dtype=np.float32)
+    if reducer is None:
+        transformed = matrix[:, : min(matrix.shape[1], int(reduce_dim))]
+    else:
+        transformed = reducer.transform(matrix)
+    return _pad_or_trim(transformed, int(reduce_dim))
+
+
+def fit_llm_reducer(
+    features: list[LLMCaseFeature],
+    reduce_dim: int,
+    random_state: int = 0,
+) -> Any:
+    """Fit a train-only dimensionality reducer for feature-style LLM vectors."""
+    if reduce_dim <= 0 or not features or not features[0].has_llm:
+        for feat in features:
+            feat.llm_vec_reduced = np.zeros(0, dtype=np.float32)
+        return None
+    llm = np.vstack([feat.llm_vec for feat in features]).astype(np.float32)
+    reducer, transformed = _fit_reducer_for_matrix(llm, reduce_dim, random_state)
     for feat, vec in zip(features, transformed):
         feat.llm_vec_reduced = vec.astype(np.float32, copy=False)
+    return reducer
+
+
+def fit_llm_summary_reducer(
+    features: list[LLMCaseFeature],
+    reduce_dim: int,
+    random_state: int = 0,
+) -> Any:
+    """Fit a train-only reducer for summary-style LLM vectors."""
+    if reduce_dim <= 0 or not features or not features[0].has_llm_summary:
+        for feat in features:
+            feat.llm_summary_vec_reduced = np.zeros(0, dtype=np.float32)
+        return None
+    llm = np.vstack([feat.llm_summary_vec for feat in features]).astype(np.float32)
+    reducer, transformed = _fit_reducer_for_matrix(llm, reduce_dim, random_state)
+    for feat, vec in zip(features, transformed):
+        feat.llm_summary_vec_reduced = vec.astype(np.float32, copy=False)
     return reducer
 
 
@@ -238,13 +513,24 @@ def apply_llm_reducer(
             feat.llm_vec_reduced = np.zeros(0, dtype=np.float32)
         return
     llm = np.vstack([feat.llm_vec for feat in features]).astype(np.float32)
-    if reducer is None:
-        transformed = llm[:, : min(llm.shape[1], int(reduce_dim))]
-    else:
-        transformed = reducer.transform(llm)
-    transformed = _pad_or_trim(transformed, int(reduce_dim))
+    transformed = _apply_reducer_to_matrix(llm, reducer, int(reduce_dim))
     for feat, vec in zip(features, transformed):
         feat.llm_vec_reduced = vec.astype(np.float32, copy=False)
+
+
+def apply_llm_summary_reducer(
+    features: list[LLMCaseFeature],
+    reducer: Any,
+    reduce_dim: int,
+) -> None:
+    if reduce_dim <= 0 or not features or not features[0].has_llm_summary:
+        for feat in features:
+            feat.llm_summary_vec_reduced = np.zeros(0, dtype=np.float32)
+        return
+    llm = np.vstack([feat.llm_summary_vec for feat in features]).astype(np.float32)
+    transformed = _apply_reducer_to_matrix(llm, reducer, int(reduce_dim))
+    for feat, vec in zip(features, transformed):
+        feat.llm_summary_vec_reduced = vec.astype(np.float32, copy=False)
 
 
 # ---------------------------------------------------------------------------
@@ -374,13 +660,127 @@ def build_llm_pair_feature_matrix(
     return matrix
 
 
-FEATURE_MODES = {"summary21", "rich", "rich_no_llm", "rich_no_det"}
+FEATURE_MODES = {
+    "summary21",
+    "rich",
+    "rich_no_llm",
+    "rich_no_det",
+    "llm_dual",
+    "llm_dual_struct",
+    "llm_dual_struct_det_summary",
+}
+DUAL_FEATURE_MODES = {"llm_dual", "llm_dual_struct", "llm_dual_struct_det_summary"}
 
 
 def _relation_block(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     if a.size == 0 or b.size == 0:
         return np.zeros(0, dtype=np.float32)
     return np.concatenate([np.abs(a - b), a * b]).astype(np.float32, copy=False)
+
+
+def _nonempty_conflict(a: str, b: str) -> float:
+    return 1.0 if a and b and a != b else 0.0
+
+
+def _both_true(ai: dict, bi: dict, key: str) -> float:
+    return 1.0 if bool(ai.get(key)) and bool(bi.get(key)) else 0.0
+
+
+def build_structured_pair_feature_vector(a: LLMCaseFeature, b: LLMCaseFeature) -> np.ndarray:
+    ai = a.info
+    bi = b.info
+    mismatch_a = str(ai.get("mismatch_type", ""))
+    mismatch_b = str(bi.get("mismatch_type", ""))
+    primary_a = str(ai.get("primary_type", ""))
+    primary_b = str(bi.get("primary_type", ""))
+    return np.asarray(
+        [
+            _same_nonempty(str(ai.get("error_source_file", "")), str(bi.get("error_source_file", ""))),
+            _same_nonempty(str(ai.get("fatal_file", "")), str(bi.get("fatal_file", ""))),
+            _same_nonempty(str(ai.get("uvm_component", "")), str(bi.get("uvm_component", ""))),
+            _same_nonempty(str(ai.get("uvm_testname", "")), str(bi.get("uvm_testname", ""))),
+            _same_nonempty(str(ai.get("failed_test_name", "")), str(bi.get("failed_test_name", ""))),
+            _same_nonempty(mismatch_a, mismatch_b),
+            _same_nonempty(str(ai.get("op_pair", "")), str(bi.get("op_pair", ""))),
+            _same_nonempty(str(ai.get("ibex_opcode", "")), str(bi.get("ibex_opcode", ""))),
+            _same_nonempty(str(ai.get("spike_opcode", "")), str(bi.get("spike_opcode", ""))),
+            _same_nonempty(str(ai.get("register_name", "")), str(bi.get("register_name", ""))),
+            _same_nonempty(str(ai.get("pc_region", "")), str(bi.get("pc_region", ""))),
+            _same_nonempty(str(ai.get("primary_signature", "")), str(bi.get("primary_signature", ""))),
+            _same_nonempty(primary_a, primary_b),
+            _both_true(ai, bi, "has_uvm_fatal"),
+            _both_true(ai, bi, "has_uvm_error"),
+            _both_true(ai, bi, "has_regr_mismatch"),
+            _nonempty_conflict(mismatch_a, mismatch_b),
+            _nonempty_conflict(primary_a, primary_b),
+            _jaccard(a.primary_tokens, b.primary_tokens),
+            _jaccard(a.sim_tokens, b.sim_tokens),
+            _jaccard(a.regr_tokens, b.regr_tokens),
+            math.log1p(len(a.token_set & b.token_set)),
+            math.log1p(len(a.primary_tokens & b.primary_tokens)),
+        ],
+        dtype=np.float32,
+    )
+
+
+def build_det_scalar_summary_vector(a: LLMCaseFeature, b: LLMCaseFeature) -> np.ndarray:
+    det_cosine = _cosine(a.det_vec, b.det_vec)
+    det_euclidean = _euclidean(a.det_vec, b.det_vec)
+    ai = a.info
+    bi = b.info
+    return np.asarray(
+        [
+            det_cosine,
+            det_euclidean,
+            _jaccard(a.token_set, b.token_set),
+            _jaccard(a.primary_tokens, b.primary_tokens),
+            _jaccard(a.sim_tokens, b.sim_tokens),
+            _jaccard(a.regr_tokens, b.regr_tokens),
+            _same_nonempty(str(ai.get("primary_signature", "")), str(bi.get("primary_signature", ""))),
+            _same_nonempty(str(ai.get("primary_type", "")), str(bi.get("primary_type", ""))),
+            _same_nonempty(str(ai.get("mismatch_type", "")), str(bi.get("mismatch_type", ""))),
+            _same_nonempty(str(ai.get("op_pair", "")), str(bi.get("op_pair", ""))),
+        ],
+        dtype=np.float32,
+    )
+
+
+def _dual_scalar_features(a: LLMCaseFeature, b: LLMCaseFeature) -> np.ndarray:
+    fv_a = a.effective_llm_vec
+    fv_b = b.effective_llm_vec
+    sv_a = a.effective_llm_summary_vec
+    sv_b = b.effective_llm_summary_vec
+    features_cos = _cosine(fv_a, fv_b) if fv_a.size and fv_b.size else 0.0
+    summary_cos = _cosine(sv_a, sv_b) if sv_a.size and sv_b.size else 0.0
+    features_euc = _euclidean(fv_a, fv_b) if fv_a.size and fv_b.size else 0.0
+    summary_euc = _euclidean(sv_a, sv_b) if sv_a.size and sv_b.size else 0.0
+    return np.asarray(
+        [
+            features_cos,
+            summary_cos,
+            abs(features_cos - summary_cos),
+            features_euc,
+            summary_euc,
+        ],
+        dtype=np.float32,
+    )
+
+
+def build_dual_pair_feature_vector(
+    a: LLMCaseFeature,
+    b: LLMCaseFeature,
+    feature_mode: str,
+) -> np.ndarray:
+    blocks = [
+        _relation_block(a.effective_llm_vec, b.effective_llm_vec),
+        _relation_block(a.effective_llm_summary_vec, b.effective_llm_summary_vec),
+        _dual_scalar_features(a, b),
+    ]
+    if feature_mode in {"llm_dual_struct", "llm_dual_struct_det_summary"}:
+        blocks.append(build_structured_pair_feature_vector(a, b))
+    if feature_mode == "llm_dual_struct_det_summary":
+        blocks.append(build_det_scalar_summary_vector(a, b))
+    return np.concatenate(blocks).astype(np.float32, copy=False)
 
 
 def build_rich_pair_feature_vector(
@@ -390,6 +790,9 @@ def build_rich_pair_feature_vector(
 ) -> np.ndarray:
     if feature_mode not in FEATURE_MODES:
         raise ValueError(f"unknown feature_mode: {feature_mode}")
+    if feature_mode in DUAL_FEATURE_MODES:
+        return build_dual_pair_feature_vector(a, b, feature_mode)
+
     include_llm = feature_mode != "rich_no_llm"
     include_det = feature_mode != "rich_no_det"
     summary = build_llm_pair_feature_vector(
@@ -707,6 +1110,8 @@ def prepare_features_for_model(model_pkg: dict, features: list[LLMCaseFeature]) 
     reduce_dim = int(model_pkg.get("llm_reduce_dim", 0) or 0)
     if reduce_dim > 0:
         apply_llm_reducer(features, model_pkg.get("llm_reducer"), reduce_dim)
+        if str(model_pkg.get("feature_mode", "")) in DUAL_FEATURE_MODES:
+            apply_llm_summary_reducer(features, model_pkg.get("llm_summary_reducer"), reduce_dim)
 
 
 def _build_model_pair_matrix(
@@ -837,6 +1242,7 @@ def save_model_pkg(model_pkg: dict, path: Path) -> None:
         "feature_mode": model_pkg.get("feature_mode", "summary21"),
         "llm_reduce_dim": int(model_pkg.get("llm_reduce_dim", 0) or 0),
         "svd_dim": int(model_pkg.get("svd_dim", 64) or 64),
+        "llm_dual": str(model_pkg.get("feature_mode", "")) in DUAL_FEATURE_MODES,
     }
     if model_type == "mlp":
         import torch
@@ -857,6 +1263,7 @@ def save_model_pkg(model_pkg: dict, path: Path) -> None:
         preproc = {
             "scaler": model_pkg.get("scaler"),
             "llm_reducer": model_pkg.get("llm_reducer"),
+            "llm_summary_reducer": model_pkg.get("llm_summary_reducer"),
             **common,
         }
         import pickle
@@ -873,6 +1280,7 @@ def save_model_pkg(model_pkg: dict, path: Path) -> None:
             "scaler": model_pkg.get("scaler"),
             "model_type": model_type,
             "llm_reducer": model_pkg.get("llm_reducer"),
+            "llm_summary_reducer": model_pkg.get("llm_summary_reducer"),
             **common,
         }
         with open(path, "wb") as f:
@@ -910,6 +1318,7 @@ def load_model_pkg(path: Path) -> dict:
                 "model": model,
                 "scaler": preproc.get("scaler"),
                 "llm_reducer": preproc.get("llm_reducer"),
+                "llm_summary_reducer": preproc.get("llm_summary_reducer"),
                 "state_dict": checkpoint["state_dict"],
                 "input_dim": int(checkpoint["input_dim"]),
                 "hidden_dims": checkpoint.get("hidden_dims", (128, 64)),
@@ -920,6 +1329,7 @@ def load_model_pkg(path: Path) -> dict:
                 "feature_mode": checkpoint.get("feature_mode", preproc.get("feature_mode", "summary21")),
                 "llm_reduce_dim": int(checkpoint.get("llm_reduce_dim", preproc.get("llm_reduce_dim", 0)) or 0),
                 "svd_dim": int(checkpoint.get("svd_dim", preproc.get("svd_dim", 64)) or 64),
+                "llm_dual": bool(checkpoint.get("llm_dual", preproc.get("llm_dual", False))),
                 "model_type": "mlp",
                 "device": "cpu",
             }
