@@ -451,6 +451,52 @@ def predict_probability_matrix_sklearn(
     return probs
 
 
+def predict_probability_matrix_ensemble(
+    model_pkgs: list[dict],
+    weights: list[float],
+    features: list[LLMCaseFeature],
+    ensemble_mode: str = "prob_average",
+    batch_size: int = 100000,
+) -> np.ndarray:
+    """Soft voting ensemble of multiple pairwise models.
+
+    ensemble_mode:
+      - prob_average: P_ens = sum(w_i * P_i)
+      - logit_average: P_ens = sigmoid(sum(w_i * logit(P_i)))
+    """
+    n = len(features)
+    if n <= 1:
+        return np.eye(n, dtype=np.float32)
+    if len(model_pkgs) != len(weights):
+        raise ValueError(
+            f"model_pkgs ({len(model_pkgs)}) and weights ({len(weights)}) length mismatch"
+        )
+    if abs(sum(weights) - 1.0) > 1e-4:
+        raise ValueError(f"weights must sum to 1, got {sum(weights)}")
+
+    prob_matrices = []
+    for model_pkg in model_pkgs:
+        prob_matrices.append(
+            predict_probability_matrix_sklearn(model_pkg, features, batch_size=batch_size)
+        )
+
+    if ensemble_mode == "prob_average":
+        fused = np.zeros((n, n), dtype=np.float64)
+        for w, P in zip(weights, prob_matrices):
+            fused += w * P.astype(np.float64)
+    elif ensemble_mode == "logit_average":
+        fused = np.zeros((n, n), dtype=np.float64)
+        eps = 1e-9
+        for w, P in zip(weights, prob_matrices):
+            P_clipped = np.clip(P.astype(np.float64), eps, 1.0 - eps)
+            fused += w * np.log(P_clipped / (1.0 - P_clipped))
+        fused = 1.0 / (1.0 + np.exp(-fused))
+    else:
+        raise ValueError(f"unknown ensemble_mode: {ensemble_mode}")
+
+    return fused.astype(np.float32)
+
+
 def cluster_from_probability(prob: np.ndarray, k: int) -> list[int]:
     from sklearn.cluster import AgglomerativeClustering
 

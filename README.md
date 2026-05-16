@@ -738,6 +738,57 @@ python train_pairwise_llm.py \
 
 This backend is experimental. The default submitted baseline remains `drain + agglomerative`.
 
+### Ensemble: Soft Voting
+
+Fuses logistic + gbdt + mlp probability matrices via weighted averaging, then clusters with `AgglomerativeClustering(precomputed, average, k)`.
+
+**Fusion modes:**
+- `prob_average`: P_ens = w_L * P_L + w_G * P_G + w_M * P_M
+- `logit_average`: P_ens = sigmoid(w_L * logit(P_L) + w_G * logit(P_G) + w_M * logit(P_M))
+
+**Seed=0 Weight Search** (10 weight configs x 2 modes = 20 evals):
+
+| Rank | Mode | w_logistic | w_gbdt | w_mlp | Mean BA | first_batch | stage2 | stage3 |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 1 | logit_average | 0.30 | 0.35 | 0.35 | 0.8015 | 0.7559 | 0.8446 | 0.8041 |
+| 2 | prob_average | 0.20 | 0.40 | 0.40 | 0.8005 | 0.7513 | 0.8395 | 0.8108 |
+| 3 | prob_average | 0.10 | 0.80 | 0.10 | 0.7996 | 0.7513 | 0.8443 | 0.8032 |
+| - | gbdt (single) | - | 1.00 | - | 0.8093 | 0.7770 | 0.8443 | 0.8065 |
+
+**5-Seed Validation** (top 3 configs):
+
+| Method | first_batch BA | stage2 BA | stage3 BA | Mean BA |
+|---|---:|---:|---:|---:|
+| pairwise_gbdt (baseline) | 0.7522 | 0.8310 | 0.8039 | 0.7957 |
+| **ensemble prob_avg (0.20/0.40/0.40)** | **0.7649** | 0.8279 | 0.8043 | **0.7990** |
+| ensemble logit_avg (0.30/0.35/0.35) | 0.7591 | 0.8266 | 0.8029 | 0.7962 |
+| ensemble prob_avg (0.10/0.80/0.10) | 0.7455 | 0.8178 | 0.8037 | 0.7890 |
+
+**Key Findings:**
+1. Best ensemble marginally beats GBDT (+0.0033 mean BA), driven by first_batch improvement (+0.0127)
+2. first_batch degradation reduced: ensemble 0.7649 vs GBDT 0.7522, though still below concat 0.7849
+3. stage2/stage3 essentially match GBDT (within ±0.003)
+4. Ensemble mode (prob vs logit) matters less than weight distribution; both top configs give GBDT+MLP > 70% combined weight
+5. Very GBDT-heavy weights (0.10/0.80/0.10) underperform the balanced config, confirming that MLP adds complementary signal
+
+**Reproduce:**
+```bash
+export LLM_MODEL_CONFIG="$(cat /tmp/nomic_llm.yaml)"
+
+# Seed=0 weight search
+python run_ensemble.py --search \
+  --model-dir /tmp/pairwise_llm_exp_full/models \
+  --split-root /tmp/pairwise_llm_exp_full/splits \
+  --output-dir /tmp/pairwise_llm_exp_ensemble
+
+# 5-seed on top config
+python run_ensemble.py \
+  --seeds 0 1 2 3 4 \
+  --weights 0.20 0.40 0.40 \
+  --ensemble-mode prob_average \
+  --output-dir /tmp/pairwise_llm_exp_ensemble
+```
+
 ## Error Analysis
 
 当 TNR 高但 TPR 低时，通常说明不同 bug 容易分开，但同一 bug 的多种表现被拆碎。可以用：
