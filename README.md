@@ -1093,6 +1093,61 @@ The main lesson is that naive hard-positive oversampling can improve seed=0 stag
 
 Recommendation: keep the current experimental best as `llm_dual_struct_det_summary_dim64 + residual focal MLP + pairwise ensemble calibrated blend` with global `alpha=0.85, rich_temp=0.75, ensemble_temp=1.25`. Do not enable the new sampling or cross-scalar mode as the recommended best. Future work should focus on less noisy supervised objectives, such as pair weighting by cluster fragmentation, per-dataset calibration learned from held-out splits, or ranking/metric losses that directly optimize close same-bug pairs without over-repeating them.
 
+
+### Selective Trace-Assisted Pair Refinement
+
+A selective trace experiment was added to test whether `trace.log` can help only on uncertain no-trace pairs, without making trace part of the default model. The official deterministic baseline and the current no-trace experimental best remain unchanged; trace is parsed only by experimental scripts and is disabled by default everywhere else.
+
+Method:
+
+- Build the current no-trace calibrated blend probability matrix `P_base` from `llm_dual_struct_det_summary_dim64 + residual focal MLP + pairwise ensemble`.
+- Select only uncertain pairs where `P_base` falls inside a probability band.
+- Parse only the tail of each `trace.log` and extract compact structural signals: opcode/register/PC sets and counts, branch/load/store/CSR ratios, exception markers, and tail opcode n-gram/LCS overlap.
+- Train a lightweight `HistGradientBoostingClassifier` trace refiner on uncertain training pairs only, then replace `P_base[i,j]` only for uncertain validation pairs.
+- Missing trace files fall back gracefully; current public datasets had 0 missing trace files in this experiment.
+
+Seed=0 showed a promising but narrow signal. The best seed=0 setting was `tail_lines=500`, band `0.40-0.60`, GBDT refiner:
+
+| setting | first_BA | stage2_BA | stage3_BA | mean_BA | note |
+|---|---:|---:|---:|---:|---|
+| no-trace base, same seed/split | 0.9348 | 0.8956 | 0.8423 | 0.8909 | calibrated blend |
+| trace refine tail=500 band=0.40-0.60 | 0.9348 | 0.8956 | 0.8549 | 0.8951 | stage3 improved on seed=0 |
+
+However, the improvement did not hold strongly across seeds:
+
+| seeds | first_BA | stage2_BA | stage3_BA | mean_BA | mean delta vs no-trace | stage2 TPR/TNR | stage3 TPR/TNR |
+|---|---:|---:|---:|---:|---:|---|---|
+| 0-4 no-trace base | 0.8798 | 0.8710 | 0.8564 | 0.8691 | - | 0.7881/0.9539 | 0.7383/0.9744 |
+| 0-4 trace refine | 0.8837 | 0.8742 | 0.8560 | 0.8713 | +0.0022 | 0.7893/0.9591 | 0.7361/0.9759 |
+| 5-9 no-trace base | 0.8724 | 0.8403 | 0.8519 | 0.8548 | - | 0.7238/0.9567 | 0.7315/0.9722 |
+| 5-9 trace refine | 0.8695 | 0.8403 | 0.8509 | 0.8536 | -0.0013 | 0.7232/0.9574 | 0.7271/0.9747 |
+| 0-9 no-trace base | 0.8761 | 0.8556 | 0.8541 | 0.8620 | - | 0.7560/0.9553 | 0.7349/0.9733 |
+| 0-9 trace refine | 0.8766 | 0.8573 | 0.8535 | 0.8624 | +0.0005 | 0.7562/0.9583 | 0.7316/0.9753 |
+
+The 0-9 refiner touched a selective slice of pairs: about 47 uncertain pairs on first_batch, 364 on stage2, and 3111 on stage3 per validation split, with no missing trace pairs. Pair-level error deltas show why the method is not yet robust: it fixes FP pairs, but also creates enough new FP/FN or loses same-bug recall to offset most gains. On 0-9, stage3 averaged about 290 fixed FP pairs but also about 192 new FP pairs and 30 new FN pairs.
+
+Recommendation: keep trace refinement experimental and disabled. The current recommended experimental best remains the no-trace calibrated blend. Trace features may still be useful, but the next iteration should use a safer correction policy, for example only allowing high-confidence vetoes/boosts with monotonic constraints or calibrating separate FP-veto and FN-merge refiners instead of replacing probabilities directly.
+
+Reproduce:
+
+```bash
+export LLM_MODEL_CONFIG="$(cat /tmp/nomic_llm.yaml)"
+
+python run_trace_refinement_experiments.py \
+  --output-dir /tmp/trace_refine_exp_seed0 \
+  --seeds 0 \
+  --tail-lines 200 500 1000 \
+  --uncertain-bands 0.25,0.75 0.35,0.65 0.40,0.60 \
+  --refiner-model gbdt
+
+python run_trace_refinement_experiments.py \
+  --output-dir /tmp/trace_refine_exp_0_4 \
+  --seeds 0 1 2 3 4 \
+  --tail-lines 200 500 1000 \
+  --uncertain-bands 0.40,0.60 \
+  --refiner-model gbdt
+```
+
 ## Error Analysis
 
 当 TNR 高但 TPR 低时，通常说明不同 bug 容易分开，但同一 bug 的多种表现被拆碎。可以用：
