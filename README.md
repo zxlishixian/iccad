@@ -924,7 +924,7 @@ Compared with prior candidates:
 | rich_no_det_residual_focal | 0.7901 | 0.8154 | 0.8113 | 0.8056 |
 | **dual input + ensemble blend alpha=0.75** | **0.8469** | **0.8741** | **0.8510** | **0.8573** |
 
-Conclusion: dual LLM input signals are a clear improvement over the single-embedding `rich_no_det` route and over the previous soft-voting ensemble. The current experimental best is `llm_dual_struct_det_summary_dim64` blended with the existing pairwise ensemble at `alpha=0.75`; it improves both stage2 and stage3 while also raising mean BA. Keep it experimental because it depends on LLM embeddings and trained sidecar reducers/models.
+Conclusion: dual LLM input signals are a clear improvement over the single-embedding `rich_no_det` route and over the previous soft-voting ensemble. The initial 5-seed best was `llm_dual_struct_det_summary_dim64` blended with the existing pairwise ensemble at `alpha=0.75`; follow-up calibration below improves this further. Keep it experimental because it depends on LLM embeddings and trained sidecar reducers/models.
 
 Reproduce:
 
@@ -953,6 +953,51 @@ python run_input_signal_experiments.py \
   --ensemble-split-root /tmp/pairwise_llm_exp_full/splits
 ```
 
+
+### Calibration Follow-Up
+
+After the dual-input run, `run_input_signal_calibration.py` reuses trained models and evaluates blend calibration without retraining. It supports alpha grids and probability temperature on the rich MLP and ensemble probability matrices.
+
+Global alpha sweep, no temperature:
+
+| config | first_BA | stage2_BA | stage3_BA | mean_BA | stage2 TPR/TNR | stage3 TPR/TNR |
+|---|---:|---:|---:|---:|---|---|
+| alpha=0.75 | 0.8469 | 0.8741 | 0.8510 | 0.8573 | 0.8101/0.9381 | 0.7446/0.9574 |
+| **alpha=0.80** | **0.8669** | 0.8704 | 0.8545 | **0.8639** | 0.7940/0.9468 | 0.7442/0.9649 |
+| alpha=0.85 | 0.8638 | 0.8692 | 0.8546 | 0.8625 | 0.7911/0.9473 | 0.7410/0.9683 |
+
+Small temperature grid around the best alpha region:
+
+| config | first_BA | stage2_BA | stage3_BA | mean_BA | stage2 TPR/TNR | stage3 TPR/TNR |
+|---|---:|---:|---:|---:|---|---|
+| alpha=0.80, rich_temp=1.00, ens_temp=0.75 | 0.8698 | 0.8727 | 0.8564 | 0.8663 | 0.8042/0.9412 | 0.7482/0.9646 |
+| alpha=0.85, rich_temp=1.25, ens_temp=1.00 | 0.8726 | 0.8728 | 0.8601 | 0.8685 | 0.7982/0.9474 | 0.7504/0.9698 |
+| **alpha=0.85, rich_temp=0.75, ens_temp=1.25** | **0.8798** | 0.8710 | 0.8564 | **0.8691** | 0.7881/0.9539 | 0.7383/0.9744 |
+
+Dataset-size policy search gives an upper-bound style result on the current three validation sets:
+
+| dataset | setting | BA | TPR/TNR |
+|---|---|---:|---|
+| first_batch | alpha=0.85, rich_temp=0.75, ens_temp=1.25 | 0.8798 | 0.8425/0.9171 |
+| stage2 | alpha=0.80, rich_temp=1.25, ens_temp=0.75 | 0.8748 | 0.8113/0.9383 |
+| stage3 | alpha=0.80, rich_temp=1.25, ens_temp=1.00 | 0.8606 | 0.7540/0.9671 |
+| policy mean | - | 0.8717 | - |
+
+Recommendation: use the single global calibrated blend `alpha=0.85, rich_temp=0.75, ensemble_temp=1.25` as the current experimental best. Treat the dataset-size policy as a promising validation result to retest on new data before relying on it.
+
+Reproduce calibration:
+
+```bash
+export LLM_MODEL_CONFIG="$(cat /tmp/nomic_llm.yaml)"
+
+python run_input_signal_calibration.py \
+  --output-dir /tmp/input_signal_temp_grid \
+  --seeds 0 1 2 3 4 \
+  --alphas 0.75 0.80 0.85 \
+  --rich-temperatures 0.75 1.0 1.25 \
+  --ensemble-temperatures 0.75 1.0 1.25
+```
+
 ## Error Analysis
 
 当 TNR 高但 TPR 低时，通常说明不同 bug 容易分开，但同一 bug 的多种表现被拆碎。可以用：
@@ -978,8 +1023,8 @@ python3 -m venv .venv
 
 ## Next Steps
 
-1. Keep `llm_dual_struct_det_summary_dim64_blend_a0.75` as the current experimental best and validate it on any new large benchmark.
-2. Explore blend calibration per dataset size, since alpha=0.5 maximizes stage2 TPR while alpha=0.75 gives the best mean/stage3 balance.
+1. Keep `llm_dual_struct_det_summary_dim64` with global calibrated blend `alpha=0.85, rich_temp=0.75, ensemble_temp=1.25` as the current experimental best.
+2. Retest the dataset-size calibration policy on new data before relying on it; it reaches 0.8717 mean BA on the current half-split validation but may overfit these three datasets.
 3. Add stronger hard negatives: same mismatch type / similar primary type but different bug.
 4. Add postprocess `split_mixed` for large mixed clusters using `primary_signature`.
 5. Keep all pairwise MLP routes experimental; default submitted baseline remains deterministic `drain + agglomerative`.
