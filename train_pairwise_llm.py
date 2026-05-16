@@ -28,6 +28,88 @@ from run_experiments import pairwise_scores, read_gold
 from run_half_split_experiments import DEFAULT_DATASETS, opposite_part, part_for_bit, stratified_half_split
 
 
+def _normalized_matrix(vectors: Sequence[np.ndarray]) -> np.ndarray:
+    if not vectors:
+        return np.zeros((0, 0), dtype=np.float32)
+    mat = np.vstack(vectors).astype(np.float32)
+    if mat.ndim != 2 or mat.shape[1] == 0:
+        return np.zeros((len(vectors), len(vectors)), dtype=np.float32)
+    norms = np.linalg.norm(mat, axis=1, keepdims=True)
+    mat = mat / np.maximum(norms, 1e-12)
+    return mat @ mat.T
+
+
+def _case_info(features: Sequence[plf.LLMCaseFeature], idx: int, key: str) -> str:
+    value = (features[idx].info or {}).get(key, "")
+    return str(value) if value is not None else ""
+
+
+def _same_nonempty(features: Sequence[plf.LLMCaseFeature], i: int, j: int, key: str) -> bool:
+    vi = _case_info(features, i, key)
+    vj = _case_info(features, j, key)
+    return bool(vi and vj and vi == vj)
+
+
+def _build_similarity_matrix(features: Sequence[plf.LLMCaseFeature]) -> tuple[np.ndarray, np.ndarray]:
+    n = len(features)
+    if n == 0:
+        empty = np.zeros((0, 0), dtype=np.float32)
+        return empty, empty
+    sims = []
+    det_sim = _normalized_matrix([f.det_vec for f in features])
+    if det_sim.size:
+        sims.append(det_sim)
+    if any(f.has_llm for f in features):
+        llm_sim = _normalized_matrix([f.llm_vec for f in features])
+        if llm_sim.size:
+            sims.append(llm_sim)
+    if any(f.has_llm_summary for f in features):
+        summary_sim = _normalized_matrix([f.llm_summary_vec for f in features])
+        if summary_sim.size:
+            sims.append(summary_sim)
+    if not sims:
+        combined = np.zeros((n, n), dtype=np.float32)
+    else:
+        combined = np.mean(np.stack(sims, axis=0), axis=0).astype(np.float32)
+    return det_sim if det_sim.size else combined, combined
+
+
+def _positive_hard_score(features: Sequence[plf.LLMCaseFeature], sim: np.ndarray, i: int, j: int, mode: str) -> float:
+    base = float(sim[i, j]) if sim.size else 0.0
+    if mode != "diverse":
+        return base
+    # Lower score is harder: low vector similarity and different surface failure descriptions.
+    score = base
+    if _same_nonempty(features, i, j, "primary_signature"):
+        score += 0.30
+    if _same_nonempty(features, i, j, "mismatch_type"):
+        score += 0.15
+    if _same_nonempty(features, i, j, "fatal_file"):
+        score += 0.10
+    if _same_nonempty(features, i, j, "register_name"):
+        score += 0.05
+    return score
+
+
+def _negative_hard_score(features: Sequence[plf.LLMCaseFeature], sim: np.ndarray, i: int, j: int, mode: str) -> float:
+    base = float(sim[i, j]) if sim.size else 0.0
+    if mode != "confusable":
+        return base
+    # Higher score is harder: high semantic similarity and same structured failure hints.
+    score = base
+    if _same_nonempty(features, i, j, "primary_signature"):
+        score += 0.45
+    if _same_nonempty(features, i, j, "mismatch_type"):
+        score += 0.25
+    if _same_nonempty(features, i, j, "fatal_file"):
+        score += 0.20
+    if _same_nonempty(features, i, j, "register_name"):
+        score += 0.10
+    if _same_nonempty(features, i, j, "pc_region"):
+        score += 0.10
+    return score
+
+
 def sample_pairs(
     features: list[plf.LLMCaseFeature],
     labels: Sequence[str],
@@ -36,6 +118,8 @@ def sample_pairs(
     hard_positive_ratio: float,
     max_train_pairs: int,
     random_state: int,
+    positive_sampling: str = "det_low",
+    negative_sampling: str = "det_high",
 ) -> tuple[list[tuple[int, int]], np.ndarray, dict]:
     rng = random.Random(random_state)
     np_rng = np.random.default_rng(random_state)
@@ -44,14 +128,9 @@ def sample_pairs(
     for idx, bug in enumerate(labels):
         by_bug[str(bug)].append(idx)
 
-    # Build det cosine matrix for hard mining
-    if features:
-        det_mat = np.vstack([f.det_vec for f in features]).astype(np.float32)
-        norms = np.linalg.norm(det_mat, axis=1, keepdims=True)
-        det_mat = det_mat / np.maximum(norms, 1e-12)
-        det_sim = det_mat @ det_mat.T
-    else:
-        det_sim = np.zeros((0, 0), dtype=np.float32)
+    det_sim, combined_sim = _build_similarity_matrix(features)
+    pos_sim = combined_sim if positive_sampling == "diverse" else det_sim
+    neg_sim = combined_sim if negative_sampling == "confusable" else det_sim
 
     positives: list[tuple[int, int]] = []
     for indices in by_bug.values():
@@ -61,9 +140,12 @@ def sample_pairs(
 
     hard_positive_added = 0
     if positives and hard_positive_ratio > 0 and features:
-        pos_set = {tuple(sorted(p)) for p in positives}
+        pos_set_base = {tuple(sorted(p)) for p in positives}
         hard_candidates = sorted(
-            [(float(det_sim[i, j]), (i, j)) for (i, j) in pos_set if det_sim.size],
+            [
+                (_positive_hard_score(features, pos_sim, i, j, positive_sampling), (i, j))
+                for (i, j) in pos_set_base
+            ],
             key=lambda x: x[0],
         )
         target_hard_pos = min(
@@ -91,25 +173,22 @@ def sample_pairs(
     neg_set: set[tuple[int, int]] = set()
     n = len(features)
 
-    # Hard negatives: high det cosine but different bugs
-    if target_hard > 0 and n > 1 and det_sim.size:
-        sim_copy = det_sim.copy()
-        np.fill_diagonal(sim_copy, -np.inf)
-        top_k = min(16, n - 1)
+    if target_hard > 0 and n > 1:
+        hard_candidates = []
         for i in range(n):
-            cands = np.argpartition(-sim_copy[i], min(top_k, n - 1))[:top_k]
-            cands = sorted(cands, key=lambda j: sim_copy[i, j], reverse=True)
-            for j in cands:
-                j = int(j)
+            for j in range(i + 1, n):
                 if labels[i] == labels[j]:
                     continue
-                pair = tuple(sorted((i, j)))
-                if pair in neg_set or pair in pos_set:
+                pair = (i, j)
+                if pair in pos_set:
                     continue
-                neg_set.add(pair)
-                negatives.append(pair)
-                if len(negatives) >= target_hard:
-                    break
+                hard_candidates.append((_negative_hard_score(features, neg_sim, i, j, negative_sampling), pair))
+        hard_candidates.sort(key=lambda x: x[0], reverse=True)
+        for _, pair in hard_candidates:
+            if pair in neg_set:
+                continue
+            neg_set.add(pair)
+            negatives.append(pair)
             if len(negatives) >= target_hard:
                 break
 
@@ -154,6 +233,8 @@ def sample_pairs(
         "negative_pairs": int((y == 0.0).sum()),
         "hard_positive_oversampled": hard_positive_added,
         "hard_negative_pairs": min(len(negatives), target_hard),
+        "positive_sampling": positive_sampling,
+        "negative_sampling": negative_sampling,
     }
     return pairs, y.astype(np.float32, copy=False), stats
 
@@ -234,6 +315,8 @@ def train(args: argparse.Namespace) -> dict:
         hard_positive_ratio=args.hard_positive_ratio,
         max_train_pairs=args.max_train_pairs,
         random_state=args.random_state,
+        positive_sampling=args.positive_sampling,
+        negative_sampling=args.negative_sampling,
     )
     print(
         f"[pairs] total={len(pairs)} pos={pair_stats['positive_pairs']} "
@@ -331,6 +414,8 @@ def train(args: argparse.Namespace) -> dict:
         "svd_dim": args.svd_dim,
         "use_llm": args.use_llm,
         "llm_doc_style": args.llm_doc_style,
+        "positive_sampling": args.positive_sampling,
+        "negative_sampling": args.negative_sampling,
         "input_dim": input_dim,
         "seed": args.seed,
         "combo": args.combo,
@@ -358,7 +443,11 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     p.add_argument("--model-tag", default="", help="optional filename tag for saved model/config")
     p.add_argument(
         "--feature-mode",
-        choices=("summary21", "rich", "rich_no_llm", "rich_no_det", "llm_dual", "llm_dual_struct", "llm_dual_struct_det_summary"),
+        choices=(
+            "summary21", "rich", "rich_no_llm", "rich_no_det",
+            "llm_dual", "llm_dual_struct", "llm_dual_struct_det_summary",
+            "llm_dual_struct_det_summary_cross",
+        ),
         default="summary21",
     )
     p.add_argument("--llm-reduce-dim", type=int, default=128)
@@ -385,6 +474,8 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     p.add_argument("--negative-ratio", type=float, default=2.0)
     p.add_argument("--hard-negative-ratio", type=float, default=0.5)
     p.add_argument("--hard-positive-ratio", type=float, default=0.5)
+    p.add_argument("--positive-sampling", choices=("det_low", "diverse"), default="det_low")
+    p.add_argument("--negative-sampling", choices=("det_high", "confusable"), default="det_high")
     p.add_argument("--max-train-pairs", type=int, default=200000)
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--combo", type=int, default=0)

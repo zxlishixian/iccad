@@ -42,6 +42,21 @@ CONFIGS: dict[str, dict] = {
     "llm_dual_struct_det_summary_dim64": {
         "feature_mode": "llm_dual_struct_det_summary", "mlp_arch": "residual", "loss": "focal", "llm_reduce_dim": 64,
     },
+    "llm_dual_struct_det_summary_cross_dim64": {
+        "feature_mode": "llm_dual_struct_det_summary_cross", "mlp_arch": "residual", "loss": "focal", "llm_reduce_dim": 64,
+    },
+    "llm_dual_dim64_hard_pos": {
+        "feature_mode": "llm_dual_struct_det_summary", "mlp_arch": "residual", "loss": "focal", "llm_reduce_dim": 64,
+        "positive_sampling": "diverse", "negative_sampling": "det_high",
+    },
+    "llm_dual_dim64_hard_neg": {
+        "feature_mode": "llm_dual_struct_det_summary", "mlp_arch": "residual", "loss": "focal", "llm_reduce_dim": 64,
+        "positive_sampling": "det_low", "negative_sampling": "confusable",
+    },
+    "llm_dual_dim64_hard_posneg": {
+        "feature_mode": "llm_dual_struct_det_summary", "mlp_arch": "residual", "loss": "focal", "llm_reduce_dim": 64,
+        "positive_sampling": "diverse", "negative_sampling": "confusable",
+    },
     "llm_dual_struct_det_summary_dim256": {
         "feature_mode": "llm_dual_struct_det_summary", "mlp_arch": "residual", "loss": "focal", "llm_reduce_dim": 256,
     },
@@ -67,6 +82,7 @@ def _model_ext(model_type: str) -> str:
 def _read_config_rows(config_path: Path, run_name: str, blend_alpha: str = "") -> list[dict]:
     data = json.loads(config_path.read_text(encoding="utf-8"))
     rows = []
+    pair_stats = data.get("pair_stats", {}) or {}
     for detail in data.get("val_details", []):
         rows.append({
             "run_name": run_name,
@@ -77,6 +93,8 @@ def _read_config_rows(config_path: Path, run_name: str, blend_alpha: str = "") -
             "arch": data.get("mlp_arch", ""),
             "loss": data.get("loss", ""),
             "llm_reduce_dim": data.get("llm_reduce_dim", ""),
+            "positive_sampling": data.get("positive_sampling", pair_stats.get("positive_sampling", "")),
+            "negative_sampling": data.get("negative_sampling", pair_stats.get("negative_sampling", "")),
             "blend_alpha": blend_alpha,
             "dataset": detail.get("dataset"),
             "BA": detail.get("BA"),
@@ -217,6 +235,8 @@ def summarize(rows: Sequence[dict]) -> list[dict]:
             "method": first["method"],
             "feature_mode": first["feature_mode"],
             "reduce_dim": first.get("llm_reduce_dim", ""),
+            "positive_sampling": first.get("positive_sampling", ""),
+            "negative_sampling": first.get("negative_sampling", ""),
             "blend_alpha": first.get("blend_alpha", ""),
             "dataset": dataset,
             "mean_BA": statistics.mean(bas),
@@ -232,8 +252,8 @@ def print_wide(summary_rows: Sequence[dict]) -> None:
     by_run: dict[str, dict[str, dict]] = defaultdict(dict)
     for row in summary_rows:
         by_run[row["run_name"]][row["dataset"]] = row
-    print("\n| method | feature_mode | reduce_dim | blend_alpha | first_BA | stage2_BA | stage3_BA | mean_BA | first_TPR/TNR | stage2_TPR/TNR | stage3_TPR/TNR |")
-    print("|---|---|---:|---:|---:|---:|---:|---:|---|---|---|")
+    print("\n| method | feature_mode | reduce_dim | pos_sampling | neg_sampling | blend_alpha | first_BA | stage2_BA | stage3_BA | mean_BA | first_TPR/TNR | stage2_TPR/TNR | stage3_TPR/TNR |")
+    print("|---|---|---:|---|---|---:|---:|---:|---:|---:|---|---|---|")
     for run_name in sorted(by_run):
         rows = by_run[run_name]
         fb = rows.get("first_batch_dataset", {})
@@ -245,7 +265,7 @@ def print_wide(summary_rows: Sequence[dict]) -> None:
         def fmt_pair(r: dict) -> str:
             return f"{float(r.get('mean_TPR', 0.0)):.4f}/{float(r.get('mean_TNR', 0.0)):.4f}" if r else ""
         print(
-            f"| {run_name} | {first.get('feature_mode', '')} | {first.get('reduce_dim', '')} | {first.get('blend_alpha', '')} "
+            f"| {run_name} | {first.get('feature_mode', '')} | {first.get('reduce_dim', '')} | {first.get('positive_sampling', '')} | {first.get('negative_sampling', '')} | {first.get('blend_alpha', '')} "
             f"| {float(fb.get('mean_BA', 0.0)):.6f} | {float(s2.get('mean_BA', 0.0)):.6f} "
             f"| {float(s3.get('mean_BA', 0.0)):.6f} | {mean_ba:.6f} "
             f"| {fmt_pair(fb)} | {fmt_pair(s2)} | {fmt_pair(s3)} |"
@@ -270,6 +290,8 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     p.add_argument("--negative-ratio", type=float, default=2.0)
     p.add_argument("--hard-negative-ratio", type=float, default=0.5)
     p.add_argument("--hard-positive-ratio", type=float, default=0.5)
+    p.add_argument("--positive-sampling", choices=("det_low", "diverse"), default="det_low")
+    p.add_argument("--negative-sampling", choices=("det_high", "confusable"), default="det_high")
     p.add_argument("--early-stop-patience", type=int, default=8)
     p.add_argument("--dropout", type=float, default=0.2)
     p.add_argument("--lr", type=float, default=1e-3)
@@ -319,6 +341,8 @@ def main(argv: Sequence[str] | None = None) -> int:
                 "--negative-ratio", str(args.negative_ratio),
                 "--hard-negative-ratio", str(args.hard_negative_ratio),
                 "--hard-positive-ratio", str(args.hard_positive_ratio),
+                "--positive-sampling", str(cfg.get("positive_sampling", args.positive_sampling)),
+                "--negative-sampling", str(cfg.get("negative_sampling", args.negative_sampling)),
                 "--early-stop-patience", str(args.early_stop_patience),
                 "--dropout", str(args.dropout),
                 "--lr", str(args.lr),
@@ -369,13 +393,13 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     result_header = [
         "run_name", "seed", "combo", "method", "feature_mode", "arch", "loss",
-        "llm_reduce_dim", "blend_alpha", "dataset", "BA", "TPR", "TNR",
+        "llm_reduce_dim", "positive_sampling", "negative_sampling", "blend_alpha", "dataset", "BA", "TPR", "TNR",
         "num_cases", "k", "model_path", "config_path", "runtime_sec", "pred_path",
     ]
     _write_csv(args.output_dir / "results.csv", all_rows, result_header)
     summary_rows = summarize(all_rows)
     summary_header = [
-        "run_name", "method", "feature_mode", "reduce_dim", "blend_alpha", "dataset",
+        "run_name", "method", "feature_mode", "reduce_dim", "positive_sampling", "negative_sampling", "blend_alpha", "dataset",
         "mean_BA", "std_BA", "mean_TPR", "mean_TNR", "num_runs",
     ]
     _write_csv(args.output_dir / "summary.csv", summary_rows, summary_header)

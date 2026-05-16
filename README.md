@@ -1065,6 +1065,34 @@ python run_postprocess_experiments.py \
   --split-keys auto
 ```
 
+
+### Sampling and Cross-Signal Follow-Up
+
+A new experimental round tested whether the remaining recall gap could be reduced by changing training sampling or adding lightweight LLM agreement signals, without increasing the residual MLP depth.
+
+Implementation additions:
+
+- `--positive-sampling det_low|diverse`: hard positive mining can rank same-bug pairs by combined deterministic/features/summary embedding dissimilarity plus different failure hints.
+- `--negative-sampling det_high|confusable`: hard negative mining can rank different-bug pairs by semantic similarity plus shared primary signature, mismatch type, fatal file, register, or PC region.
+- `llm_dual_struct_det_summary_cross`: adds 14 scalar agreement features between features-style and summary-style LLM embeddings, including cross cosine, max/min agreement, product agreement, and L1/Linf diff summaries.
+
+All of these remain experimental-only. They do not affect `regr_fail_bucketing.py` default prediction and still use only `sim.log` and `regr.log`; no `gold.csv` is read outside training/evaluation scripts.
+
+Seed=0 quick search did not produce a stable replacement for the current calibrated global blend:
+
+| experiment | best setting | first_BA | stage2_BA | stage3_BA | mean_BA | conclusion |
+|---|---|---:|---:|---:|---:|---|
+| baseline sampling grid | `alpha=0.75, rt=0.75, et=1.25` | 0.8329 | 0.8601 | 0.8576 | 0.8502 | useful calibration reference, below current best |
+| hard positive, ratio=0.50 | `alpha=0.75, rt=0.75, et=1.00` | 0.8329 | 0.8743 | 0.8585 | 0.8552 | promising on seed=0 only |
+| hard positive, ratio=0.50, seeds 0-4 | same setting | 0.8041 | 0.8537 | 0.8365 | 0.8314 | not stable enough |
+| hard negative / hard pos+neg | calibration grid | <=0.8473 | <=0.8604 | <=0.8486 | <=0.8473 | no improvement |
+| cross-scalar input | calibration grid | 0.8236 | 0.8741 | 0.8334 | 0.8437 | no improvement |
+| hard positive, ratio=0.25 | `alpha=0.75, rt=0.75, et=1.25` | 0.8329 | 0.8743 | 0.8519 | 0.8530 | better than ratio=0.25 baseline, still below ratio=0.50 seed=0 and not enough for 0-9 |
+
+The main lesson is that naive hard-positive oversampling can improve seed=0 stage2/stage3 recall, but it has high seed variance and hurts first_batch. Cross-embedding scalar agreement did not add a useful signal beyond the existing dual relation blocks and structured features.
+
+Recommendation: keep the current experimental best as `llm_dual_struct_det_summary_dim64 + residual focal MLP + pairwise ensemble calibrated blend` with global `alpha=0.85, rich_temp=0.75, ensemble_temp=1.25`. Do not enable the new sampling or cross-scalar mode as the recommended best. Future work should focus on less noisy supervised objectives, such as pair weighting by cluster fragmentation, per-dataset calibration learned from held-out splits, or ranking/metric losses that directly optimize close same-bug pairs without over-repeating them.
+
 ## Error Analysis
 
 当 TNR 高但 TPR 低时，通常说明不同 bug 容易分开，但同一 bug 的多种表现被拆碎。可以用：

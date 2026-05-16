@@ -668,8 +668,14 @@ FEATURE_MODES = {
     "llm_dual",
     "llm_dual_struct",
     "llm_dual_struct_det_summary",
+    "llm_dual_struct_det_summary_cross",
 }
-DUAL_FEATURE_MODES = {"llm_dual", "llm_dual_struct", "llm_dual_struct_det_summary"}
+DUAL_FEATURE_MODES = {
+    "llm_dual",
+    "llm_dual_struct",
+    "llm_dual_struct_det_summary",
+    "llm_dual_struct_det_summary_cross",
+}
 
 
 def _relation_block(a: np.ndarray, b: np.ndarray) -> np.ndarray:
@@ -766,6 +772,60 @@ def _dual_scalar_features(a: LLMCaseFeature, b: LLMCaseFeature) -> np.ndarray:
     )
 
 
+def _safe_cosine(a: np.ndarray, b: np.ndarray) -> float:
+    return _cosine(a, b) if a.size and b.size else 0.0
+
+
+def _safe_euclidean(a: np.ndarray, b: np.ndarray) -> float:
+    return _euclidean(a, b) if a.size and b.size else 0.0
+
+
+def build_dual_cross_scalar_features(a: LLMCaseFeature, b: LLMCaseFeature) -> np.ndarray:
+    fv_a = a.effective_llm_vec
+    fv_b = b.effective_llm_vec
+    sv_a = a.effective_llm_summary_vec
+    sv_b = b.effective_llm_summary_vec
+    features_cos = _safe_cosine(fv_a, fv_b)
+    summary_cos = _safe_cosine(sv_a, sv_b)
+    cross_ab = _safe_cosine(fv_a, sv_b)
+    cross_ba = _safe_cosine(sv_a, fv_b)
+    features_euc = _safe_euclidean(fv_a, fv_b)
+    summary_euc = _safe_euclidean(sv_a, sv_b)
+    if fv_a.size and fv_b.size:
+        fdiff = np.abs(fv_a - fv_b)
+        features_l1_mean = float(np.mean(fdiff))
+        features_linf = float(np.max(fdiff))
+    else:
+        features_l1_mean = 0.0
+        features_linf = 0.0
+    if sv_a.size and sv_b.size:
+        sdiff = np.abs(sv_a - sv_b)
+        summary_l1_mean = float(np.mean(sdiff))
+        summary_linf = float(np.max(sdiff))
+    else:
+        summary_l1_mean = 0.0
+        summary_linf = 0.0
+    return np.asarray(
+        [
+            cross_ab,
+            cross_ba,
+            0.5 * (cross_ab + cross_ba),
+            abs(cross_ab - cross_ba),
+            max(features_cos, summary_cos),
+            min(features_cos, summary_cos),
+            features_cos * summary_cos,
+            abs(features_euc - summary_euc),
+            features_l1_mean,
+            summary_l1_mean,
+            abs(features_l1_mean - summary_l1_mean),
+            features_linf,
+            summary_linf,
+            abs(features_linf - summary_linf),
+        ],
+        dtype=np.float32,
+    )
+
+
 def build_dual_pair_feature_vector(
     a: LLMCaseFeature,
     b: LLMCaseFeature,
@@ -776,10 +836,12 @@ def build_dual_pair_feature_vector(
         _relation_block(a.effective_llm_summary_vec, b.effective_llm_summary_vec),
         _dual_scalar_features(a, b),
     ]
-    if feature_mode in {"llm_dual_struct", "llm_dual_struct_det_summary"}:
+    if feature_mode in {"llm_dual_struct", "llm_dual_struct_det_summary", "llm_dual_struct_det_summary_cross"}:
         blocks.append(build_structured_pair_feature_vector(a, b))
-    if feature_mode == "llm_dual_struct_det_summary":
+    if feature_mode in {"llm_dual_struct_det_summary", "llm_dual_struct_det_summary_cross"}:
         blocks.append(build_det_scalar_summary_vector(a, b))
+    if feature_mode == "llm_dual_struct_det_summary_cross":
+        blocks.append(build_dual_cross_scalar_features(a, b))
     return np.concatenate(blocks).astype(np.float32, copy=False)
 
 
