@@ -679,7 +679,7 @@ This backend is experimental. The default submitted baseline remains `drain + ag
 |---------|------|------|
 | **logistic** | sklearn LogisticRegression + StandardScaler | 可解释，稳定 |
 | **gbdt** | sklearn HistGradientBoostingClassifier | 非线性，tabular 友好 |
-| **mlp** | PyTorch MLP (21→64→32→1, GELU, LayerNorm, Dropout 0.1) | 深度学习 |
+| **mlp** | PyTorch MLP; legacy 21-dim shallow and experimental deep/residual rich modes | 深度学习 |
 
 ### 5-Seed Half-Split Results
 
@@ -789,6 +789,88 @@ python run_ensemble.py \
   --output-dir /tmp/pairwise_llm_exp_ensemble
 ```
 
+
+
+### Rich Pairwise MLP (Experimental)
+
+Rich Pairwise MLP is a research-only deep learning route. It does not change the official predictor interface and is not the default. Training/evaluation scripts read half-split `gold.csv` labels; formal prediction with `regr_fail_bucketing.py --input ... --output ... --k ...` still reads only `input.csv` plus referenced `sim.log` / `regr.log`, never `gold.csv` or `meta.csv`, and never `trace.log`.
+
+新增 feature modes:
+
+| feature_mode | Pair input |
+|---|---|
+| `summary21` | existing 21 scalar pair features |
+| `rich` | `abs(det_i-det_j), det_i*det_j, abs(llm_i-llm_j), llm_i*llm_j, summary21` |
+| `rich_no_llm` | deterministic vector relation plus summary scalars with LLM scalar terms zeroed |
+| `rich_no_det` | LLM vector relation plus summary scalars with deterministic scalar terms zeroed |
+
+For rich modes, Nomic/OpenAI-compatible embedding vectors are reduced with a train-fitted `TruncatedSVD + Normalizer` sidecar before pair construction (`--llm-reduce-dim`, default 128). Torch checkpoints only store `state_dict` and architecture/config fields; scaler/reducer preprocessing is saved separately as `.preproc.pkl` to avoid torch deserialization issues.
+
+New MLP options include:
+
+```text
+--feature-mode summary21|rich|rich_no_llm|rich_no_det
+--llm-reduce-dim 128
+--mlp-arch shallow|deep|residual
+--loss bce|focal
+--dropout 0.2
+--layernorm / --no-layernorm
+--batchnorm
+```
+
+Seed=0 search with real Nomic embeddings (`embedding_dim=768`, no fallback warnings):
+
+| method | feature_mode | arch | loss | first_BA | stage2_BA | stage3_BA | mean_BA |
+|---|---|---|---|---:|---:|---:|---:|
+| rich_mlp_summary21_shallow_bce | summary21 | shallow | bce | 0.785714 | 0.830357 | 0.805856 | 0.807309 |
+| rich_mlp_summary21_deep_focal | summary21 | deep | focal | 0.802679 | 0.835587 | 0.794351 | 0.810872 |
+| rich_mlp_rich_deep_bce | rich | deep | bce | 0.720179 | 0.709949 | 0.751991 | 0.727373 |
+| rich_mlp_rich_deep_focal | rich | deep | focal | 0.772143 | 0.732440 | 0.788889 | 0.764491 |
+| rich_mlp_rich_residual_focal | rich | residual | focal | 0.831964 | 0.797109 | 0.792417 | 0.807163 |
+
+Seed=0 ablation on residual/focal:
+
+| method | feature_mode | first_BA | stage2_BA | stage3_BA | mean_BA |
+|---|---|---:|---:|---:|---:|
+| summary21_deep_focal | summary21 | 0.802679 | 0.835587 | 0.794351 | 0.810872 |
+| rich_residual_focal | rich | 0.831964 | 0.797109 | 0.792417 | 0.807163 |
+| rich_no_llm_residual_focal | rich_no_llm | 0.750000 | 0.690986 | 0.734130 | 0.725039 |
+| rich_no_det_residual_focal | rich_no_det | 0.708036 | 0.804847 | 0.812350 | 0.775078 |
+
+5-seed validation of the best candidates:
+
+| method | feature_mode | arch | loss | first_BA | stage2_BA | stage3_BA | mean_BA |
+|---|---|---|---|---:|---:|---:|---:|
+| rich_no_det_residual_focal | rich_no_det | residual | focal | 0.790071 | 0.815425 | 0.811272 | 0.805590 |
+| rich_residual_focal | rich | residual | focal | 0.811750 | 0.775901 | 0.793327 | 0.793659 |
+| summary21_deep_focal | summary21 | deep | focal | 0.750036 | 0.830689 | 0.795655 | 0.792127 |
+| summary21_shallow_bce | summary21 | shallow | bce | 0.752071 | 0.827551 | 0.797428 | 0.792350 |
+
+Conclusion: `rich_no_det_residual_focal` exceeds the current soft-voting ensemble on mean BA (0.8056 vs 0.7990) and improves stage3 (0.8113 vs 0.8043), but it trails ensemble on stage2 (0.8154 vs 0.8279) and has a high-TNR/low-TPR under-merge profile. It is worth keeping as an experimental candidate, especially for larger stage3-like sets, but the soft-voting ensemble remains the safer experimental best for balanced stage2/stage3 behavior.
+
+Reproduce:
+
+```bash
+export LLM_MODEL_CONFIG="$(cat /tmp/nomic_llm.yaml)"
+
+python run_rich_mlp_experiments.py \
+  --output-dir /tmp/rich_pairwise_mlp_5seed_best \
+  --seeds 0 1 2 3 4 \
+  --configs summary21_deep_focal summary21_shallow_bce \
+            rich_residual_focal rich_no_det_residual_focal \
+  --epochs 30 \
+  --batch-size 8192 \
+  --max-train-pairs 300000 \
+  --negative-ratio 2.0 \
+  --hard-negative-ratio 0.5 \
+  --hard-positive-ratio 0.5 \
+  --early-stop-patience 8 \
+  --llm-reduce-dim 128 \
+  --dropout 0.2 \
+  --lr 1e-3 \
+  --weight-decay 1e-4
+```
+
 ## Error Analysis
 
 当 TNR 高但 TPR 低时，通常说明不同 bug 容易分开，但同一 bug 的多种表现被拆碎。可以用：
@@ -814,8 +896,8 @@ python3 -m venv .venv
 
 ## Next Steps
 
-1. Run architecture ablation: `plain` vs `layernorm` vs `residual`, prioritizing stage3 TPR and mean BA.
-2. Add focal loss or class-balanced loss if residual still over-merges or under-merges.
+1. Tune rich MLP calibration to recover TPR on stage2 while preserving the stage3 gain from `rich_no_det_residual_focal`.
+2. Try probability calibration or cluster-distance temperature for rich models, since current rich variants are high-TNR/low-TPR.
 3. Add stronger hard negatives: same mismatch type / similar primary type but different bug.
 4. Add postprocess `split_mixed` for large mixed clusters using `primary_signature`.
-5. Keep pairwise MLP experimental unless multi-seed validation shows stable gains over `drain + agglomerative`.
+5. Keep pairwise MLP experimental; default submitted baseline remains deterministic `drain + agglomerative`.

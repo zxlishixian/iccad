@@ -133,6 +133,16 @@ def main() -> int:
     parser.add_argument("--seeds", nargs="+", type=int, default=[0])
     parser.add_argument("--combo", type=int, default=0)
     parser.add_argument("--methods", nargs="+", choices=("logistic", "gbdt", "mlp"), default=["logistic", "gbdt", "mlp"])
+    parser.add_argument("--feature-mode", choices=("summary21", "rich", "rich_no_llm", "rich_no_det"), default="summary21")
+    parser.add_argument("--llm-reduce-dim", type=int, default=128)
+    parser.add_argument("--mlp-arch", choices=("shallow", "deep", "residual"), default="shallow")
+    parser.add_argument("--loss", choices=("bce", "focal"), default="bce")
+    parser.add_argument("--focal-gamma", type=float, default=2.0)
+    parser.add_argument("--focal-alpha", default="auto")
+    parser.add_argument("--early-stop-patience", type=int, default=8)
+    parser.add_argument("--layernorm", action="store_true", default=True)
+    parser.add_argument("--no-layernorm", action="store_true", default=False)
+    parser.add_argument("--batchnorm", action="store_true", default=False)
     parser.add_argument("--baselines", nargs="+", choices=("deterministic", "llm_concat_features", "llm_concat_summary"),
                         default=["deterministic", "llm_concat_features"])
     parser.add_argument("--use-llm", action="store_true", default=True)
@@ -144,7 +154,7 @@ def main() -> int:
     parser.add_argument("--epochs", type=int, default=40)
     parser.add_argument("--max-train-pairs", type=int, default=200000)
     parser.add_argument("--batch-size", type=int, default=4096)
-    parser.add_argument("--hidden-dims", nargs="+", type=int, default=[128, 64])
+    parser.add_argument("--hidden-dims", nargs="+", type=int, default=None)
     parser.add_argument("--dropout", type=float, default=0.15)
     parser.add_argument("--negative-ratio", type=float, default=2.0)
     parser.add_argument("--hard-negative-ratio", type=float, default=0.5)
@@ -155,6 +165,8 @@ def main() -> int:
 
     if args.no_llm:
         args.use_llm = False
+    if args.no_layernorm:
+        args.layernorm = False
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -186,12 +198,25 @@ def main() -> int:
         # --- Train pairwise models ---
         for model_type in args.methods:
             print(f"\n=== Training {model_type} seed={seed} combo={combo:03b} ===", file=sys.stderr)
+            model_tag = model_type
+            method_label = f"pairwise_{model_type}"
+            if model_type == "mlp" or args.feature_mode != "summary21":
+                model_tag = f"{model_type}_{args.feature_mode}_{args.mlp_arch}_{args.loss}"
+                method_label = f"pairwise_{model_tag}"
             train_cmd = [
                 args.python,
                 str(PROJECT_ROOT / "train_pairwise_llm.py"),
                 "--datasets", *[str(d) for d in datasets],
                 "--output-dir", str(args.output_dir / "models"),
                 "--model-type", model_type,
+                "--model-tag", model_tag,
+                "--feature-mode", args.feature_mode,
+                "--llm-reduce-dim", str(args.llm_reduce_dim),
+                "--mlp-arch", args.mlp_arch,
+                "--loss", args.loss,
+                "--focal-gamma", str(args.focal_gamma),
+                "--focal-alpha", str(args.focal_alpha),
+                "--early-stop-patience", str(args.early_stop_patience),
                 "--svd-dim", str(args.svd_dim),
                 "--llm-doc-style", args.llm_doc_style,
                 "--llm-cache-dir", str(args.llm_cache_dir),
@@ -201,13 +226,18 @@ def main() -> int:
                 "--epochs", str(args.epochs),
                 "--max-train-pairs", str(args.max_train_pairs),
                 "--batch-size", str(args.batch_size),
-                "--hidden-dims", *[str(d) for d in args.hidden_dims],
                 "--dropout", str(args.dropout),
                 "--negative-ratio", str(args.negative_ratio),
                 "--hard-negative-ratio", str(args.hard_negative_ratio),
                 "--hard-positive-ratio", str(args.hard_positive_ratio),
                 "--predict-batch-size", str(args.predict_batch_size),
             ]
+            if args.hidden_dims:
+                train_cmd.extend(["--hidden-dims", *[str(d) for d in args.hidden_dims]])
+            if args.no_layernorm:
+                train_cmd.append("--no-layernorm")
+            if args.batchnorm:
+                train_cmd.append("--batchnorm")
             if not args.use_llm:
                 train_cmd.append("--no-llm")
 
@@ -220,7 +250,7 @@ def main() -> int:
 
             # Find model path
             ext = "pt" if model_type == "mlp" else "pkl"
-            model_path = args.output_dir / "models" / f"model_seed{seed}_combo{combo:03b}_{model_type}.{ext}"
+            model_path = args.output_dir / "models" / f"model_seed{seed}_combo{combo:03b}_{model_tag}.{ext}"
 
             # Evaluate on each val part
             for part in all_val_parts:
@@ -253,7 +283,7 @@ def main() -> int:
                     "seed": seed,
                     "combo": f"{combo:03b}",
                     "dataset": part["dataset"],
-                    "method": f"pairwise_{model_type}",
+                    "method": method_label,
                     "doc_style": args.llm_doc_style if args.use_llm else "none",
                     "model_type": model_type,
                     "BA": ba,

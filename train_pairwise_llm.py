@@ -193,13 +193,30 @@ def train(args: argparse.Namespace) -> dict:
     )
     all_features: list[plf.LLMCaseFeature] = []
     all_labels: list[str] = []
+    all_features, _bundle = plf.build_llm_case_features_for_inputs(
+        train_inputs, svd_dim=args.svd_dim, llm_args=llm_args
+    )
+    offset = 0
     for inp, gold in zip(train_inputs, train_golds):
-        feats, _bundle = plf.build_llm_case_features(inp, svd_dim=args.svd_dim, llm_args=llm_args)
         gold_labels = read_gold(gold)
-        if len(feats) != len(gold_labels):
-            raise RuntimeError(f"feature/label mismatch: {len(feats)} vs {len(gold_labels)} in {inp}")
-        all_features.extend(feats)
+        next_offset = offset + len(gold_labels)
+        if next_offset > len(all_features):
+            raise RuntimeError(f"feature/label mismatch in {inp}")
         all_labels.extend(gold_labels)
+        offset = next_offset
+    if len(all_features) != len(all_labels):
+        raise RuntimeError(f"feature/label mismatch: {len(all_features)} vs {len(all_labels)}")
+
+    llm_reducer = None
+    if args.feature_mode in {"rich", "rich_no_det"} and args.llm_reduce_dim > 0:
+        llm_reducer = plf.fit_llm_reducer(
+            all_features, args.llm_reduce_dim, random_state=args.random_state
+        )
+        print(
+            f"[features] llm_reduce_dim={args.llm_reduce_dim} "
+            f"reducer={'none' if llm_reducer is None else type(llm_reducer).__name__}",
+            file=sys.stderr,
+        )
 
     # Sample pairs
     pairs, y, pair_stats = sample_pairs(
@@ -219,9 +236,12 @@ def train(args: argparse.Namespace) -> dict:
     )
 
     # Build pairwise feature matrix
-    X = plf.build_llm_pair_feature_matrix(all_features, pairs)
+    X = plf.build_rich_pair_feature_matrix(all_features, pairs, feature_mode=args.feature_mode)
     input_dim = X.shape[1]
-    print(f"[features] input_dim={input_dim} pairs={len(pairs)}", file=sys.stderr)
+    print(
+        f"[features] mode={args.feature_mode} input_dim={input_dim} pairs={len(pairs)}",
+        file=sys.stderr,
+    )
 
     # Train selected backend
     train_time = time.perf_counter()
@@ -241,9 +261,22 @@ def train(args: argparse.Namespace) -> dict:
             weight_decay=args.weight_decay,
             device=args.device,
             random_state=args.random_state,
+            mlp_arch=args.mlp_arch,
+            loss=args.loss,
+            focal_gamma=args.focal_gamma,
+            focal_alpha=args.focal_alpha,
+            early_stop_patience=args.early_stop_patience,
+            layernorm=args.layernorm,
+            batchnorm=args.batchnorm,
         )
     else:
         raise ValueError(f"unknown model_type: {args.model_type}")
+    model_pkg.update({
+        "feature_mode": args.feature_mode,
+        "llm_reduce_dim": args.llm_reduce_dim if args.feature_mode in {"rich", "rich_no_det"} else 0,
+        "llm_reducer": llm_reducer,
+        "svd_dim": args.svd_dim,
+    })
     train_time = time.perf_counter() - train_time
 
     # Evaluate on each validation part
@@ -275,12 +308,18 @@ def train(args: argparse.Namespace) -> dict:
 
     # Save model
     ext = "pt" if args.model_type == "mlp" else "pkl"
-    model_path = args.output_dir / f"model_seed{args.seed}_combo{args.combo:03b}_{args.model_type}.{ext}"
+    model_tag = args.model_tag or args.model_type
+    model_path = args.output_dir / f"model_seed{args.seed}_combo{args.combo:03b}_{model_tag}.{ext}"
     plf.save_model_pkg(model_pkg, model_path)
 
     total_time = time.perf_counter() - t0
     config = {
         "model_type": args.model_type,
+        "model_tag": model_tag,
+        "feature_mode": args.feature_mode,
+        "mlp_arch": args.mlp_arch,
+        "loss": args.loss,
+        "llm_reduce_dim": args.llm_reduce_dim,
         "svd_dim": args.svd_dim,
         "use_llm": args.use_llm,
         "llm_doc_style": args.llm_doc_style,
@@ -297,7 +336,7 @@ def train(args: argparse.Namespace) -> dict:
         "total_time_sec": total_time,
         "model_path": str(model_path),
     }
-    config_path = args.output_dir / f"config_seed{args.seed}_combo{args.combo:03b}_{args.model_type}.json"
+    config_path = args.output_dir / f"config_seed{args.seed}_combo{args.combo:03b}_{model_tag}.json"
     config_path.parent.mkdir(parents=True, exist_ok=True)
     config_path.write_text(json.dumps(config, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return config
@@ -308,6 +347,17 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     p.add_argument("--datasets", nargs="+", type=Path, default=DEFAULT_DATASETS)
     p.add_argument("--output-dir", type=Path, required=True)
     p.add_argument("--model-type", choices=("logistic", "gbdt", "mlp"), default="logistic")
+    p.add_argument("--model-tag", default="", help="optional filename tag for saved model/config")
+    p.add_argument("--feature-mode", choices=("summary21", "rich", "rich_no_llm", "rich_no_det"), default="summary21")
+    p.add_argument("--llm-reduce-dim", type=int, default=128)
+    p.add_argument("--mlp-arch", choices=("shallow", "deep", "residual"), default="shallow")
+    p.add_argument("--loss", choices=("bce", "focal"), default="bce")
+    p.add_argument("--focal-gamma", type=float, default=2.0)
+    p.add_argument("--focal-alpha", default="auto")
+    p.add_argument("--early-stop-patience", type=int, default=8)
+    p.add_argument("--layernorm", action="store_true", default=True)
+    p.add_argument("--no-layernorm", action="store_true", default=False)
+    p.add_argument("--batchnorm", action="store_true", default=False)
     p.add_argument("--use-llm", action="store_true", default=True)
     p.add_argument("--no-llm", action="store_true", default=False)
     p.add_argument("--llm-doc-style", choices=("features", "summary"), default="features")
@@ -318,7 +368,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     p.add_argument("--batch-size", type=int, default=4096)
     p.add_argument("--lr", type=float, default=1e-3)
     p.add_argument("--weight-decay", type=float, default=1e-4)
-    p.add_argument("--hidden-dims", nargs="+", type=int, default=[128, 64])
+    p.add_argument("--hidden-dims", nargs="+", type=int, default=None)
     p.add_argument("--dropout", type=float, default=0.15)
     p.add_argument("--negative-ratio", type=float, default=2.0)
     p.add_argument("--hard-negative-ratio", type=float, default=0.5)
@@ -335,6 +385,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parse_args(argv)
     if args.no_llm:
         args.use_llm = False
+    if args.no_layernorm:
+        args.layernorm = False
     args.output_dir.mkdir(parents=True, exist_ok=True)
     try:
         config = train(args)

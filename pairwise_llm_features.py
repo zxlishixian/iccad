@@ -30,6 +30,7 @@ class LLMCaseFeature:
     case_id: str
     det_vec: np.ndarray
     llm_vec: np.ndarray
+    llm_vec_reduced: np.ndarray | None
     tokens: list[str]
     token_set: set[str]
     primary_tokens: set[str]
@@ -40,6 +41,12 @@ class LLMCaseFeature:
     @property
     def has_llm(self) -> bool:
         return self.llm_vec.size > 0
+
+    @property
+    def effective_llm_vec(self) -> np.ndarray:
+        if self.llm_vec_reduced is not None:
+            return self.llm_vec_reduced
+        return self.llm_vec
 
 
 def _make_llm_args(
@@ -87,15 +94,21 @@ def fetch_llm_embeddings_for_counters(
     return llm_mat, model_name
 
 
-def build_llm_case_features(
-    input_csv: str | Path,
+def build_llm_case_features_for_inputs(
+    input_csvs: Sequence[str | Path],
     parser: str = "drain",
     svd_dim: int = 64,
     llm_args: argparse.Namespace | None = None,
 ) -> tuple[list[LLMCaseFeature], pf.VectorizerBundle]:
-    """Build deterministic features (via pairwise_features) and attach LLM embeddings."""
-    det_features, bundle = pf.build_case_features(
-        Path(input_csv).resolve(),
+    """Build deterministic features for one or more inputs and attach LLM embeddings.
+
+    Multiple training splits are vectorized together so deterministic SVD vectors
+    live in one basis for pair sampling. Inference can still build one input at a
+    time because the learned pair model consumes relations, not absolute case ids.
+    """
+    resolved_inputs = [Path(p).resolve() for p in input_csvs]
+    det_features, bundle = pf.build_case_features_for_inputs(
+        resolved_inputs,
         parser=parser,
         svd_dim=svd_dim,
     )
@@ -104,10 +117,12 @@ def build_llm_case_features(
     model_name = ""
     if llm_args is not None and rfb.load_llm_embedding_config() is not None:
         # Re-extract feature counters to build LLM documents
-        from sklearn.feature_extraction.text import TfidfVectorizer
-        _case_ids, base_features, normalized_lines, _infos = pf._collect_case_inputs(
-            Path(input_csv).resolve(), parser
-        )
+        base_features = []
+        normalized_lines = []
+        for input_csv in resolved_inputs:
+            _case_ids, base, lines, _infos = pf._collect_case_inputs(input_csv, parser)
+            base_features.extend(base)
+            normalized_lines.extend(lines)
         parser_args = pf._make_parser_args(parser)
         feature_counters, _template_count = rfb.build_feature_counters(
             parser_args,
@@ -139,6 +154,7 @@ def build_llm_case_features(
                 case_id=det_feat.case_id,
                 det_vec=det_feat.dense_vec.astype(np.float32, copy=False),
                 llm_vec=llm_vec,
+                llm_vec_reduced=None,
                 tokens=list(det_feat.tokens),
                 token_set=det_feat.token_set,
                 primary_tokens=det_feat.primary_tokens,
@@ -148,6 +164,87 @@ def build_llm_case_features(
             )
         )
     return result, bundle
+
+
+def build_llm_case_features(
+    input_csv: str | Path,
+    parser: str = "drain",
+    svd_dim: int = 64,
+    llm_args: argparse.Namespace | None = None,
+) -> tuple[list[LLMCaseFeature], pf.VectorizerBundle]:
+    """Build deterministic features (via pairwise_features) and attach LLM embeddings."""
+    return build_llm_case_features_for_inputs(
+        [input_csv],
+        parser=parser,
+        svd_dim=svd_dim,
+        llm_args=llm_args,
+    )
+
+
+def _pad_or_trim(matrix: np.ndarray, dim: int) -> np.ndarray:
+    matrix = np.asarray(matrix, dtype=np.float32)
+    if matrix.shape[1] < dim:
+        pad = np.zeros((matrix.shape[0], dim - matrix.shape[1]), dtype=np.float32)
+        return np.hstack([matrix, pad])
+    if matrix.shape[1] > dim:
+        return matrix[:, :dim]
+    return matrix
+
+
+def fit_llm_reducer(
+    features: list[LLMCaseFeature],
+    reduce_dim: int,
+    random_state: int = 0,
+) -> Any:
+    """Fit a train-only dimensionality reducer for LLM vectors and mutate features.
+
+    The reducer is intentionally external to torch checkpoints; save_model_pkg
+    writes it into a sidecar preprocessor pickle for MLP models.
+    """
+    if reduce_dim <= 0 or not features or not features[0].has_llm:
+        for feat in features:
+            feat.llm_vec_reduced = np.zeros(0, dtype=np.float32)
+        return None
+    llm = np.vstack([feat.llm_vec for feat in features]).astype(np.float32)
+    n_components = min(int(reduce_dim), llm.shape[0] - 1, llm.shape[1] - 1)
+    if n_components < 2:
+        transformed = llm[:, : min(llm.shape[1], max(1, int(reduce_dim)))]
+        reducer = None
+    else:
+        from sklearn.decomposition import TruncatedSVD
+        from sklearn.pipeline import Pipeline
+        from sklearn.preprocessing import Normalizer
+
+        reducer = Pipeline(
+            [
+                ("svd", TruncatedSVD(n_components=n_components, random_state=random_state)),
+                ("norm", Normalizer(copy=False)),
+            ]
+        )
+        transformed = reducer.fit_transform(llm)
+    transformed = _pad_or_trim(transformed, int(reduce_dim))
+    for feat, vec in zip(features, transformed):
+        feat.llm_vec_reduced = vec.astype(np.float32, copy=False)
+    return reducer
+
+
+def apply_llm_reducer(
+    features: list[LLMCaseFeature],
+    reducer: Any,
+    reduce_dim: int,
+) -> None:
+    if reduce_dim <= 0 or not features or not features[0].has_llm:
+        for feat in features:
+            feat.llm_vec_reduced = np.zeros(0, dtype=np.float32)
+        return
+    llm = np.vstack([feat.llm_vec for feat in features]).astype(np.float32)
+    if reducer is None:
+        transformed = llm[:, : min(llm.shape[1], int(reduce_dim))]
+    else:
+        transformed = reducer.transform(llm)
+    transformed = _pad_or_trim(transformed, int(reduce_dim))
+    for feat, vec in zip(features, transformed):
+        feat.llm_vec_reduced = vec.astype(np.float32, copy=False)
 
 
 # ---------------------------------------------------------------------------
@@ -185,11 +282,16 @@ def llm_pair_feature_dim() -> int:
     return 21
 
 
-def build_llm_pair_feature_vector(a: LLMCaseFeature, b: LLMCaseFeature) -> np.ndarray:
-    det_cosine = _cosine(a.det_vec, b.det_vec)
-    det_euclidean = _euclidean(a.det_vec, b.det_vec)
+def build_llm_pair_feature_vector(
+    a: LLMCaseFeature,
+    b: LLMCaseFeature,
+    include_det: bool = True,
+    include_llm: bool = True,
+) -> np.ndarray:
+    det_cosine = _cosine(a.det_vec, b.det_vec) if include_det else 0.0
+    det_euclidean = _euclidean(a.det_vec, b.det_vec) if include_det else 0.0
 
-    has_llm = a.has_llm and b.has_llm
+    has_llm = include_llm and a.has_llm and b.has_llm
     llm_cosine = _cosine(a.llm_vec, b.llm_vec) if has_llm else 0.0
     llm_euclidean = _euclidean(a.llm_vec, b.llm_vec) if has_llm else 0.0
     abs_det_llm_diff = abs(det_cosine - llm_cosine)
@@ -272,23 +374,117 @@ def build_llm_pair_feature_matrix(
     return matrix
 
 
+FEATURE_MODES = {"summary21", "rich", "rich_no_llm", "rich_no_det"}
+
+
+def _relation_block(a: np.ndarray, b: np.ndarray) -> np.ndarray:
+    if a.size == 0 or b.size == 0:
+        return np.zeros(0, dtype=np.float32)
+    return np.concatenate([np.abs(a - b), a * b]).astype(np.float32, copy=False)
+
+
+def build_rich_pair_feature_vector(
+    a: LLMCaseFeature,
+    b: LLMCaseFeature,
+    feature_mode: str = "summary21",
+) -> np.ndarray:
+    if feature_mode not in FEATURE_MODES:
+        raise ValueError(f"unknown feature_mode: {feature_mode}")
+    include_llm = feature_mode != "rich_no_llm"
+    include_det = feature_mode != "rich_no_det"
+    summary = build_llm_pair_feature_vector(
+        a, b, include_det=include_det, include_llm=include_llm
+    )
+    if feature_mode == "summary21":
+        return summary
+
+    blocks: list[np.ndarray] = []
+    if feature_mode in {"rich", "rich_no_llm"}:
+        blocks.append(_relation_block(a.det_vec, b.det_vec))
+    if feature_mode in {"rich", "rich_no_det"}:
+        blocks.append(_relation_block(a.effective_llm_vec, b.effective_llm_vec))
+    blocks.append(summary)
+    return np.concatenate(blocks).astype(np.float32, copy=False)
+
+
+def build_rich_pair_feature_matrix(
+    features: list[LLMCaseFeature],
+    pairs: list[tuple[int, int]],
+    feature_mode: str = "summary21",
+) -> np.ndarray:
+    if feature_mode not in FEATURE_MODES:
+        raise ValueError(f"unknown feature_mode: {feature_mode}")
+    if not pairs:
+        if not features:
+            return np.zeros((0, llm_pair_feature_dim()), dtype=np.float32)
+        sample = build_rich_pair_feature_vector(features[0], features[0], feature_mode)
+        return np.zeros((0, len(sample)), dtype=np.float32)
+    sample = build_rich_pair_feature_vector(features[pairs[0][0]], features[pairs[0][1]], feature_mode)
+    matrix = np.empty((len(pairs), len(sample)), dtype=np.float32)
+    for idx, (i, j) in enumerate(pairs):
+        matrix[idx] = build_rich_pair_feature_vector(features[i], features[j], feature_mode)
+    return matrix
+
+
 # ---------------------------------------------------------------------------
 # Model backends
 # ---------------------------------------------------------------------------
 
-def _make_mlp(input_dim: int, hidden_dims: Sequence[int] = (128, 64), dropout: float = 0.15):
+def _default_hidden_dims(arch: str) -> list[int]:
+    if arch == "deep":
+        return [512, 512, 256, 256, 128]
+    if arch == "residual":
+        return [512, 512, 512, 256, 256, 128]
+    return [128, 64]
+
+
+def _make_mlp(
+    input_dim: int,
+    hidden_dims: Sequence[int] | None = None,
+    dropout: float = 0.15,
+    arch: str = "shallow",
+    layernorm: bool = True,
+    batchnorm: bool = False,
+):
     import torch
     from torch import nn
 
-    class SmallMLP(nn.Module):
+    dims = [int(h) for h in (hidden_dims if hidden_dims else _default_hidden_dims(arch))]
+
+    def norm_layer(dim: int) -> nn.Module | None:
+        if batchnorm:
+            return nn.BatchNorm1d(dim)
+        if layernorm:
+            return nn.LayerNorm(dim)
+        return None
+
+    class ResidualBlock(nn.Module):
+        def __init__(self, dim: int) -> None:
+            super().__init__()
+            layers: list[nn.Module] = [nn.Linear(dim, dim)]
+            norm = norm_layer(dim)
+            if norm is not None:
+                layers.append(norm)
+            layers.extend([nn.GELU(), nn.Dropout(float(dropout)), nn.Linear(dim, dim)])
+            norm = norm_layer(dim)
+            if norm is not None:
+                layers.append(norm)
+            self.net = nn.Sequential(*layers)
+            self.out = nn.GELU()
+
+        def forward(self, x):  # type: ignore[no-untyped-def]
+            return self.out(x + self.net(x))
+
+    class MLP(nn.Module):
         def __init__(self) -> None:
             super().__init__()
             layers: list[nn.Module] = []
             prev = input_dim
-            for h in hidden_dims:
-                h = int(h)
+            for h in dims:
                 layers.append(nn.Linear(prev, h))
-                layers.append(nn.LayerNorm(h))
+                norm = norm_layer(h)
+                if norm is not None:
+                    layers.append(norm)
                 layers.append(nn.GELU())
                 layers.append(nn.Dropout(float(dropout)))
                 prev = h
@@ -298,7 +494,37 @@ def _make_mlp(input_dim: int, hidden_dims: Sequence[int] = (128, 64), dropout: f
         def forward(self, x):  # type: ignore[no-untyped-def]
             return self.net(x).squeeze(-1)
 
-    return SmallMLP()
+    class ResidualMLP(nn.Module):
+        def __init__(self) -> None:
+            super().__init__()
+            first = dims[0] if dims else 512
+            layers: list[nn.Module] = [nn.Linear(input_dim, first)]
+            norm = norm_layer(first)
+            if norm is not None:
+                layers.append(norm)
+            layers.extend([nn.GELU(), nn.Dropout(float(dropout))])
+            prev = first
+            for h in dims[1:]:
+                h = int(h)
+                if h == prev:
+                    layers.append(ResidualBlock(h))
+                else:
+                    layers.append(nn.Linear(prev, h))
+                    norm = norm_layer(h)
+                    if norm is not None:
+                        layers.append(norm)
+                    layers.append(nn.GELU())
+                    layers.append(nn.Dropout(float(dropout)))
+                prev = h
+            layers.append(nn.Linear(prev, 1))
+            self.net = nn.Sequential(*layers)
+
+        def forward(self, x):  # type: ignore[no-untyped-def]
+            return self.net(x).squeeze(-1)
+
+    if arch == "residual":
+        return ResidualMLP()
+    return MLP()
 
 
 def train_logistic_model(
@@ -345,7 +571,7 @@ def train_mlp_model(
     X: np.ndarray,
     y: np.ndarray,
     input_dim: int,
-    hidden_dims: Sequence[int] = (128, 64),
+    hidden_dims: Sequence[int] | None = None,
     dropout: float = 0.15,
     batch_size: int = 4096,
     epochs: int = 40,
@@ -353,39 +579,105 @@ def train_mlp_model(
     weight_decay: float = 1e-4,
     device: str = "cpu",
     random_state: int = 0,
+    mlp_arch: str = "shallow",
+    loss: str = "bce",
+    focal_gamma: float = 2.0,
+    focal_alpha: float | str = "auto",
+    early_stop_patience: int = 8,
+    layernorm: bool = True,
+    batchnorm: bool = False,
 ) -> Any:
     import torch
     from torch import nn
     from torch.utils.data import DataLoader, TensorDataset
 
+    from sklearn.model_selection import StratifiedShuffleSplit
     from sklearn.preprocessing import StandardScaler
 
     torch.manual_seed(random_state)
     device = pf.resolve_torch_device(device)
 
-    scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X).astype(np.float32)
+    indices = np.arange(len(y))
+    if len(np.unique(y)) == 2 and len(y) >= 20:
+        splitter = StratifiedShuffleSplit(n_splits=1, test_size=0.12, random_state=random_state)
+        train_idx, val_idx = next(splitter.split(X, y))
+    else:
+        rng = np.random.default_rng(random_state)
+        rng.shuffle(indices)
+        cut = max(1, int(round(len(indices) * 0.88)))
+        train_idx, val_idx = indices[:cut], indices[cut:]
 
-    model = _make_mlp(input_dim, hidden_dims, dropout).to(device)
-    pos = float((y == 1.0).sum())
-    neg = float((y == 0.0).sum())
+    scaler = StandardScaler()
+    X_train = scaler.fit_transform(X[train_idx]).astype(np.float32)
+    y_train = y[train_idx].astype(np.float32)
+    X_val = scaler.transform(X[val_idx]).astype(np.float32) if len(val_idx) else X_train
+    y_val = y[val_idx].astype(np.float32) if len(val_idx) else y_train
+
+    hidden = list(hidden_dims) if hidden_dims else _default_hidden_dims(mlp_arch)
+    model = _make_mlp(
+        input_dim, hidden, dropout,
+        arch=mlp_arch, layernorm=layernorm, batchnorm=batchnorm,
+    ).to(device)
+    pos = float((y_train == 1.0).sum())
+    neg = float((y_train == 0.0).sum())
     pos_weight = torch.tensor([neg / max(pos, 1.0)], dtype=torch.float32, device=device)
-    loss_fn = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
+    bce_loss = nn.BCEWithLogitsLoss(pos_weight=pos_weight, reduction="none")
+
+    if focal_alpha == "auto":
+        alpha_value = neg / max(pos + neg, 1.0)
+    else:
+        alpha_value = float(focal_alpha)
+    alpha_value = max(0.0, min(1.0, float(alpha_value)))
+
+    def compute_loss(logits, target):  # type: ignore[no-untyped-def]
+        raw = bce_loss(logits, target)
+        if loss == "focal":
+            prob = torch.sigmoid(logits)
+            pt = torch.where(target > 0.5, prob, 1.0 - prob)
+            alpha_t = torch.where(
+                target > 0.5,
+                torch.full_like(target, alpha_value),
+                torch.full_like(target, 1.0 - alpha_value),
+            )
+            raw = alpha_t * torch.pow(1.0 - pt, float(focal_gamma)) * raw
+        return raw.mean()
+
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
 
-    X_t = torch.from_numpy(X_scaled)
-    y_t = torch.from_numpy(y.astype(np.float32))
-    loader = DataLoader(TensorDataset(X_t, y_t), batch_size=batch_size, shuffle=True)
+    train_loader = DataLoader(
+        TensorDataset(torch.from_numpy(X_train), torch.from_numpy(y_train)),
+        batch_size=batch_size,
+        shuffle=True,
+    )
+    X_val_t = torch.from_numpy(X_val).to(device)
+    y_val_t = torch.from_numpy(y_val).to(device)
 
+    best_state = None
+    best_val = float("inf")
+    bad_epochs = 0
     for _epoch in range(epochs):
         model.train()
-        for xb, yb in loader:
+        for xb, yb in train_loader:
             xb, yb = xb.to(device), yb.to(device)
             optimizer.zero_grad(set_to_none=True)
-            loss = loss_fn(model(xb), yb)
-            loss.backward()
+            batch_loss = compute_loss(model(xb), yb)
+            batch_loss.backward()
             optimizer.step()
 
+        model.eval()
+        with torch.no_grad():
+            val_loss = float(compute_loss(model(X_val_t), y_val_t).detach().cpu())
+        if val_loss + 1e-6 < best_val:
+            best_val = val_loss
+            bad_epochs = 0
+            best_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
+        else:
+            bad_epochs += 1
+            if early_stop_patience > 0 and bad_epochs >= early_stop_patience:
+                break
+
+    if best_state is not None:
+        model.load_state_dict(best_state)
     model.eval()
     state_dict = {k: v.detach().cpu() for k, v in model.state_dict().items()}
     return {
@@ -393,8 +685,15 @@ def train_mlp_model(
         "scaler": scaler,
         "state_dict": state_dict,
         "input_dim": input_dim,
-        "hidden_dims": list(hidden_dims),
+        "hidden_dims": list(hidden),
         "dropout": dropout,
+        "mlp_arch": mlp_arch,
+        "loss": loss,
+        "focal_gamma": focal_gamma,
+        "focal_alpha": alpha_value,
+        "layernorm": layernorm,
+        "batchnorm": batchnorm,
+        "best_val_loss": best_val,
         "model_type": "mlp",
         "device": device,
     }
@@ -404,11 +703,27 @@ def train_mlp_model(
 # Pair probability prediction (batched)
 # ---------------------------------------------------------------------------
 
+def prepare_features_for_model(model_pkg: dict, features: list[LLMCaseFeature]) -> None:
+    reduce_dim = int(model_pkg.get("llm_reduce_dim", 0) or 0)
+    if reduce_dim > 0:
+        apply_llm_reducer(features, model_pkg.get("llm_reducer"), reduce_dim)
+
+
+def _build_model_pair_matrix(
+    model_pkg: dict,
+    features: list[LLMCaseFeature],
+    pairs: list[tuple[int, int]],
+) -> np.ndarray:
+    feature_mode = str(model_pkg.get("feature_mode", "summary21"))
+    return build_rich_pair_feature_matrix(features, pairs, feature_mode=feature_mode)
+
+
 def predict_probability_matrix_sklearn(
     model_pkg: dict,
     features: list[LLMCaseFeature],
     batch_size: int = 100000,
 ) -> np.ndarray:
+    prepare_features_for_model(model_pkg, features)
     n = len(features)
     probs = np.eye(n, dtype=np.float32)
     if n <= 1:
@@ -419,7 +734,7 @@ def predict_probability_matrix_sklearn(
     def flush() -> None:
         if not pairs:
             return
-        X = build_llm_pair_feature_matrix(features, pairs)
+        X = _build_model_pair_matrix(model_pkg, features, pairs)
         model = model_pkg["model"]
         scaler = model_pkg.get("scaler")
         if scaler is not None:
@@ -518,6 +833,11 @@ def cluster_from_probability(prob: np.ndarray, k: int) -> list[int]:
 def save_model_pkg(model_pkg: dict, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     model_type = model_pkg.get("model_type", "")
+    common = {
+        "feature_mode": model_pkg.get("feature_mode", "summary21"),
+        "llm_reduce_dim": int(model_pkg.get("llm_reduce_dim", 0) or 0),
+        "svd_dim": int(model_pkg.get("svd_dim", 64) or 64),
+    }
     if model_type == "mlp":
         import torch
         torch.save(
@@ -526,22 +846,34 @@ def save_model_pkg(model_pkg: dict, path: Path) -> None:
                 "input_dim": model_pkg["input_dim"],
                 "hidden_dims": model_pkg["hidden_dims"],
                 "dropout": model_pkg["dropout"],
+                "mlp_arch": model_pkg.get("mlp_arch", "shallow"),
+                "layernorm": bool(model_pkg.get("layernorm", True)),
+                "batchnorm": bool(model_pkg.get("batchnorm", False)),
                 "model_type": "mlp",
+                **common,
             },
             path,
         )
-        scaler = model_pkg.get("scaler")
-        if scaler is not None:
-            import pickle
-            scaler_path = path.with_suffix(".scaler.pkl")
-            with open(scaler_path, "wb") as f:
-                pickle.dump(scaler, f)
+        preproc = {
+            "scaler": model_pkg.get("scaler"),
+            "llm_reducer": model_pkg.get("llm_reducer"),
+            **common,
+        }
+        import pickle
+        with open(path.with_suffix(".preproc.pkl"), "wb") as f:
+            pickle.dump(preproc, f)
+        # Compatibility with older loaders. The torch checkpoint stays sklearn-free.
+        if model_pkg.get("scaler") is not None:
+            with open(path.with_suffix(".scaler.pkl"), "wb") as f:
+                pickle.dump(model_pkg.get("scaler"), f)
     else:
         import pickle
         save_obj = {
             "model": model_pkg["model"],
             "scaler": model_pkg.get("scaler"),
             "model_type": model_type,
+            "llm_reducer": model_pkg.get("llm_reducer"),
+            **common,
         }
         with open(path, "wb") as f:
             pickle.dump(save_obj, f)
@@ -556,22 +888,38 @@ def load_model_pkg(path: Path) -> dict:
                 int(checkpoint["input_dim"]),
                 hidden_dims=checkpoint.get("hidden_dims", (128, 64)),
                 dropout=float(checkpoint.get("dropout", 0.15)),
+                arch=checkpoint.get("mlp_arch", "shallow"),
+                layernorm=bool(checkpoint.get("layernorm", True)),
+                batchnorm=bool(checkpoint.get("batchnorm", False)),
             )
             model.load_state_dict(checkpoint["state_dict"])
             model.eval()
-            scaler = None
-            scaler_path = path.with_suffix(".scaler.pkl")
-            if scaler_path.exists():
+            preproc = {}
+            preproc_path = path.with_suffix(".preproc.pkl")
+            if preproc_path.exists():
                 import pickle
-                with open(scaler_path, "rb") as f:
-                    scaler = pickle.load(f)
+                with open(preproc_path, "rb") as f:
+                    preproc = pickle.load(f)
+            else:
+                scaler_path = path.with_suffix(".scaler.pkl")
+                if scaler_path.exists():
+                    import pickle
+                    with open(scaler_path, "rb") as f:
+                        preproc["scaler"] = pickle.load(f)
             return {
                 "model": model,
-                "scaler": scaler,
+                "scaler": preproc.get("scaler"),
+                "llm_reducer": preproc.get("llm_reducer"),
                 "state_dict": checkpoint["state_dict"],
                 "input_dim": int(checkpoint["input_dim"]),
                 "hidden_dims": checkpoint.get("hidden_dims", (128, 64)),
                 "dropout": float(checkpoint.get("dropout", 0.15)),
+                "mlp_arch": checkpoint.get("mlp_arch", "shallow"),
+                "layernorm": bool(checkpoint.get("layernorm", True)),
+                "batchnorm": bool(checkpoint.get("batchnorm", False)),
+                "feature_mode": checkpoint.get("feature_mode", preproc.get("feature_mode", "summary21")),
+                "llm_reduce_dim": int(checkpoint.get("llm_reduce_dim", preproc.get("llm_reduce_dim", 0)) or 0),
+                "svd_dim": int(checkpoint.get("svd_dim", preproc.get("svd_dim", 64)) or 64),
                 "model_type": "mlp",
                 "device": "cpu",
             }
