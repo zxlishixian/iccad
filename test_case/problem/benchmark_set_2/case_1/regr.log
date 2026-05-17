@@ -1,0 +1,4 @@
+Mismatch[1]:
+ibex[425] : pc[80001b38] mulhsu	x30,x6,x11: t5:00000000
+spike[425] : pc[ffffffff80001b52] add     s11, s3, t0: s11:00049c58
+[FAILED]: 360 matched, 35687 mismatch

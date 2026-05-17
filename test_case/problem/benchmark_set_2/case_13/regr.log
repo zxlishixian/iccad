@@ -1,0 +1,4 @@
+Mismatch[1]:
+ibex[727] : pc[80000b98] remu	x28,x20,x30: t3:00000fff
+spike[727] : pc[ffffffff80000bd0] andi    t3, s6, 291: t3:00000021
+[FAILED]: 597 matched, 583 mismatch
