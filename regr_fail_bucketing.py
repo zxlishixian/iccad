@@ -791,6 +791,27 @@ def case_id_from_row(row: dict, idx: int, columns: Sequence[str]) -> str:
     return f"case_{idx + 1:06d}"
 
 
+def output_case_values(rows: Sequence[dict], fieldnames: Sequence[str]) -> List[str]:
+    """Return case IDs for the official output CSV.
+
+    Official testcase inputs provide a `Case` column and sample solutions emit
+    `Case,bucket`.  Older local fake datasets did not require that column, so
+    fall back to extracting a stable case id from log paths or, finally, row
+    order.
+    """
+    normalized = [(name, norm_col(name)) for name in fieldnames]
+    case_col = next((name for name, key in normalized if key in {"case", "caseid", "id"}), None)
+    out: List[str] = []
+    for idx, row in enumerate(rows):
+        if case_col is not None:
+            value = str(row.get(case_col, "") or "").strip()
+            if value:
+                out.append(value)
+                continue
+        out.append(case_id_from_row(row, idx, fieldnames))
+    return out
+
+
 def collect_case_inputs(
     input_csv: Path,
     rows: Sequence[dict],
@@ -1176,13 +1197,17 @@ def remap_labels(labels: Sequence[int]) -> List[int]:
     return out
 
 
-def write_output(path: Path, labels: Sequence[int]) -> None:
+def write_output(path: Path, labels: Sequence[int], cases: Sequence[str] | None = None) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
+    if cases is None:
+        cases = [str(idx + 1) for idx in range(len(labels))]
+    if len(cases) != len(labels):
+        raise ValueError(f"number of cases ({len(cases)}) does not match labels ({len(labels)})")
     with path.open("w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
-        writer.writerow(["bucket"])
-        for label in labels:
-            writer.writerow([f"bucket_{label:03d}"])
+        writer.writerow(["Case", "bucket"])
+        for case, label in zip(cases, labels):
+            writer.writerow([case, f"bucket_{label:03d}"])
 
 
 def parse_llm_config_without_yaml(raw: str) -> dict:
@@ -1749,9 +1774,10 @@ def main(argv: Sequence[str] | None = None) -> int:
     rows, fieldnames = read_csv_rows(input_csv)
     sim_col = pick_column(fieldnames, "sim")
     regr_col = pick_column(fieldnames, "regr")
+    output_cases = output_case_values(rows, fieldnames)
 
     if not rows:
-        write_output(args.output.resolve(), [])
+        write_output(args.output.resolve(), [], [])
         return 0
     if sim_col is None and regr_col is None:
         raise SystemExit("input CSV must contain at least a sim.log or regr.log column")
@@ -1782,7 +1808,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             labels = remap_labels(labels)
             info(f"[data] cases={len(rows)} templates={template_count} vector_shape={prob_shape}")
             info(f"[cluster] requested_k={args.k} effective_k={effective_k} method=pairwise_mlp")
-            write_output(args.output.resolve(), labels)
+            write_output(args.output.resolve(), labels, output_cases)
             info(
                 f"[output] buckets={len(set(labels))} path={args.output.resolve()} "
                 f"runtime_sec={time.perf_counter() - start:.3f}"
@@ -1830,7 +1856,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     f"[cluster] requested_k={args.k} effective_k={effective_k} "
                     f"method=llm_similarity+{args.cluster}"
                 )
-                write_output(args.output.resolve(), labels)
+                write_output(args.output.resolve(), labels, output_cases)
                 info(
                     f"[output] buckets={len(set(labels))} path={args.output.resolve()} "
                     f"runtime_sec={time.perf_counter() - start:.3f}"
@@ -1854,7 +1880,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         pre_reduced=pre_reduced,
     )
     labels = remap_labels(labels)
-    write_output(args.output.resolve(), labels)
+    write_output(args.output.resolve(), labels, output_cases)
     # TODO: add split_mixed post-processing for large mixed clusters.
     info(f"[output] buckets={len(set(labels))} path={args.output.resolve()} runtime_sec={time.perf_counter() - start:.3f}")
     return 0
