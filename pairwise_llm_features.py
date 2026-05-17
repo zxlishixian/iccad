@@ -34,6 +34,8 @@ class LLMCaseFeature:
     llm_vec_reduced: np.ndarray | None
     llm_summary_vec: np.ndarray
     llm_summary_vec_reduced: np.ndarray | None
+    trace_vec: np.ndarray          # 128d raw trace embedding
+    trace_vec_reduced: np.ndarray | None
     tokens: list[str]
     token_set: set[str]
     primary_tokens: set[str]
@@ -60,6 +62,16 @@ class LLMCaseFeature:
         if self.llm_summary_vec_reduced is not None:
             return self.llm_summary_vec_reduced
         return self.llm_summary_vec
+
+    @property
+    def has_trace(self) -> bool:
+        return self.trace_vec.size > 0 and np.any(self.trace_vec != 0)
+
+    @property
+    def effective_trace_vec(self) -> np.ndarray:
+        if self.trace_vec_reduced is not None:
+            return self.trace_vec_reduced
+        return self.trace_vec
 
 
 def _make_llm_args(
@@ -397,6 +409,8 @@ def build_llm_case_features_for_inputs(
                 llm_vec_reduced=None,
                 llm_summary_vec=llm_summary_vec,
                 llm_summary_vec_reduced=None,
+                trace_vec=np.zeros(0, dtype=np.float32),
+                trace_vec_reduced=None,
                 tokens=list(det_feat.tokens),
                 token_set=det_feat.token_set,
                 primary_tokens=det_feat.primary_tokens,
@@ -531,6 +545,86 @@ def apply_llm_summary_reducer(
     transformed = _apply_reducer_to_matrix(llm, reducer, int(reduce_dim))
     for feat, vec in zip(features, transformed):
         feat.llm_summary_vec_reduced = vec.astype(np.float32, copy=False)
+
+
+def normalize_trace_vectors(features: list[LLMCaseFeature]) -> int:
+    """Ensure all features have trace_vec of the same dimension.
+
+    Features without a trace (size 0) get a zero vector of embed_dim.
+    Returns the embed_dim, or 0 if no features have traces.
+    """
+    embed_dim = 0
+    for f in features:
+        if f.trace_vec.size > 0:
+            embed_dim = f.trace_vec.size
+            break
+    if embed_dim == 0:
+        return 0
+    for f in features:
+        if f.trace_vec.size != embed_dim:
+            f.trace_vec = np.zeros(embed_dim, dtype=np.float32)
+    return embed_dim
+
+
+def fit_trace_reducer(
+    features: list[LLMCaseFeature],
+    reduce_dim: int,
+    random_state: int = 0,
+) -> Any:
+    """Fit a train-only SVD reducer for trace embeddings."""
+    if reduce_dim <= 0 or not features:
+        for feat in features:
+            feat.trace_vec_reduced = np.zeros(0, dtype=np.float32)
+        return None
+    # Determine the embedding dimension from features that have trace
+    embed_dim = 0
+    for f in features:
+        if f.trace_vec.size > 0:
+            embed_dim = f.trace_vec.size
+            break
+    if embed_dim == 0:
+        for feat in features:
+            feat.trace_vec_reduced = np.zeros(0, dtype=np.float32)
+        return None
+    # Normalize: zero-vectors for missing traces get the right shape
+    trace_mat = np.vstack([
+        feat.trace_vec if feat.trace_vec.size == embed_dim
+        else np.zeros(embed_dim, dtype=np.float32)
+        for feat in features
+    ]).astype(np.float32)
+    reducer, transformed = _fit_reducer_for_matrix(trace_mat, reduce_dim, random_state)
+    for feat, vec in zip(features, transformed):
+        feat.trace_vec_reduced = vec.astype(np.float32, copy=False)
+    return reducer
+
+
+def apply_trace_reducer(
+    features: list[LLMCaseFeature],
+    reducer: Any,
+    reduce_dim: int,
+) -> None:
+    """Apply a pre-fit trace reducer to features."""
+    if reduce_dim <= 0 or not features:
+        for feat in features:
+            feat.trace_vec_reduced = np.zeros(0, dtype=np.float32)
+        return
+    embed_dim = 0
+    for f in features:
+        if f.trace_vec.size > 0:
+            embed_dim = f.trace_vec.size
+            break
+    if embed_dim == 0:
+        for feat in features:
+            feat.trace_vec_reduced = np.zeros(0, dtype=np.float32)
+        return
+    trace_mat = np.vstack([
+        feat.trace_vec if feat.trace_vec.size == embed_dim
+        else np.zeros(embed_dim, dtype=np.float32)
+        for feat in features
+    ]).astype(np.float32)
+    transformed = _apply_reducer_to_matrix(trace_mat, reducer, int(reduce_dim))
+    for feat, vec in zip(features, transformed):
+        feat.trace_vec_reduced = vec.astype(np.float32, copy=False)
 
 
 # ---------------------------------------------------------------------------
@@ -669,12 +763,14 @@ FEATURE_MODES = {
     "llm_dual_struct",
     "llm_dual_struct_det_summary",
     "llm_dual_struct_det_summary_cross",
+    "llm_dual_struct_det_summary_trace",
 }
 DUAL_FEATURE_MODES = {
     "llm_dual",
     "llm_dual_struct",
     "llm_dual_struct_det_summary",
     "llm_dual_struct_det_summary_cross",
+    "llm_dual_struct_det_summary_trace",
 }
 
 
@@ -772,6 +868,33 @@ def _dual_scalar_features(a: LLMCaseFeature, b: LLMCaseFeature) -> np.ndarray:
     )
 
 
+def _trace_scalars(a: LLMCaseFeature, b: LLMCaseFeature) -> np.ndarray:
+    """Pairwise scalar features for trace embeddings (8 dimensions)."""
+    ta = a.effective_trace_vec
+    tb = b.effective_trace_vec
+    has_a = a.has_trace
+    has_b = b.has_trace
+
+    cos_sim = _safe_cosine(ta, tb) if has_a and has_b else 0.0
+    euc = _safe_euclidean(ta, tb) if has_a and has_b else 0.0
+    l1 = float(np.sum(np.abs(ta - tb))) if has_a and has_b and ta.size else 0.0
+    dot = float(np.dot(ta, tb)) if has_a and has_b and ta.size else 0.0
+
+    return np.asarray(
+        [
+            cos_sim,
+            euc,
+            l1,
+            dot,
+            float(has_a and has_b),
+            float(has_a != has_b),  # one_missing
+            float(not has_a and not has_b),  # both_missing
+            float(bool(has_a) ^ bool(has_b)),  # xor_missing
+        ],
+        dtype=np.float32,
+    )
+
+
 def _safe_cosine(a: np.ndarray, b: np.ndarray) -> float:
     return _cosine(a, b) if a.size and b.size else 0.0
 
@@ -836,12 +959,15 @@ def build_dual_pair_feature_vector(
         _relation_block(a.effective_llm_summary_vec, b.effective_llm_summary_vec),
         _dual_scalar_features(a, b),
     ]
-    if feature_mode in {"llm_dual_struct", "llm_dual_struct_det_summary", "llm_dual_struct_det_summary_cross"}:
+    if feature_mode in {"llm_dual_struct", "llm_dual_struct_det_summary", "llm_dual_struct_det_summary_cross", "llm_dual_struct_det_summary_trace"}:
         blocks.append(build_structured_pair_feature_vector(a, b))
-    if feature_mode in {"llm_dual_struct_det_summary", "llm_dual_struct_det_summary_cross"}:
+    if feature_mode in {"llm_dual_struct_det_summary", "llm_dual_struct_det_summary_cross", "llm_dual_struct_det_summary_trace"}:
         blocks.append(build_det_scalar_summary_vector(a, b))
     if feature_mode == "llm_dual_struct_det_summary_cross":
         blocks.append(build_dual_cross_scalar_features(a, b))
+    if feature_mode == "llm_dual_struct_det_summary_trace":
+        blocks.append(_relation_block(a.effective_trace_vec, b.effective_trace_vec))
+        blocks.append(_trace_scalars(a, b))
     return np.concatenate(blocks).astype(np.float32, copy=False)
 
 
@@ -1174,6 +1300,9 @@ def prepare_features_for_model(model_pkg: dict, features: list[LLMCaseFeature]) 
         apply_llm_reducer(features, model_pkg.get("llm_reducer"), reduce_dim)
         if str(model_pkg.get("feature_mode", "")) in DUAL_FEATURE_MODES:
             apply_llm_summary_reducer(features, model_pkg.get("llm_summary_reducer"), reduce_dim)
+    trace_dim = int(model_pkg.get("trace_reduce_dim", 0) or 0)
+    if trace_dim > 0:
+        apply_trace_reducer(features, model_pkg.get("trace_reducer"), trace_dim)
 
 
 def _build_model_pair_matrix(
@@ -1305,6 +1434,8 @@ def save_model_pkg(model_pkg: dict, path: Path) -> None:
         "llm_reduce_dim": int(model_pkg.get("llm_reduce_dim", 0) or 0),
         "svd_dim": int(model_pkg.get("svd_dim", 64) or 64),
         "llm_dual": str(model_pkg.get("feature_mode", "")) in DUAL_FEATURE_MODES,
+        "trace_reduce_dim": int(model_pkg.get("trace_reduce_dim", 0) or 0),
+        "trace_encoder_dir": str(model_pkg.get("trace_encoder_dir", "")),
     }
     if model_type == "mlp":
         import torch
@@ -1326,6 +1457,7 @@ def save_model_pkg(model_pkg: dict, path: Path) -> None:
             "scaler": model_pkg.get("scaler"),
             "llm_reducer": model_pkg.get("llm_reducer"),
             "llm_summary_reducer": model_pkg.get("llm_summary_reducer"),
+            "trace_reducer": model_pkg.get("trace_reducer"),
             **common,
         }
         import pickle
@@ -1343,6 +1475,7 @@ def save_model_pkg(model_pkg: dict, path: Path) -> None:
             "model_type": model_type,
             "llm_reducer": model_pkg.get("llm_reducer"),
             "llm_summary_reducer": model_pkg.get("llm_summary_reducer"),
+            "trace_reducer": model_pkg.get("trace_reducer"),
             **common,
         }
         with open(path, "wb") as f:
@@ -1381,6 +1514,7 @@ def load_model_pkg(path: Path) -> dict:
                 "scaler": preproc.get("scaler"),
                 "llm_reducer": preproc.get("llm_reducer"),
                 "llm_summary_reducer": preproc.get("llm_summary_reducer"),
+                "trace_reducer": preproc.get("trace_reducer"),
                 "state_dict": checkpoint["state_dict"],
                 "input_dim": int(checkpoint["input_dim"]),
                 "hidden_dims": checkpoint.get("hidden_dims", (128, 64)),
@@ -1392,6 +1526,8 @@ def load_model_pkg(path: Path) -> dict:
                 "llm_reduce_dim": int(checkpoint.get("llm_reduce_dim", preproc.get("llm_reduce_dim", 0)) or 0),
                 "svd_dim": int(checkpoint.get("svd_dim", preproc.get("svd_dim", 64)) or 64),
                 "llm_dual": bool(checkpoint.get("llm_dual", preproc.get("llm_dual", False))),
+                "trace_reduce_dim": int(checkpoint.get("trace_reduce_dim", preproc.get("trace_reduce_dim", 0)) or 0),
+                "trace_encoder_dir": str(checkpoint.get("trace_encoder_dir", preproc.get("trace_encoder_dir", ""))),
                 "model_type": "mlp",
                 "device": "cpu",
             }

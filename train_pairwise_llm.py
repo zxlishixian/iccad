@@ -289,6 +289,29 @@ def train(args: argparse.Namespace) -> dict:
     if len(all_features) != len(all_labels):
         raise RuntimeError(f"feature/label mismatch: {len(all_features)} vs {len(all_labels)}")
 
+    # Encode trace files if trace encoder is provided
+    trace_encoder = None
+    if args.trace_encoder is not None and args.feature_mode == "llm_dual_struct_det_summary_trace":
+        from trace_transformer_pretrain import load_pretrained
+        trace_encoder = load_pretrained(args.trace_encoder, device=args.device)
+        # Collect trace paths from all training inputs into one lookup
+        trace_by_case: dict[str, tuple[Path | None, str]] = {}
+        for inp in train_inputs:
+            from trace_sequence import collect_trace_paths_from_input
+            for case_id, path, status in collect_trace_paths_from_input(inp):
+                trace_by_case[case_id] = (path, status)
+        encoded_count = 0
+        for feat in all_features:
+            path, status = trace_by_case.get(feat.case_id, (None, "missing"))
+            if status == "ok" and path is not None:
+                feat.trace_vec = trace_encoder.encode_trace_tail(
+                    str(path), tail_lines=args.trace_window_size,
+                )
+                encoded_count += 1
+        print(f"[trace] encoder loaded, traces encoded for {encoded_count}/{len(all_features)} cases",
+              file=sys.stderr)
+        plf.normalize_trace_vectors(all_features)
+
     llm_reducer = None
     llm_summary_reducer = None
     if args.feature_mode in ({"rich", "rich_no_det"} | plf.DUAL_FEATURE_MODES) and args.llm_reduce_dim > 0:
@@ -303,6 +326,18 @@ def train(args: argparse.Namespace) -> dict:
             f"[features] llm_reduce_dim={args.llm_reduce_dim} "
             f"features_reducer={'none' if llm_reducer is None else type(llm_reducer).__name__} "
             f"summary_reducer={'none' if llm_summary_reducer is None else type(llm_summary_reducer).__name__}",
+            file=sys.stderr,
+        )
+
+    trace_reducer = None
+    if args.trace_encoder is not None and args.feature_mode == "llm_dual_struct_det_summary_trace":
+        if args.trace_reduce_dim > 0:
+            trace_reducer = plf.fit_trace_reducer(
+                all_features, args.trace_reduce_dim, random_state=args.random_state,
+            )
+        print(
+            f"[features] trace_reduce_dim={args.trace_reduce_dim} "
+            f"trace_reducer={'none' if trace_reducer is None else type(trace_reducer).__name__}",
             file=sys.stderr,
         )
 
@@ -366,6 +401,9 @@ def train(args: argparse.Namespace) -> dict:
         "llm_reduce_dim": args.llm_reduce_dim if args.feature_mode in ({"rich", "rich_no_det"} | plf.DUAL_FEATURE_MODES) else 0,
         "llm_reducer": llm_reducer,
         "llm_summary_reducer": llm_summary_reducer,
+        "trace_reduce_dim": args.trace_reduce_dim if args.feature_mode == "llm_dual_struct_det_summary_trace" else 0,
+        "trace_reducer": trace_reducer,
+        "trace_encoder_dir": str(args.trace_encoder) if args.trace_encoder is not None else "",
         "svd_dim": args.svd_dim,
     })
     train_time = time.perf_counter() - train_time
@@ -376,6 +414,19 @@ def train(args: argparse.Namespace) -> dict:
         val_feats, _bundle = plf.build_llm_case_features(
             part["input"], svd_dim=args.svd_dim, llm_args=llm_args
         )
+        # Encode traces for val features if trace mode
+        if args.feature_mode == "llm_dual_struct_det_summary_trace" and trace_encoder is not None:
+            from trace_sequence import collect_trace_paths_from_input
+            trace_by_case = {}
+            for case_id, path, status in collect_trace_paths_from_input(part["input"]):
+                trace_by_case[case_id] = (path, status)
+            for feat in val_feats:
+                path, status = trace_by_case.get(feat.case_id, (None, "missing"))
+                if status == "ok" and path is not None:
+                    feat.trace_vec = trace_encoder.encode_trace_tail(
+                        str(path), tail_lines=args.trace_window_size,
+                    )
+            plf.normalize_trace_vectors(val_feats)
         prob = plf.predict_probability_matrix_sklearn(
             model_pkg, val_feats, batch_size=args.predict_batch_size
         )
@@ -419,6 +470,8 @@ def train(args: argparse.Namespace) -> dict:
         "input_dim": input_dim,
         "seed": args.seed,
         "combo": args.combo,
+        "trace_reduce_dim": args.trace_reduce_dim if args.feature_mode == "llm_dual_struct_det_summary_trace" else 0,
+        "trace_encoder_dir": str(args.trace_encoder) if args.trace_encoder is not None else "",
         "val_mean_BA": mean_ba,
         "val_mean_TPR": mean_tpr,
         "val_mean_TNR": mean_tnr,
@@ -447,6 +500,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
             "summary21", "rich", "rich_no_llm", "rich_no_det",
             "llm_dual", "llm_dual_struct", "llm_dual_struct_det_summary",
             "llm_dual_struct_det_summary_cross",
+            "llm_dual_struct_det_summary_trace",
         ),
         default="summary21",
     )
@@ -481,6 +535,13 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     p.add_argument("--combo", type=int, default=0)
     p.add_argument("--random-state", type=int, default=0)
     p.add_argument("--predict-batch-size", type=int, default=100000)
+    p.add_argument("--trace-encoder", type=Path, default=None,
+                   help="path to pretrained trace encoder directory")
+    p.add_argument("--trace-reduce-dim", type=int, default=32,
+                   help="SVD reduction dim for trace embeddings (0 to disable)")
+    p.add_argument("--trace-window-mode", choices=("tail", "random"), default="tail")
+    p.add_argument("--trace-window-size", type=int, default=500)
+    p.add_argument("--trace-max-seq-len", type=int, default=1024)
     return p.parse_args(argv)
 
 
