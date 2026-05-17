@@ -985,6 +985,16 @@ Dataset-size policy search gives an upper-bound style result on the current thre
 
 Recommendation: use the single global calibrated blend `alpha=0.85, rich_temp=0.75, ensemble_temp=1.25` as the current experimental best. Treat the dataset-size policy as a promising validation result to retest on new data before relying on it.
 
+A later 0-9 calibration grid supersedes the initial 0-4 setting. Reusing the same trained rich MLP and ensemble artifacts, the most stable global no-trace setting by primary mean BA is:
+
+| setting | first_BA | stage2_BA | stage3_BA | mean_BA | stage2 TPR/TNR | stage3 TPR/TNR |
+|---|---:|---:|---:|---:|---|---|
+| old 0-9 reference, alpha=0.85, rt=0.75, et=1.25 | 0.8761 | 0.8556 | 0.8541 | 0.8620 | 0.7560/0.9553 | 0.7349/0.9733 |
+| **new 0-9 best, alpha=0.88, rt=1.15, et=1.00** | **0.8930** | **0.8595** | **0.8552** | **0.8692** | 0.7655/0.9535 | 0.7369/0.9735 |
+| best minimum-dataset BA, alpha=0.82, rt=1.15, et=0.90 | 0.8723 | 0.8632 | 0.8600 | 0.8651 | 0.7762/0.9502 | 0.7497/0.9702 |
+
+Recommendation after the 0-9 retune: keep the no-trace calibrated dual-input blend as the recommended experimental best, now with global `alpha=0.88, rich_temp=1.15, ensemble_temp=1.00`. The `alpha=0.82, rich_temp=1.15, ensemble_temp=0.90` setting is more balanced by minimum dataset BA, but lower on the primary mean-BA metric.
+
 Reproduce calibration:
 
 ```bash
@@ -1091,7 +1101,7 @@ Seed=0 quick search did not produce a stable replacement for the current calibra
 
 The main lesson is that naive hard-positive oversampling can improve seed=0 stage2/stage3 recall, but it has high seed variance and hurts first_batch. Cross-embedding scalar agreement did not add a useful signal beyond the existing dual relation blocks and structured features.
 
-Recommendation: keep the current experimental best as `llm_dual_struct_det_summary_dim64 + residual focal MLP + pairwise ensemble calibrated blend` with global `alpha=0.85, rich_temp=0.75, ensemble_temp=1.25`. Do not enable the new sampling or cross-scalar mode as the recommended best. Future work should focus on less noisy supervised objectives, such as pair weighting by cluster fragmentation, per-dataset calibration learned from held-out splits, or ranking/metric losses that directly optimize close same-bug pairs without over-repeating them.
+Recommendation: keep the current experimental best as `llm_dual_struct_det_summary_dim64 + residual focal MLP + pairwise ensemble calibrated blend`. After the 0-9 calibration retune above, the recommended global no-trace setting is `alpha=0.88, rich_temp=1.15, ensemble_temp=1.00`. Do not enable the new sampling or cross-scalar mode as the recommended best. Future work should focus on less noisy supervised objectives, such as pair weighting by cluster fragmentation, per-dataset calibration learned from held-out splits, or ranking/metric losses that directly optimize close same-bug pairs without over-repeating them.
 
 
 ### Selective Trace-Assisted Pair Refinement
@@ -1146,6 +1156,80 @@ python run_trace_refinement_experiments.py \
   --tail-lines 200 500 1000 \
   --uncertain-bands 0.40,0.60 \
   --refiner-model gbdt
+```
+
+### Conservative Trace Veto/Boost
+
+A follow-up trace experiment replaced the learned GBDT refiner with a rule-based, monotonic policy. It still treats trace as experimental-only postprocess: the official predictor and no-trace experimental blend do not read `trace.log`, `gold.csv`, or `meta.csv`; trace parsing is invoked only by `run_trace_policy_experiments.py`.
+
+Policy:
+
+- `none`: keep the calibrated no-trace probability matrix.
+- `veto`: cap high `P_base` pairs only when trace agreement is very low and sim/regr structured signals do not strongly agree.
+- `boost`: floor moderate `P_base` pairs only when trace agreement is high and sim/regr structured signals do not conflict.
+- `veto_boost`: apply both conservative edits.
+
+Trace agreement is a compact structural score from opcode Jaccard, tail opcode 2-gram Jaccard, tail opcode LCS ratio, and PC-region Jaccard. Trace text is not sent to the embedding endpoint or to an LLM completion API. Missing traces fall back gracefully; the current public datasets had 0 missing trace pairs.
+
+0-9 no-trace calibration grid:
+
+| setting | first_BA | stage2_BA | stage3_BA | mean_BA | stage2 TPR/TNR | stage3 TPR/TNR |
+|---|---:|---:|---:|---:|---|---|
+| old reference, alpha=0.85, rt=0.75, et=1.25 | 0.8761 | 0.8556 | 0.8541 | 0.8620 | 0.7560/0.9553 | 0.7349/0.9733 |
+| **new no-trace best, alpha=0.88, rt=1.15, et=1.00** | **0.8930** | **0.8595** | **0.8552** | **0.8692** | 0.7655/0.9535 | 0.7369/0.9735 |
+
+Seed=0 trace policy search using the new calibration showed possible local gains:
+
+| policy | first_BA | stage2_BA | stage3_BA | mean_BA | note |
+|---|---:|---:|---:|---:|---|
+| none | 0.9348 | 0.8781 | 0.8395 | 0.8841 | no-trace calibrated base |
+| boost, base 0.25-0.60, trace>=0.55, floor=0.65 | 0.9348 | 0.8922 | 0.8409 | 0.8893 | improves stage2 on seed=0 |
+| veto, base>=0.55, trace<=0.20, cap=0.35 | 0.9348 | 0.8781 | 0.8436 | 0.8855 | small stage3 gain |
+| veto_boost, same veto plus trace>=0.85/floor=0.75 | 0.9348 | 0.8931 | 0.8473 | 0.8918 | best seed=0 only |
+
+The gains did not hold across 0-9:
+
+| policy | first_BA | stage2_BA | stage3_BA | mean_BA | stage2 TPR/TNR | stage3 TPR/TNR |
+|---|---:|---:|---:|---:|---|---|
+| **none** | **0.8930** | 0.8595 | 0.8552 | **0.8692** | 0.7655/0.9535 | 0.7369/0.9735 |
+| boost, base 0.25-0.60, trace>=0.55, floor=0.65 | 0.8716 | **0.8655** | 0.8554 | 0.8642 | 0.7795/0.9516 | 0.7374/0.9734 |
+| veto_boost, base>=0.55 trace<=0.20 cap=0.35 plus same boost | 0.8716 | 0.8651 | **0.8557** | 0.8641 | 0.7783/0.9519 | 0.7380/0.9735 |
+
+Pair-level deltas explain the instability. The best boost reduces FN on stage2/stage3, but introduces too many FP pairs and hurts first_batch strongly on some seeds:
+
+| policy | fixed_FN | new_FN | fixed_FP | new_FP | net_FN_delta | net_FP_delta |
+|---|---:|---:|---:|---:|---:|---:|
+| boost | 252 | 219 | 1343 | 1625 | -33 | +282 |
+| veto_boost | 261 | 224 | 1405 | 1640 | -37 | +235 |
+
+Recommendation: do not enable trace policy by default and do not treat it as the experimental best. The current recommended experimental best remains the no-trace calibrated blend with `alpha=0.88, rich_temp=1.15, ensemble_temp=1.00`. Trace features have a real but noisy recall signal, especially on stage2, but the current boost rule is not conservative enough for small datasets and creates a net FP cost.
+
+Reproduce:
+
+```bash
+export LLM_MODEL_CONFIG="$(cat /tmp/nomic_llm.yaml)"
+
+python run_input_signal_calibration.py \
+  --output-dir /tmp/notrace_calibration_0_9 \
+  --seeds 0 1 2 3 4 5 6 7 8 9 \
+  --alphas 0.75 0.80 0.82 0.85 0.88 0.90 \
+  --rich-temperatures 0.65 0.75 0.85 1.00 1.15 \
+  --ensemble-temperatures 0.90 1.00 1.10 1.25 1.40
+
+python run_trace_policy_experiments.py \
+  --output-dir /tmp/trace_policy_exp_0_9 \
+  --seeds 0 1 2 3 4 5 6 7 8 9 \
+  --alpha 0.88 \
+  --rich-temperature 1.15 \
+  --ensemble-temperature 1.00 \
+  --trace-policy none boost veto_boost \
+  --tail-lines 500 \
+  --veto-base-min 0.55 \
+  --veto-trace-max 0.20 \
+  --veto-cap 0.35 \
+  --boost-base-ranges 0.25,0.60 \
+  --boost-trace-min 0.55 \
+  --boost-floor 0.65
 ```
 
 ## Error Analysis
