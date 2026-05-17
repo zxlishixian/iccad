@@ -68,6 +68,44 @@ def _model_ext(model_type: str) -> str:
     return "pt" if model_type == "mlp" else "pkl"
 
 
+def _temperature(prob: np.ndarray, temp: float) -> np.ndarray:
+    if abs(float(temp) - 1.0) < 1e-12:
+        return prob.astype(np.float32, copy=False)
+    clipped = np.clip(prob.astype(np.float64), 1e-5, 1.0 - 1e-5)
+    logits = np.log(clipped / (1.0 - clipped)) / float(temp)
+    out = 1.0 / (1.0 + np.exp(-logits))
+    np.fill_diagonal(out, 1.0)
+    return out.astype(np.float32)
+
+
+def _prob_stats(name: str, prob: np.ndarray) -> dict:
+    if prob.shape[0] <= 1:
+        vals = prob.reshape(-1).astype(np.float64)
+    else:
+        mask = ~np.eye(prob.shape[0], dtype=bool)
+        vals = prob[mask].astype(np.float64)
+    if vals.size == 0:
+        vals = np.asarray([0.0], dtype=np.float64)
+    pct = np.percentile(vals, [1, 10, 50, 90, 99])
+    return {
+        f"{name}_min": float(np.min(vals)),
+        f"{name}_mean": float(np.mean(vals)),
+        f"{name}_max": float(np.max(vals)),
+        f"{name}_p01": float(pct[0]),
+        f"{name}_p10": float(pct[1]),
+        f"{name}_p50": float(pct[2]),
+        f"{name}_p90": float(pct[3]),
+        f"{name}_p99": float(pct[4]),
+    }
+
+
+def _find_rich_model(model_root: Path, model_tag: str, seed: int, combo: int) -> Path:
+    path = model_root / f"model_seed{seed}_combo{combo:03b}_{model_tag}.pt"
+    if not path.exists():
+        raise FileNotFoundError(f"missing rich model: {path}")
+    return path
+
+
 # ---------------------------------------------------------------------------
 # Pretraining helpers
 # ---------------------------------------------------------------------------
@@ -305,6 +343,9 @@ def evaluate_blend(
     svd_dim: int,
     predict_batch_size: int,
     trace_encoder_dir: Path | None = None,
+    rich_temperature: float = 1.0,
+    ensemble_temperature: float = 1.0,
+    debug_rows: list[dict] | None = None,
 ) -> list[dict]:
     rich_model = plf.load_model_pkg(model_path)
     feature_mode = str(rich_model.get("feature_mode", ""))
@@ -348,13 +389,36 @@ def evaluate_blend(
                     feat.trace_vec = trace_encoder.encode_trace_tail(str(path))
             plf.normalize_trace_vectors(rich_features)
 
-        p_rich = plf.predict_probability_matrix_sklearn(rich_model, rich_features, batch_size=predict_batch_size)
+        p_rich_base = plf.predict_probability_matrix_sklearn(rich_model, rich_features, batch_size=predict_batch_size)
         ensemble_features, _ = plf.build_llm_case_features(part["input"], svd_dim=svd_dim, llm_args=ensemble_args)
-        p_ensemble = plf.predict_probability_matrix_ensemble(
+        p_ensemble_base = plf.predict_probability_matrix_ensemble(
             ensemble_pkgs, list(ENSEMBLE_WEIGHTS), ensemble_features,
             ensemble_mode="prob_average", batch_size=predict_batch_size,
         )
+        p_rich = _temperature(p_rich_base, rich_temperature)
+        p_ensemble = _temperature(p_ensemble_base, ensemble_temperature)
         prob = float(alpha) * p_rich + (1.0 - float(alpha)) * p_ensemble
+        if debug_rows is not None:
+            dbg = {
+                "run_name": run_name,
+                "seed": seed,
+                "combo": f"{combo:03b}",
+                "dataset": part["dataset"],
+                "feature_mode": feature_mode,
+                "input_dim": rich_model.get("input_dim", ""),
+                "llm_reduce_dim": rich_model.get("llm_reduce_dim", ""),
+                "trace_reduce_dim": rich_model.get("trace_reduce_dim", ""),
+                "alpha": float(alpha),
+                "rich_temperature": float(rich_temperature),
+                "ensemble_temperature": float(ensemble_temperature),
+                "ensemble_weights": "/".join(str(x) for x in ENSEMBLE_WEIGHTS),
+            }
+            dbg.update(_prob_stats("p_rich_base", p_rich_base))
+            dbg.update(_prob_stats("p_rich", p_rich))
+            dbg.update(_prob_stats("p_ens_base", p_ensemble_base))
+            dbg.update(_prob_stats("p_ens", p_ensemble))
+            dbg.update(_prob_stats("p_final", prob))
+            debug_rows.append(dbg)
         labels = plf.cluster_from_probability(prob.astype(np.float32), part["k"])
         gold = read_gold(part["gold"])
         pred = [f"bucket_{label:03d}" for label in labels]
@@ -377,6 +441,8 @@ def evaluate_blend(
             "llm_reduce_dim": rich_model.get("llm_reduce_dim", ""),
             "trace_reduce_dim": rich_model.get("trace_reduce_dim", ""),
             "blend_alpha": f"{alpha:.2f}",
+            "rich_temperature": f"{rich_temperature:.2f}",
+            "ensemble_temperature": f"{ensemble_temperature:.2f}",
             "dataset": part["dataset"],
             "BA": ba,
             "TPR": tpr,
@@ -488,8 +554,14 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     p.add_argument("--focal-alpha", default="auto")
     p.add_argument("--predict-batch-size", type=int, default=100000)
     p.add_argument("--blend-alphas", nargs="+", type=float, default=[0.88])
+    p.add_argument("--rich-temperatures", nargs="+", type=float, default=[1.15])
+    p.add_argument("--ensemble-temperatures", nargs="+", type=float, default=[1.0])
     p.add_argument("--ensemble-model-dir", type=Path, default=Path("/tmp/pairwise_llm_exp_full/models"))
     p.add_argument("--ensemble-split-root", type=Path, default=Path("/tmp/pairwise_llm_exp_full/splits"))
+    p.add_argument("--reuse-notrace-model-root", type=Path, default=Path("/tmp/input_signal_5seed_top/models/llm_dual_struct_det_summary_dim64"))
+    p.add_argument("--reuse-notrace-model-tag", default="llm_dual_struct_det_summary_dim64")
+    p.add_argument("--reuse-notrace-split-root", type=Path, default=Path("/tmp/input_signal_5seed_top/models/llm_dual_struct_det_summary_dim64/splits"))
+    p.add_argument("--retrain-notrace", action="store_true", help="retrain no_trace instead of reusing current-best artifacts")
     p.add_argument("--force-pretrain", action="store_true", help="force re-pretraining of trace encoder")
     p.add_argument("--skip-pretrain", action="store_true", help="skip pretraining (use cached)")
     p.add_argument("--trace-encoder-cache", type=Path, default=Path("/tmp/trace_transformer_encoders"))
@@ -503,6 +575,8 @@ def main(argv: Sequence[str] | None = None) -> int:
     datasets = [(d if d.is_absolute() else (PROJECT_ROOT / d).resolve()) for d in args.datasets]
     all_rows: list[dict] = []
     trained_model_paths: dict[tuple[int, str], Path] = {}
+    split_roots: dict[tuple[int, str], Path] = {}
+    debug_rows: list[dict] = []
 
     # Phase 0: Pretrain ONE shared trace encoder from official benchmarks
     encoder_dir = pretrain_or_load_trace_encoder(
@@ -515,6 +589,15 @@ def main(argv: Sequence[str] | None = None) -> int:
     for seed in args.seeds:
         for config_name in args.configs:
             cfg = CONFIGS[config_name]
+            if config_name == "no_trace" and not args.retrain_notrace:
+                config_path = args.reuse_notrace_model_root / f"config_seed{seed}_combo{args.combo:03b}_{args.reuse_notrace_model_tag}.json"
+                model_path = _find_rich_model(args.reuse_notrace_model_root, args.reuse_notrace_model_tag, seed, args.combo)
+                print(f"[reuse] no_trace seed={seed} model={model_path}", file=sys.stderr)
+                rows = _read_config_rows(config_path, config_name) if config_path.exists() else []
+                all_rows.extend(rows)
+                trained_model_paths[(seed, config_name)] = model_path
+                split_roots[(seed, config_name)] = args.reuse_notrace_split_root / f"seed_{seed}"
+                continue
             config_path = train_config(
                 python=args.python,
                 config_name=config_name,
@@ -548,6 +631,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             model_path = Path(rows[0]["model_path"]) if rows else None
             if model_path:
                 trained_model_paths[(seed, config_name)] = model_path
+                split_roots[(seed, config_name)] = args.output_dir / "models" / config_name / "splits" / f"seed_{seed}"
 
     # Phase 2: Evaluate with calibrated blend
     for seed in args.seeds:
@@ -555,32 +639,37 @@ def main(argv: Sequence[str] | None = None) -> int:
             model_path = trained_model_paths.get((seed, config_name))
             if model_path is None:
                 continue
-            split_root = args.output_dir / "models" / args.configs[0] / "splits" / f"seed_{seed}"
-            if not split_root.exists():
+            split_root = split_roots.get((seed, config_name))
+            if split_root is None or not split_root.exists():
                 split_root = args.ensemble_split_root / f"seed_{seed}"
             for alpha in args.blend_alphas:
-                rows = evaluate_blend(
-                    config_name,
-                    model_path,
-                    args.output_dir,
-                    datasets,
-                    seed,
-                    args.combo,
-                    alpha,
-                    args.ensemble_model_dir,
-                    split_root,
-                    args.llm_cache_dir,
-                    args.svd_dim,
-                    args.predict_batch_size,
-                    trace_encoder_dir=encoder_dir,
-                )
-                all_rows.extend(rows)
+                for rich_temp in args.rich_temperatures:
+                    for ens_temp in args.ensemble_temperatures:
+                        rows = evaluate_blend(
+                            config_name,
+                            model_path,
+                            args.output_dir,
+                            datasets,
+                            seed,
+                            args.combo,
+                            alpha,
+                            args.ensemble_model_dir,
+                            split_root,
+                            args.llm_cache_dir,
+                            args.svd_dim,
+                            args.predict_batch_size,
+                            trace_encoder_dir=encoder_dir,
+                            rich_temperature=rich_temp,
+                            ensemble_temperature=ens_temp,
+                            debug_rows=debug_rows,
+                        )
+                        all_rows.extend(rows)
 
     # Write results
     result_header = [
         "run_name", "seed", "combo", "method", "feature_mode", "arch", "loss",
         "llm_reduce_dim", "trace_reduce_dim", "positive_sampling", "negative_sampling",
-        "blend_alpha", "dataset", "BA", "TPR", "TNR",
+        "blend_alpha", "rich_temperature", "ensemble_temperature", "dataset", "BA", "TPR", "TNR",
         "num_cases", "k", "model_path", "config_path", "runtime_sec", "pred_path",
     ]
     _write_csv(args.output_dir / "results.csv", all_rows, result_header)
@@ -590,9 +679,14 @@ def main(argv: Sequence[str] | None = None) -> int:
         "blend_alpha", "dataset", "mean_BA", "std_BA", "mean_TPR", "mean_TNR", "num_runs",
     ]
     _write_csv(args.output_dir / "summary.csv", summary_rows, summary_header)
+    if debug_rows:
+        debug_fields = sorted({key for row in debug_rows for key in row})
+        _write_csv(args.output_dir / "debug_prob_stats.csv", debug_rows, debug_fields)
     print_wide(summary_rows)
     print(f"\nResults: {args.output_dir / 'results.csv'}")
     print(f"Summary:  {args.output_dir / 'summary.csv'}")
+    if debug_rows:
+        print(f"Debug:    {args.output_dir / 'debug_prob_stats.csv'}")
     return 0
 
 

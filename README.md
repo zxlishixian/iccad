@@ -1304,6 +1304,34 @@ python error_analysis_pairwise.py \
   --ensemble-temperature 1.00
 ```
 
+
+### Anchor-Guided Trace Window Experiments
+
+Full-trace transformer experiments showed that trace has some signal, but the original trace runner's no-trace path did not reproduce the current best. Its 5-seed runner baseline was about mean BA 0.8374, while `trace_embedding_blend_a0.88` reached about 0.8427. Because that no-trace baseline was misaligned with the current calibrated blend, these numbers are not considered a new best.
+
+The trace runner was fixed so `no_trace` reuses the current-best artifacts and applies the same calibration (`alpha=0.88, rich_temp=1.15, ensemble_temp=1.00`). Seed 0 now matches the current-best calibration runner exactly:
+
+| runner | seed | first_BA | stage2_BA | stage3_BA | mean_BA |
+|---|---:|---:|---:|---:|---:|
+| current calibration runner | 0 | 0.9348 | 0.8781 | 0.8395 | 0.8841 |
+| trace runner no_trace fixed | 0 | 0.9348 | 0.8781 | 0.8395 | 0.8841 |
+
+Anchor-guided trace windows use failure information from `sim.log` / `regr.log` to choose a local `trace.log` window, then add only lightweight structural pair features. This remains experimental and is not used by the default predictor. On the fake datasets, anchors were found for all train/validation cases via simulation failure time, with zero tail fallback in seed 0 (`located_by=time` for 960/960 anchor-debug rows across window sizes 32/64/128).
+
+Seed 0 results after fixing failure-time anchoring:
+
+| method | window | first_BA | stage2_BA | stage3_BA | mean_BA | first_TPR/TNR | stage2_TPR/TNR | stage3_TPR/TNR |
+|---|---:|---:|---:|---:|---:|---|---|---|
+| no_trace_current_best | - | 0.9348 | 0.8781 | 0.8395 | 0.8841 | 0.9125/0.9571 | 0.7917/0.9646 | 0.7042/0.9747 |
+| tail_trace_struct | 500 | 0.7796 | 0.8298 | 0.8464 | 0.8186 | 0.7250/0.8343 | 0.7232/0.9364 | 0.7528/0.9400 |
+| anchor_trace_struct | 32 | 0.8236 | 0.8625 | 0.8604 | 0.8488 | 0.8000/0.8471 | 0.7798/0.9452 | 0.7799/0.9409 |
+| anchor_trace_struct | 64 | 0.8236 | 0.8642 | 0.8487 | 0.8455 | 0.8000/0.8471 | 0.7798/0.9486 | 0.7576/0.9397 |
+| anchor_trace_struct | 128 | 0.8236 | 0.8745 | 0.8434 | 0.8471 | 0.8000/0.8471 | 0.7857/0.9633 | 0.7250/0.9617 |
+
+Anchor windows are more useful than simple tail structural features on stage2/stage3, and they improve stage3 TPR versus no-trace, but they hurt first_batch and overall TNR enough that mean BA stays below the no-trace current best. Seeds 0-4 were therefore not expanded in this round.
+
+Recommendation: keep the no-trace calibrated blend as the experimental best. If trace is revisited, the next trace direction should be an anchor-window transformer or a gated trace feature that only acts on uncertain pairs, but only after preserving the aligned no-trace baseline in the same runner.
+
 ## Error Analysis
 
 当 TNR 高但 TPR 低时，通常说明不同 bug 容易分开，但同一 bug 的多种表现被拆碎。可以用：
