@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import csv
+import gzip
 import math
 import re
 from collections import Counter, deque
@@ -99,7 +100,8 @@ def _resolve_trace_path(input_csv: Path, value: str | None) -> tuple[Path | None
 
 def _tail_lines(path: Path, tail_lines: int) -> list[str]:
     dq: deque[str] = deque(maxlen=max(1, int(tail_lines)))
-    with path.open("r", encoding="utf-8", errors="ignore") as f:
+    opener = gzip.open if path.suffix == ".gz" else open
+    with opener(path, "rt", encoding="utf-8", errors="ignore") as f:
         for line in f:
             dq.append(line.rstrip("\n"))
     return list(dq)

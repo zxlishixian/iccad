@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import csv
+import gzip
 import hashlib
 import json
 import math
@@ -20,7 +21,7 @@ import random
 import re
 import sys
 import time
-from collections import Counter, defaultdict
+from collections import Counter, defaultdict, deque
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Sequence, Tuple
@@ -169,6 +170,33 @@ def read_log_sample(path: Path | None) -> Tuple[str, str]:
     except OSError:
         return "", "missing_file"
     try:
+        if path.suffix == ".gz":
+            half = MAX_LOG_BYTES // 2
+            head: List[str] = []
+            head_chars = 0
+            tail: deque[str] = deque()
+            tail_chars = 0
+            all_parts: List[str] | None = []
+            total_chars = 0
+            with gzip.open(path, "rt", encoding="utf-8", errors="ignore") as f:
+                for line in f:
+                    total_chars += len(line)
+                    if all_parts is not None:
+                        all_parts.append(line)
+                        if total_chars > MAX_LOG_BYTES:
+                            all_parts = None
+                    if head_chars < half:
+                        take = line[: max(0, half - head_chars)]
+                        head.append(take)
+                        head_chars += len(take)
+                    tail.append(line)
+                    tail_chars += len(line)
+                    while tail_chars > half and tail:
+                        removed = tail.popleft()
+                        tail_chars -= len(removed)
+            if all_parts is not None:
+                return "".join(all_parts), "ok"
+            return "".join(head) + "\n... <LOG_TRUNCATED_HEAD_TAIL> ...\n" + "".join(tail), "ok"
         with path.open("rb") as f:
             if size <= MAX_LOG_BYTES:
                 data = f.read()
