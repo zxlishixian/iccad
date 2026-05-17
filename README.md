@@ -983,7 +983,7 @@ Dataset-size policy search gives an upper-bound style result on the current thre
 | stage3 | alpha=0.80, rich_temp=1.25, ens_temp=1.00 | 0.8606 | 0.7540/0.9671 |
 | policy mean | - | 0.8717 | - |
 
-Recommendation: use the single global calibrated blend `alpha=0.85, rich_temp=0.75, ensemble_temp=1.25` as the current experimental best. Treat the dataset-size policy as a promising validation result to retest on new data before relying on it.
+Historical note: this initial 0-4 calibration selected `alpha=0.85, rich_temp=0.75, ensemble_temp=1.25`, but it is superseded by the 0-9 retune below. Treat the dataset-size policy as a promising validation result to retest on new data before relying on it.
 
 A later 0-9 calibration grid supersedes the initial 0-4 setting. Reusing the same trained rich MLP and ensemble artifacts, the most stable global no-trace setting by primary mean BA is:
 
@@ -1045,7 +1045,7 @@ Seed=0 search showed aggressive merge raises TPR but destroys TNR; split is most
 | merge_close p>=0.92, consistency>=0.95 | 0.8761 | 0.8536 | 0.8517 | 0.8605 | 0.7693/0.9379 | 0.7476/0.9558 |
 | merge_close p>=0.90, consistency>=0.95 | 0.8711 | 0.8485 | 0.8442 | 0.8546 | 0.8057/0.8914 | 0.7762/0.9121 |
 
-Recommendation: keep postprocess disabled for now. The current experimental best remains the calibrated global dual-input blend without postprocess. Future gains should come from better training/sampling or more discriminative input signals rather than a simple structural merge/split pass.
+Recommendation: keep postprocess disabled for now. The current experimental best remains the calibrated global dual-input blend without postprocess, using `alpha=0.88, rich_temp=1.15, ensemble_temp=1.00`. Future gains should come from better training/sampling or more discriminative input signals rather than a simple structural merge/split pass.
 
 Reproduce stability and postprocess checks:
 
@@ -1232,6 +1232,78 @@ python run_trace_policy_experiments.py \
   --boost-floor 0.65
 ```
 
+
+### Current Best Strict Validation
+
+The current recommended experimental best is the no-trace calibrated blend:
+
+```text
+llm_dual_struct_det_summary_dim64
++ residual focal MLP
++ pairwise soft-voting ensemble blend
++ alpha=0.88, rich_temp=1.15, ensemble_temp=1.00
+```
+
+This remains experimental and does not change the official default predictor. Training/evaluation scripts may read `gold.csv`; official prediction still reads only `input.csv` plus `sim.log` / `regr.log`, does not read `gold.csv` or `meta.csv`, and does not use `trace.log` by default. LLM usage is embedding-only.
+
+Leave-one-dataset-out validation trains on two bundled datasets and evaluates on the held-out dataset:
+
+| method | first_BA | stage2_BA | stage3_BA | mean_BA | note |
+|---|---:|---:|---:|---:|---|
+| deterministic | 0.7821 | 0.7657 | 0.7788 | 0.7755 | default no-LLM baseline |
+| llm_concat_features | 0.7805 | 0.7612 | 0.7773 | 0.7730 | embedding concat baseline |
+| pairwise_soft_voting_ensemble | 0.8061 | 0.7757 | 0.7153 | 0.7657 | summary21 supervised ensemble |
+| **current_no_trace_calibrated_blend** | **0.8656** | **0.8551** | **0.8582** | **0.8596** | alpha=0.88, rt=1.15, et=1.00 |
+
+The LODO result shows the dual-input calibrated blend still generalizes better than the older baselines when the validation dataset is entirely held out. The held-out stage2/stage3 runs keep high TNR but lower TPR, so the model remains conservative and recall-limited.
+
+Additional seeds 10-19 were run with the same current-best parameters. They are materially lower than seeds 0-9, so the more conservative stability estimate is the 0-19 aggregate rather than the earlier 0-9 headline:
+
+| dataset | seeds | mean_BA | std_BA | mean_TPR | mean_TNR | min_BA | max_BA |
+|---|---|---:|---:|---:|---:|---:|---:|
+| first_batch | 0-9 | 0.8930 | 0.0424 | 0.8525 | 0.9334 | 0.8030 | 0.9607 |
+| stage2 | 0-9 | 0.8595 | 0.0169 | 0.7655 | 0.9535 | 0.8235 | 0.8840 |
+| stage3 | 0-9 | 0.8552 | 0.0173 | 0.7369 | 0.9735 | 0.8185 | 0.8766 |
+| first_batch | 10-19 | 0.8548 | 0.0219 | 0.8113 | 0.8983 | 0.8180 | 0.8841 |
+| stage2 | 10-19 | 0.8310 | 0.0333 | 0.7354 | 0.9266 | 0.7942 | 0.8995 |
+| stage3 | 10-19 | 0.8213 | 0.0116 | 0.7409 | 0.9017 | 0.8048 | 0.8447 |
+| **ALL mean** | **0-19** | **0.8525** | **0.0304** | **0.7737** | **0.9312** | **0.7942** | **0.9607** |
+
+Current-best pairwise error analysis over seeds 0-19:
+
+| dataset | BA | TPR | TNR | FN pairs | FP pairs | top FN bug | top FP bug pair |
+|---|---:|---:|---:|---:|---:|---|---|
+| first_batch | 0.8739 | 0.8319 | 0.9159 | 269 | 1178 | bug_001 | bug_001/bug_002 |
+| stage2 | 0.8452 | 0.7504 | 0.9401 | 1677 | 7050 | bug_003 | bug_012/bug_013 |
+| stage3 | 0.8383 | 0.7389 | 0.9376 | 7519 | 61883 | bug_030 | bug_012/bug_013 |
+
+The dominant metric imbalance is low TPR relative to TNR: same-bug pairs are still fragmented. However, the absolute pair-error count is dominated by FP because negative pairs are much more numerous, and many FP pairs sit in the same high-probability band as FN pairs. The repeated FP pairs are adjacent-looking or structurally similar bugs such as `bug_012/bug_013`, `bug_018/bug_019`, `bug_023/bug_024`, and `bug_025/bug_026`. This explains why naive merge/boost postprocess and trace boost improve recall locally but do not reliably improve overall BA.
+
+Recommendation after strict validation: keep the current best as the no-trace calibrated blend with `alpha=0.88, rich_temp=1.15, ensemble_temp=1.00`, but report both the 0-9 headline mean BA (0.8692) and the stricter 0-19 stability mean BA (0.8525). Do not enable trace policy or structural postprocess by default.
+
+Reproduce strict validation:
+
+```bash
+export LLM_MODEL_CONFIG="$(cat /tmp/nomic_llm.yaml)"
+
+python run_lodo_experiments.py \
+  --output-dir /tmp/lodo_exp
+
+python run_input_signal_calibration.py \
+  --output-dir /tmp/current_best_seeds_10_19 \
+  --seeds 10 11 12 13 14 15 16 17 18 19 \
+  --alphas 0.88 \
+  --rich-temperatures 1.15 \
+  --ensemble-temperatures 1.00
+
+python error_analysis_pairwise.py \
+  --output-dir /tmp/current_best_error_analysis \
+  --seeds 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 \
+  --alpha 0.88 \
+  --rich-temperature 1.15 \
+  --ensemble-temperature 1.00
+```
+
 ## Error Analysis
 
 当 TNR 高但 TPR 低时，通常说明不同 bug 容易分开，但同一 bug 的多种表现被拆碎。可以用：
@@ -1257,8 +1329,8 @@ python3 -m venv .venv
 
 ## Next Steps
 
-1. Keep `llm_dual_struct_det_summary_dim64` with global calibrated blend `alpha=0.85, rich_temp=0.75, ensemble_temp=1.25` as the current experimental best, but report the 0-9 mean BA (0.8620) as the more conservative stability estimate.
-2. Do not enable the current lightweight postprocess by default; it did not beat no-postprocess in 0-9 validation.
-3. Add stronger hard negatives: same mismatch type / similar primary type but different bug, especially adjacent-looking bug pairs that dominate FP.
-4. Improve recall through training/sampling rather than naive bucket merge, because FN and FP probability distributions overlap.
+1. Keep `llm_dual_struct_det_summary_dim64` with global calibrated blend `alpha=0.88, rich_temp=1.15, ensemble_temp=1.00` as the current experimental best, but report both the 0-9 headline mean BA (0.8692) and the stricter 0-19 stability mean BA (0.8525).
+2. Do not enable trace policy or lightweight structural postprocess by default; neither beat the no-trace current best under 0-9/0-19 validation.
+3. Improve recall without increasing FP on adjacent-looking bug pairs. The most useful next direction is better supervised objectives or sampling that directly targets fragmented same-bug pairs while penalizing high-probability FP pairs such as `bug_012/bug_013`.
+4. Investigate per-dataset or validation-learned calibration only if new private/public datasets are available; avoid tuning policies to the current three bundled datasets.
 5. Keep all pairwise MLP routes experimental; default submitted baseline remains deterministic `drain + agglomerative`.

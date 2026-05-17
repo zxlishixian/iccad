@@ -300,7 +300,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     p.add_argument("--focal-alpha", default="auto")
     p.add_argument("--predict-batch-size", type=int, default=100000)
     p.add_argument("--blend-with-ensemble", action="store_true")
-    p.add_argument("--blend-alphas", nargs="+", type=float, default=[0.25, 0.5, 0.75])
+    p.add_argument("--blend-alphas", nargs="+", type=float, default=[0.88])
     p.add_argument("--blend-configs", nargs="+", default=[])
     p.add_argument("--ensemble-model-dir", type=Path, default=Path("/tmp/pairwise_llm_exp_full/models"))
     p.add_argument("--ensemble-split-root", type=Path, default=Path("/tmp/pairwise_llm_exp_full/splits"))
