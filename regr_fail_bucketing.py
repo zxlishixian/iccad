@@ -1585,7 +1585,7 @@ def cluster_with_llm_similarity_fusion(
     args: argparse.Namespace,
     effective_k: int,
     sklearn_input: bool,
-) -> Tuple[List[int], Tuple[int, int]]:
+) -> Tuple[List[int], Tuple[int, int], int]:
     if not SKLEARN_AVAILABLE or not sklearn_input:
         raise RuntimeError("LLM similarity fusion requires scikit-learn vectorization")
     try:
@@ -1618,8 +1618,25 @@ def cluster_with_llm_similarity_fusion(
         f"embedding_dim={llm.shape[1]} fusion=similarity alpha={alpha} "
         f"doc_style={args.llm_doc_style}"
     )
-    labels = cluster_precomputed_distance(distance, effective_k)
-    return labels, distance.shape
+    selected_k = effective_k
+    if args.k_selection == "dynamic":
+        selected_k = select_dynamic_k_from_similarity(
+            sim,
+            requested_k=args.k,
+            window=args.dynamic_k_window,
+            merge_threshold=args.dynamic_merge_threshold,
+            top_pairs=args.dynamic_top_pairs,
+            label="llm_similarity",
+            policy=args.dynamic_k_policy,
+            gap_min=args.dynamic_gap_min,
+            gap_ratio=args.dynamic_gap_ratio,
+            start_factor=args.dynamic_start_factor,
+            min_factor=args.dynamic_min_factor,
+            local_quantile=args.dynamic_local_quantile,
+            below_k_margin=args.dynamic_below_k_margin,
+        )
+    labels = cluster_precomputed_distance(distance, selected_k)
+    return labels, distance.shape, selected_k
 
 
 def cluster_precomputed_distance(distance: Any, k: int) -> List[int]:
@@ -1638,7 +1655,200 @@ def cluster_precomputed_distance(distance: Any, k: int) -> List[int]:
     return model.fit_predict(distance).tolist()
 
 
-def run_pairwise_mlp_backend(args: argparse.Namespace, input_csv: Path, effective_k: int) -> tuple[List[int], int, tuple[int, int]]:
+def initial_effective_k(args: argparse.Namespace, n_cases: int) -> int:
+    if args.k_selection in {"fixed", "dynamic"}:
+        return max(1, min(n_cases, int(args.k)))
+    return max(1, min(n_cases, round(args.k * args.cluster_factor)))
+
+
+def _dynamic_k_bounds(requested_k: int, n_cases: int, window: int) -> tuple[int, int]:
+    requested_k = max(1, min(n_cases, int(requested_k)))
+    window = max(0, int(window))
+    lower = max(1, requested_k - window)
+    upper = min(n_cases, requested_k + window)
+    return lower, max(lower, upper)
+
+
+def _dynamic_k_factor_bounds(
+    requested_k: int,
+    n_cases: int,
+    start_factor: float,
+    min_factor: float,
+) -> tuple[int, int]:
+    requested_k = max(1, min(n_cases, int(requested_k)))
+    start_factor = max(1.0, float(start_factor))
+    min_factor = max(0.0, min(float(min_factor), start_factor))
+    upper = min(n_cases, max(requested_k, int(math.ceil(requested_k * start_factor))))
+    lower = max(1, min(requested_k, int(math.floor(requested_k * min_factor))))
+    return lower, max(lower, upper)
+
+
+def _best_intercluster_score(similarity: Any, labels: Sequence[int], top_pairs: int) -> float:
+    import numpy as np
+
+    clusters: Dict[int, List[int]] = defaultdict(list)
+    for idx, label in enumerate(labels):
+        clusters[int(label)].append(idx)
+    best = 0.0
+    keys = sorted(clusters)
+    top_pairs = max(1, int(top_pairs))
+    for pos, a in enumerate(keys):
+        ia = clusters[a]
+        for b in keys[pos + 1:]:
+            ib = clusters[b]
+            vals = similarity[np.ix_(ia, ib)].reshape(-1)
+            if vals.size == 0:
+                continue
+            if vals.size > top_pairs:
+                vals = np.partition(vals, vals.size - top_pairs)[-top_pairs:]
+            score = float(np.mean(vals))
+            if score > best:
+                best = score
+    return best
+
+
+def select_dynamic_k_from_similarity(
+    similarity: Any,
+    requested_k: int,
+    window: int,
+    merge_threshold: float,
+    top_pairs: int,
+    label: str = "",
+    policy: str = "gap",
+    gap_min: float = 0.05,
+    gap_ratio: float = 0.92,
+    start_factor: float = 1.2,
+    min_factor: float = 0.8,
+    local_quantile: float = 0.75,
+    below_k_margin: float = 0.02,
+) -> int:
+    import numpy as np
+
+    n = int(similarity.shape[0])
+    if n <= 1:
+        return n
+    if not SKLEARN_AVAILABLE or AgglomerativeClustering is None:
+        warn("dynamic k-selection requires scikit-learn; falling back to requested k")
+        return max(1, min(n, int(requested_k)))
+    policy = str(policy or "gap")
+    if policy == "reference_band":
+        lower, upper = _dynamic_k_factor_bounds(requested_k, n, start_factor, min_factor)
+    else:
+        lower, upper = _dynamic_k_bounds(requested_k, n, window)
+    if lower == upper:
+        return lower
+
+    sim = np.asarray(similarity, dtype=np.float32)
+    sim = np.clip(sim, 0.0, 1.0)
+    distance = 1.0 - sim
+    np.fill_diagonal(distance, 0.0)
+
+    scores: List[tuple[int, float]] = []
+    for candidate_k in range(upper, lower, -1):
+        labels = cluster_precomputed_distance(distance, candidate_k)
+        best_score = _best_intercluster_score(sim, labels, top_pairs=top_pairs)
+        scores.append((candidate_k, best_score))
+
+    selected = lower
+    if policy == "threshold":
+        for candidate_k, best_score in scores:
+            if best_score < float(merge_threshold):
+                selected = candidate_k
+                break
+    elif policy == "gap":
+        # Scores are the best available merge from candidate_k clusters to
+        # candidate_k - 1 clusters. Stop at the first local cliff near k:
+        # if the next merge score drops sharply relative to the previous
+        # merge, the lower-score merge is likely crossing a bug boundary.
+        prev_score = None
+        for candidate_k, best_score in scores:
+            if prev_score is not None:
+                abs_drop = float(prev_score) - float(best_score)
+                ratio = float(best_score) / max(float(prev_score), 1e-12)
+                if abs_drop >= float(gap_min) and ratio <= float(gap_ratio):
+                    selected = candidate_k
+                    break
+            prev_score = best_score
+        else:
+            selected = lower
+    elif policy == "reference_band":
+        score_values = np.asarray([score for _, score in scores], dtype=np.float32)
+        cutoff = float(np.quantile(score_values, max(0.0, min(1.0, float(local_quantile)))))
+        requested_k = max(1, min(n, int(requested_k)))
+        requested_score = next((score for k, score in scores if k == requested_k), None)
+        if requested_score is None:
+            requested_score = float(np.median(score_values))
+
+        selected = upper
+        prev_score = None
+        for candidate_k, best_score in scores:
+            best_score = float(best_score)
+            if prev_score is not None:
+                abs_drop = float(prev_score) - best_score
+                ratio = best_score / max(float(prev_score), 1e-12)
+                if abs_drop >= float(gap_min) and ratio <= float(gap_ratio):
+                    selected = candidate_k
+                    break
+
+            if candidate_k <= requested_k:
+                required = max(cutoff, float(requested_score) + float(below_k_margin))
+                if best_score < required:
+                    selected = candidate_k
+                    break
+
+            selected = max(lower, candidate_k - 1)
+            prev_score = best_score
+    else:
+        raise ValueError(f"unknown dynamic k policy: {policy}")
+
+    trace = [f"{k}:{score:.3f}" for k, score in scores]
+    context = f" {label}" if label else ""
+    info(
+        f"[cluster] dynamic_k{context} requested_k={requested_k} range={lower}-{upper} "
+        f"selected_k={selected} policy={policy} merge_threshold={float(merge_threshold):.3f} "
+        f"gap_min={float(gap_min):.3f} gap_ratio={float(gap_ratio):.3f} "
+        f"start_factor={float(start_factor):.3f} min_factor={float(min_factor):.3f} "
+        f"local_quantile={float(local_quantile):.3f} below_k_margin={float(below_k_margin):.3f} "
+        f"best_next_merge=" + ",".join(trace)
+    )
+    return selected
+
+
+def select_dynamic_k_for_vectors(
+    X: Any,
+    args: argparse.Namespace,
+    sklearn_input: bool = True,
+    pre_reduced: bool = False,
+) -> int:
+    if not SKLEARN_AVAILABLE or not sklearn_input:
+        warn("dynamic k-selection is unavailable without scikit-learn vector features; falling back to requested k")
+        return max(1, min(X.shape[0] if sklearn_input else len(X), int(args.k)))
+    import numpy as np
+
+    reduced = X if pre_reduced else to_dense_or_reduced(X, args.svd_dim)
+    mat = np.asarray(reduced.toarray() if hasattr(reduced, "toarray") else reduced, dtype=np.float32)
+    norms = np.linalg.norm(mat, axis=1, keepdims=True)
+    mat = mat / np.maximum(norms, 1e-12)
+    sim = mat @ mat.T
+    np.fill_diagonal(sim, 1.0)
+    return select_dynamic_k_from_similarity(
+        sim,
+        requested_k=args.k,
+        window=args.dynamic_k_window,
+        merge_threshold=args.dynamic_merge_threshold,
+        top_pairs=args.dynamic_top_pairs,
+        label="vectors",
+        policy=args.dynamic_k_policy,
+        gap_min=args.dynamic_gap_min,
+        gap_ratio=args.dynamic_gap_ratio,
+        start_factor=args.dynamic_start_factor,
+        min_factor=args.dynamic_min_factor,
+        local_quantile=args.dynamic_local_quantile,
+        below_k_margin=args.dynamic_below_k_margin,
+    )
+
+
+def run_pairwise_mlp_backend(args: argparse.Namespace, input_csv: Path, effective_k: int) -> tuple[List[int], int, tuple[int, int], int]:
     if not args.pairwise_model:
         raise RuntimeError("--cluster pairwise_mlp requires --pairwise-model")
     try:
@@ -1684,8 +1894,25 @@ def run_pairwise_mlp_backend(args: argparse.Namespace, input_csv: Path, effectiv
     )
     distance = 1.0 - prob
     np.fill_diagonal(distance, 0.0)
-    labels = cluster_precomputed_distance(distance, effective_k)
-    return labels, bundle.template_count, prob.shape
+    selected_k = effective_k
+    if args.k_selection == "dynamic":
+        selected_k = select_dynamic_k_from_similarity(
+            prob,
+            requested_k=args.k,
+            window=args.dynamic_k_window,
+            merge_threshold=args.dynamic_merge_threshold,
+            top_pairs=args.dynamic_top_pairs,
+            label="pairwise",
+            policy=args.dynamic_k_policy,
+            gap_min=args.dynamic_gap_min,
+            gap_ratio=args.dynamic_gap_ratio,
+            start_factor=args.dynamic_start_factor,
+            min_factor=args.dynamic_min_factor,
+            local_quantile=args.dynamic_local_quantile,
+            below_k_margin=args.dynamic_below_k_margin,
+        )
+    labels = cluster_precomputed_distance(distance, selected_k)
+    return labels, bundle.template_count, prob.shape, selected_k
 
 
 def parse_args(argv: Sequence[str]) -> argparse.Namespace:
@@ -1731,6 +1958,22 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser.add_argument("--token-weights", type=Path, help="optional token_weights.json learned from training data")
     parser.add_argument("--token-weight-mode", choices=("repeat", "none"), default="none")
     parser.add_argument("--cluster-factor", type=float, default=0.875, help="multiply requested k before clustering")
+    parser.add_argument(
+        "--k-selection",
+        choices=("factor", "fixed", "dynamic"),
+        default="factor",
+        help="bucket-count policy: factor keeps legacy k*cluster_factor, fixed uses k, dynamic stops merges when the best cross-cluster score is low",
+    )
+    parser.add_argument("--dynamic-k-window", type=int, default=2, help="absolute +/- window around k for --k-selection dynamic")
+    parser.add_argument("--dynamic-k-policy", choices=("gap", "threshold", "reference_band"), default="gap", help="dynamic k policy: gap uses within-dataset merge-score cliffs; threshold uses an absolute score cutoff; reference_band starts above k and stops by local score distribution")
+    parser.add_argument("--dynamic-merge-threshold", type=float, default=0.95, help="absolute cutoff used by --dynamic-k-policy threshold")
+    parser.add_argument("--dynamic-gap-min", type=float, default=0.05, help="minimum absolute drop between adjacent merge scores for --dynamic-k-policy gap/reference_band")
+    parser.add_argument("--dynamic-gap-ratio", type=float, default=0.95, help="maximum current/previous score ratio for --dynamic-k-policy gap/reference_band")
+    parser.add_argument("--dynamic-start-factor", type=float, default=1.20, help="start reference_band dynamic k from ceil(k*this factor)")
+    parser.add_argument("--dynamic-min-factor", type=float, default=0.80, help="do not merge below floor(k*this factor) in reference_band dynamic k")
+    parser.add_argument("--dynamic-local-quantile", type=float, default=0.75, help="within-dataset merge-score quantile required for reference_band continuation")
+    parser.add_argument("--dynamic-below-k-margin", type=float, default=0.02, help="extra score margin required to continue below k in reference_band dynamic k")
+    parser.add_argument("--dynamic-top-pairs", type=int, default=8, help="top pair similarities averaged for each candidate dynamic merge")
     parser.add_argument(
         "--postprocess",
         choices=("none",),
@@ -1782,7 +2025,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     if sim_col is None and regr_col is None:
         raise SystemExit("input CSV must contain at least a sim.log or regr.log column")
 
-    effective_k = max(1, min(len(rows), round(args.k * args.cluster_factor)))
+    effective_k = initial_effective_k(args, len(rows))
     token_weights: Dict[str, float] = {}
     token_weights_label = "None"
     if args.token_weights and args.token_weight_mode == "none":
@@ -1793,7 +2036,8 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     info(
         f"[config] parser={args.parser} cluster={args.cluster} "
-        f"cluster_factor={args.cluster_factor} feature_level={args.feature_level} "
+        f"cluster_factor={args.cluster_factor} k_selection={args.k_selection} "
+        f"feature_level={args.feature_level} "
         f"normalizer={args.normalizer} line_mode={args.line_mode} "
         f"template_weighting={args.template_weighting} "
         f"llm_mode={args.llm_mode} "
@@ -1804,10 +2048,10 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     if args.cluster == "pairwise_mlp":
         try:
-            labels, template_count, prob_shape = run_pairwise_mlp_backend(args, input_csv, effective_k)
+            labels, template_count, prob_shape, selected_k = run_pairwise_mlp_backend(args, input_csv, effective_k)
             labels = remap_labels(labels)
             info(f"[data] cases={len(rows)} templates={template_count} vector_shape={prob_shape}")
-            info(f"[cluster] requested_k={args.k} effective_k={effective_k} method=pairwise_mlp")
+            info(f"[cluster] requested_k={args.k} effective_k={selected_k} method=pairwise_mlp")
             write_output(args.output.resolve(), labels, output_cases)
             info(
                 f"[output] buckets={len(set(labels))} path={args.output.resolve()} "
@@ -1849,11 +2093,11 @@ def main(argv: Sequence[str] | None = None) -> int:
     if use_llm:
         try:
             if args.llm_fusion == "similarity":
-                labels, shape = cluster_with_llm_similarity_fusion(X, feature_counters, args, effective_k, sklearn_input)
+                labels, shape, selected_k = cluster_with_llm_similarity_fusion(X, feature_counters, args, effective_k, sklearn_input)
                 labels = remap_labels(labels)
                 info(f"[data] cases={len(rows)} templates={template_count} vector_shape={shape}")
                 info(
-                    f"[cluster] requested_k={args.k} effective_k={effective_k} "
+                    f"[cluster] requested_k={args.k} effective_k={selected_k} "
                     f"method=llm_similarity+{args.cluster}"
                 )
                 write_output(args.output.resolve(), labels, output_cases)
@@ -1869,6 +2113,13 @@ def main(argv: Sequence[str] | None = None) -> int:
             warn(f"LLM embedding augmentation failed ({exc}); falling back to deterministic baseline")
             if args.strict_llm:
                 return 3
+    if args.k_selection == "dynamic":
+        effective_k = select_dynamic_k_for_vectors(
+            X,
+            args,
+            sklearn_input=sklearn_input,
+            pre_reduced=pre_reduced,
+        )
     info(f"[data] cases={len(rows)} templates={template_count} vector_shape={shape}")
     info(f"[cluster] requested_k={args.k} effective_k={effective_k} method={args.cluster}")
     labels = cluster_vectors(
