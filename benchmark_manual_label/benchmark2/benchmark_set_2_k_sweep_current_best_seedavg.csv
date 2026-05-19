@@ -1,0 +1,11 @@
+k,BA,TPR,TNR,num_pred_clusters,pred_path
+3,0.8103081438004403,0.9482758620689655,0.6723404255319149,3,/home/lishixian/iccad/benchmark_manual_label/benchmark2/benchmark_set_2_pred_current_best_seedavg_k3.csv
+4,0.9379677182685253,0.9482758620689655,0.9276595744680851,4,/home/lishixian/iccad/benchmark_manual_label/benchmark2/benchmark_set_2_pred_current_best_seedavg_k4.csv
+5,0.9379126925898753,0.9396551724137931,0.9361702127659575,5,/home/lishixian/iccad/benchmark_manual_label/benchmark2/benchmark_set_2_pred_current_best_seedavg_k5.csv
+6,0.8775678650036685,0.8189655172413793,0.9361702127659575,6,/home/lishixian/iccad/benchmark_manual_label/benchmark2/benchmark_set_2_pred_current_best_seedavg_k6.csv
+7,0.8882061628760088,0.8189655172413793,0.9574468085106383,7,/home/lishixian/iccad/benchmark_manual_label/benchmark2/benchmark_set_2_pred_current_best_seedavg_k7.csv
+8,0.6769992663242848,0.39655172413793105,0.9574468085106383,8,/home/lishixian/iccad/benchmark_manual_label/benchmark2/benchmark_set_2_pred_current_best_seedavg_k8.csv
+9,0.6726889214966985,0.3879310344827586,0.9574468085106383,9,/home/lishixian/iccad/benchmark_manual_label/benchmark2/benchmark_set_2_pred_current_best_seedavg_k9.csv
+10,0.620964783565664,0.28448275862068967,0.9574468085106383,10,/home/lishixian/iccad/benchmark_manual_label/benchmark2/benchmark_set_2_pred_current_best_seedavg_k10.csv
+11,0.6294754218635363,0.28448275862068967,0.9744680851063829,11,/home/lishixian/iccad/benchmark_manual_label/benchmark2/benchmark_set_2_pred_current_best_seedavg_k11.csv
+12,0.5863719735876742,0.19827586206896552,0.9744680851063829,12,/home/lishixian/iccad/benchmark_manual_label/benchmark2/benchmark_set_2_pred_current_best_seedavg_k12.csv
