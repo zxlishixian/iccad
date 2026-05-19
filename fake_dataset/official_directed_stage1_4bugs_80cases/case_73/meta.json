@@ -1,0 +1,10 @@
+{
+  "case_id": "case_73",
+  "case": 73,
+  "bug_id": "bug_039",
+  "group": "debug",
+  "family": "ebreak_debug_enable_mode_swap",
+  "test": "riscv_rand_instr_test",
+  "seed": 5301,
+  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_official_directed_stage1_4bugs/bug_039/riscv_rand_instr_test/seed_005301"
+}
