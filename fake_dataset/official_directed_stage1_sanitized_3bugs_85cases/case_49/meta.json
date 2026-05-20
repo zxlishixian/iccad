@@ -1,0 +1,10 @@
+{
+  "Case": "49",
+  "case_id": "case_49",
+  "bug_id": "bug_037",
+  "group": "debug",
+  "family": "debug_request_priority_wrong",
+  "test": "riscv_debug_ebreak_test",
+  "seed": "5651",
+  "source_run_dir": "/workspace/ibex/dv/uvm/out"
+}

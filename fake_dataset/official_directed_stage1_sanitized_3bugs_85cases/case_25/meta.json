@@ -1,0 +1,10 @@
+{
+  "Case": "25",
+  "case_id": "case_25",
+  "bug_id": "bug_036",
+  "group": "interrupt",
+  "family": "interrupt_enable_condition_wrong",
+  "test": "riscv_single_interrupt_test",
+  "seed": "5577",
+  "source_run_dir": "/workspace/ibex/dv/uvm/out"
+}
