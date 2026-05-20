@@ -1390,6 +1390,74 @@ python run_official_directed_trace_eval.py \
 ```
 
 
+
+### External Trace Transfer Experiments
+
+The official-directed sanitized target dataset `fake_dataset/official_directed_stage1_sanitized_3bugs_85cases` is held out for these experiments. Its `gold.csv` is used only at the final scoring step, never for training, calibration, or parameter selection.
+
+Training sources:
+
+- old fake datasets with gold: `fake_dataset/first_batch_dataset`, `fake_dataset/stage2_dataset_working`, `fake_dataset/stage3_dataset_32bugs_640cases`
+- public benchmark traces with manual weak labels: `test_case/problem/benchmark_set_1`, `test_case/problem/benchmark_set_2`
+- manual benchmark labels are weak labels from `benchmark_manual_label/benchmark1/*` and `benchmark_manual_label/benchmark2/*`; they are not official ground truth
+
+Target baseline on the current tree:
+
+| method | BA | TPR | TNR | note |
+|---|---:|---:|---:|---|
+| no_trace_current_best_external | 0.5753 | 0.8501 | 0.3005 | current calibrated no-trace artifacts, seedavg10 |
+
+External transfer results on the sanitized target:
+
+| config | window | model | runs | BA | TPR | TNR | note |
+|---|---:|---|---:|---:|---:|---:|---|
+| anchor_old_fake | 128 | gbdt | 5 | 0.5932 | 0.7845 | 0.4019 | best anchor structural transfer |
+| anchor_old_fake_benchmark | 128 | gbdt | 5 | 0.5932 | 0.7845 | 0.4019 | benchmark manual weak labels did not improve |
+| anchor_old_fake_benchmark | 128 | logistic | 5 | 0.5888 | 0.8458 | 0.3318 | small TNR gain, recall mostly preserved |
+| anchor_old_fake | 64 | gbdt | 5 | 0.5862 | 0.7930 | 0.3794 | moderate TNR gain, TPR loss |
+| trace_encoder_old_fake_benchmark | 64 | gbdt | 1 | 0.5689 | 0.8373 | 0.3005 | rich + anchor + pretrained trace encoder did not transfer |
+
+Anchor location statistics for the full external-transfer grid:
+
+- target located_by: `pc=4380`, `time=720` across all target/window/model/random-state runs
+- train located_by top counts: `time=49200`, `pc=9480`
+- trace encoder smoke: `trace_encoded_train=996`, `trace_encoded_target=85`
+
+The best transfer model reduces over-merge false positives but not enough: TNR rises from about 0.3005 to 0.4019, while TPR drops from 0.8501 to 0.7845. This is a real but small transfer signal, far below the direct supervised trace diagnostic (`anchor_trace_w64_trace_only` near 0.97 BA when trained on the target itself). The gap indicates dataset shift: current anchor structural features can separate the sanitized target when trained on it, but rules learned from old fake + manual public benchmark data do not yet generalize strongly.
+
+Recommendation: keep this route experimental. Continue only if the next iteration improves transfer supervision, for example by training on official-directed style synthetic traces, doing leave-bug-family-out validation, or learning anchor-window trace embeddings with contrastive objectives. Do not enable trace transfer in the default predictor.
+
+Reproduce:
+
+```bash
+source /home/lishixian/miniforge3/etc/profile.d/conda.sh
+conda activate collab-overcooked
+export LLM_MODEL_CONFIG="$(cat /tmp/nomic_llm.yaml)"
+
+python run_external_trace_transfer_experiments.py \
+  --output-dir /tmp/external_trace_transfer_exp \
+  --train-datasets fake_dataset/first_batch_dataset fake_dataset/stage2_dataset_working fake_dataset/stage3_dataset_32bugs_640cases \
+  --benchmark-datasets test_case/problem/benchmark_set_1 test_case/problem/benchmark_set_2 \
+  --target-dataset fake_dataset/official_directed_stage1_sanitized_3bugs_85cases \
+  --configs no_trace anchor_old_fake anchor_old_fake_benchmark anchor_blend \
+  --window-sizes 32 64 128 \
+  --model-types logistic gbdt \
+  --betas 0.25 0.50 0.75 1.00 \
+  --random-states 0 1 2 3 4
+
+python run_external_trace_transfer_experiments.py \
+  --output-dir /tmp/external_trace_transfer_trace_encoder_smoke \
+  --train-datasets fake_dataset/first_batch_dataset fake_dataset/stage2_dataset_working fake_dataset/stage3_dataset_32bugs_640cases \
+  --benchmark-datasets test_case/problem/benchmark_set_1 test_case/problem/benchmark_set_2 \
+  --target-dataset fake_dataset/official_directed_stage1_sanitized_3bugs_85cases \
+  --configs no_trace trace_encoder_old_fake_benchmark \
+  --window-sizes 64 \
+  --model-types gbdt \
+  --random-state 0 \
+  --device cpu
+```
+
+
 ## Error Analysis
 
 当 TNR 高但 TPR 低时，通常说明不同 bug 容易分开，但同一 bug 的多种表现被拆碎。可以用：
