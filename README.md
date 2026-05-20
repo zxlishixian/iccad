@@ -1332,6 +1332,64 @@ Anchor windows are more useful than simple tail structural features on stage2/st
 
 Recommendation: keep the no-trace calibrated blend as the experimental best. If trace is revisited, the next trace direction should be an anchor-window transformer or a gated trace feature that only acts on uncertain pairs, but only after preserving the aligned no-trace baseline in the same runner.
 
+
+### Official-Directed Trace Diagnosis and Direct Evaluation
+
+A new fake official-directed dataset was added at `fake_dataset/official_directed_stage1_valid_failure_only`. Its `sim.log` / `regr.log` surface signals are intentionally very similar across the four gold bugs (`bug_036`, `bug_037`, `bug_038`, `bug_041`): many cases look like `core_ibex_debug_intr_basic_test` with PC/register mismatch or timeout-style failures. This exposes a failure mode for no-trace models: they over-merge, so TPR remains high while TNR collapses.
+
+Direct evaluation on this dataset uses `gold.csv` for scoring and, for trace-supervised rows, for same-dataset pairwise training. These rows are diagnostic experiments, not official prediction settings. The default `regr_fail_bucketing.py` path still does not read trace/gold/meta.
+
+| method | BA | TPR | TNR | clusters | note |
+|---|---:|---:|---:|---:|---|
+| deterministic | 0.5775 | 0.8366 | 0.3184 | 4 | default no-trace baseline |
+| no_trace_best | 0.5899 | 0.8434 | 0.3363 | 4 | 10-seed calibrated blend, alpha=0.88, rt=1.15, et=1.00 |
+| trace_policy_veto_boost | 0.5899 | 0.8434 | 0.3363 | 4 | conservative tail policy did not move clustering |
+| trace_tail_trace_only | 0.8644 | 0.8383 | 0.8905 | 4 | direct supervised trace GBDT |
+| anchor_trace_w32_trace_only | 0.8632 | 0.9991 | 0.7272 | 4 | direct supervised anchor-window GBDT |
+| **anchor_trace_w64_trace_only** | **0.9843** | **0.9796** | **0.9891** | 4 | best direct trace-only diagnostic |
+| anchor_trace_w128_trace_only | 0.8632 | 0.9991 | 0.7272 | 4 | direct supervised anchor-window GBDT |
+| trace_tail_rich | 1.0000 | 1.0000 | 1.0000 | 4 | direct supervised rich+trace GBDT; train=evaluate |
+| anchor_trace_w32/w64/w128_rich | 1.0000 | 1.0000 | 1.0000 | 4 | direct supervised rich+trace GBDT; train=evaluate |
+
+The bug-pair confusion confirms the diagnosis. `no_trace_best` merges most of the target bug pairs: `bug_036/bug_037` has 864 FP pairs, `bug_037/bug_038` has 416, and `bug_036/bug_038` has 351. With `anchor_trace_w64_trace_only`, the remaining target confusion is only `bug_036/bug_038` with 28 FP pairs. This is a large TNR improvement and shows that trace contains the missing discriminative signal.
+
+The rule anchor extractor was extended to use PC mismatch / DUT retired PC, ISS retired PC, register mismatch targets, and debug/IRQ/CSR/illegal/timeout tags. On the official-directed dataset, anchor windows were located without tail fallback: across window sizes 32/64/128, `located_by=pc` for 222/261 anchor rows and `located_by=time` for 39/261 rows.
+
+As a sanity check, the same anchor structural route was run on the older fake datasets with seed 0 and window size 64:
+
+| method | first_BA | stage2_BA | stage3_BA | mean_BA | note |
+|---|---:|---:|---:|---:|---|
+| no_trace_current_best | 0.9348 | 0.8781 | 0.8395 | 0.8841 | aligned current best |
+| tail_trace_struct_w500 | 0.8064 | 0.8747 | 0.8455 | 0.8422 | improves stage3 recall but hurts first/TNR |
+| anchor_trace_struct_w64 | 0.8671 | 0.8496 | 0.8345 | 0.8504 | below no-trace current best |
+
+Recommendation: keep the current no-trace calibrated blend as the experimental best for general use. For official-directed style data, continue trace-aware work as a separate experimental backend, preferably with anchor-window train/heldout validation rather than same-dataset direct supervision. The most promising next step is an anchor-window trace model or gated trace feature that preserves the aligned no-trace baseline and only activates when sim/regr signals are ambiguous.
+
+Reproduce the direct trace diagnosis:
+
+```bash
+source /home/lishixian/miniforge3/etc/profile.d/conda.sh
+conda activate collab-overcooked
+export LLM_MODEL_CONFIG="$(cat /tmp/nomic_llm.yaml)"
+
+python run_official_directed_trace_eval.py \
+  --dataset fake_dataset/official_directed_stage1_valid_failure_only \
+  --output-dir /tmp/official_directed_trace_eval \
+  --methods deterministic no_trace_best trace_tail trace_policy anchor_trace \
+  --window-sizes 32 64 128 \
+  --k-from-gold \
+  --trace-context rich
+
+python run_official_directed_trace_eval.py \
+  --dataset fake_dataset/official_directed_stage1_valid_failure_only \
+  --output-dir /tmp/official_directed_trace_eval_traceonly \
+  --methods deterministic trace_tail anchor_trace \
+  --window-sizes 32 64 128 \
+  --k-from-gold \
+  --trace-context trace_only
+```
+
+
 ## Error Analysis
 
 当 TNR 高但 TPR 低时，通常说明不同 bug 容易分开，但同一 bug 的多种表现被拆碎。可以用：

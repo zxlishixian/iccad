@@ -24,6 +24,19 @@ INDEX_RE = re.compile(r"\b(?:ibex|dut|rtl|spike|iss)\[(\d+)\]", re.IGNORECASE)
 PC_BRACKET_RE = re.compile(r"\bpc\[(0x[0-9a-fA-F]+|[0-9a-fA-F]{6,16})\]", re.IGNORECASE)
 UVM_TIME_RE = re.compile(r"@\s*(\d+)\s*:")
 OP_PAIR_RE = rfb.PC_OP_RE
+DUT_RETIRED_PC_RE = re.compile(r"DUT\s+retired\s*:\s*(0x[0-9a-fA-F]+|[0-9a-fA-F]{6,16})", re.IGNORECASE)
+ISS_RETIRED_PC_RE = re.compile(r"ISS\s+retired\s*:\s*(0x[0-9a-fA-F]+|[0-9a-fA-F]{6,16})", re.IGNORECASE)
+REG_MISMATCH_RE = re.compile(r"register write data mismatch to\s+(x(?:[0-2]?\d|3[01]))", re.IGNORECASE)
+ANCHOR_TAG_PATTERNS = {
+    "illegal_instruction": re.compile(r"illegal instruction|illegal", re.IGNORECASE),
+    "debug_entry": re.compile(r"IN_DEBUG_MODE|debug", re.IGNORECASE),
+    "irq_entry": re.compile(r"HANDLING_IRQ|interrupt|irq", re.IGNORECASE),
+    "csr": re.compile(r"CSR|IbexCsr", re.IGNORECASE),
+    "ebreak": re.compile(r"\bebreak\b", re.IGNORECASE),
+    "dret": re.compile(r"\bdret\b", re.IGNORECASE),
+    "mret": re.compile(r"\bmret\b", re.IGNORECASE),
+    "timeout": re.compile(r"timeout", re.IGNORECASE),
+}
 
 
 @dataclass
@@ -39,6 +52,8 @@ class TraceAnchor:
     mismatch_type: str
     primary_type: str
     reason: str
+    mismatch_register: str = ""
+    anchor_tags: tuple[str, ...] = ()
 
 
 @dataclass
@@ -149,6 +164,14 @@ def extract_trace_anchor(case_id: str, sim_lines: Sequence[str], regr_lines: Seq
     pcs = [_clean_pc(x) for x in PC_BRACKET_RE.findall(joined_regr)]
     dut_pc = pcs[0] if pcs else ""
     iss_pc = pcs[1] if len(pcs) > 1 else ""
+    if not dut_pc:
+        m_dut = DUT_RETIRED_PC_RE.search(joined)
+        if m_dut:
+            dut_pc = _clean_pc(m_dut.group(1))
+    if not iss_pc:
+        m_iss = ISS_RETIRED_PC_RE.search(joined)
+        if m_iss:
+            iss_pc = _clean_pc(m_iss.group(1))
     sim_time = None
     time_lines = list(sim_lines) + list(regr_lines)
     time_priority_groups = [
@@ -175,6 +198,9 @@ def extract_trace_anchor(case_id: str, sim_lines: Sequence[str], regr_lines: Seq
         elif side_l in {"spike", "iss"} and not spike_opcode:
             spike_opcode = op_l
     primary_tokens = rfb.extract_primary_signature({}, {}, list(sim_lines), list(regr_lines))
+    reg_match = REG_MISMATCH_RE.search(joined)
+    mismatch_register = reg_match.group(1).lower() if reg_match else ""
+    anchor_tags = tuple(sorted(name for name, pat in ANCHOR_TAG_PATTERNS.items() if pat.search(joined)))
     reason = ""
     for line in list(regr_lines) + list(sim_lines):
         low = line.lower()
@@ -202,6 +228,8 @@ def extract_trace_anchor(case_id: str, sim_lines: Sequence[str], regr_lines: Seq
         mismatch_type=_mismatch_type(joined),
         primary_type=_primary_type(primary_tokens),
         reason=reason,
+        mismatch_register=mismatch_register,
+        anchor_tags=anchor_tags,
     )
 
 
@@ -362,6 +390,8 @@ def build_anchor_trace_case_features(input_csvs: Sequence[str | Path], window_si
                 "mismatch_type": anchor.mismatch_type,
                 "primary_type": anchor.primary_type,
                 "reason": anchor.reason,
+                "mismatch_register": anchor.mismatch_register,
+                "anchor_tags": ";".join(anchor.anchor_tags),
                 "located_by": feat.located_by,
                 "center_line": feat.center_line,
                 "window_start": feat.window_start,
@@ -392,6 +422,8 @@ def build_anchor_trace_pair_feature_vector(a: AnchorTraceFeature, b: AnchorTrace
         float(a.anchor_source == b.anchor_source),
         float(a.located_by == b.located_by),
         abs(float(a.repeated_pc_count) - float(b.repeated_pc_count)),
+        1.0 if a.anchor and b.anchor and a.anchor.mismatch_register and a.anchor.mismatch_register == b.anchor.mismatch_register else 0.0,
+        _jaccard(set(a.anchor.anchor_tags if a.anchor else ()), set(b.anchor.anchor_tags if b.anchor else ())),
     ], dtype=np.float32)
     return np.concatenate([base, extra]).astype(np.float32, copy=False)
 
