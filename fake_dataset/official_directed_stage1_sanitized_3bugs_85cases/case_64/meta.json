@@ -4,7 +4,7 @@
   "bug_id": "bug_038",
   "group": "csr_exception",
   "family": "mstatus_mpie_restore_wrong",
-  "test": "riscv_rand_instr_test",
-  "seed": "5766",
+  "test": "riscv_single_interrupt_test",
+  "seed": "5760",
   "source_run_dir": "/workspace/ibex/dv/uvm/out"
 }

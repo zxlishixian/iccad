@@ -1,13 +1,13 @@
 0.00% PASS 0 PASSED, 1 FAILED
-riscv_rand_instr_test.5763: FAILED
+riscv_single_interrupt_test.5572: FAILED
 
 
 ################################################################################
 # Details of failing tests
 ################################################################################
 
-riscv_rand_instr_test.5763
---------------------------
+riscv_single_interrupt_test.5572
+--------------------------------
 binary:          test.bin
 rtl_log:         rtl_sim.log
 rtl_trace:       trace_core_00000000.log
@@ -15,16 +15,16 @@ iss_cosim_trace: spike_cosim_trace_core_00000000.log
 
 [FAILED]: error seen in 'rtl_sim.log'
 ---------------*LOG-EXTRACT*----------------
-    216: 2934866: Illegal instruction (hart 0) at PC 0x8000b68c: 0xf14d1173
-    217: 2961646: Illegal instruction (hart 0) at PC 0x8000b6a8: 0xf11cdcf3
-    218: 2961666: Illegal instruction (hart 0) at PC 0x8000b6a8: 0xf11cdcf3
-    219: 2985146: Illegal instruction (hart 0) at PC 0x8000b7e0: 0xf142bef3
-    220: 2985166: Illegal instruction (hart 0) at PC 0x8000b7e0: 0xf142bef3
-[E] 221: UVM_FATAL /workspace/ibex/dv/uvm/core_ibex/common/ibex_cosim_agent/ibex_cosim_scoreboard.sv(172) @ 2997336: uvm_test_top.env.cosim_agent.scoreboard [uvm_test_top.env.cosim_agent.scoreboard] Cosim mismatch Register write data mismatch to x28 DUT: 80 expected: 88
-    222: 
-    223: 
-    224: --- RISC-V UVM TEST FAILED ---
-    225: 
+    103: UVM_INFO /workspace/ibex/dv/uvm/core_ibex/tests/core_ibex_test_lib.sv(856) @ 52034: uvm_test_top [uvm_test_top] irq_id: 0x0
+    104: UVM_INFO /workspace/ibex/dv/uvm/core_ibex/tests/core_ibex_seq_lib.sv(46) @ 53214: uvm_test_top.env.irq_agent.sequencer@@irq_single_seq_h [uvm_test_top.env.irq_agent.sequencer.irq_single_seq_h] Starting sequence...
+    105: UVM_INFO /workspace/ibex/dv/uvm/core_ibex/tests/core_ibex_seq_lib.sv(58) @ 53224: uvm_test_top.env.irq_agent.sequencer@@irq_single_seq_h [uvm_test_top.env.irq_agent.sequencer.irq_single_seq_h] Exiting sequence
+    106: UVM_INFO /workspace/ibex/dv/uvm/core_ibex/tests/core_ibex_test_lib.sv(853) @ 53254: uvm_test_top [uvm_test_top] irq: 0x4000000
+    107: UVM_INFO /workspace/ibex/dv/uvm/core_ibex/tests/core_ibex_test_lib.sv(856) @ 53254: uvm_test_top [uvm_test_top] irq_id: 0x1a
+[E] 108: UVM_FATAL /workspace/ibex/dv/uvm/core_ibex/common/ibex_cosim_agent/ibex_cosim_scoreboard.sv(172) @ 53594: uvm_test_top.env.cosim_agent.scoreboard [uvm_test_top.env.cosim_agent.scoreboard] Cosim mismatch PC mismatch, DUT retired : 800036d2 , but the ISS retired: 80002768
+    109: 
+    110: 
+    111: --- RISC-V UVM TEST FAILED ---
+    112: 
 --------------------------------------------
 
 

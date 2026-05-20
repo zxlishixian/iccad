@@ -5,6 +5,6 @@
   "group": "debug",
   "family": "debug_request_priority_wrong",
   "test": "riscv_debug_basic_test",
-  "seed": "5653",
+  "seed": "5662",
   "source_run_dir": "/workspace/ibex/dv/uvm/out"
 }

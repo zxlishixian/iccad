@@ -1,2 +1,0 @@
-method,k,BA,TPR,TNR,num_cases,num_pred_clusters,runtime_sec,pred_path,prob_path,note
-overcooked_rich_logistic_mlp_seedavg_no_gbdt,4,0.5898626888442978,0.843404255319149,0.3363211223694466,87,4,52.95262519991957,/home/lishixian/iccad/fake_dataset/official_directed_stage1_valid_failure_only/pred_overcooked_rich_log_mlp_seedavg_k4.csv,/home/lishixian/iccad/fake_dataset/official_directed_stage1_valid_failure_only/overcooked_rich_log_mlp_seedavg_prob.npy,GBDT pickle cannot be loaded directly in current collab-overcooked; no code modified

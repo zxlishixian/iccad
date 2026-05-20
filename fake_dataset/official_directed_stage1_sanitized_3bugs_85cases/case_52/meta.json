@@ -1,10 +1,10 @@
 {
   "Case": "52",
   "case_id": "case_52",
-  "bug_id": "bug_037",
-  "group": "debug",
-  "family": "debug_request_priority_wrong",
-  "test": "riscv_debug_ebreak_test",
-  "seed": "5654",
+  "bug_id": "bug_038",
+  "group": "csr_exception",
+  "family": "mstatus_mpie_restore_wrong",
+  "test": "riscv_single_interrupt_test",
+  "seed": "5756",
   "source_run_dir": "/workspace/ibex/dv/uvm/out"
 }

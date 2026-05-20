@@ -1,10 +1,10 @@
 {
   "Case": "84",
   "case_id": "case_84",
-  "bug_id": "bug_038",
-  "group": "csr_exception",
-  "family": "mstatus_mpie_restore_wrong",
+  "bug_id": "bug_036",
+  "group": "interrupt",
+  "family": "interrupt_enable_condition_wrong",
   "test": "riscv_single_interrupt_test",
-  "seed": "5768",
+  "seed": "5580",
   "source_run_dir": "/workspace/ibex/dv/uvm/out"
 }

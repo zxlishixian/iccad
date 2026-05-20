@@ -5,6 +5,6 @@
   "group": "interrupt",
   "family": "interrupt_enable_condition_wrong",
   "test": "riscv_single_interrupt_test",
-  "seed": "5576",
+  "seed": "5557",
   "source_run_dir": "/workspace/ibex/dv/uvm/out"
 }

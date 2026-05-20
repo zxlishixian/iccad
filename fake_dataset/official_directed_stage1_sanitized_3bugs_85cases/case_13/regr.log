@@ -1,13 +1,13 @@
 0.00% PASS 0 PASSED, 1 FAILED
-riscv_single_interrupt_test.5563: FAILED
+riscv_debug_basic_test.5653: FAILED
 
 
 ################################################################################
 # Details of failing tests
 ################################################################################
 
-riscv_single_interrupt_test.5563
---------------------------------
+riscv_debug_basic_test.5653
+---------------------------
 binary:          test.bin
 rtl_log:         rtl_sim.log
 rtl_trace:       trace_core_00000000.log
@@ -15,16 +15,16 @@ iss_cosim_trace: spike_cosim_trace_core_00000000.log
 
 [FAILED]: error seen in 'rtl_sim.log'
 ---------------*LOG-EXTRACT*----------------
-    66: core_ibex_tb_top.dut.u_ibex_tracer.unmblk2.unmblk1: Writing execution trace to /workspace/ibex/dv/uvm/out/run/tests/riscv_single_interrupt_test.5563/trace_core_00000000.log
-    67: UVM_INFO /workspace/ibex/dv/uvm/core_ibex/tests/core_ibex_seq_lib.sv(46) @ 28800: uvm_test_top.env.irq_agent.sequencer@@irq_single_seq_h [uvm_test_top.env.irq_agent.sequencer.irq_single_seq_h] Starting sequence...
-    68: UVM_INFO /workspace/ibex/dv/uvm/core_ibex/tests/core_ibex_seq_lib.sv(58) @ 28820: uvm_test_top.env.irq_agent.sequencer@@irq_single_seq_h [uvm_test_top.env.irq_agent.sequencer.irq_single_seq_h] Exiting sequence
-    69: UVM_INFO /workspace/ibex/dv/uvm/core_ibex/tests/core_ibex_test_lib.sv(853) @ 28840: uvm_test_top [uvm_test_top] irq: 0x10000000
-    70: UVM_INFO /workspace/ibex/dv/uvm/core_ibex/tests/core_ibex_test_lib.sv(856) @ 28840: uvm_test_top [uvm_test_top] irq_id: 0x1c
-[E] 71: UVM_FATAL /workspace/ibex/dv/uvm/core_ibex/common/ibex_cosim_agent/ibex_cosim_scoreboard.sv(172) @ 29360: uvm_test_top.env.cosim_agent.scoreboard [uvm_test_top.env.cosim_agent.scoreboard] Cosim mismatch PC mismatch, DUT retired : 8001275e , but the ISS retired: 80002770
+    65: UVM_INFO /workspace/ibex/dv/uvm/core_ibex/common/ibex_mem_intf_agent/ibex_mem_intf_response_seq_lib.sv(44) @ 2019: uvm_test_top.env.instr_if_response_agent.sequencer@@instr_intf_seq [uvm_test_top.env.instr_if_response_agent.sequencer.instr_intf_seq] is_dmem_seq: 0x0
+    66: UVM_INFO /workspace/ibex/dv/uvm/core_ibex/common/ibex_mem_intf_agent/ibex_mem_intf_response_seq_lib.sv(44) @ 2019: uvm_test_top.env.data_if_response_agent.sequencer@@data_intf_seq [uvm_test_top.env.data_if_response_agent.sequencer.data_intf_seq] is_dmem_seq: 0x1
+    67: UVM_INFO /workspace/ibex/dv/uvm/core_ibex/tests/core_ibex_new_seq_lib.sv(65) @ 2019: reporter@@fetch_enable_seq_h [fetch_enable_seq_h] Running the "InfiniteRuns" schedule for stimulus generation
+    68: core_ibex_tb_top.dut.u_ibex_tracer.unmblk2.unmblk1: Writing execution trace to /workspace/ibex/dv/uvm/out/run/tests/riscv_debug_basic_test.5653/trace_core_00000000.log
+    69: UVM_INFO /workspace/ibex/dv/uvm/core_ibex/tests/core_ibex_seq_lib.sv(46) @ 55119: reporter@@debug_seq_stress_h [debug_seq_stress_h] Starting sequence...
+[E] 70: UVM_FATAL /workspace/ibex/dv/uvm/core_ibex/common/ibex_cosim_agent/ibex_cosim_scoreboard.sv(172) @ 55399: uvm_test_top.env.cosim_agent.scoreboard [uvm_test_top.env.cosim_agent.scoreboard] Cosim mismatch PC mismatch, DUT retired : 800032a2 , but the ISS retired: 80000000
+    71: 
     72: 
-    73: 
-    74: --- RISC-V UVM TEST FAILED ---
-    75: 
+    73: --- RISC-V UVM TEST FAILED ---
+    74: 
 --------------------------------------------
 
 
