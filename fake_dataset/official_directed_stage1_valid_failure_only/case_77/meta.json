@@ -1,0 +1,10 @@
+{
+  "case_id": "case_77",
+  "case": 77,
+  "bug_id": "bug_038",
+  "group": "csr_exception",
+  "family": "mstatus_mpie_restore_wrong",
+  "test": "riscv_single_interrupt_test",
+  "seed": 5759,
+  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_official_directed_stage1_valid/bug_038/riscv_single_interrupt_test/seed_005759"
+}

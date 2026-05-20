@@ -1,0 +1,35 @@
+0.00% PASS 0 PASSED, 1 FAILED
+riscv_single_interrupt_test.5768: FAILED
+
+
+################################################################################
+# Details of failing tests
+################################################################################
+
+riscv_single_interrupt_test.5768
+--------------------------------
+binary:          test.bin
+rtl_log:         rtl_sim.log
+rtl_trace:       trace_core_00000000.log
+iss_cosim_trace: spike_cosim_trace_core_00000000.log
+
+[FAILED]: error seen in 'rtl_sim.log'
+---------------*LOG-EXTRACT*----------------
+    95: UVM_INFO /home/meow/iccad/repos/ibex_work_038/dv/uvm/core_ibex/tests/core_ibex_test_lib.sv(856) @ 52960: uvm_test_top [uvm_test_top] irq_id: 0x0
+    96: UVM_INFO /home/meow/iccad/repos/ibex_work_038/dv/uvm/core_ibex/tests/core_ibex_seq_lib.sv(46) @ 54780: uvm_test_top.env.irq_agent.sequencer@@irq_single_seq_h [uvm_test_top.env.irq_agent.sequencer.irq_single_seq_h] Starting sequence...
+    97: UVM_INFO /home/meow/iccad/repos/ibex_work_038/dv/uvm/core_ibex/tests/core_ibex_seq_lib.sv(58) @ 54790: uvm_test_top.env.irq_agent.sequencer@@irq_single_seq_h [uvm_test_top.env.irq_agent.sequencer.irq_single_seq_h] Exiting sequence
+    98: UVM_INFO /home/meow/iccad/repos/ibex_work_038/dv/uvm/core_ibex/tests/core_ibex_test_lib.sv(853) @ 54820: uvm_test_top [uvm_test_top] irq: 0x800
+    99: UVM_INFO /home/meow/iccad/repos/ibex_work_038/dv/uvm/core_ibex/tests/core_ibex_test_lib.sv(856) @ 54820: uvm_test_top [uvm_test_top] irq_id: 0xb
+[E] 100: UVM_FATAL /home/meow/iccad/repos/ibex_work_038/dv/uvm/core_ibex/common/ibex_cosim_agent/ibex_cosim_scoreboard.sv(172) @ 54980: uvm_test_top.env.cosim_agent.scoreboard [uvm_test_top.env.cosim_agent.scoreboard] Cosim mismatch PC mismatch, DUT retired : 800033e6 , but the ISS retired: 8000252c
+    101: 
+    102: 
+    103: --- RISC-V UVM TEST FAILED ---
+    104: 
+--------------------------------------------
+
+
+
+################################################################################
+# Details of passing tests
+################################################################################
+No passing tests. Hmmmm...

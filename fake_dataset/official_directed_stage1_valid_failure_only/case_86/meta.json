@@ -1,0 +1,10 @@
+{
+  "case_id": "case_86",
+  "case": 86,
+  "bug_id": "bug_041",
+  "group": "debug_csr",
+  "family": "debug_ebreakm_output_wrong",
+  "test": "riscv_debug_basic_test",
+  "seed": 5809,
+  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_official_directed_stage1_valid/bug_041/riscv_debug_basic_test/seed_005809"
+}

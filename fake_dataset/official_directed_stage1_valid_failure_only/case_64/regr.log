@@ -1,0 +1,35 @@
+0.00% PASS 0 PASSED, 1 FAILED
+riscv_rand_instr_test.5766: FAILED
+
+
+################################################################################
+# Details of failing tests
+################################################################################
+
+riscv_rand_instr_test.5766
+--------------------------
+binary:          test.bin
+rtl_log:         rtl_sim.log
+rtl_trace:       trace_core_00000000.log
+iss_cosim_trace: spike_cosim_trace_core_00000000.log
+
+[FAILED]: error seen in 'rtl_sim.log'
+---------------*LOG-EXTRACT*----------------
+    130: 2047860: Illegal instruction (hart 0) at PC 0x80003b9c: 0x7b2072f3
+    131: 2104740: Illegal instruction (hart 0) at PC 0x800040b4: 0x7b207173
+    132: 2104760: Illegal instruction (hart 0) at PC 0x800040b4: 0x7b207173
+    133: 2158600: Illegal instruction (hart 0) at PC 0x8000424a: 0xf13853f3
+    134: 2158620: Illegal instruction (hart 0) at PC 0x8000424a: 0xf13853f3
+[E] 135: UVM_FATAL /home/meow/iccad/repos/ibex_work_038/dv/uvm/core_ibex/common/ibex_cosim_agent/ibex_cosim_scoreboard.sv(172) @ 2198370: uvm_test_top.env.cosim_agent.scoreboard [uvm_test_top.env.cosim_agent.scoreboard] Cosim mismatch Register write data mismatch to x16 DUT: 80 expected: 88
+    136: 
+    137: 
+    138: --- RISC-V UVM TEST FAILED ---
+    139: 
+--------------------------------------------
+
+
+
+################################################################################
+# Details of passing tests
+################################################################################
+No passing tests. Hmmmm...

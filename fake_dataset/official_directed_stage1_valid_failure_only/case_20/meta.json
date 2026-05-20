@@ -1,0 +1,10 @@
+{
+  "case_id": "case_20",
+  "case": 20,
+  "bug_id": "bug_036",
+  "group": "interrupt",
+  "family": "interrupt_enable_condition_wrong",
+  "test": "riscv_single_interrupt_test",
+  "seed": 5571,
+  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_official_directed_stage1_valid/bug_036/riscv_single_interrupt_test/seed_005571"
+}
