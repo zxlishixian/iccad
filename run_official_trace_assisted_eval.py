@@ -455,11 +455,18 @@ def run_existing_trace_embedding(
             llm_dual=True,
         )
         features, _ = plf.build_llm_case_features(input_csv, svd_dim=args.svd_dim, llm_args=llm_args)
-        trace_by_case = dict(_collect_trace_paths(input_csv))
-        for feat in features:
+        collected_paths = _collect_trace_paths(input_csv)
+        trace_by_case = dict(collected_paths)
+        encoded = 0
+        for idx, feat in enumerate(features):
             path = trace_by_case.get(feat.case_id)
+            if path is None and feat.case_id.startswith("case_"):
+                path = trace_by_case.get(feat.case_id.removeprefix("case_"))
+            if path is None and idx < len(collected_paths):
+                path = collected_paths[idx][1]
             if path is not None:
                 feat.trace_vec = encoder.encode_trace_tail(str(path), tail_lines=args.tail_lines)
+                encoded += int(feat.trace_vec.size > 0)
         plf.normalize_trace_vectors(features)
         prob_sum = np.zeros((len(features), len(features)), dtype=np.float64)
         used = 0

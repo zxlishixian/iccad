@@ -1486,7 +1486,7 @@ Official-gold results:
 | benchmark_set_2 | trace_guided_split_w32/w64/w128 | 0.9560 | 0.9516 | 0.9604 | gated no-op, preserves no-trace |
 | benchmark_set_2 | trace_policy_zero_shot | 0.8348 | 0.9516 | 0.7181 | hurts TNR |
 
-Existing trace-transformer artifacts were also probed, but the available model expected a different feature dimensionality (`StandardScaler` expected 366 features while the current feature stack produced 302), so this route was skipped rather than force-loaded.
+Existing trace-transformer artifacts were initially skipped because official case ids (`1`, `2`, ...) did not match the feature ids (`case_1`, `case_2`, ...), leaving trace vectors unattached and producing a 302-d feature stack instead of the 366-d stack expected by the trace model. After fixing the experimental runner to match trace paths by case-id alias and input order, the old fake-trained trace embedding model runs on official gold: set1 remains unchanged (`BA=0.5313, TPR=0.8125, TNR=0.2500`), while set2 drops to `BA=0.7288, TPR=0.9113, TNR=0.5463`. This confirms the trained trace embedding does not currently help official-gold evaluation.
 
 Set1 error analysis: official gold groups cases `1..5` as one bug and `6..9` as another. The no-trace model predicts one large mixed bucket containing cases `1,2,3,4,5,6,7,9` and a singleton `8`, giving 15 false-positive cross-bug pairs and 3 false-negative pairs within `bug_7023`. Tail/anchor trace similarities do not form a clean zero-shot `1..5` vs `6..9` separation; for example, cases `4`, `5`, and `9` have very similar anchor-window opcode profiles even though case `9` belongs to the other official bug.
 
