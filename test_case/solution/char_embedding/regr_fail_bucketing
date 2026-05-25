@@ -29,6 +29,12 @@ def calculate_ngram(in_string):
 
 
 def main():
+    print(
+        "[CAUTION] This is only a workable sample of regr_fail_bucketing as a "
+        "baseline reference and does NOT guarantee correct bucketing answers.",
+        file=sys.stderr,
+    )
+
     seed = 42
     random.seed(seed)
     os.environ["PYTHONHASHSEED"] = str(seed)
