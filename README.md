@@ -1458,6 +1458,55 @@ python run_external_trace_transfer_experiments.py \
 ```
 
 
+
+### Official Gold Trace-Assisted Validation
+
+Official `golden.csv` labels are now available for `test_case/problem/benchmark_set_1` and `test_case/problem/benchmark_set_2`. This validation keeps the current no-trace calibrated blend unchanged and tests only zero-shot/unsupervised trace-assisted corrections. It does not train on official trace logs, and it does not change the default `regr_fail_bucketing.py` path.
+
+Current no-trace best:
+
+- `llm_dual_struct_det_summary_dim64`
+- residual focal MLP + pairwise soft-voting ensemble
+- `alpha=0.88, rich_temp=1.15, ensemble_temp=1.00`
+- seed average over seeds `0..9`
+
+Official-gold results:
+
+| dataset | method | BA | TPR | TNR | note |
+|---|---|---:|---:|---:|---|
+| benchmark_set_1 | no_trace_best | 0.5313 | 0.8125 | 0.2500 | over-merges cases `1,2,3,4,5` with `6,7,9`; isolates case `8` |
+| benchmark_set_1 | trace_tail_unsupervised | 0.5313 | 0.8125 | 0.2500 | same score as no-trace |
+| benchmark_set_1 | anchor_trace_w32/w64 | 0.5313 | 0.8125 | 0.2500 | same score as no-trace |
+| benchmark_set_1 | anchor_trace_w128 | 0.4750 | 0.7500 | 0.2000 | worse split |
+| benchmark_set_1 | trace_guided_split_w32/w64 | 0.4563 | 0.5625 | 0.3500 | TNR improves, but TPR drops too much |
+| benchmark_set_1 | trace_policy_zero_shot | 0.4563 | 0.5625 | 0.3500 | 11 vetoes, no boosts |
+| benchmark_set_2 | no_trace_best | 0.9560 | 0.9516 | 0.9604 | already strong |
+| benchmark_set_2 | trace_tail_unsupervised | 0.7831 | 0.9274 | 0.6388 | hurts TNR |
+| benchmark_set_2 | anchor_trace_w64 | 0.7013 | 0.7903 | 0.6123 | hurts both metrics |
+| benchmark_set_2 | trace_guided_split_w32/w64/w128 | 0.9560 | 0.9516 | 0.9604 | gated no-op, preserves no-trace |
+| benchmark_set_2 | trace_policy_zero_shot | 0.8348 | 0.9516 | 0.7181 | hurts TNR |
+
+Existing trace-transformer artifacts were also probed, but the available model expected a different feature dimensionality (`StandardScaler` expected 366 features while the current feature stack produced 302), so this route was skipped rather than force-loaded.
+
+Set1 error analysis: official gold groups cases `1..5` as one bug and `6..9` as another. The no-trace model predicts one large mixed bucket containing cases `1,2,3,4,5,6,7,9` and a singleton `8`, giving 15 false-positive cross-bug pairs and 3 false-negative pairs within `bug_7023`. Tail/anchor trace similarities do not form a clean zero-shot `1..5` vs `6..9` separation; for example, cases `4`, `5`, and `9` have very similar anchor-window opcode profiles even though case `9` belongs to the other official bug.
+
+Recommendation: do not enable trace-guided split or zero-shot trace policy as an official-gold backend yet. The trace gate can safely preserve set2 when it no-ops, but it does not solve set1 and it can lower TPR sharply. The next trace direction should either learn a calibrated split policy on non-official data or use official traces only for diagnostic analysis until a held-out validation source exists.
+
+Reproduce:
+
+```bash
+source /home/lishixian/miniforge3/etc/profile.d/conda.sh
+conda activate collab-overcooked
+export LLM_MODEL_CONFIG="$(cat /tmp/nomic_llm.yaml)"
+
+python run_official_trace_assisted_eval.py \
+  --benchmarks test_case/problem/benchmark_set_1 test_case/problem/benchmark_set_2 \
+  --output-dir /tmp/official_trace_assisted_eval \
+  --methods no_trace_best trace_tail_unsupervised anchor_trace trace_guided_split trace_policy_zero_shot existing_trace_embedding \
+  --window-sizes 32 64 128
+```
+
+
 ## Error Analysis
 
 当 TNR 高但 TPR 低时，通常说明不同 bug 容易分开，但同一 bug 的多种表现被拆碎。可以用：
