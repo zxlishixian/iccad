@@ -105,9 +105,10 @@ def dataset_artifacts(dataset: Path, args: argparse.Namespace) -> dict:
     pairs = osf.all_pairs(len(records))
     labels = osf.pair_labels(records, pairs)
     anchor_by_window: dict[int, np.ndarray] = {}
-    for window in args.window_sizes:
-        feats, _debug = ta.build_anchor_trace_case_features([input_csv], window_size=window)
-        anchor_by_window[int(window)] = ta.build_anchor_trace_pair_feature_matrix(feats, pairs)
+    if "tags_graph_anchor" in set(args.variants):
+        for window in args.window_sizes:
+            feats, _debug = ta.build_anchor_trace_case_features([input_csv], window_size=window)
+            anchor_by_window[int(window)] = ta.build_anchor_trace_pair_feature_matrix(feats, pairs)
     return {
         "name": name,
         "dataset": dataset,
@@ -152,8 +153,22 @@ def score_probability(art: dict, prob: np.ndarray, method: str, output_dir: Path
     }
 
 
-def run_train_eval(
-    train_art: dict,
+def build_features_for_art(art: dict, variant: str, window_size: int) -> tuple[np.ndarray, np.ndarray]:
+    include_graph = variant in {"tags_graph", "tags_graph_anchor"}
+    include_anchor = variant == "tags_graph_anchor"
+    X = osf.build_pair_feature_matrix(
+        art["records"],
+        art["pairs"],
+        art["prob_base"],
+        include_graph=include_graph,
+        include_anchor=include_anchor,
+        anchor_pair_matrix=art["anchor_by_window"].get(int(window_size)) if include_anchor else None,
+    )
+    return X, art["labels"].astype(int)
+
+
+def run_train_eval_multi(
+    train_arts: Sequence[dict],
     test_art: dict,
     variant: str,
     model_type: str,
@@ -161,26 +176,14 @@ def run_train_eval(
     output_dir: Path,
     seed: int,
     blend_alpha: float | None = None,
+    method_prefix: str = "official_style",
 ) -> dict:
-    include_graph = variant in {"tags_graph", "tags_graph_anchor"}
+    train_blocks = [build_features_for_art(art, variant, window_size) for art in train_arts]
+    X_train = np.vstack([x for x, _y in train_blocks])
+    y_train = np.concatenate([y for _x, y in train_blocks]).astype(int)
+    X_test, _ = build_features_for_art(test_art, variant, window_size)
     include_anchor = variant == "tags_graph_anchor"
-    X_train = osf.build_pair_feature_matrix(
-        train_art["records"],
-        train_art["pairs"],
-        train_art["prob_base"],
-        include_graph=include_graph,
-        include_anchor=include_anchor,
-        anchor_pair_matrix=train_art["anchor_by_window"].get(int(window_size)) if include_anchor else None,
-    )
-    y_train = train_art["labels"].astype(int)
-    X_test = osf.build_pair_feature_matrix(
-        test_art["records"],
-        test_art["pairs"],
-        test_art["prob_base"],
-        include_graph=include_graph,
-        include_anchor=include_anchor,
-        anchor_pair_matrix=test_art["anchor_by_window"].get(int(window_size)) if include_anchor else None,
-    )
+
     t0 = time.perf_counter()
     model = train_model(X_train, y_train, model_type, seed)
     pair_scores = predict_scores(model, X_test)
@@ -193,27 +196,52 @@ def run_train_eval(
         blend_suffix = ""
     np.fill_diagonal(prob, 1.0)
     runtime = time.perf_counter() - t0
-    method = f"official_style_{variant}_{model_type}"
+
+    method = f"{method_prefix}_{variant}_{model_type}"
     if include_anchor:
         method += f"_w{window_size}"
     method += blend_suffix
+    train_names = "+".join(art["name"] for art in train_arts)
     row = score_probability(
         test_art,
         prob,
         method,
         output_dir,
         notes=(
-            f"train={train_art['name']}; variant={variant}; model={model_type}; "
+            f"train={train_names}; variant={variant}; model={model_type}; "
             f"train_pairs={len(y_train)} pos={int(y_train.sum())} neg={int((1-y_train).sum())}"
         ),
         runtime=runtime,
     )
     row.update({
-        "train_dataset": train_art["name"],
+        "train_dataset": train_names,
         "model_type": model_type,
         "window_size": window_size if include_anchor else "",
     })
     return row
+
+
+def run_train_eval(
+    train_art: dict,
+    test_art: dict,
+    variant: str,
+    model_type: str,
+    window_size: int,
+    output_dir: Path,
+    seed: int,
+    blend_alpha: float | None = None,
+) -> dict:
+    return run_train_eval_multi(
+        [train_art],
+        test_art,
+        variant,
+        model_type,
+        window_size,
+        output_dir,
+        seed,
+        blend_alpha=blend_alpha,
+        method_prefix="official_style",
+    )
 
 
 def build_error_report(artifacts: Sequence[dict], rows: Sequence[dict], output_dir: Path) -> None:
@@ -275,6 +303,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     p.add_argument("--window-sizes", nargs="+", type=int, default=[64])
     p.add_argument("--blend-alphas", nargs="+", type=float, default=[0.25, 0.50])
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--eval-mode", choices=["pairwise", "leave_one_out", "both"], default="pairwise")
     p.add_argument("--seeds", nargs="+", type=int, default=list(range(10)))
     p.add_argument("--rich-model-root", type=Path, default=Path("/tmp/input_signal_5seed_top/models/llm_dual_struct_det_summary_dim64"))
     p.add_argument("--model-tag", default="llm_dual_struct_det_summary_dim64")
@@ -305,7 +334,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             notes=art["base_note"],
             runtime=art["base_runtime"],
         ))
-    if len(artifacts) >= 2:
+    if len(artifacts) >= 2 and args.eval_mode in {"pairwise", "both"}:
         for train_art in artifacts:
             for test_art in artifacts:
                 if train_art["name"] == test_art["name"]:
@@ -317,6 +346,16 @@ def main(argv: Sequence[str] | None = None) -> int:
                             rows.append(run_train_eval(train_art, test_art, variant, model_type, int(window), args.output_dir, args.seed, blend_alpha=None))
                             for blend_alpha in args.blend_alphas:
                                 rows.append(run_train_eval(train_art, test_art, variant, model_type, int(window), args.output_dir, args.seed, blend_alpha=float(blend_alpha)))
+    if len(artifacts) >= 3 and args.eval_mode in {"leave_one_out", "both"}:
+        for test_art in artifacts:
+            train_arts = [art for art in artifacts if art["name"] != test_art["name"]]
+            for variant in args.variants:
+                for model_type in args.model_types:
+                    windows = args.window_sizes if variant == "tags_graph_anchor" else [0]
+                    for window in windows:
+                        rows.append(run_train_eval_multi(train_arts, test_art, variant, model_type, int(window), args.output_dir, args.seed, blend_alpha=None, method_prefix="official_style_lodo"))
+                        for blend_alpha in args.blend_alphas:
+                            rows.append(run_train_eval_multi(train_arts, test_art, variant, model_type, int(window), args.output_dir, args.seed, blend_alpha=float(blend_alpha), method_prefix="official_style_lodo"))
     fields = [
         "train_dataset", "test_dataset", "method", "model_type", "window_size",
         "k", "cases", "num_pred_clusters", "BA", "TPR", "TNR", "runtime_sec",

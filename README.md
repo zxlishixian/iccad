@@ -1549,6 +1549,42 @@ The useful signal is the root-cause tag layer itself. Adding graph context from 
 Recommendation: keep the previous no-trace calibrated blend as the old fake-dataset experimental best, but for the fixed official benchmark style pursue a separate experimental `official_style_tags` backend. Do not replace the formal deterministic default until it is validated on additional held-out official-style data.
 
 
+#### Five-Dataset Leave-One-Out Check
+
+To check whether `official_style_tags` is useful beyond the two public official benchmarks, the runner also supports multi-dataset leave-one-out validation:
+
+```bash
+python run_official_style_training_experiments.py \
+  --benchmarks fake_dataset/first_batch_dataset fake_dataset/stage2_dataset_working fake_dataset/stage3_dataset_32bugs_640cases test_case/problem/benchmark_set_1 test_case/problem/benchmark_set_2 \
+  --output-dir /tmp/official_style_lodo_5datasets_tags \
+  --eval-mode leave_one_out \
+  --variants tags \
+  --model-types logistic gbdt \
+  --blend-alphas 0.50 \
+  --seed 0
+```
+
+This trains on four datasets and evaluates on the held-out fifth dataset. It is still experimental and uses gold only in the training/evaluation script.
+
+| held-out test | no_trace_best BA | tags_logistic_blend0.50 BA | tags_gbdt_blend0.50 BA |
+|---|---:|---:|---:|
+| first_batch_dataset | 0.8555 | 0.8555 | 0.8867 |
+| stage2_dataset_working | 0.8317 | 0.8369 | 0.8035 |
+| stage3_dataset_32bugs_640cases | 0.8682 | 0.8745 | 0.8658 |
+| benchmark_set_1 | 0.4583 | 0.7222 | 0.5139 |
+| benchmark_set_2 | 0.4742 | 0.4777 | 0.4626 |
+
+Aggregate:
+
+| method | all 5 mean BA | fake-only mean BA | mean TPR | mean TNR |
+|---|---:|---:|---:|---:|
+| no_trace_best | 0.6976 | 0.8518 | 0.6597 | 0.7355 |
+| tags_logistic_blend0.50 | 0.7534 | 0.8556 | 0.6934 | 0.8133 |
+| tags_gbdt_blend0.50 | 0.7065 | 0.8520 | 0.6256 | 0.7874 |
+
+Interpretation: `tags_logistic_blend0.50` is the best current official-style candidate. It slightly improves the three fake datasets, strongly improves official benchmark set1, and raises overall TNR, but it still fails on official benchmark set2. This is not yet strong enough to replace the current experimental best globally. The next iteration should target set2's remaining official-label mismatch, likely by adding a second objective for broad same-root families such as `bug_107` while preserving high-confidence splits for smaller root-cause classes.
+
+
 ## Error Analysis
 
 当 TNR 高但 TPR 低时，通常说明不同 bug 容易分开，但同一 bug 的多种表现被拆碎。可以用：
