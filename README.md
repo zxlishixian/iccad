@@ -1600,6 +1600,47 @@ Aggregate:
 Interpretation: `tags_logistic_blend0.50` is the best current official-style candidate. It slightly improves the three fake datasets, strongly improves official benchmark set1, and raises overall TNR, but it still fails on official benchmark set2. This is not yet strong enough to replace the current experimental best globally. The next iteration should target set2's remaining official-label mismatch, likely by adding a second objective for broad same-root families such as `bug_107` while preserving high-confidence splits for smaller root-cause classes.
 
 
+### Official-Style Adapter Gated Blend
+
+The corrected five-dataset LODO experiment supports a gated adapter rather than a single mixed model. Training the adapter on official public benchmarks only (`benchmark_set_1` and `benchmark_set_2`) and blending it lightly into the no-trace current best gives the best tradeoff. Mixing fake datasets directly into the adapter, even with official pair weight 100, improves fake stage2/stage3 but largely loses the official benchmark gain, especially on `benchmark_set_2`.
+
+Results from `run_official_style_training_experiments.py` with reused no-trace probability matrices:
+
+| setup | test | no_trace BA | best adapter BA | note |
+|---|---|---:|---:|---|
+| official_only | first_batch | 0.8555 | 0.8555 | no regression at blend 0.25 |
+| official_only | stage2 | 0.8317 | 0.8437 | GBDT blend 0.25; logistic blend 0.25 is 0.8414 |
+| official_only | stage3 | 0.8682 | 0.8758 | logistic blend 0.25 |
+| official_only | benchmark_set_1 | 0.4583 | 0.7222 | logistic/GBDT adapter or blend 0.50 |
+| official_only | benchmark_set_2 | 0.4742 | 0.9213 | logistic blend 0.50 |
+| mixed official:fake 10:1 | benchmark_set_2 | 0.4742 | 0.4641 | fake data overwhelms official style |
+| mixed official:fake 100:1 | benchmark_set_2 | 0.4742 | 0.4641 | still does not recover set2 |
+
+Candidate gated policy:
+
+- Train adapter on official public benchmarks only.
+- Use logistic `official_style_tags` as the adapter model.
+- If the dataset has official-style `Case, Regr Log, Sim Log, Trace Log` columns and gzip logs, use `adapter_alpha=0.50`.
+- Otherwise use `adapter_alpha=0.25` or keep no-trace if a validation gate is unavailable.
+
+This is still experimental. It should not replace the default deterministic predictor or the no-trace calibrated blend yet, but it is the strongest direction for aligning with fixed official labels while preserving old fake-dataset performance. The next implementation step is to add an experimental prediction backend that trains/loads this official-only adapter and applies the dataset-style gate without reading gold at prediction time.
+
+Reproduce:
+
+```bash
+python run_official_style_training_experiments.py \
+  --benchmarks fake_dataset/first_batch_dataset fake_dataset/stage2_dataset_working fake_dataset/stage3_dataset_32bugs_640cases test_case/problem/benchmark_set_1 test_case/problem/benchmark_set_2 \
+  --output-dir /tmp/official_adapter_official_only \
+  --reuse-base-probs-dir /tmp/official_style_lodo_5datasets_tags/probs \
+  --eval-mode leave_one_out \
+  --train-source official_only \
+  --variants tags \
+  --model-types logistic gbdt \
+  --blend-alphas 0.25 0.50 0.75 \
+  --seed 0
+```
+
+
 ## Error Analysis
 
 当 TNR 高但 TPR 低时，通常说明不同 bug 容易分开，但同一 bug 的多种表现被拆碎。可以用：

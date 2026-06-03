@@ -51,7 +51,7 @@ def prob_from_pair_scores(n: int, pairs: Sequence[tuple[int, int]], scores: np.n
     return prob
 
 
-def train_model(X: np.ndarray, y: np.ndarray, model_type: str, seed: int) -> object:
+def train_model(X: np.ndarray, y: np.ndarray, model_type: str, seed: int, sample_weight: np.ndarray | None = None) -> object:
     if model_type == "logistic":
         from sklearn.linear_model import LogisticRegression
         from sklearn.pipeline import make_pipeline
@@ -66,7 +66,10 @@ def train_model(X: np.ndarray, y: np.ndarray, model_type: str, seed: int) -> obj
                 random_state=seed,
             ),
         )
-        model.fit(X, y)
+        fit_kwargs = {}
+        if sample_weight is not None:
+            fit_kwargs["logisticregression__sample_weight"] = sample_weight
+        model.fit(X, y, **fit_kwargs)
         return model
     if model_type == "gbdt":
         from sklearn.ensemble import GradientBoostingClassifier
@@ -81,6 +84,8 @@ def train_model(X: np.ndarray, y: np.ndarray, model_type: str, seed: int) -> obj
         pos = max(1.0, float(np.sum(y == 1)))
         neg = max(1.0, float(np.sum(y == 0)))
         weights = np.where(y == 1, (pos + neg) / (2.0 * pos), (pos + neg) / (2.0 * neg))
+        if sample_weight is not None:
+            weights = weights * sample_weight
         model.fit(X, y, sample_weight=weights)
         return model
     raise ValueError(f"unknown model_type: {model_type}")
@@ -117,9 +122,11 @@ def dataset_artifacts(dataset: Path, args: argparse.Namespace) -> dict:
         for window in args.window_sizes:
             feats, _debug = ta.build_anchor_trace_case_features([input_csv], window_size=window)
             anchor_by_window[int(window)] = ta.build_anchor_trace_pair_feature_matrix(feats, pairs)
+    source_type = "official" if gold_csv.name == "golden.csv" or "test_case" in str(dataset) else "fake"
     return {
         "name": name,
         "dataset": dataset,
+        "source_type": source_type,
         "input_csv": input_csv,
         "gold_csv": gold_csv,
         "k": len(set(read_gold(gold_csv))),
@@ -161,6 +168,13 @@ def score_probability(art: dict, prob: np.ndarray, method: str, output_dir: Path
     }
 
 
+_WEIGHT_CONTEXT: dict[str, float] = {"official": 1.0, "fake": 1.0}
+
+
+def args_weight_for_art(art: dict, _output_dir: Path | None = None) -> float:
+    return _WEIGHT_CONTEXT.get(str(art.get("source_type", "fake")), 1.0)
+
+
 def build_features_for_art(art: dict, variant: str, window_size: int) -> tuple[np.ndarray, np.ndarray]:
     include_graph = variant in {"tags_graph", "tags_graph_anchor"}
     include_anchor = variant == "tags_graph_anchor"
@@ -189,11 +203,15 @@ def run_train_eval_multi(
     train_blocks = [build_features_for_art(art, variant, window_size) for art in train_arts]
     X_train = np.vstack([x for x, _y in train_blocks])
     y_train = np.concatenate([y for _x, y in train_blocks]).astype(int)
+    sample_weight = np.concatenate([
+        np.full(len(y), float(args_weight_for_art(art, output_dir)), dtype=np.float32)
+        for art, (_x, y) in zip(train_arts, train_blocks)
+    ])
     X_test, _ = build_features_for_art(test_art, variant, window_size)
     include_anchor = variant == "tags_graph_anchor"
 
     t0 = time.perf_counter()
-    model = train_model(X_train, y_train, model_type, seed)
+    model = train_model(X_train, y_train, model_type, seed, sample_weight=sample_weight)
     pair_scores = predict_scores(model, X_test)
     prob_model = prob_from_pair_scores(len(test_art["records"]), test_art["pairs"], pair_scores)
     if blend_alpha is not None:
@@ -217,6 +235,7 @@ def run_train_eval_multi(
         output_dir,
         notes=(
             f"train={train_names}; variant={variant}; model={model_type}; "
+            f"weights=official:{_WEIGHT_CONTEXT['official']},fake:{_WEIGHT_CONTEXT['fake']}; "
             f"train_pairs={len(y_train)} pos={int(y_train.sum())} neg={int((1-y_train).sum())}"
         ),
         runtime=runtime,
@@ -311,7 +330,10 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     p.add_argument("--window-sizes", nargs="+", type=int, default=[64])
     p.add_argument("--blend-alphas", nargs="+", type=float, default=[0.25, 0.50])
     p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--official-pair-weight", type=float, default=1.0)
+    p.add_argument("--fake-pair-weight", type=float, default=1.0)
     p.add_argument("--eval-mode", choices=["pairwise", "leave_one_out", "both"], default="pairwise")
+    p.add_argument("--train-source", choices=["all_other", "official_only", "fake_only"], default="all_other")
     p.add_argument("--seeds", nargs="+", type=int, default=list(range(10)))
     p.add_argument("--rich-model-root", type=Path, default=Path("/tmp/input_signal_5seed_top/models/llm_dual_struct_det_summary_dim64"))
     p.add_argument("--model-tag", default="llm_dual_struct_det_summary_dim64")
@@ -328,6 +350,8 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = parse_args(argv)
+    _WEIGHT_CONTEXT["official"] = float(args.official_pair_weight)
+    _WEIGHT_CONTEXT["fake"] = float(args.fake_pair_weight)
     args.output_dir.mkdir(parents=True, exist_ok=True)
     artifacts = [
         dataset_artifacts((PROJECT_ROOT / ds).resolve() if not ds.is_absolute() else ds, args)
@@ -358,13 +382,20 @@ def main(argv: Sequence[str] | None = None) -> int:
     if len(artifacts) >= 3 and args.eval_mode in {"leave_one_out", "both"}:
         for test_art in artifacts:
             train_arts = [art for art in artifacts if art["name"] != test_art["name"]]
+            if args.train_source == "official_only":
+                train_arts = [art for art in train_arts if art.get("source_type") == "official"]
+            elif args.train_source == "fake_only":
+                train_arts = [art for art in train_arts if art.get("source_type") == "fake"]
+            if not train_arts:
+                continue
             for variant in args.variants:
                 for model_type in args.model_types:
                     windows = args.window_sizes if variant == "tags_graph_anchor" else [0]
                     for window in windows:
-                        rows.append(run_train_eval_multi(train_arts, test_art, variant, model_type, int(window), args.output_dir, args.seed, blend_alpha=None, method_prefix="official_style_lodo"))
+                        prefix = f"official_style_lodo_{args.train_source}"
+                        rows.append(run_train_eval_multi(train_arts, test_art, variant, model_type, int(window), args.output_dir, args.seed, blend_alpha=None, method_prefix=prefix))
                         for blend_alpha in args.blend_alphas:
-                            rows.append(run_train_eval_multi(train_arts, test_art, variant, model_type, int(window), args.output_dir, args.seed, blend_alpha=float(blend_alpha), method_prefix="official_style_lodo"))
+                            rows.append(run_train_eval_multi(train_arts, test_art, variant, model_type, int(window), args.output_dir, args.seed, blend_alpha=float(blend_alpha), method_prefix=prefix))
     fields = [
         "train_dataset", "test_dataset", "method", "model_type", "window_size",
         "k", "cases", "num_pred_clusters", "BA", "TPR", "TNR", "runtime_sec",
