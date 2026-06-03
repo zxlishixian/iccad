@@ -97,9 +97,17 @@ def dataset_artifacts(dataset: Path, args: argparse.Namespace) -> dict:
     name = dataset.name
     input_csv = dataset / "input.csv"
     gold_csv = osf.gold_path(dataset)
-    prob, _features, note, runtime = build_current_best_probability(args, input_csv)
-    if prob is None:
-        raise RuntimeError(f"failed to build current-best probability for {dataset}: {note}")
+    reuse_path = None
+    if getattr(args, "reuse_base_probs_dir", None):
+        reuse_path = Path(args.reuse_base_probs_dir) / f"{name}_B0_no_trace_best.npy"
+    if reuse_path is not None and reuse_path.is_file():
+        prob = np.load(reuse_path).astype(np.float32)
+        note = f"reused_base_probability={reuse_path}"
+        runtime = 0.0
+    else:
+        prob, _features, note, runtime = build_current_best_probability(args, input_csv)
+        if prob is None:
+            raise RuntimeError(f"failed to build current-best probability for {dataset}: {note}")
     records = osf.build_case_records(name, input_csv, gold_csv)
     cases = osf.read_cases(input_csv)
     pairs = osf.all_pairs(len(records))
@@ -309,6 +317,7 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     p.add_argument("--model-tag", default="llm_dual_struct_det_summary_dim64")
     p.add_argument("--ensemble-model-dir", type=Path, default=Path("/tmp/pairwise_llm_exp_full/models"))
     p.add_argument("--llm-cache-dir", type=Path, default=Path("/tmp/regr_fail_llm_cache"))
+    p.add_argument("--reuse-base-probs-dir", type=Path, default=None, help="Optional directory containing *_B0_no_trace_best.npy files.")
     p.add_argument("--svd-dim", type=int, default=64)
     p.add_argument("--predict-batch-size", type=int, default=100000)
     p.add_argument("--alpha", type=float, default=0.88)

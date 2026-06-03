@@ -87,14 +87,40 @@ def read_gold_map(path: Path) -> dict[str, str]:
     return {str(row[case_col]).strip(): str(row[bug_col]).strip() for row in rows}
 
 
-def read_cases(input_csv: Path) -> list[str]:
-    rows, fields = rfb.read_csv_rows(input_csv)
-    case_col = pick_col(fields, ("Case", "case", "case_id", "id"), 0)
-    out: list[str] = []
-    for idx, row in enumerate(rows):
+def explicit_case_col(fields: Sequence[str]) -> str | None:
+    by_key = {normalize_key(f): f for f in fields}
+    for name in ("Case", "case", "case_id", "id"):
+        key = normalize_key(name)
+        if key in by_key:
+            return by_key[key]
+    return None
+
+
+def infer_case_id(input_csv: Path, row: dict, fields: Sequence[str], idx: int) -> str:
+    case_col = explicit_case_col(fields)
+    if case_col:
         value = str(row.get(case_col, "")).strip()
-        out.append(value if value else str(idx + 1))
-    return out
+        if value:
+            return value
+    for field in fields:
+        value = str(row.get(field, "")).strip()
+        if not value:
+            continue
+        path = Path(value)
+        parts = path.parts
+        for part in reversed(parts):
+            if re.fullmatch(r"case[_-]?\d+", part, flags=re.IGNORECASE):
+                return part
+        stem = path.stem
+        if re.fullmatch(r"case[_-]?\d+", stem, flags=re.IGNORECASE):
+            return stem
+    return str(idx + 1)
+
+
+def read_cases(input_csv: Path) -> list[str]:
+    input_csv = Path(input_csv)
+    rows, fields = rfb.read_csv_rows(input_csv)
+    return [infer_case_id(input_csv, row, fields, idx) for idx, row in enumerate(rows)]
 
 
 def _root_tags(text: str, info: dict, anchor: ta.TraceAnchor) -> frozenset[str]:
@@ -119,12 +145,11 @@ def build_case_records(dataset: str, input_csv: Path, gold_csv: Path | None = No
     input_csv = Path(input_csv)
     gold = read_gold_map(gold_csv) if gold_csv is not None else {}
     rows, fields = rfb.read_csv_rows(input_csv)
-    case_col = pick_col(fields, ("Case", "case", "case_id", "id"), 0)
     sim_col = rfb.pick_column(fields, "sim")
     regr_col = rfb.pick_column(fields, "regr")
     out: list[OfficialCaseRecord] = []
     for idx, row in enumerate(rows):
-        case_id = str(row.get(case_col, "")).strip() or str(idx + 1)
+        case_id = infer_case_id(input_csv, row, fields, idx)
         sim_path = rfb.resolve_log_path(input_csv, row.get(sim_col) if sim_col else None)
         regr_path = rfb.resolve_log_path(input_csv, row.get(regr_col) if regr_col else None)
         sim_text, _ = rfb.read_log_sample(sim_path)

@@ -1549,6 +1549,21 @@ The useful signal is the root-cause tag layer itself. Adding graph context from 
 Recommendation: keep the previous no-trace calibrated blend as the old fake-dataset experimental best, but for the fixed official benchmark style pursue a separate experimental `official_style_tags` backend. Do not replace the formal deterministic default until it is validated on additional held-out official-style data.
 
 
+Correction: the first five-dataset LODO run exposed a case-id alignment bug for fake datasets without an explicit `Case` column. Fake inputs use log paths such as `cases/case_000001/trace.log`, while `gold.csv` uses `case_000001`; the experimental reader now infers `case_000001` from the path before joining gold labels. After the fix, pair labels are normal: first_batch `pos=360`, stage2 `pos=1680`, stage3 `pos=6080`, benchmark_set_1 `pos=9`, benchmark_set_2 `pos=117`.
+
+Corrected five-dataset LODO (`train = other four datasets`, `test = held-out dataset`, no cross-dataset clustering) shows that `official_style_tags` is useful on the old fake datasets but not yet a universal mainline:
+
+| test | no_trace_best BA | best official_style_tags BA | note |
+|---|---:|---:|---|
+| first_batch_dataset | 0.8555 | 0.8555 | tie; GBDT alone drops to 0.8430 |
+| stage2_dataset_working | 0.8317 | 0.8528 | logistic improves TPR with moderate TNR loss |
+| stage3_dataset_32bugs_640cases | 0.8682 | 0.8954 | logistic improves TPR and keeps high TNR |
+| benchmark_set_1 | 0.4583 | 0.4583 | no improvement when trained with fake + set2 |
+| benchmark_set_2 | 0.4742 | 0.5783 | GBDT improves but remains weak |
+
+Conclusion: do not replace the existing no-trace calibrated blend yet. The corrected result supports an experimental gated architecture: keep no-trace calibrated blend as the base, add official-style root-cause tags as an auxiliary correction when validation or dataset-style detection indicates it helps.
+
+
 #### Five-Dataset Leave-One-Out Check
 
 To check whether `official_style_tags` is useful beyond the two public official benchmarks, the runner also supports multi-dataset leave-one-out validation:
