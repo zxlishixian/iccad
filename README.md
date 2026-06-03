@@ -1507,6 +1507,48 @@ python run_official_trace_assisted_eval.py \
 ```
 
 
+### Official-Style Root-Cause Training
+
+After the fixed official `golden.csv` labels were pulled, the previous no-trace calibrated blend no longer matched the official grouping style on the public benchmarks. With the current artifacts (`llm_dual_struct_det_summary_dim64`, `alpha=0.88`, `rich_temp=1.15`, `ensemble_temp=1.00`, seeds `0..9`), direct official-gold evaluation is:
+
+| dataset | method | BA | TPR | TNR |
+|---|---|---:|---:|---:|
+| benchmark_set_1 | no_trace_best | 0.4583 | 0.6667 | 0.2500 |
+| benchmark_set_2 | no_trace_best | 0.4742 | 0.3419 | 0.6066 |
+
+The main issue is not missing model capacity. The pair probabilities learned from old fake datasets assign high similarity to pairs that the fixed official labels split apart, and low/medium similarity to many same-official-bug pairs. In set1, no-trace predicts a mixed bucket with both `bug_7023` and `bug_234`; in set2, large portions of `bug_107` are fragmented while other bugs are mixed into the same bucket.
+
+A new experimental leave-one-benchmark-out runner was added:
+
+```bash
+python run_official_style_training_experiments.py \
+  --benchmarks test_case/problem/benchmark_set_1 test_case/problem/benchmark_set_2 \
+  --output-dir /tmp/official_style_training_exp_final \
+  --variants tags tags_graph tags_graph_anchor \
+  --model-types logistic gbdt \
+  --window-sizes 64 \
+  --blend-alphas 0.25 0.50 \
+  --seed 0
+```
+
+This route trains only on the other benchmark's fixed official labels and extracts official-style root-cause tags from `sim.log`/`regr.log`: `irq_entry`, `debug_entry`, `dret_return`, `csr`, `mcause_exception`, `core_status_timeout`, PC/register divergence, and related tags. It remains experimental and does not change `regr_fail_bucketing.py`.
+
+LOBO results:
+
+| train | test | method | BA | TPR | TNR |
+|---|---|---|---:|---:|---:|
+| - | benchmark_set_1 | no_trace_best | 0.4583 | 0.6667 | 0.2500 |
+| - | benchmark_set_2 | no_trace_best | 0.4742 | 0.3419 | 0.6066 |
+| benchmark_set_2 | benchmark_set_1 | official_style_tags_logistic | 0.7222 | 0.7778 | 0.6667 |
+| benchmark_set_2 | benchmark_set_1 | official_style_tags_gbdt | 0.7222 | 0.7778 | 0.6667 |
+| benchmark_set_1 | benchmark_set_2 | official_style_tags_logistic_blend0.50 | 0.9213 | 0.9573 | 0.8852 |
+| benchmark_set_1 | benchmark_set_2 | official_style_tags_gbdt_blend0.50 | 0.9100 | 0.9402 | 0.8798 |
+
+The useful signal is the root-cause tag layer itself. Adding graph context from the old no-trace probability matrix often reintroduces the old bias; anchor trace structural features are not consistently better in this fixed-official setting. The next architecture should therefore treat official-style root-cause tags as a first-class supervised objective, then only add trace/window signals behind a validation gate.
+
+Recommendation: keep the previous no-trace calibrated blend as the old fake-dataset experimental best, but for the fixed official benchmark style pursue a separate experimental `official_style_tags` backend. Do not replace the formal deterministic default until it is validated on additional held-out official-style data.
+
+
 ## Error Analysis
 
 当 TNR 高但 TPR 低时，通常说明不同 bug 容易分开，但同一 bug 的多种表现被拆碎。可以用：
