@@ -1,1 +1,1 @@
-riscv_interrupt_csr_test.0 : [FAILED]
+riscv_csr_test.0 : [FAILED]

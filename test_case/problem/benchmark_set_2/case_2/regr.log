@@ -1,4 +1,1 @@
-Mismatch[1]:
-ibex[937] : pc[80000c7e] srai	x21,x28,0x1: s5:ffffff32
-spike[937] : pc[ffffffff80000ca2] c.mv    s0, sp: s0:00000338
-[FAILED]: 883 matched, 64810 mismatch
+riscv_csr_test.0 : [FAILED]

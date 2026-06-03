@@ -1,4 +1,4 @@
 Mismatch[1]:
-ibex[425] : pc[80001b38] mulhsu	x30,x6,x11: t5:00000000
-spike[425] : pc[ffffffff80001b52] add     s11, s3, t0: s11:00049c58
-[FAILED]: 360 matched, 35687 mismatch
+ibex[31157] : pc[8002c47c] ori	x16,x3,903: a6:00000387
+spike[31157] : pc[ffffffff8002c484] add     s10, s8, a5: s10:b38e86a1
+[FAILED]: 29586 matched, 106747 mismatch

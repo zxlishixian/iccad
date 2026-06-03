@@ -1,4 +1,1 @@
-Mismatch[1]:
-ibex[633] : pc[80000aa0] remu	x26,x17,x10: s10:0000005d
-spike[633] : pc[ffffffff80000aa6] div     ra, zero, a1: ra:00000000
-[FAILED]: 602 matched, 16795 mismatch
+riscv_single_interrupt_test.0 : [FAILED]

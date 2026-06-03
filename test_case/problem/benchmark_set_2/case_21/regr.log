@@ -1,1 +1,4 @@
-riscv_debug_basic_test.0 : [FAILED]
+Mismatch[1]:
+ibex[1194] : pc[800009aa] c.xor	x8,x12: s0:800142d3
+spike[1194] : pc[ffffffff800009b6] mulh    a6, sp, a3: a6:00000040
+[FAILED]: 678 matched, 1696 mismatch

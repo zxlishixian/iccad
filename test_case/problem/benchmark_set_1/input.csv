@@ -6,5 +6,3 @@ Case,Regr Log,Sim Log,Trace Log
 5,case_5/regr.log,case_5/sim.log.gz,case_5/trace.log.gz
 6,case_6/regr.log,case_6/sim.log.gz,case_6/trace.log.gz
 7,case_7/regr.log,case_7/sim.log.gz,case_7/trace.log.gz
-8,case_8/regr.log,case_8/sim.log.gz,case_8/trace.log.gz
-9,case_9/regr.log,case_9/sim.log.gz,case_9/trace.log.gz

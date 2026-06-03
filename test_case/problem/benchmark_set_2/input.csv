@@ -24,5 +24,3 @@ Case,Regr Log,Sim Log,Trace Log
 23,case_23/regr.log,case_23/sim.log.gz,case_23/trace.log.gz
 24,case_24/regr.log,case_24/sim.log.gz,case_24/trace.log.gz
 25,case_25/regr.log,case_25/sim.log.gz,case_25/trace.log.gz
-26,case_26/regr.log,case_26/sim.log.gz,case_26/trace.log.gz
-27,case_27/regr.log,case_27/sim.log.gz,case_27/trace.log.gz

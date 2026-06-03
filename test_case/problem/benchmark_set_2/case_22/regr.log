@@ -1,4 +1,4 @@
 Mismatch[1]:
-ibex[88] : pc[8000f8e0] addi	x5,x5,-124: t0:80022da0
-spike[88] : pc[ffffffff800016da] addi    t0, t0, -64: t0:80022ddc
-[FAILED]: 76 matched, 41737 mismatch
+ibex[231] : pc[80000474] c.or	x14,x8: a4:00ef9e4f
+spike[231] : pc[ffffffff80000464] c.lui   t3, 0x9: t3:00009000
+[FAILED]: 377 matched, 11187 mismatch
