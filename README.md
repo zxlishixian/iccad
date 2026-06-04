@@ -8,6 +8,21 @@
 regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 ```
 
+
+## Latest Work Summary
+
+Recent experiments focused on whether a single generalized model can work well across the old fake datasets, fixed official benchmarks, and the official-directed sanitized diagnostic dataset without routing by dataset origin. The formal default predictor remains unchanged and still does not read `gold.csv`, `meta.csv`, or `trace.log`.
+
+Key findings:
+
+- The previous source-gated official adapter is strong on the fixed official benchmarks, but it uses an input-format gate, so it is not the final generalization target.
+- A stricter global unified adapter with one model and one alpha improves fake stage2/stage3 and official set2, especially with LLM scalar features and anchor-trace features, but official set1 remains the bottleneck.
+- Full retraining on official set1+set2 overfits official data: official scores improve, but fake datasets and sanitized collapse through over-merging.
+- Mixed fake+official full retraining with higher official pair weight preserves fake performance and makes set2 strong, but still does not solve set1 and hurts sanitized recall.
+- Official set1 and set2 do transfer to each other when trained alone, which means the official labels contain useful shared signal; the main unresolved problem is how to keep that boundary signal when mixed with the larger fake distribution.
+
+Current experimental recommendation: keep the no-trace calibrated blend as the stable experimental baseline, keep the source-gated adapter only as an analysis/reference route, and move next to domain-balanced error-aware sampling/objectives that emphasize high-confidence false merges without introducing dataset-source routing at inference time.
+
 ## 当前推荐方法
 
 当前推荐默认配置是：
