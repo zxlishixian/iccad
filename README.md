@@ -1651,7 +1651,7 @@ The adapter is trained only on the public official benchmarks. When the target i
 | benchmark_set_2 | 0.4742 | 0.9213 | 0.9573 | 0.8852 |
 | mean | 0.6976 | 0.8432 | 0.8117 | 0.8748 |
 
-This is currently the strongest unified experimental route across the three fake datasets plus the two fixed official benchmarks. It remains experimental because the adapter is trained from public official labels and the gate has only been validated on the available datasets. The formal default remains unchanged.
+This is currently the strongest source-gated experimental route across the three fake datasets plus the two fixed official benchmarks. It remains experimental because the adapter is trained from public official labels and the input-format gate has only been validated on the available datasets. It should not be treated as the final generalization model, because the long-term goal is a single model and one global calibration policy that works across fake, official, and official-directed data without routing by dataset origin. The formal default remains unchanged.
 
 Reproduce:
 
@@ -1667,6 +1667,42 @@ python run_official_style_training_experiments.py \
   --blend-alphas 0.25 0.50 0.75 \
   --seed 0
 ```
+
+
+#### Global Unified Adapter Search
+
+`run_global_unified_adapter_search.py` evaluates a stricter experimental setting: one feature set, one adapter model, one blend alpha, and the same clustering rule across fake datasets, fixed official benchmarks, and the official-directed sanitized diagnostic dataset. It does not use a fake/official source gate. Gold/golden labels are used only inside this experimental runner for leave-one-dataset-out training and scoring; the formal predictor is unchanged.
+
+The GPU MLP variant uses PyTorch for the adapter training step:
+
+```bash
+export LLM_MODEL_CONFIG="$(cat /tmp/nomic_llm.yaml)"
+CUDA_VISIBLE_DEVICES=7 python run_global_unified_adapter_search.py \
+  --output-dir /tmp/global_unified_adapter_gpu_mlp_llm_trace_w64_seed0 \
+  --feature-sets tags_structured_llm_trace \
+  --models mlp \
+  --official-weights 1 3 \
+  --alphas 0.25 0.40 0.50 \
+  --random-states 0 \
+  --folds fake_first fake_stage2 fake_stage3 official_set1 official_set2 sanitized \
+  --negative-ratio 2.0 \
+  --exclude-sanitized-from-training \
+  --device cuda \
+  --epochs 30 \
+  --batch-size 8192 \
+  --hidden-dim 256 \
+  --trace-window-size 64
+```
+
+Seed-0 LODO results from the first strict unified search:
+
+| feature set | model | official weight | alpha | mean BA | min BA | fake mean | official mean | sanitized | set1 | set2 |
+|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| tags | mlp | 1 | 0.25 | 0.6969 | 0.4583 | 0.8640 | 0.5073 | 0.5753 | 0.4583 | 0.5562 |
+| tags_structured_llm | mlp | 1 | 0.50 | 0.7438 | 0.5278 | 0.8810 | 0.6265 | 0.5666 | 0.5278 | 0.7252 |
+| tags_structured_llm_trace | mlp | 3 | 0.50 | 0.7518 | 0.5278 | 0.8926 | 0.6256 | 0.5817 | 0.5278 | 0.7233 |
+
+The strict unified model improves fake stage2/stage3 and fixed official set2, and trace-anchor features give a small sanitized gain. However, fixed official set1 remains the bottleneck at BA 0.5278. This suggests the next useful work is not simply a larger MLP or more source weighting; it is an error-aware objective/sampling strategy that targets high-confidence false merges while preserving same-bug recall. Trace-anchor features should be kept as candidate inputs, but they are not yet a standalone solution.
 
 
 ## Error Analysis
