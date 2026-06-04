@@ -1625,6 +1625,34 @@ Candidate gated policy:
 
 This is still experimental. It should not replace the default deterministic predictor or the no-trace calibrated blend yet, but it is the strongest direction for aligning with fixed official labels while preserving old fake-dataset performance. The next implementation step is to add an experimental prediction backend that trains/loads this official-only adapter and applies the dataset-style gate without reading gold at prediction time.
 
+
+#### Auto-Gated Adapter Backend
+
+A standalone experimental runner now evaluates the gated adapter without changing the formal predictor:
+
+```bash
+python run_official_gated_adapter_eval.py \
+  --output-dir /tmp/official_gated_adapter_eval \
+  --reuse-base-probs-dir /tmp/official_style_lodo_5datasets_tags/probs \
+  --gate auto \
+  --fake-alpha 0.25 \
+  --official-alpha 0.50 \
+  --model-type logistic
+```
+
+The adapter is trained only on the public official benchmarks. When the target is one of those official benchmarks, the runner uses leave-target-official-out training. The auto gate uses input format only: official-style `Case, Regr Log, Sim Log, Trace Log` with gzip logs gets `alpha=0.50`; old fake-style path-only CSVs get `alpha=0.25`. Gold is used only for evaluation scoring.
+
+| test | no_trace BA | gated adapter BA | TPR | TNR |
+|---|---:|---:|---:|---:|
+| first_batch_dataset | 0.8555 | 0.8555 | 0.8167 | 0.8943 |
+| stage2_dataset_working | 0.8317 | 0.8414 | 0.7274 | 0.9554 |
+| stage3_dataset_32bugs_640cases | 0.8682 | 0.8758 | 0.7794 | 0.9721 |
+| benchmark_set_1 | 0.4583 | 0.7222 | 0.7778 | 0.6667 |
+| benchmark_set_2 | 0.4742 | 0.9213 | 0.9573 | 0.8852 |
+| mean | 0.6976 | 0.8432 | 0.8117 | 0.8748 |
+
+This is currently the strongest unified experimental route across the three fake datasets plus the two fixed official benchmarks. It remains experimental because the adapter is trained from public official labels and the gate has only been validated on the available datasets. The formal default remains unchanged.
+
 Reproduce:
 
 ```bash
