@@ -1705,6 +1705,28 @@ Seed-0 LODO results from the first strict unified search:
 The strict unified model improves fake stage2/stage3 and fixed official set2, and trace-anchor features give a small sanitized gain. However, fixed official set1 remains the bottleneck at BA 0.5278. This suggests the next useful work is not simply a larger MLP or more source weighting; it is an error-aware objective/sampling strategy that targets high-confidence false merges while preserving same-bug recall. Trace-anchor features should be kept as candidate inputs, but they are not yet a standalone solution.
 
 
+#### Official Full Retraining Diagnostic
+
+`run_official_full_retrain_experiments.py` retrains the full pairwise rich model, not just the lightweight official-style adapter. It samples pairs only within each benchmark so independent datasets are not accidentally linked by shared bug names. This remains experimental and does not affect `regr_fail_bucketing.py`.
+
+Seed-0 results with `llm_dual_struct_det_summary`, reduce dim 64, residual focal MLP:
+
+| train data | eval target | BA | TPR | TNR | note |
+|---|---|---:|---:|---:|---|
+| set1+set2 | set1 | 1.0000 | 1.0000 | 1.0000 | train-set score, not generalization |
+| set1+set2 | set2 | 0.8770 | 0.8632 | 0.8907 | train-set score, not generalization |
+| set1+set2 | fake mean | 0.5042 | - | - | severe over-merge / poor transfer |
+| set1+set2 | sanitized | 0.4999 | 0.9532 | 0.0467 | severe over-merge |
+| fake+set1+set2, official weight 10 | fake mean | 0.8802 | - | - | fake mostly preserved |
+| fake+set1+set2, official weight 10 | set1 | 0.5278 | 0.5556 | 0.5000 | still bottleneck |
+| fake+set1+set2, official weight 10 | set2 | 0.9380 | 0.9744 | 0.9016 | strong |
+| fake+set1+set2, official weight 10 | sanitized | 0.4961 | 0.3654 | 0.6269 | recall collapse |
+| set2 only | set1 | 0.7222 | 0.7778 | 0.6667 | official cross-set transfer works |
+| set1 only | set2 | 0.9072 | 0.9402 | 0.8743 | official cross-set transfer works |
+
+The diagnostic says the official benchmarks contain useful shared signal: set1 and set2 can transfer to each other. The failure mode appears when fake and official data are mixed naively: the official boundary is diluted by the larger fake distribution, while official-only retraining overfits and collapses fake/sanitized TNR. The next promising direction is domain-balanced or error-aware sampling/objective design, not source-routed inference and not simply enlarging the MLP.
+
+
 ## Error Analysis
 
 当 TNR 高但 TPR 低时，通常说明不同 bug 容易分开，但同一 bug 的多种表现被拆碎。可以用：
