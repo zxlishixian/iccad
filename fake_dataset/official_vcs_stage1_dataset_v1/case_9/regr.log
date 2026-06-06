@@ -1,5 +1,3 @@
-Test binary: /workspace/ibex/dv/uvm/out/asm_tests/riscv_debug_ebreak_test.0.o
-ibex uvm log : /workspace/ibex/dv/uvm/out/rtl_sim/riscv_debug_ebreak_test.0/sim.log
 riscv_debug_ebreak_test.0 : [FAILED]
 
 0 PASSED, 1 FAILED

@@ -1,9 +1,5 @@
-Test binary: /workspace/ibex/dv/uvm/out/asm_tests/riscv_rand_instr_test.0.o
-ibex : /workspace/ibex/dv/uvm/out/rtl_sim/riscv_rand_instr_test.0/trace_core_00000000.csv
-spike : /workspace/ibex/dv/uvm/out/instr_gen/spike_sim/riscv_rand_instr_test.0.csv
 Mismatch[1]:
 [3] ibex : pc[8000008c] lui	x3,0x80000: gp:80000000 
-5129 instructions left in trace ibex
 [FAILED]: 0 matched, 1 mismatch
 
 0 PASSED, 1 FAILED
