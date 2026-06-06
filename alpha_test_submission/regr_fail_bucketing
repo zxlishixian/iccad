@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if [[ -x "$ROOT/regr_fail_bucketing.bin" ]]; then
+  exec "$ROOT/regr_fail_bucketing.bin" "$@"
+fi
+
+PYTHON_BIN="${PYTHON_BIN:-python3}"
+exec "$PYTHON_BIN" "$ROOT/submission_main.py" "$@"

@@ -1,2 +1,0 @@
-method,k,BA,TPR,TNR,num_cases,num_pred_clusters,runtime_sec,pred_path,prob_path
-current_best_seedavg_no_trace,6,0.8775678650036685,0.8189655172413793,0.9361702127659575,27,6,32.952662950148806,/home/lishixian/iccad/benchmark_manual_label/benchmark2/benchmark_set_2_pred_current_best_seedavg_k6.csv,/home/lishixian/iccad/benchmark_manual_label/benchmark2/benchmark_set_2_current_best_seedavg_prob.npy
