@@ -1,0 +1,9 @@
+Test binary: /workspace/ibex/dv/uvm/out/asm_tests/riscv_machine_mode_rand_test.0.o
+ibex : /workspace/ibex/dv/uvm/out/rtl_sim/riscv_machine_mode_rand_test.0/trace_core_00000000.csv
+spike : /workspace/ibex/dv/uvm/out/instr_gen/spike_sim/riscv_machine_mode_rand_test.0.csv
+Mismatch[1]:
+[2] ibex : pc[80000088] lui	x2,0xf900b: sp:f900b000 
+4915 instructions left in trace ibex
+[FAILED]: 0 matched, 1 mismatch
+
+0 PASSED, 1 FAILED
