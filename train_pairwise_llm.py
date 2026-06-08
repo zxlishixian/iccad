@@ -368,6 +368,28 @@ def train(args: argparse.Namespace) -> dict:
         file=sys.stderr,
     )
 
+    # Prepare the exact held-out half-split clustering episodes once. All
+    # neural architectures use these same matrices for early stopping by BA.
+    validation_clusters = []
+    if args.model_type == "mlp" and args.feature_mode != "llm_dual_struct_det_summary_trace":
+        for part in val_parts:
+            val_feats, _ = plf.build_llm_case_features(
+                part["input"], svd_dim=args.svd_dim, llm_args=llm_args
+            )
+            if args.llm_reduce_dim > 0:
+                plf.apply_llm_reducer(val_feats, llm_reducer, args.llm_reduce_dim)
+                if args.feature_mode in plf.DUAL_FEATURE_MODES:
+                    plf.apply_llm_summary_reducer(val_feats, llm_summary_reducer, args.llm_reduce_dim)
+            val_pairs = [(i, j) for i in range(len(val_feats)) for j in range(i + 1, len(val_feats))]
+            validation_clusters.append({
+                "dataset": part["dataset"],
+                "X": plf.build_rich_pair_feature_matrix(val_feats, val_pairs, feature_mode=args.feature_mode),
+                "pairs": val_pairs,
+                "n": len(val_feats),
+                "k": part["k"],
+                "gold": read_gold(part["gold"]),
+            })
+
     # Train selected backend
     train_time = time.perf_counter()
     if args.model_type == "logistic":
@@ -393,11 +415,22 @@ def train(args: argparse.Namespace) -> dict:
             early_stop_patience=args.early_stop_patience,
             layernorm=args.layernorm,
             batchnorm=args.batchnorm,
+            model_arch=args.model_arch,
+            gate_reg=args.gate_reg,
+            ft_d_token=args.ft_d_token,
+            ft_layers=args.ft_layers,
+            ft_heads=args.ft_heads,
+            ft_dropout=args.ft_dropout,
+            ft_attention_dropout=args.ft_attention_dropout,
+            ft_ffn_mult=args.ft_ffn_mult,
+            ft_max_tokens=args.ft_max_tokens,
+            validation_clusters=validation_clusters,
         )
     else:
         raise ValueError(f"unknown model_type: {args.model_type}")
     model_pkg.update({
         "feature_mode": args.feature_mode,
+        "feature_schema_version": 1,
         "llm_reduce_dim": args.llm_reduce_dim if args.feature_mode in ({"rich", "rich_no_det"} | plf.DUAL_FEATURE_MODES) else 0,
         "llm_reducer": llm_reducer,
         "llm_summary_reducer": llm_summary_reducer,
@@ -460,6 +493,17 @@ def train(args: argparse.Namespace) -> dict:
         "model_tag": model_tag,
         "feature_mode": args.feature_mode,
         "mlp_arch": args.mlp_arch,
+        "model_arch": args.model_arch if args.model_type == "mlp" else "",
+        "model_config": {
+            "gate_reg": args.gate_reg,
+            "ft_d_token": args.ft_d_token,
+            "ft_layers": args.ft_layers,
+            "ft_heads": args.ft_heads,
+            "ft_dropout": args.ft_dropout,
+            "ft_attention_dropout": args.ft_attention_dropout,
+            "ft_ffn_mult": args.ft_ffn_mult,
+            "ft_max_tokens": args.ft_max_tokens,
+        } if args.model_type == "mlp" else {},
         "loss": args.loss,
         "llm_reduce_dim": args.llm_reduce_dim,
         "svd_dim": args.svd_dim,
@@ -472,6 +516,8 @@ def train(args: argparse.Namespace) -> dict:
         "combo": args.combo,
         "trace_reduce_dim": args.trace_reduce_dim if args.feature_mode == "llm_dual_struct_det_summary_trace" else 0,
         "trace_encoder_dir": str(args.trace_encoder) if args.trace_encoder is not None else "",
+        "best_epoch": int(model_pkg.get("best_epoch", 0)),
+        "best_val_BA": float(model_pkg.get("best_val_BA", -1.0)),
         "val_mean_BA": mean_ba,
         "val_mean_TPR": mean_tpr,
         "val_mean_TNR": mean_tnr,
@@ -505,7 +551,21 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         default="summary21",
     )
     p.add_argument("--llm-reduce-dim", type=int, default=128)
-    p.add_argument("--mlp-arch", choices=("shallow", "deep", "residual"), default="shallow")
+    p.add_argument("--mlp-arch", choices=("shallow", "deep", "residual"), default="shallow", help="legacy residual MLP shape selector")
+    p.add_argument(
+        "--model-arch",
+        choices=("auto", "res_mlp", "gated_mlp", "ft_transformer"),
+        default="auto",
+        help="auto preserves the legacy --mlp-arch behavior",
+    )
+    p.add_argument("--gate-reg", type=float, default=1e-4)
+    p.add_argument("--ft-d-token", type=int, default=64)
+    p.add_argument("--ft-layers", type=int, default=2)
+    p.add_argument("--ft-heads", type=int, default=4)
+    p.add_argument("--ft-dropout", type=float, default=0.1)
+    p.add_argument("--ft-attention-dropout", type=float, default=0.1)
+    p.add_argument("--ft-ffn-mult", type=int, default=2)
+    p.add_argument("--ft-max-tokens", type=int, default=0)
     p.add_argument("--loss", choices=("bce", "focal"), default="bce")
     p.add_argument("--focal-gamma", type=float, default=2.0)
     p.add_argument("--focal-alpha", default="auto")

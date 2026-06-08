@@ -349,9 +349,14 @@ def _anchor_feature_from_base(base: tf.TraceCaseFeature, anchor: TraceAnchor, me
     )
 
 
-def build_anchor_trace_case_features(input_csvs: Sequence[str | Path], window_size: int = 64) -> tuple[list[AnchorTraceFeature], list[dict]]:
+def build_anchor_trace_case_features(
+    input_csvs: Sequence[str | Path],
+    window_size: int = 64,
+    selected_indices: set[int] | None = None,
+) -> tuple[list[AnchorTraceFeature], list[dict]]:
     out: list[AnchorTraceFeature] = []
     debug: list[dict] = []
+    global_index = 0
     for input_csv_raw in input_csvs:
         input_csv = Path(input_csv_raw).resolve()
         with input_csv.open(newline="", encoding="utf-8-sig") as f:
@@ -363,6 +368,26 @@ def build_anchor_trace_case_features(input_csvs: Sequence[str | Path], window_si
         trace_col = tf.pick_trace_column(fields)
         for idx, row in enumerate(rows):
             cid = _case_id(row, idx, fields)
+            selected = selected_indices is None or global_index in selected_indices
+            global_index += 1
+            if not selected:
+                anchor = TraceAnchor(cid, "not_selected", None, "", "", None, "", "", "", "", "")
+                base = tf._empty_feature(cid, "", "not_selected")
+                feat = _anchor_feature_from_base(base, anchor, {"located_by": "not_selected", "center_line": -1}, [])
+                out.append(feat)
+                debug.append({
+                    "input_csv": str(input_csv), "case_id": cid,
+                    "anchor_source": "not_selected", "instr_index": "",
+                    "dut_pc": "", "iss_pc": "", "sim_time": "",
+                    "ibex_opcode": "", "spike_opcode": "",
+                    "mismatch_type": "", "primary_type": "", "reason": "",
+                    "mismatch_register": "", "anchor_tags": "",
+                    "located_by": "not_selected", "center_line": -1,
+                    "window_start": 0, "window_end": 0,
+                    "trace_lines_used": 0, "center_opcode": "",
+                    "center_pc_region": "",
+                })
+                continue
             sim_path = _resolve(input_csv, row.get(sim_col) if sim_col else None)
             regr_path = _resolve(input_csv, row.get(regr_col) if regr_col else None)
             trace_path = _resolve(input_csv, row.get(trace_col) if trace_col else None)

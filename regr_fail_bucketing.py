@@ -1860,6 +1860,42 @@ def run_pairwise_mlp_backend(args: argparse.Namespace, input_csv: Path, effectiv
 
     device = pf.resolve_torch_device(args.pairwise_device)
     checkpoint = torch.load(args.pairwise_model, map_location=device, weights_only=False)
+    if checkpoint.get("feature_mode"):
+        import pairwise_llm_features as plf
+        model_pkg = plf.load_model_pkg(args.pairwise_model)
+        model_pkg["device"] = device
+        feature_mode = str(model_pkg.get("feature_mode", "summary21"))
+        llm_args = plf._make_llm_args(
+            llm_mode="embedding" if int(model_pkg.get("llm_reduce_dim", 0) or 0) > 0 else "none",
+            llm_doc_style="features",
+            llm_cache_dir=args.llm_cache_dir,
+            svd_dim=int(model_pkg.get("svd_dim", args.svd_dim)),
+            llm_dual=feature_mode in plf.DUAL_FEATURE_MODES,
+        )
+        features, bundle = plf.build_llm_case_features(
+            input_csv,
+            svd_dim=int(model_pkg.get("svd_dim", args.svd_dim)),
+            llm_args=llm_args,
+        )
+        prob = plf.predict_probability_matrix_sklearn(
+            model_pkg, features, batch_size=args.pairwise_batch_size
+        )
+        selected_k = effective_k
+        if args.k_selection == "dynamic":
+            selected_k = select_dynamic_k_from_similarity(
+                prob, requested_k=args.k, window=args.dynamic_k_window,
+                merge_threshold=args.dynamic_merge_threshold,
+                top_pairs=args.dynamic_top_pairs, label="pairwise-rich",
+                policy=args.dynamic_k_policy, gap_min=args.dynamic_gap_min,
+                gap_ratio=args.dynamic_gap_ratio,
+                start_factor=args.dynamic_start_factor,
+                min_factor=args.dynamic_min_factor,
+                local_quantile=args.dynamic_local_quantile,
+                below_k_margin=args.dynamic_below_k_margin,
+            )
+        labels = plf.cluster_from_probability(prob, selected_k)
+        return labels, bundle.template_count, prob.shape, selected_k
+
     input_dim = int(checkpoint["input_dim"])
     hidden_dims = checkpoint.get("hidden_dims", (256, 128))
     dropout = float(checkpoint.get("dropout", 0.2))

@@ -1177,6 +1177,16 @@ def train_mlp_model(
     early_stop_patience: int = 8,
     layernorm: bool = True,
     batchnorm: bool = False,
+    model_arch: str = "auto",
+    gate_reg: float = 1e-4,
+    ft_d_token: int = 64,
+    ft_layers: int = 2,
+    ft_heads: int = 4,
+    ft_dropout: float = 0.1,
+    ft_attention_dropout: float = 0.1,
+    ft_ffn_mult: int = 2,
+    ft_max_tokens: int = 0,
+    validation_clusters: Sequence[dict] | None = None,
 ) -> Any:
     import torch
     from torch import nn
@@ -1204,11 +1214,34 @@ def train_mlp_model(
     X_val = scaler.transform(X[val_idx]).astype(np.float32) if len(val_idx) else X_train
     y_val = y[val_idx].astype(np.float32) if len(val_idx) else y_train
 
-    hidden = list(hidden_dims) if hidden_dims else _default_hidden_dims(mlp_arch)
-    model = _make_mlp(
-        input_dim, hidden, dropout,
-        arch=mlp_arch, layernorm=layernorm, batchnorm=batchnorm,
-    ).to(device)
+    from pairwise_neural_models import build_pairwise_neural_model, default_hidden_dims
+
+    effective_arch = "res_mlp" if model_arch == "residual" else model_arch
+    hidden = list(hidden_dims) if hidden_dims else (
+        _default_hidden_dims(mlp_arch)
+        if effective_arch in {"auto", "res_mlp"}
+        else default_hidden_dims(effective_arch)
+    )
+    model_config = {
+        "gate_reg": float(gate_reg),
+        "ft_d_token": int(ft_d_token),
+        "ft_layers": int(ft_layers),
+        "ft_heads": int(ft_heads),
+        "ft_dropout": float(ft_dropout),
+        "ft_attention_dropout": float(ft_attention_dropout),
+        "ft_ffn_mult": int(ft_ffn_mult),
+        "ft_max_tokens": int(ft_max_tokens),
+    }
+    if effective_arch == "auto":
+        model = _make_mlp(
+            input_dim, hidden, dropout,
+            arch=mlp_arch, layernorm=layernorm, batchnorm=batchnorm,
+        ).to(device)
+    else:
+        model = build_pairwise_neural_model(
+            input_dim, effective_arch, hidden, dropout,
+            layernorm=layernorm, batchnorm=batchnorm, **model_config,
+        ).to(device)
     pos = float((y_train == 1.0).sum())
     neg = float((y_train == 0.0).sum())
     pos_weight = torch.tensor([neg / max(pos, 1.0)], dtype=torch.float32, device=device)
@@ -1235,31 +1268,78 @@ def train_mlp_model(
 
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=weight_decay)
 
+    micro_batch_size = min(batch_size, 128) if effective_arch == "ft_transformer" else batch_size
+    accumulation_steps = max(1, int(math.ceil(batch_size / micro_batch_size)))
     train_loader = DataLoader(
         TensorDataset(torch.from_numpy(X_train), torch.from_numpy(y_train)),
-        batch_size=batch_size,
+        batch_size=micro_batch_size,
         shuffle=True,
     )
     X_val_t = torch.from_numpy(X_val).to(device)
     y_val_t = torch.from_numpy(y_val).to(device)
+    prepared_cluster_validation = []
+    for item in validation_clusters or []:
+        prepared_cluster_validation.append({
+            **item,
+            "X_scaled": scaler.transform(item["X"]).astype(np.float32),
+        })
+
+    def validation_cluster_ba() -> float:
+        if not prepared_cluster_validation:
+            return float("nan")
+        from run_experiments import pairwise_scores
+        scores = []
+        model.eval()
+        with torch.no_grad():
+            for item in prepared_cluster_validation:
+                matrix = item["X_scaled"]
+                step = 128 if effective_arch == "ft_transformer" else max(1, len(matrix))
+                values = []
+                for start in range(0, len(matrix), step):
+                    logits = model(torch.from_numpy(matrix[start:start + step]).to(device))
+                    values.append(torch.sigmoid(logits).detach().cpu().numpy())
+                flat = np.concatenate(values) if values else np.zeros(0, dtype=np.float32)
+                prob = np.eye(int(item["n"]), dtype=np.float32)
+                for (i, j), value in zip(item["pairs"], flat):
+                    prob[i, j] = prob[j, i] = float(value)
+                pred = cluster_from_probability(prob, int(item["k"]))
+                ba, _, _ = pairwise_scores(item["gold"], [f"bucket_{x:03d}" for x in pred])
+                scores.append(ba)
+        return float(np.mean(scores)) if scores else float("nan")
 
     best_state = None
     best_val = float("inf")
+    best_epoch = 0
+    best_val_ba = -1.0
     bad_epochs = 0
     for _epoch in range(epochs):
         model.train()
-        for xb, yb in train_loader:
+        optimizer.zero_grad(set_to_none=True)
+        for batch_index, (xb, yb) in enumerate(train_loader):
             xb, yb = xb.to(device), yb.to(device)
-            optimizer.zero_grad(set_to_none=True)
             batch_loss = compute_loss(model(xb), yb)
-            batch_loss.backward()
-            optimizer.step()
+            if hasattr(model, "regularization_loss"):
+                batch_loss = batch_loss + model.regularization_loss()
+            (batch_loss / accumulation_steps).backward()
+            is_last = batch_index + 1 == len(train_loader)
+            if (batch_index + 1) % accumulation_steps == 0 or is_last:
+                optimizer.step()
+                optimizer.zero_grad(set_to_none=True)
 
         model.eval()
         with torch.no_grad():
             val_loss = float(compute_loss(model(X_val_t), y_val_t).detach().cpu())
-        if val_loss + 1e-6 < best_val:
+        cluster_ba = validation_cluster_ba()
+        if prepared_cluster_validation:
+            improved = cluster_ba > best_val_ba + 1e-9 or (
+                abs(cluster_ba - best_val_ba) <= 1e-9 and val_loss + 1e-6 < best_val
+            )
+        else:
+            improved = val_loss + 1e-6 < best_val
+        if improved:
             best_val = val_loss
+            best_val_ba = cluster_ba if prepared_cluster_validation else best_val_ba
+            best_epoch = _epoch + 1
             bad_epochs = 0
             best_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
         else:
@@ -1279,12 +1359,16 @@ def train_mlp_model(
         "hidden_dims": list(hidden),
         "dropout": dropout,
         "mlp_arch": mlp_arch,
+        "model_arch": "legacy_mlp" if effective_arch == "auto" else effective_arch,
+        "model_config": model_config,
         "loss": loss,
         "focal_gamma": focal_gamma,
         "focal_alpha": alpha_value,
         "layernorm": layernorm,
         "batchnorm": batchnorm,
         "best_val_loss": best_val,
+        "best_val_BA": best_val_ba,
+        "best_epoch": best_epoch,
         "model_type": "mlp",
         "device": device,
     }
@@ -1341,9 +1425,13 @@ def predict_probability_matrix_sklearn(
             device = model_pkg.get("device", "cpu")
             model.to(device)
             model.eval()
+            neural_batch = 128 if model_pkg.get("model_arch") == "ft_transformer" else len(X)
+            chunks = []
             with torch.no_grad():
-                logits = model(torch.from_numpy(X.astype(np.float32)).to(device)).detach().cpu()
-                batch_probs = torch.sigmoid(logits).numpy().astype(np.float32)
+                for start in range(0, len(X), neural_batch):
+                    logits = model(torch.from_numpy(X[start:start + neural_batch].astype(np.float32)).to(device)).detach().cpu()
+                    chunks.append(torch.sigmoid(logits).numpy().astype(np.float32))
+            batch_probs = np.concatenate(chunks) if chunks else np.zeros(0, dtype=np.float32)
         elif hasattr(model, "predict_proba"):
             batch_probs = model.predict_proba(X)[:, 1].astype(np.float32)
         else:
@@ -1446,6 +1534,15 @@ def save_model_pkg(model_pkg: dict, path: Path) -> None:
                 "hidden_dims": model_pkg["hidden_dims"],
                 "dropout": model_pkg["dropout"],
                 "mlp_arch": model_pkg.get("mlp_arch", "shallow"),
+                "model_arch": model_pkg.get(
+                    "model_arch",
+                    "res_mlp" if model_pkg.get("mlp_arch") == "residual" else "legacy_mlp",
+                ),
+                "model_config": dict(model_pkg.get("model_config", {})),
+                "best_val_loss": float(model_pkg.get("best_val_loss", 0.0)),
+                "best_val_BA": float(model_pkg.get("best_val_BA", -1.0)),
+                "best_epoch": int(model_pkg.get("best_epoch", 0)),
+                "feature_schema_version": int(model_pkg.get("feature_schema_version", 1)),
                 "layernorm": bool(model_pkg.get("layernorm", True)),
                 "batchnorm": bool(model_pkg.get("batchnorm", False)),
                 "model_type": "mlp",
@@ -1487,14 +1584,39 @@ def load_model_pkg(path: Path) -> dict:
         import torch
         checkpoint = torch.load(path, map_location="cpu", weights_only=False)
         if checkpoint.get("model_type") == "mlp":
-            model = _make_mlp(
-                int(checkpoint["input_dim"]),
-                hidden_dims=checkpoint.get("hidden_dims", (128, 64)),
-                dropout=float(checkpoint.get("dropout", 0.15)),
-                arch=checkpoint.get("mlp_arch", "shallow"),
-                layernorm=bool(checkpoint.get("layernorm", True)),
-                batchnorm=bool(checkpoint.get("batchnorm", False)),
-            )
+            from pairwise_neural_models import build_pairwise_neural_model
+            legacy_mlp_arch = checkpoint.get("mlp_arch", "shallow")
+            model_arch = checkpoint.get("model_arch")
+            if not model_arch:
+                if legacy_mlp_arch == "residual":
+                    model_arch = "res_mlp"
+                else:
+                    model = _make_mlp(
+                        int(checkpoint["input_dim"]),
+                        hidden_dims=checkpoint.get("hidden_dims", (128, 64)),
+                        dropout=float(checkpoint.get("dropout", 0.15)),
+                        arch=legacy_mlp_arch,
+                        layernorm=bool(checkpoint.get("layernorm", True)),
+                        batchnorm=bool(checkpoint.get("batchnorm", False)),
+                    )
+            if model_arch == "legacy_mlp":
+                model = _make_mlp(
+                    int(checkpoint["input_dim"]),
+                    hidden_dims=checkpoint.get("hidden_dims", (128, 64)),
+                    dropout=float(checkpoint.get("dropout", 0.15)),
+                    arch=legacy_mlp_arch,
+                    layernorm=bool(checkpoint.get("layernorm", True)),
+                    batchnorm=bool(checkpoint.get("batchnorm", False)),
+                )
+            elif model_arch:
+                model = build_pairwise_neural_model(
+                    int(checkpoint["input_dim"]), model_arch,
+                    hidden_dims=checkpoint.get("hidden_dims", (128, 64)),
+                    dropout=float(checkpoint.get("dropout", 0.15)),
+                    layernorm=bool(checkpoint.get("layernorm", True)),
+                    batchnorm=bool(checkpoint.get("batchnorm", False)),
+                    **dict(checkpoint.get("model_config", {})),
+                )
             model.load_state_dict(checkpoint["state_dict"])
             model.eval()
             preproc = {}
@@ -1520,6 +1642,12 @@ def load_model_pkg(path: Path) -> dict:
                 "hidden_dims": checkpoint.get("hidden_dims", (128, 64)),
                 "dropout": float(checkpoint.get("dropout", 0.15)),
                 "mlp_arch": checkpoint.get("mlp_arch", "shallow"),
+                "model_arch": checkpoint.get("model_arch", "res_mlp" if checkpoint.get("mlp_arch") == "residual" else "legacy_mlp"),
+                "model_config": dict(checkpoint.get("model_config", {})),
+                "best_val_loss": float(checkpoint.get("best_val_loss", 0.0)),
+                "best_val_BA": float(checkpoint.get("best_val_BA", -1.0)),
+                "best_epoch": int(checkpoint.get("best_epoch", 0)),
+                "feature_schema_version": int(checkpoint.get("feature_schema_version", 1)),
                 "layernorm": bool(checkpoint.get("layernorm", True)),
                 "batchnorm": bool(checkpoint.get("batchnorm", False)),
                 "feature_mode": checkpoint.get("feature_mode", preproc.get("feature_mode", "summary21")),

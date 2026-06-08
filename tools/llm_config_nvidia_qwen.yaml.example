@@ -1,0 +1,15 @@
+embedding:
+  model_name: nomic-embed-text-v1.5
+  config:
+    model: nomic-embed-text-v1.5
+    base_url: http://127.0.0.1:8001/v1
+    api_key: dummy
+
+completion:
+  model_name: qwen/qwen3-coder-480b-a35b-instruct
+  config:
+    model: qwen/qwen3-coder-480b-a35b-instruct
+    base_url: https://integrate.api.nvidia.com/v1
+    api_key_env: NVIDIA_API_KEY
+    timeout: 120
+    max_tokens: 320

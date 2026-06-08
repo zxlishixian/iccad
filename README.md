@@ -1742,6 +1742,52 @@ Seed-0 results with `llm_dual_struct_det_summary`, reduce dim 64, residual focal
 The diagnostic says the official benchmarks contain useful shared signal: set1 and set2 can transfer to each other. The failure mode appears when fake and official data are mixed naively: the official boundary is diluted by the larger fake distribution, while official-only retraining overfits and collapses fake/sanitized TNR. The next promising direction is domain-balanced or error-aware sampling/objective design, not source-routed inference and not simply enlarging the MLP.
 
 
+#### Unified Multi-Dataset Episodic Pair Training
+
+`run_unified_multidataset_experiments.py` trains one experimental model across seven independent benchmarks: old fake first/stage2/stage3, VCS official-format fake data, stable official-like multitest data, and fixed official set1/set2.
+
+Each benchmark remains an independent clustering episode. Positive/negative pairs, hard triplets, and transitivity triangles are created only within that benchmark; bug names are never compared across datasets. A dataset-balanced sampler gives small benchmarks comparable gradient exposure without selecting a model by dataset source at inference time.
+
+The shared model uses the existing `llm_dual_struct_det_summary` 294-dimensional pair input with separately reduced features/summary embeddings, followed by a wider residual pair encoder. Experimental objectives are focal classification, hard-pair ranking, probability transitivity consistency, an optional gradient-reversal domain classifier, and conservative two-hop graph refinement.
+
+Seed-0 strict leave-one-dataset-out results:
+
+| config | graph | mean BA | min BA | set1 | set2 | first | stage2 | stage3 | VCS | stable |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| rank | 0.0 | 0.7750 | 0.6111 | 1.0000 | 0.6990 | 0.8150 | 0.7586 | 0.7985 | 0.7428 | 0.6111 |
+| **rank+transitivity+domain** | **0.1** | **0.8086** | 0.5556 | **1.0000** | **0.9084** | **0.8517** | **0.8046** | 0.7968 | 0.7428 | 0.5556 |
+
+Three-seed probability averaging improves stability:
+
+| config | graph | mean BA | set1 | set2 | first | stage2 | stage3 | VCS | stable |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| rank | 0.0 | 0.7791 | 1.0000 | 0.7146 | 0.8136 | 0.7880 | 0.8296 | 0.7428 | 0.5648 |
+| **rank+transitivity+domain** | **0.1** | **0.8140** | **1.0000** | **0.9170** | **0.8608** | 0.7892 | 0.8233 | 0.7428 | 0.5648 |
+
+This is promising but not a replacement for the current experimental best yet. It improves official-set alignment while retaining useful old-fake performance, but the stable official-like dataset remains weak and individual models have seed variance. The next iteration should stabilize episode construction, use seed/model ensembling, warm up the domain loss, and target fragmented positives without source-routed inference.
+
+Completion LLM use is intentionally deferred from this first objective experiment. The recommended next use is one cached completion per case that produces canonical failure JSON (mechanism, stage, mismatch object, state, trigger, and evidence tags), then uses those fields as teacher/structured features. Do not call completion per pair and do not let it directly output buckets.
+
+```bash
+export LLM_MODEL_CONFIG="$(cat /tmp/nomic_llm.yaml)"
+CUDA_VISIBLE_DEVICES=0 python run_unified_multidataset_experiments.py \
+  --datasets \
+    old_fake_dataset/first_batch_dataset \
+    old_fake_dataset/stage2_dataset_working \
+    old_fake_dataset/stage3_dataset_32bugs_640cases \
+    official_format_fake_dataset/official_vcs_stage1_dataset_v1 \
+    official_format_fake_dataset/stable_official_like_multitest_v1 \
+    test_case/problem/benchmark_set_1 \
+    test_case/problem/benchmark_set_2 \
+  --holdouts all \
+  --output-dir /tmp/unified_multidataset \
+  --configs rank rank_trans_domain \
+  --seeds 0 1 2 \
+  --graph-gammas 0 0.1 \
+  --device cuda
+```
+
+
 ## Error Analysis
 
 当 TNR 高但 TPR 低时，通常说明不同 bug 容易分开，但同一 bug 的多种表现被拆碎。可以用：
@@ -1772,3 +1818,265 @@ python3 -m venv .venv
 3. Improve recall without increasing FP on adjacent-looking bug pairs. The most useful next direction is better supervised objectives or sampling that directly targets fragmented same-bug pairs while penalizing high-probability FP pairs such as `bug_012/bug_013`.
 4. Investigate per-dataset or validation-learned calibration only if new private/public datasets are available; avoid tuning policies to the current three bundled datasets.
 5. Keep all pairwise MLP routes experimental; default submitted baseline remains deterministic `drain + agglomerative`.
+
+
+### Hosted Completion LLM (Experimental)
+
+Completion experiments do not require a locally deployed model or a project GPU. The preferred exact-model development endpoint is NVIDIA NIM with `qwen/qwen3-coder-480b-a35b-instruct`; the second contest-compatible route is OpenAI `gpt-4o`. Both use an OpenAI-compatible chat-completions API.
+
+API keys are read from environment variables and must not be committed. Example configurations are:
+
+- `tools/llm_config_nvidia_qwen.yaml.example`
+- `tools/llm_config_openai_gpt4o.yaml.example`
+
+NVIDIA one-time setup (the prompt is hidden and the key is stored outside the repository with mode `600`):
+
+```bash
+tools/configure_nvidia_completion.sh
+```
+
+After that, any command can use the hosted completion endpoint without per-terminal exports:
+
+```bash
+tools/with_nvidia_completion.sh python tools/check_completion_endpoint.py
+tools/with_nvidia_completion.sh python run_unified_trace_completion_experiments.py --help
+```
+
+The wrapper loads `~/.config/iccad/nvidia_api_key` and the checked-in YAML template only for the child process.
+
+OpenAI example:
+
+```bash
+export OPENAI_API_KEY='...'
+export LLM_MODEL_CONFIG="$(cat tools/llm_config_openai_gpt4o.yaml.example)"
+python tools/check_completion_endpoint.py
+```
+
+`completion_case_features.py` makes at most one cached completion call per case. Before the request, it locally converts sim/regr logs into a strict whitelist of generic enums and booleans. It does not send raw log lines, paths, addresses, identifiers, gold/meta/trace, or bucket labels. The model only canonicalizes these signals into JSON attributes; it is never asked to assign buckets and is never called per pair. Hosted completion remains experimental and does not change the default predictor.
+
+
+#### Hosted Completion and Trace Modality Experiments (June 2026)
+
+This experimental round used the hosted NVIDIA NIM `qwen/qwen3-coder-480b-a35b-instruct` endpoint; no completion model was deployed on shared GPUs. Completion calls are cached once per case and never output buckets. The formal predictor remains unchanged.
+
+A strict structured-completion input (generic enums and booleans only) was evaluated first. It was too coarse and caused false merges:
+
+| 3-domain seed-0 LODO | stable | set1 | set2 | mean |
+|---|---:|---:|---:|---:|
+| base | 0.5648 | 0.7222 | 0.7746 | 0.6872 |
+| trace | 0.5046 | 0.7222 | 0.8365 | 0.6878 |
+| structured completion | 0.5037 | 0.4583 | 0.7840 | 0.5820 |
+| trace + structured completion | 0.5648 | 0.5556 | 0.6342 | 0.5848 |
+
+Raw-public completion caching was started separately, but the NVIDIA hosted endpoint reached HTTP 429 rate limits after partial progress. Cached responses are reusable; this route is not yet scored.
+
+Direct trace concatenation was also inconsistent. In seven-domain seed-0 LODO it improved first, stage2, VCS, and set2, but severely damaged set1, reducing mean BA from 0.7571 to 0.7431.
+
+A unified trace-modality-dropout model was then added. During training, the whole trace block is randomly removed for 50% of sampled pairs. At inference, full-trace and missing-trace views are probability-averaged. It uses one shared model rather than source-routed models.
+
+| 7-domain seed-0 LODO | base | trace dropout |
+|---|---:|---:|
+| first | 0.7800 | **0.8390** |
+| stage2 | 0.8067 | **0.8518** |
+| stage3 | **0.8232** | 0.7818 |
+| VCS | 0.6053 | **0.7428** |
+| stable | 0.5648 | **0.5981** |
+| set1 | **1.0000** | 0.5278 |
+| set2 | 0.7201 | 0.7201 |
+| mean | **0.7571** | 0.7231 |
+
+The modality-dropout model is more useful than direct trace concatenation, but cannot replace the base model by itself. A diagnostic base-protection gate that enables trace dropout only under moderate base/dropout clustering agreement reached seed-0 mean BA 0.7905. This gate is not recommended as a default because its thresholds were observed on only seven datasets.
+
+Five-seed probability averaging on stable/set1/set2 showed:
+
+| method | stable | set1 | set2 |
+|---|---:|---:|---:|
+| base ensemble | 0.5648 | **0.7222** | 0.8944 |
+| trace ensemble | 0.5185 | 0.5278 | 0.6895 |
+| trace-modality-dropout ensemble | **0.5648** | 0.5278 | **0.9213** |
+
+Next: train the trace model with base-teacher probability distillation and learn a pair-level gate only from inner validation pairs. This should preserve base boundaries on stage3/set1 while retaining trace gains on first/stage2/VCS/set2. Do not promote completion, trace concatenation, or the heuristic gate to the default path yet.
+
+
+#### Multi-Granular Selective Expert and Signed-Graph Experiments (June 2026)
+
+`run_multigranular_selective_experiments.py` implements a single experimental architecture across all seven independent benchmark episodes. It never routes by dataset name and never constructs pairs across datasets.
+
+The pipeline is:
+
+```text
+multi-granular sim/regr evidence
+  -> shared residual base pair model
+  -> entropy/disagreement/margin/instability difficulty score
+  -> selective anchor-trace and/or cached completion evidence
+  -> base-distilled expert model
+  -> validation-trained pair gate
+  -> fixed-k or adaptive signed-graph clustering
+```
+
+`multigranular_features.py` extracts ordered fatal/error/mismatch/timeout events, normalized times and positions, PC/opcode/register/CSR/state objects, and separate local sim/regr evidence windows. Local windows use the configured embedding endpoint and are reduced independently; the existing global features/summary dual embedding and deterministic scalar features remain present.
+
+Only the highest-difficulty 15% of cases in each episode receive expert evidence, with a minimum of 2 and maximum of 20 cases. Completion is called once per selected case and cached. It returns canonical evidence JSON, never a bucket. Missing trace, missing completion configuration, HTTP errors, and rate limits leave the base probability unchanged. The expert uses modality dropout and easy-pair base distillation. A learned gate is trained only from held-out training pairs; expert-unavailable pairs have gate weight exactly zero.
+
+The signed-graph clusterer merges using top-k positive logit evidence minus structured conflict penalties. Adaptive k is restricted to `[0.8k, 1.2k]`; it selects the largest standardized merge-gain cliff, falls back to reference k when no cliff is clear, and prefers more buckets on ties.
+
+Loss coefficients are fixed to classification 1.0, hard-pair ranking 0.20, transitivity 0.05, easy-pair distillation 0.30, and separately optimized gate BCE 0.20. Useful ablations are exposed through `--no-event-order`, `--no-local-embeddings`, `--expert-mode`, `--gate-mode`, `--clusterer`, and `--k-policy`.
+
+A short two-epoch set1 LODO smoke test verified the complete base/fine/signed/trace path, both 768-dimensional global embedding channels, local embeddings, GPU training, selective trace extraction, output files, and error analysis:
+
+| smoke method | set1 BA | TPR | TNR |
+|---|---:|---:|---:|
+| current base | 0.7222 | 0.7778 | 0.6667 |
+| fine-grained base | 0.7222 | 0.7778 | 0.6667 |
+| fine-grained signed graph | 0.7222 | 0.7778 | 0.6667 |
+| selective trace | 0.5278 | 0.5556 | 0.5000 |
+
+These are integration-smoke numbers, not model-selection results. In particular, the selective-trace regression confirms why expert gating and strict multi-seed LODO are required. The current no-trace calibrated blend remains the experimental best until the planned 0-4/0-9 seven-dataset run satisfies the official improvement and fake-data guardrails.
+
+Example seed-0 screening command:
+
+```bash
+export LLM_MODEL_CONFIG="$(cat /tmp/nomic_llm.yaml)"
+CUDA_VISIBLE_DEVICES=0 python run_multigranular_selective_experiments.py \
+  --output-dir /tmp/multigranular_selective_seed0 \
+  --holdouts all \
+  --seeds 0 \
+  --variants current_base fine_base fine_signed selective_trace \
+             selective_completion full full_adaptive \
+  --device cuda
+```
+
+The runner writes `results.csv`, `summary.csv`, `ablation.csv`, `difficulty_debug.csv`, `completion_debug.csv`, `trace_debug.csv`, `cluster_trajectory.csv`, `error_analysis.md`, `preds/`, and `probs/`. The formal `regr_fail_bucketing.py` predictor is unchanged and still does not read gold, meta, or trace by default.
+
+#### Pairwise Classifier Architecture Ablation (June 2026)
+
+This experiment changes only the neural classifier over the existing 294-dimensional `llm_dual_struct_det_summary_dim64` pair vector. Feature construction, half-split episodes, pair sampling, focal loss, calibrated ensemble (`alpha=0.88`, rich temperature `1.15`, ensemble temperature `1.00`), and fixed-k average agglomerative clustering remain unchanged. The formal default predictor is unchanged.
+
+Three experimental backends are available through `train_pairwise_model.py` and `run_arch_ablation.py`:
+
+- `res_mlp`: the existing residual MLP control.
+- `gated_mlp`: a feature-wise sigmoid gate followed by the same residual backbone, with gate regularization `1e-4`.
+- `ft_transformer`: one scalar-feature token per input dimension, 64-dimensional tokens, two Transformer layers, four heads, FFN multiplier two, and dropout `0.1`. GPU micro-batches use gradient accumulation so all 294 tokens are retained.
+
+Checkpoints contain the architecture name, architecture config, input dimension, feature schema, best clustering-validation BA, and `state_dict`. Scalers and LLM reducers remain in a separate preprocessing sidecar. The loader remains compatible with legacy residual/shallow/deep checkpoints. Early stopping uses mean clustering BA on the held-out half-split episodes, with focal validation loss as a tie-breaker.
+
+Seed-0 screening used eight epochs and at most 50,000 sampled pairs (17,856 pairs were available for this split):
+
+| architecture | evaluation | first BA | stage2 BA | stage3 BA | mean BA |
+|---|---|---:|---:|---:|---:|
+| res_mlp | model only | 0.9321 | 0.8473 | 0.8587 | 0.8794 |
+| gated_mlp | model only | 0.8911 | 0.8615 | 0.9030 | **0.8852** |
+| ft_transformer | model only | 0.8911 | 0.7768 | 0.8348 | 0.8342 |
+| res_mlp | calibrated blend | 0.8157 | **0.8813** | 0.8355 | **0.8442** |
+| gated_mlp | calibrated blend | 0.8064 | 0.8665 | 0.8468 | 0.8399 |
+| ft_transformer | calibrated blend | **0.8671** | 0.7896 | **0.8473** | 0.8347 |
+
+The gated model improves model-only mean BA by `+0.0058`, mainly through higher TPR on stage2/stage3, but loses `0.0411` BA on first_batch and reduces mean TNR. More importantly, under the unchanged calibrated-blend pipeline it is worse than the residual control. FT-Transformer also trails the residual control. Therefore this seed-0 screen does not justify a 0-9 expansion or a new experimental best; the existing no-trace calibrated residual blend remains recommended. The Siamese case encoder remains a TODO because introducing separate case-level towers would change the current pair-vector interface rather than isolate classifier architecture.
+
+```bash
+export LLM_MODEL_CONFIG="$(cat /tmp/nomic_llm.yaml)"
+CUDA_VISIBLE_DEVICES=5 python run_arch_ablation.py \
+  --output-dir /tmp/pairwise_arch_ablation_seed0 \
+  --seeds 0 \
+  --model-arches res_mlp gated_mlp ft_transformer \
+  --epochs 8 --max-train-pairs 50000 --batch-size 4096 --device cuda
+```
+
+##### Seven-Dataset Strict LODO Architecture Validation
+
+The classifier screen was extended to all seven labeled benchmarks using strict leave-one-dataset-out evaluation. Each held-out benchmark is used only for final clustering and scoring. Training pairs are sampled independently inside each of the other six benchmarks; no cross-dataset pairs are created. Fake labels come from `gold.csv`, while official-format and official benchmark labels come from `golden.csv`. This run uses the same 294-dimensional dual-input pair vector, focal classification, fixed reference k, and average agglomerative clustering. It does not include the historical calibrated soft-voting blend, graph refinement, trace, or completion.
+
+Seed-0 all-architecture screening:
+
+| held-out dataset | res_mlp | gated_mlp | ft_transformer |
+|---|---:|---:|---:|
+| first_batch | 0.7790 | **0.7914** | 0.7807 |
+| stage2 | 0.7473 | **0.8036** | 0.7349 |
+| stage3 | 0.7809 | **0.7985** | 0.7720 |
+| VCS official-format fake | 0.5869 | **0.7428** | 0.5883 |
+| stable official-like | 0.4880 | **0.6380** | 0.4884 |
+| official set1 | 0.7222 | **1.0000** | 0.5278 |
+| official set2 | 0.7146 | **0.9170** | 0.6850 |
+| **macro mean** | 0.6884 | **0.8130** | 0.6539 |
+
+Because gated MLP won all seven seed-0 folds, residual and gated were compared over seeds 0-2:
+
+| held-out dataset | residual BA mean±std | gated BA mean±std | gated delta | gated 3-seed probability-average BA |
+|---|---:|---:|---:|---:|
+| first_batch | 0.7737±0.0352 | 0.7589±0.0695 | -0.0148 | 0.8003 |
+| stage2 | 0.7570±0.0414 | 0.7857±0.0199 | +0.0287 | 0.7765 |
+| stage3 | 0.7371±0.0621 | 0.7638±0.0304 | +0.0268 | 0.8208 |
+| VCS official-format fake | 0.5869±0.0000 | 0.6908±0.0900 | +0.1039 | 0.7428 |
+| stable official-like | 0.5392±0.0444 | 0.5920±0.0400 | +0.0528 | 0.5648 |
+| official set1 | 0.8148±0.1604 | 1.0000±0.0000 | +0.1852 | 1.0000 |
+| official set2 | 0.7094±0.0090 | 0.7821±0.1169 | +0.0726 | 0.7146 |
+| **macro mean** | **0.7026** | **0.7676** | **+0.0650** | **0.7743** |
+
+Gated MLP generalizes better on six of seven benchmarks and raises the official set1/set2 three-seed mean from `0.7621` to `0.8910`. The exception is first_batch, and official set2 remains seed-sensitive: seed 0 reaches `0.9170`, while seeds 1-2 reach `0.7146`; naïve probability averaging does not repair that boundary. Therefore gated MLP is the leading architecture candidate for the unified LODO path, but it does not yet replace the historical no-trace calibrated residual blend. The next fair step is seeds 0-9 plus calibration learned only from training-domain inner validation, with special attention to set2 TPR stability.
+
+Raw outputs:
+
+- `/tmp/all_dataset_arch_lodo_seed0/results.csv`
+- `/tmp/all_dataset_gated_lodo_seeds1_2/results.csv`
+- `/tmp/all_dataset_residual_lodo_seeds1_2/results.csv`
+- `/tmp/all_dataset_arch_lodo_3seed_summary.csv`
+
+##### Gated MLP 0-9 Stability and Inner Calibration
+
+The strict seven-dataset LODO comparison was extended to seeds 0-9. Each fold trains on six independent benchmark episodes and evaluates the seventh; pair sampling remains dataset-local. FT-Transformer was not extended because its seed-0 macro BA (`0.6539`) was already below both residual and gated MLP.
+
+| architecture | macro BA | official set1 BA | official set2 BA | official mean | global worst seed/dataset BA |
+|---|---:|---:|---:|---:|---:|
+| residual MLP | 0.7194 | 0.8333±0.1434 | 0.7136±0.0054 | 0.7735 | 0.4880 |
+| gated MLP | **0.7581** | **0.9250±0.1646** | **0.7539±0.0836** | **0.8395** | **0.5130** |
+
+Per-dataset gated results over ten seeds:
+
+| dataset | BA mean±std | worst BA | mean TPR | mean TNR |
+|---|---:|---:|---:|---:|
+| first_batch | 0.7822±0.0581 | 0.6791 | 0.7600 | 0.8044 |
+| stage2 | 0.7806±0.0235 | 0.7414 | 0.6457 | 0.9155 |
+| stage3 | 0.7604±0.0296 | 0.7151 | 0.5810 | 0.9398 |
+| VCS official-format fake | 0.7099±0.0650 | 0.5869 | 0.6190 | 0.8008 |
+| stable official-like | 0.5946±0.0507 | 0.5130 | 0.4383 | 0.7509 |
+| official set1 | 0.9250±0.1646 | 0.5278 | 0.9333 | 0.9167 |
+| official set2 | 0.7539±0.0836 | 0.6990 | 0.6188 | 0.8891 |
+
+A ten-seed probability ensemble raises gated macro BA to `0.7813` and official mean BA to `0.8573`. It improves first to `0.8608`, VCS to `0.7428`, and keeps set1 at `1.0000`. Set2 remains `0.7146`, showing that its unstable seeds share a systematic clustering boundary rather than independent probability noise.
+
+Two no-target-leakage calibration variants were evaluated. For each target fold and seed, temperature, logit bias, residual/gated blend beta, and optionally cluster factor were selected using only OOF predictions and labels from the other six training domains. The target gold was never used for selection.
+
+| calibration | macro BA | set1 BA | set2 BA | conclusion |
+|---|---:|---:|---:|---|
+| raw gated | **0.7581** | **0.9250** | **0.7539** | current candidate |
+| inner calibrated, adaptive cluster factor | 0.7410 | 0.9167 | 0.7339 | over-selects factor 0.8 |
+| inner calibrated, fixed k | 0.7518 | 0.9250 | 0.7354 | safer, still below raw gated |
+
+Cross-domain calibration therefore does not transfer reliably enough to enable. Keep fixed reference k and raw gated probabilities for this candidate. Fold-local residual blending is also not consistently beneficial; selected beta varies substantially across seeds/domains.
+
+Pair-level error analysis explains the remaining bottlenecks. On first_batch, gated fixes 1,837 residual FP pairs but introduces 1,594 new FP pairs; it fixes 200 FN and introduces 214 FN, so the net change is a broad boundary rearrangement rather than a clean recall gain. On official set2, gated fixes 107 FN and introduces only 10 FN, while FP changes are nearly balanced (20 fixed, 24 new). Its set2 benefit is therefore primarily reduced fragmentation, but the remaining `bug_107` split is systematic across many seeds.
+
+Gated MLP is now the leading unified-LODO architecture candidate, but it does not replace the historical calibrated residual blend default. The next useful work is a validation-trained multi-seed/model selector or a targeted fragmentation objective for set2-like large bugs, not additional global temperature or k-factor sweeps.
+
+Outputs:
+
+- `/tmp/all_dataset_arch_lodo_0_9_summary.csv`
+- `/tmp/all_dataset_arch_lodo_10seed_probability_ensemble.csv`
+- `/tmp/all_dataset_inner_calibrated_0_9/`
+- `/tmp/all_dataset_inner_calibrated_fixedk_0_9/`
+- `/tmp/gated_lodo_error_analysis.md`
+
+##### Fragmentation-Targeted Objective Screen
+
+A focused follow-up tested whether static hard-positive quotas and graph-level losses can repair official set2 fragmentation while keeping the same dual-embedding Gated MLP, fixed k, and average agglomerative clustering. Hard positives are the lowest-similarity 40% of same-bug edges. Connectivity loss requires each case to retain at least top-m strong same-bug links; the prototype surrogate separates a bug's sampled positive-edge mean from its nearest sampled negative edges.
+
+Official set2 seed-0 results:
+
+| objective | BA | TPR | TNR |
+|---|---:|---:|---:|
+| baseline gated | **0.9170** | **0.9487** | 0.8852 |
+| static hard-positive quota | 0.7201 | 0.5385 | 0.9016 |
+| hard positive + connectivity | **0.9170** | **0.9487** | 0.8852 |
+| hard positive + prototype surrogate | 0.6944 | 0.4872 | 0.9016 |
+
+On previously weak seeds 1 and 5, connectivity raises mean BA only from `0.7161` to `0.7201`; TPR remains `0.5385`, so it does not repair the systematic `bug_107` split. Static low-similarity positive oversampling is too broad and severely damages recall. The next implementation should mine same-bug edges from out-of-fold low model probability and known fragmented training clusters, then apply connectivity only to those targeted bridge edges. Do not enable the current hard-positive or prototype variants.

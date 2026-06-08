@@ -1,0 +1,15 @@
+embedding:
+  model_name: text-embedding-3-small
+  config:
+    model: text-embedding-3-small
+    base_url: https://api.openai.com/v1
+    api_key_env: OPENAI_API_KEY
+
+completion:
+  model_name: gpt-4o
+  config:
+    model: gpt-4o
+    base_url: https://api.openai.com/v1
+    api_key_env: OPENAI_API_KEY
+    timeout: 120
+    max_tokens: 320
