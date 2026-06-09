@@ -13,6 +13,7 @@ import hashlib
 import json
 import os
 import re
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Sequence
@@ -77,7 +78,7 @@ def load_completion_config() -> dict | None:
     api_key_env = cfg.get("api_key_env")
     if not api_key and api_key_env:
         api_key = os.getenv(str(api_key_env), "")
-    if not model or not base_url or not api_key:
+    if not model or not base_url:
         return None
     return {
         "model": str(model),
@@ -253,11 +254,16 @@ def _parse_json(text: str, case_id: str) -> CompletionCaseFeature:
     )
 
 
+SCHEMA_VERSION = 2  # bump when prompt/schema/parsing changes
+
+
 def build_completion_case_features(
     input_csvs: Sequence[str | Path],
     cache_dir: str | Path,
     strict: bool = False,
     selected_indices: set[int] | None = None,
+    cache_ignore_errors: bool = True,
+    cache_error_ttl_sec: float = 3600.0,
 ) -> tuple[list[CompletionCaseFeature], list[dict]]:
     config = load_completion_config()
     if config is None and strict:
@@ -272,7 +278,7 @@ def build_completion_case_features(
         from openai import OpenAI
 
         client = OpenAI(
-            api_key=config["api_key"],
+            api_key=config["api_key"] or "dummy",
             base_url=config["base_url"],
             timeout=config["timeout"],
         )
@@ -308,43 +314,115 @@ def build_completion_case_features(
                 })
                 continue
             evidence = _compact_evidence(input_csv, row, fields)
+            # cache key includes model, base_url, schema_version, evidence hash
+            cache_identity = "|".join([
+                str(config["model"] if config else "missing"),
+                str(config["base_url"] if config else "missing"),
+                f"v{SCHEMA_VERSION}",
+            ])
             digest = hashlib.sha256(
-                (str(config["model"] if config else "missing") + "\n" + evidence).encode()
+                (cache_identity + "\n" + evidence).encode()
             ).hexdigest()
             cache_path = cache_root / f"{digest}.json"
             cached = False
             if cache_path.is_file():
-                raw = json.loads(cache_path.read_text(encoding="utf-8"))
-                feature = CompletionCaseFeature(**raw)
-                feature.case_id = case_id
-                cached = True
-            elif client is None:
-                feature = CompletionCaseFeature(case_id, "missing_config")
-            else:
                 try:
-                    system, user = _prompt(evidence)
-                    response = client.chat.completions.create(
-                        model=config["model"],
-                        messages=[
-                            {"role": "system", "content": system},
-                            {"role": "user", "content": user},
-                        ],
-                        temperature=0,
-                        max_tokens=config["max_tokens"],
-                    )
-                    text = response.choices[0].message.content or ""
-                    feature = _parse_json(text, case_id)
-                    if feature.status == "ok":
+                    raw = json.loads(cache_path.read_text(encoding="utf-8"))
+                    # Check TTL for error caches
+                    if raw.get("status") != "ok" and cache_ignore_errors:
+                        created = raw.get("created_at", 0)
+                        if created and (time.time() - created) < cache_error_ttl_sec:
+                            # Error cache still fresh, reuse it
+                            pass
+                        else:
+                            # Error cache expired or ignore_errors, delete and re-fetch
+                            cache_path.unlink()
+                            raw = None
+                    if raw is not None:
+                        # Load feature from cache
+                        feature = CompletionCaseFeature(
+                            case_id=case_id,
+                            status=raw.get("status", "missing"),
+                            failure_stage=raw.get("failure_stage", ""),
+                            primary_mechanism=raw.get("primary_mechanism", ""),
+                            mismatch_object=raw.get("mismatch_object", ""),
+                            dut_state=raw.get("dut_state", ""),
+                            state_transition=raw.get("state_transition", ""),
+                            trigger=raw.get("trigger", ""),
+                            candidate_explanations=tuple(raw.get("candidate_explanations", ())),
+                            evidence_tags=tuple(raw.get("evidence_tags", ())),
+                            conflict_tags=tuple(raw.get("conflict_tags", ())),
+                            confidence=float(raw.get("confidence", 0.0)),
+                            rationale=str(raw.get("rationale", "")),
+                        )
+                        cached = True
+                except (json.JSONDecodeError, OSError, TypeError) as exc:
+                    print(f"[completion] cache read error for {case_id}: {exc}", file=sys.stderr)
+                    cache_path.unlink(missing_ok=True)
+            if not cached:
+                if client is None:
+                    feature = CompletionCaseFeature(case_id, "missing_config")
+                else:
+                    try:
+                        system, user = _prompt(evidence)
+                        response = client.chat.completions.create(
+                            model=config["model"],
+                            messages=[
+                                {"role": "system", "content": system},
+                                {"role": "user", "content": user},
+                            ],
+                            temperature=0,
+                            max_tokens=config["max_tokens"],
+                        )
+                        text = response.choices[0].message.content or ""
+                        feature = _parse_json(text, case_id)
+                        # Always cache, including errors (with TTL)
+                        cache_data = {
+                            "case_id": case_id,
+                            "status": feature.status,
+                            "failure_stage": feature.failure_stage,
+                            "primary_mechanism": feature.primary_mechanism,
+                            "mismatch_object": feature.mismatch_object,
+                            "dut_state": feature.dut_state,
+                            "state_transition": feature.state_transition,
+                            "trigger": feature.trigger,
+                            "candidate_explanations": list(feature.candidate_explanations),
+                            "evidence_tags": list(feature.evidence_tags),
+                            "conflict_tags": list(feature.conflict_tags),
+                            "confidence": feature.confidence,
+                            "rationale": feature.rationale,
+                            "raw_response": text[:500],
+                            "created_at": time.time(),
+                            "schema_version": SCHEMA_VERSION,
+                            "model": config["model"],
+                        }
                         cache_path.write_text(
-                            json.dumps(feature.__dict__, indent=2) + "\n",
+                            json.dumps(cache_data, indent=2, ensure_ascii=False) + "\n",
                             encoding="utf-8",
                         )
-                except Exception as exc:
-                    if strict:
-                        raise
-                    feature = CompletionCaseFeature(
-                        case_id, f"request_error:{type(exc).__name__}"
-                    )
+                    except Exception as exc:
+                        if strict:
+                            raise
+                        feature = CompletionCaseFeature(
+                            case_id, f"request_error:{type(exc).__name__}"
+                        )
+                        # Cache error too (with short TTL)
+                        cache_data = {
+                            "case_id": case_id,
+                            "status": feature.status,
+                            "error_type": type(exc).__name__,
+                            "error_message": str(exc)[:500],
+                            "created_at": time.time(),
+                            "schema_version": SCHEMA_VERSION,
+                            "model": config["model"] if config else "unknown",
+                        }
+                        try:
+                            cache_path.write_text(
+                                json.dumps(cache_data, indent=2, ensure_ascii=False) + "\n",
+                                encoding="utf-8",
+                            )
+                        except OSError:
+                            pass
             features.append(feature)
             debug.append({
                 "input_csv": str(input_csv),

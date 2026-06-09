@@ -1951,6 +1951,230 @@ def run_pairwise_mlp_backend(args: argparse.Namespace, input_csv: Path, effectiv
     return labels, bundle.template_count, prob.shape, selected_k
 
 
+# ── Completion-based cluster merging ──────────────────────────────────────
+
+def _load_completion_config() -> dict | None:
+    """Read completion config from LLM_MODEL_CONFIG."""
+    raw = os.getenv("LLM_MODEL_CONFIG", "").strip()
+    if not raw:
+        return None
+    try:
+        import yaml
+        data = yaml.safe_load(raw)
+    except Exception:
+        return None
+    if not isinstance(data, dict):
+        return None
+    section = data.get("completion") or data.get("chat")
+    if not isinstance(section, dict):
+        return None
+    cfg = section.get("config") if isinstance(section.get("config"), dict) else section
+    model = section.get("model_name") or cfg.get("model")
+    base_url = cfg.get("base_url")
+    api_key = cfg.get("api_key")
+    api_key_env = cfg.get("api_key_env")
+    if not api_key and api_key_env:
+        api_key = os.getenv(str(api_key_env), "")
+    if not model or not base_url:
+        return None
+    return {
+        "model": str(model), "base_url": str(base_url),
+        "api_key": str(api_key or "dummy"),
+        "timeout": float(cfg.get("timeout", 30.0)),
+        "max_tokens": int(cfg.get("max_tokens", 320)),
+    }
+
+
+def _completion_hash(model: str, prompt: str) -> str:
+    return hashlib.sha256(f"{model}|v2|{prompt}".encode()).hexdigest()[:16]
+
+
+def _completion_prompt(case_info: dict) -> str:
+    """Build compact completion prompt from one case's structured info."""
+    parts = []
+    for key in ("primary_signature", "primary_type", "mismatch_type", "op_pair",
+                "failed_reason", "fatal_file"):
+        val = case_info.get(key, "")
+        if val:
+            parts.append(f"{key}: {val}")
+    return (
+        "Analyze this RISC-V CPU regression failure. "
+        "Return JSON: {\"mechanism\":\"...\",\"trigger\":\"...\","
+        "\"confidence\":\"low|medium|high\","
+        "\"evidence_tags\":[],\"conflict_tags\":[]}\n\n"
+        + "\n".join(parts[:8])
+    )
+
+
+def _parse_completion_json(text: str) -> dict:
+    """Extract minimal JSON from completion response."""
+    m = re.search(r"\{[\s\S]*\}", str(text))
+    if not m:
+        return {}
+    try:
+        return json.loads(m.group(0))
+    except (json.JSONDecodeError, ValueError):
+        return {}
+
+
+def _completion_cache_path(cache_dir: Path, cache_key: str) -> Path:
+    return cache_dir / f"{cache_key}.json"
+
+
+def _call_completions(
+    prompts: list[tuple[int, str]],  # (cluster_id, prompt)
+    config: dict,
+    cache_dir: Path,
+    runtime_budget_sec: float,
+) -> dict[int, dict]:
+    """Call completion LLM for selected cluster representatives.
+    Returns {cluster_id: parsed_json}.
+    """
+    from openai import OpenAI
+    client = OpenAI(api_key=config["api_key"], base_url=config["base_url"],
+                    timeout=min(config["timeout"], runtime_budget_sec))
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    results: dict[int, dict] = {}
+
+    for cluster_id, prompt in prompts:
+        cache_key = _completion_hash(config["model"], prompt)
+        cache_path = _completion_cache_path(cache_dir, cache_key)
+        if cache_path.is_file():
+            try:
+                results[cluster_id] = json.loads(cache_path.read_text())
+                continue
+            except (json.JSONDecodeError, OSError):
+                pass
+        try:
+            resp = client.chat.completions.create(
+                model=config["model"],
+                messages=[{"role": "user", "content": prompt}],
+                temperature=0, max_tokens=config["max_tokens"],
+            )
+            text = resp.choices[0].message.content or ""
+            parsed = _parse_completion_json(text)
+            parsed["_raw"] = text[:200]
+            parsed["_status"] = "ok"
+        except Exception as exc:
+            parsed = {"_status": f"error:{type(exc).__name__}", "_error": str(exc)[:200]}
+        cache_path.write_text(json.dumps(parsed, ensure_ascii=False))
+        results[cluster_id] = parsed
+
+    return results
+
+
+def refine_labels_with_completion(
+    labels: list[int],
+    case_infos: list[dict],
+    n_cases: int,
+    k: int,
+    runtime_elapsed: float,
+    runtime_limit: float = 30.0,
+    completion_cache_dir: Path = Path("/tmp/regr_fail_completion_cache"),
+) -> list[int]:
+    """Post-process cluster labels using selective completion LLM calls.
+
+    Strategy: pick one representative case per cluster, call completion,
+    then merge clusters whose representatives share the same failure
+    mechanism and trigger. Time-budget aware with graceful fallback.
+    """
+    import numpy as np
+
+    # Time budget check
+    remaining = runtime_limit - runtime_elapsed
+    if remaining < 10:
+        info("[completion] insufficient time budget, skipping refinement")
+        return labels
+
+    config = _load_completion_config()
+    if config is None:
+        info("[completion] no valid completion config, skipping")
+        return labels
+
+    # Pick one representative per cluster (case closest to centroid would be ideal,
+    # but here we use the case with the most informative structured info)
+    cluster_to_idx: dict[int, int] = {}
+    for label in set(labels):
+        members = [i for i, l in enumerate(labels) if l == label]
+        if not members:
+            continue
+        # Pick member with richest info
+        best = max(members, key=lambda i: sum(
+            1 for k in ("primary_type", "mismatch_type", "op_pair", "failed_reason")
+            if case_infos[i].get(k, "")
+        ) if i < len(case_infos) else 0)
+        cluster_to_idx[label] = best
+
+    n_clusters = len(cluster_to_idx)
+    # Limit reps: max 5 for >30 cases, all for ≤30 cases
+    max_rep_calls = n_clusters if n_cases <= 30 else min(5, n_clusters)
+    if max_rep_calls < n_clusters:
+        # Pick clusters with fewest members first (small fragments need most help)
+        cluster_sizes = {l: sum(1 for x in labels if x == l) for l in cluster_to_idx}
+        sorted_clusters = sorted(cluster_to_idx.keys(), key=lambda l: cluster_sizes.get(l, 999))
+        selected_clusters = sorted_clusters[:max_rep_calls]
+    else:
+        selected_clusters = list(cluster_to_idx.keys())
+
+    info(f"[completion] calling {len(selected_clusters)}/{n_clusters} cluster reps (budget={remaining:.0f}s)")
+
+    # Build prompts
+    prompts = [(label, _completion_prompt(
+        case_infos[cluster_to_idx[label]] if cluster_to_idx[label] < len(case_infos) else {}
+    )) for label in selected_clusters]
+
+    # Time budget per call: each call needs ~30s minimum
+    per_call_budget = min(config["timeout"], max(20, (remaining - 5) / max(1, len(prompts))))
+    config["timeout"] = per_call_budget
+
+    # Call completions (sequential for simplicity)
+    try:
+        results = _call_completions(prompts, config, completion_cache_dir, remaining - 5)
+    except Exception as exc:
+        info(f"[completion] API calls failed ({exc}), returning base labels")
+        return labels
+
+    ok_count = sum(1 for v in results.values() if v.get("_status") == "ok")
+    info(f"[completion] {ok_count}/{len(results)} cluster reps OK")
+
+    if ok_count == 0:
+        return labels
+
+    # Build cluster signatures from completion results
+    cluster_sig: dict[int, tuple[str, str]] = {}
+    for label, data in results.items():
+        mech = str(data.get("mechanism", "") or "").strip().lower()
+        trig = str(data.get("trigger", "") or "").strip().lower()
+        if mech or trig:
+            cluster_sig[label] = (mech, trig)
+
+    if len(cluster_sig) < 2:
+        return labels
+
+    # Merge clusters with same (mechanism, trigger)
+    merge_map: dict[int, int] = {}
+    seen_sigs: dict[tuple[str, str], int] = {}
+
+    for label in sorted(cluster_sig.keys()):
+        sig = cluster_sig[label]
+        if sig in seen_sigs and sig != ("unknown", "unknown"):
+            merge_map[label] = seen_sigs[sig]
+        else:
+            seen_sigs[sig] = label
+
+    if merge_map:
+        info(f"[completion] merging {len(merge_map)} clusters: {dict(merge_map)}")
+        new_labels = []
+        for l in labels:
+            new_labels.append(merge_map.get(l, l))
+        # Compact label IDs
+        unique = sorted(set(new_labels))
+        remap = {old: new for new, old in enumerate(unique)}
+        return [remap[l] for l in new_labels]
+
+    return labels
+
+
 def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Bucket Ibex regression failures.")
     parser.add_argument("--input", required=True, type=Path, help="Input CSV containing log paths.")
@@ -2043,6 +2267,10 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser.add_argument("--llm-alpha", type=float, default=0.75, help="deterministic similarity weight for --llm-fusion similarity")
     parser.add_argument("--llm-doc-style", choices=("features", "summary"), default="features")
     parser.add_argument("--strict-llm", action="store_true", help="fail instead of fallback when LLM embedding fails")
+    parser.add_argument("--completion", choices=("none", "selective"), default="none",
+                        help="Post-cluster refinement via completion LLM")
+    parser.add_argument("--completion-cache-dir", type=Path,
+                        default=Path("/tmp/regr_fail_completion_cache"))
     return parser.parse_args(argv)
 
 
@@ -2167,10 +2395,74 @@ def main(argv: Sequence[str] | None = None) -> int:
         pre_reduced=pre_reduced,
     )
     labels = remap_labels(labels)
+
+    # Completion-based cluster refinement
+    if args.completion == "selective":
+        try:
+            # Collect structured info for each case from sim/regr logs
+            case_infos: list[dict] = _collect_case_infos_for_completion(
+                input_csv, rows, sim_col, regr_col)
+            runtime_limit = _benchmark_runtime_limit(len(rows))
+            refined = refine_labels_with_completion(
+                labels, case_infos, len(rows), effective_k,
+                runtime_elapsed=time.perf_counter() - start,
+                runtime_limit=runtime_limit,
+                completion_cache_dir=args.completion_cache_dir,
+            )
+            if len(set(refined)) != len(set(labels)):
+                info(f"[completion] clusters changed: {len(set(labels))} → {len(set(refined))}")
+            labels = refined
+        except Exception as exc:
+            info(f"[completion] refinement failed ({exc}), keeping base labels")
+
     write_output(args.output.resolve(), labels, output_cases)
-    # TODO: add split_mixed post-processing for large mixed clusters.
     info(f"[output] buckets={len(set(labels))} path={args.output.resolve()} runtime_sec={time.perf_counter() - start:.3f}")
     return 0
+
+
+def _benchmark_runtime_limit(n_cases: int) -> float:
+    """Return runtime limit in seconds based on benchmark size (from Section 3.2)."""
+    if n_cases <= 30:
+        return 30.0
+    if n_cases <= 300:
+        return 100.0
+    return 300.0
+
+
+def _collect_case_infos_for_completion(
+    input_csv: Path, rows: list[dict], sim_col: str | None, regr_col: str | None,
+) -> list[dict]:
+    """Collect minimal structured info per case for completion prompts.
+    Re-reads sim/regr log snippets for each case (only error lines).
+    """
+    from pairwise_llm_features import _extract_rich_case_info
+    infos: list[dict] = []
+    for row in rows:
+        info: dict = {}
+        for prefix, col in (("sim", sim_col), ("regr", regr_col)):
+            if not col:
+                continue
+            path = resolve_log_path(input_csv, row.get(col))
+            text, _ = read_log_sample(path)
+            lines = select_lines(text)
+            # Keep only error/mismatch/fatal lines
+            error_lines = [l for l in lines if re.search(
+                r"fatal|error|failed|mismatch|timeout|interrupt|irq|debug|exception|illegal",
+                l, re.IGNORECASE)]
+            if not error_lines:
+                error_lines = lines[-15:]  # fallback to last 15 lines
+            if error_lines:
+                info[f"{prefix}_errors"] = error_lines[:5]
+        # Extract structured info
+        sim_lines = info.get("sim_errors", [])
+        regr_lines = info.get("regr_errors", [])
+        primary_tokens = extract_primary_signature(
+            {"path": "", "status": "ok"}, {"path": "", "status": "ok"},
+            sim_lines, regr_lines,
+        )
+        rich = _extract_rich_case_info(sim_lines, regr_lines, primary_tokens)
+        infos.append(rich)
+    return infos
 
 
 if __name__ == "__main__":
