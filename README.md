@@ -2155,3 +2155,48 @@ Five mitigation strategies were implemented and tested:
 - `/tmp/oof_bridge_set2/bridge_instability_report.md` — root-cause analysis
 - `/tmp/oof_bridge_stable/` — stabilization experiment (quality, budget, hardest variants)
 - `/tmp/oof_bridge_set2/oof_cache/` — cached OOF predictions (reusable)
+
+##### Trace Structured Features (Route A)
+
+Implemented lightweight deterministic trace features injected as extra pairwise feature blocks into the existing Gated MLP. No transformer, no LLM, no new backbone.
+
+**Approach:** Parse RISC-V trace.log files into structured summaries, then derive pairwise features:
+- **Tail features** (20 dims): opcode histogram cosine, PC region jaccard, load/store/branch ratios, tight loop detection, exception markers
+- **Anchor features** (16 dims): opcode/PC context around mismatch location, branch/CSR patterns
+- **Sequence stats** (16 dims): opcode/PC entropy, load-store ratio, compressed ratio, CSR density, loop density
+- **Combined tail_anchor** (36 dims) added to the existing 294-dim dual-embedding pair vector → 338-dim input
+
+**Implementation files:**
+
+| File | Purpose |
+|------|---------|
+| `trace_structured_features.py` | RISC-V trace parser, summary extraction, pairwise feature builders |
+| `pairwise_llm_features.py` | Added `FEATURE_MODE=llm_dual_struct_det_summary_trace_struct` (338 dims) |
+| `run_trace_completion_experiments.py` | Experiment runner for trace ablation |
+
+**Experiment results (set2/stable/VCS, seeds 0/1/2):**
+
+| dataset | mode | mean BA | std | worst | best | TPR | TNR |
+|---------|------|:---:|:---:|:---:|:---:|:---:|:---:|
+| set2 | none | **0.7504** | 0.137 | 0.666 | 0.908 | 0.641 | 0.860 |
+| set2 | trace | 0.6698 | 0.025 | 0.655 | 0.699 | 0.507 | 0.832 |
+| VCS | none | 0.6389 | 0.090 | 0.587 | 0.743 | 0.575 | 0.703 |
+| VCS | trace | **0.6908** | 0.090 | 0.587 | 0.743 | 0.608 | 0.773 |
+| stable | none | 0.5525 | 0.022 | 0.527 | 0.566 | 0.361 | 0.744 |
+| stable | trace | **0.5870** | 0.096 | 0.504 | 0.693 | 0.544 | 0.630 |
+
+**Key findings:**
+
+1. **Trace features are dataset-dependent**: VCS benefits (+5.2% mean BA, +7.0% TNR), stable marginally benefits (+3.5% mean BA), but **set2 is hurt** (-8.1% mean BA).
+2. **Trace features are destabilizing**: On set2 seed 2, trace collapses BA from 0.908→0.655. On stable, worst BA drops from 0.527→0.504.
+3. **VCS benefits most from trace**: VCS has hardware-level CSR/trap failures where trace behavioral signals (CSR density, exception markers) provide discriminative information beyond sim/regr logs.
+4. **set2 regresses with trace**: set2 bugs are primarily logic/debug mismatches where trace behavior is similar across cases; the 36 extra trace dims introduce noise that masks the stronger sim/regr signals.
+5. **Variance increases**: Trace features amplify seed-to-seed variance on stable (std 0.022→0.096).
+6. **No completion LLM available**: Only an embedding endpoint (nomic-embed-text-v1.5 at port 8001). No completion-capable endpoint was found. Route B (completion JSON) and Route C (trace+completion fusion) are blocked.
+
+**Verdict: Do not enable trace features by default.** Trace is beneficial only for VCS-like hardware-level datasets. For set2 (the primary fragmentation target), trace features are harmful. If selectively enabled, a dataset-aware gate or feature selection mechanism would be needed.
+
+**Outputs:**
+
+- `/tmp/trace_struct_exp/results.csv` — full trace ablation results
+- `/tmp/trace_struct_exp/summary.csv` — per-dataset per-mode summary

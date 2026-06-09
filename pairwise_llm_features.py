@@ -42,6 +42,7 @@ class LLMCaseFeature:
     sim_tokens: set[str]
     regr_tokens: set[str]
     info: dict
+    trace_structured: Any = None   # TraceStructuredSummary | None (must be after all non-defaults)
 
     @property
     def has_llm(self) -> bool:
@@ -417,6 +418,7 @@ def build_llm_case_features_for_inputs(
                 sim_tokens=det_feat.sim_tokens,
                 regr_tokens=det_feat.regr_tokens,
                 info=info,
+                trace_structured=None,
             )
         )
     return result, bundle
@@ -764,6 +766,7 @@ FEATURE_MODES = {
     "llm_dual_struct_det_summary",
     "llm_dual_struct_det_summary_cross",
     "llm_dual_struct_det_summary_trace",
+    "llm_dual_struct_det_summary_trace_struct",
 }
 DUAL_FEATURE_MODES = {
     "llm_dual",
@@ -771,6 +774,7 @@ DUAL_FEATURE_MODES = {
     "llm_dual_struct_det_summary",
     "llm_dual_struct_det_summary_cross",
     "llm_dual_struct_det_summary_trace",
+    "llm_dual_struct_det_summary_trace_struct",
 }
 
 
@@ -959,15 +963,22 @@ def build_dual_pair_feature_vector(
         _relation_block(a.effective_llm_summary_vec, b.effective_llm_summary_vec),
         _dual_scalar_features(a, b),
     ]
-    if feature_mode in {"llm_dual_struct", "llm_dual_struct_det_summary", "llm_dual_struct_det_summary_cross", "llm_dual_struct_det_summary_trace"}:
+    if feature_mode in {"llm_dual_struct", "llm_dual_struct_det_summary", "llm_dual_struct_det_summary_cross", "llm_dual_struct_det_summary_trace", "llm_dual_struct_det_summary_trace_struct"}:
         blocks.append(build_structured_pair_feature_vector(a, b))
-    if feature_mode in {"llm_dual_struct_det_summary", "llm_dual_struct_det_summary_cross", "llm_dual_struct_det_summary_trace"}:
+    if feature_mode in {"llm_dual_struct_det_summary", "llm_dual_struct_det_summary_cross", "llm_dual_struct_det_summary_trace", "llm_dual_struct_det_summary_trace_struct"}:
         blocks.append(build_det_scalar_summary_vector(a, b))
     if feature_mode == "llm_dual_struct_det_summary_cross":
         blocks.append(build_dual_cross_scalar_features(a, b))
     if feature_mode == "llm_dual_struct_det_summary_trace":
         blocks.append(_relation_block(a.effective_trace_vec, b.effective_trace_vec))
         blocks.append(_trace_scalars(a, b))
+    if feature_mode == "llm_dual_struct_det_summary_trace_struct":
+        from trace_structured_features import build_trace_structured_pair_features
+        blocks.append(_relation_block(a.effective_trace_vec, b.effective_trace_vec))
+        blocks.append(_trace_scalars(a, b))
+        blocks.append(build_trace_structured_pair_features(
+            a.trace_structured, b.trace_structured, trace_mode="tail_anchor",
+        ))
     return np.concatenate(blocks).astype(np.float32, copy=False)
 
 

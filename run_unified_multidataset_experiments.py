@@ -650,8 +650,9 @@ def predict_probability(
     import torch
 
     pairs = [(i, j) for i in range(len(features)) for j in range(i + 1, len(features))]
+    feature_mode = model_pkg.get("feature_mode", "llm_dual_struct_det_summary")
     X = plf.build_rich_pair_feature_matrix(
-        features, pairs, feature_mode="llm_dual_struct_det_summary"
+        features, pairs, feature_mode=feature_mode
     )
     X = model_pkg["scaler"].transform(X).astype(np.float32)
     model = model_pkg["model"]
