@@ -2080,3 +2080,78 @@ Official set2 seed-0 results:
 | hard positive + prototype surrogate | 0.6944 | 0.4872 | 0.9016 |
 
 On previously weak seeds 1 and 5, connectivity raises mean BA only from `0.7161` to `0.7201`; TPR remains `0.5385`, so it does not repair the systematic `bug_107` split. Static low-similarity positive oversampling is too broad and severely damages recall. The next implementation should mine same-bug edges from out-of-fold low model probability and known fragmented training clusters, then apply connectivity only to those targeted bridge edges. Do not enable the current hard-positive or prototype variants.
+
+##### OOF Model-Aware Bridge-Edge Mining
+
+Replaced static hard-positive mining with **dataset-aware out-of-fold (OOF) bridge-edge mining**. The idea: use an OOF model to identify which same-bug pairs the model actually splits (bridge edges), then apply a light auxiliary BCE loss to reunite them during final training.
+
+**Core concepts:**
+
+- **OOF prediction**: Leave-one-training-dataset-out. For each training dataset `d`, train on the other 5 datasets, predict pair probabilities on `d`, and cluster to get OOF predicted labels.
+- **Bridge edge**: A same-bug pair `(i,j)` where the OOF model splits cases `i` and `j` into different fragments and assigns low `P_oof(i,j)`. These are the fragmentation frontiers the model itself identifies.
+- **Bridge loss**: Auxiliary BCE with target=1 applied to bridge edge pairs during final training. Total loss = `focal_loss + bridge_weight * bridge_loss`.
+
+**Implementation files:**
+
+| File | Purpose |
+|------|---------|
+| `oof_bridge_mining.py` | `mine_oof_bridge_edges()`, `bridge_quality_score()`, `fragmentation_rows()` |
+| `run_oof_bridge_experiments.py` | Full experimental pipeline: OOF generation, bridge mining, training, evaluation |
+| `analyze_bridge_instability.py` | Root-cause analysis comparing good vs catastrophic seeds |
+
+**Baseline bridge experiment (set2, seeds 0/1/5):**
+
+| Config | Mean BA | Std | Worst BA | TPR | TNR | bug_107 fragments |
+|--------|:---:|:---:|:---:|:---:|:---:|:---:|
+| raw gated | 0.6989 | 0.026 | 0.6620 | 0.527 | 0.871 | 2 |
+| bridge w=0.3 | **0.8265** | 0.116 | 0.6623 | 0.801 | 0.853 | →1 (2/3 seeds) |
+
+Bridge w=0.3 fixes bug_107 fragmentation on seeds 0 and 5 (BA ~0.91), but seed 1 remains catastrophic (BA 0.662→0.633, bug_107 goes from 2→3 fragments). Mean BA is high but worst-seed BA disqualifies it from mainline consideration.
+
+**Root-cause analysis** (`/tmp/oof_bridge_set2/bridge_instability_report.md`):
+
+The instability is caused by OOF model quality variance across seeds:
+
+| Metric | seed 0 (good) | seed 1 (bad) | seed 5 (good) |
+|--------|:---:|:---:|:---:|
+| Raw gated BA (set2) | 0.720 | 0.662 | 0.715 |
+| stage3 OOF BA | **0.823** | **0.754** | 0.840 |
+| stable OOF BA | 0.648 | **0.501** | 0.517 |
+| Mined bridge edges | 424 | 511 | 339 |
+
+Seed 1's OOF model quality is systematically worse across training datasets. Worse OOF → more false fragments → more (+noisier) bridge edges → collateral damage. Seed 1's bridges have 87 additional edges (511 vs 424) concentrated in bugs that weren't fragmented in better seeds.
+
+**Stabilization attempts (all failed on seed 1):**
+
+Five mitigation strategies were implemented and tested:
+
+| Strategy | CLI flags | Effect on seed 1 |
+|----------|-----------|:---:|
+| Quality-weighted bridge loss | `--bridge-quality-weighted` | BA 0.662→0.633 ✗ |
+| Budget cap (150 edges) | `--bridge-max-edges-total 150` | BA 0.662→0.633 ✗ |
+| Quality + budget combined | both | BA 0.662→0.625 ✗ |
+| Hardest fragments only | `--bridge-hardest-fragments` | BA 0.662→0.633 ✗ |
+| Quality w=0.2 + budget=150 | combined | **Seed 0/5 BA ~0.91**, but seed 1 still 0.625 |
+
+`bridge_quality_score()` combines OOF confidence, signal agreement (primary_type, mismatch_type), primary_signature match, conflict penalty, fragment size, and OOF reliability into a 0~1 weight. On good seeds, quality-weighted bridge modestly improves over uniform (seed 5: 0.917 vs 0.910). However, no filtering strategy can rescue seed 1 because the underlying OOF predictions are too noisy.
+
+**Key findings:**
+
+1. Bridge edge mining **works extremely well when OOF quality is sufficient** — seeds 0 and 5 achieve BA ~0.91 with bug_107 fully repaired.
+2. Bridge edge mining **catastrophically fails when OOF quality is poor** — seed 1's TNR collapses from 0.820 to 0.771.
+3. **Quality scoring, budget capping, and hardest-fragment filtering do not fix the instability.** The root cause is OOF model quality, not bridge edge selection.
+4. **Budget alone is dangerous** — capping edges without quality guidance loses critical bridges (seed 5: 0.910→0.700 with budget=150 alone).
+5. **Quality + budget is the best combo** on good seeds — matches full-bridge BA with 20% fewer edges.
+
+**Verdict: Do not promote bridge loss to mainline.** The catastrophic seed instability violates the "worst BA must improve" criterion. Bridge loss should remain experimental. The correct path forward, if bridge is pursued, requires:
+
+- **OOF quality gate**: skip bridge mining when per-dataset OOF BA < 0.70
+- **Multi-seed OOF ensemble**: average OOF predictions across seeds to reduce noise
+- **Per-bug OOF check**: don't bridge bugs with >4 OOF fragments (OOF too unreliable for that bug)
+
+**Outputs:**
+
+- `/tmp/oof_bridge_set2/` — baseline bridge experiment (seeds 0/1/5, set2)
+- `/tmp/oof_bridge_set2/bridge_instability_report.md` — root-cause analysis
+- `/tmp/oof_bridge_stable/` — stabilization experiment (quality, budget, hardest variants)
+- `/tmp/oof_bridge_set2/oof_cache/` — cached OOF predictions (reusable)

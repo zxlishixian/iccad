@@ -159,9 +159,18 @@ def oof_predictions_for_outer_train(
 def mine_strategy_edges(
     oof: dict[str, dict], args: argparse.Namespace,
     bridge_select: str, conflict_filter: bool,
+    quality_weighted: bool = False,
+    quality_min: float = 0.2,
+    top_quality_ratio: float | None = None,
+    max_edges_total: int | None = None,
+    hardest_fragments_only: bool = False,
 ) -> dict[str, list[BridgeEdge]]:
     result: dict[str, list[BridgeEdge]] = {}
     for dataset_key, data in oof.items():
+        # Compute OOF BA for quality scoring
+        from run_experiments import pairwise_scores
+        pred_buckets = [f"bucket_{l:03d}" for l in data["pred"]]
+        oof_ba, _, _ = pairwise_scores(data["gold"], pred_buckets)
         result[dataset_key] = mine_oof_bridge_edges(
             data["cases"], data["gold"], data["prob"], data["pred"], data["infos"],
             bridge_select=bridge_select,
@@ -170,19 +179,27 @@ def mine_strategy_edges(
             max_edges_per_bug=args.max_edges_per_bug,
             max_edges_per_fragment_pair=args.max_edges_per_fragment_pair,
             conflict_filter=conflict_filter,
+            quality_weighted=quality_weighted,
+            quality_min=quality_min,
+            top_quality_ratio=top_quality_ratio,
+            max_edges_total=max_edges_total,
+            hardest_fragments_only=hardest_fragments_only,
+            oof_ba=oof_ba,
         )
     return result
 
 
 def bridge_pairs_for_final_slices(
     train_slices: Sequence[unified.DatasetSlice], edge_map: dict[str, list[BridgeEdge]],
-) -> tuple[list[tuple[int, int]], list[dict]]:
+) -> tuple[list[tuple[int, int]], list[float], list[dict]]:
     pairs: list[tuple[int, int]] = []
+    weights: list[float] = []
     rows: list[dict] = []
     for dataset_slice in train_slices:
         key = str(dataset_slice.path.resolve())
         for edge in edge_map.get(key, []):
             pairs.append((dataset_slice.start + edge.i, dataset_slice.start + edge.j))
+            weights.append(float(edge.weight))
             rows.append({
                 "dataset": dataset_slice.name,
                 "case_i": dataset_slice.cases[edge.i],
@@ -192,8 +209,9 @@ def bridge_pairs_for_final_slices(
                 "fragment_j": edge.fragment_j,
                 "oof_probability": edge.oof_probability,
                 "weight": edge.weight,
+                "quality": edge.quality,
             })
-    return pairs, rows
+    return pairs, weights, rows
 
 
 def save_model(
@@ -218,11 +236,43 @@ def save_model(
 
 
 def strategy_specs(args: argparse.Namespace) -> list[dict]:
-    specs = [{"name": "raw_gated", "weight": 0.0, "select": "none", "conflict": False}]
+    specs = [{"name": "raw_gated", "weight": 0.0, "select": "none", "conflict": False,
+              "quality_weighted": False, "quality_min": 0.2, "top_quality_ratio": None,
+              "max_edges_total": None, "hardest_fragments_only": False}]
+    # Baseline bridge configs
     for weight in args.bridge_weights:
-        specs.append({"name": f"bridge_abs_w{weight:g}", "weight": weight, "select": "abs_threshold", "conflict": False})
-    specs.append({"name": "bridge_quantile_w0.2", "weight": 0.2, "select": "bug_quantile", "conflict": False})
-    specs.append({"name": "bridge_abs_w0.2_conflict", "weight": 0.2, "select": "abs_threshold", "conflict": True})
+        specs.append({"name": f"bridge_abs_w{weight:g}", "weight": weight, "select": "abs_threshold",
+                      "conflict": False, "quality_weighted": False, "quality_min": 0.2,
+                      "top_quality_ratio": None, "max_edges_total": None,
+                      "hardest_fragments_only": False})
+    # Quality-weighted bridge
+    if args.bridge_quality_weighted:
+        specs.append({"name": "bridge_quality_w0.2", "weight": 0.2, "select": "abs_threshold",
+                      "conflict": False, "quality_weighted": True, "quality_min": args.bridge_quality_min,
+                      "top_quality_ratio": None, "max_edges_total": None,
+                      "hardest_fragments_only": False})
+    # Low-budget bridge
+    if args.bridge_max_edges_total:
+        for budget in args.bridge_max_edges_total:
+            specs.append({"name": f"bridge_budget{int(budget)}_w0.2", "weight": 0.2,
+                          "select": "abs_threshold", "conflict": False, "quality_weighted": False,
+                          "quality_min": 0.2, "top_quality_ratio": None,
+                          "max_edges_total": int(budget), "hardest_fragments_only": False})
+    # Quality + low-budget
+    if args.bridge_quality_weighted and args.bridge_max_edges_total:
+        for budget in args.bridge_max_edges_total:
+            specs.append({"name": f"bridge_quality_budget{int(budget)}_w0.2", "weight": 0.2,
+                          "select": "abs_threshold", "conflict": False,
+                          "quality_weighted": True, "quality_min": args.bridge_quality_min,
+                          "top_quality_ratio": None, "max_edges_total": int(budget),
+                          "hardest_fragments_only": False})
+    # Hardest fragments only
+    if args.bridge_hardest_fragments:
+        specs.append({"name": "bridge_hardest_w0.2", "weight": 0.2, "select": "abs_threshold",
+                      "conflict": False, "quality_weighted": False, "quality_min": 0.2,
+                      "top_quality_ratio": None, "max_edges_total": None,
+                      "hardest_fragments_only": True})
+    # Deduplicate
     seen = set()
     unique = []
     for spec in specs:
@@ -235,10 +285,25 @@ def run_outer_fold(args: argparse.Namespace, target: Path, seed: int) -> tuple[l
     started = time.perf_counter()
     outer_train = [dataset for dataset in args.datasets if dataset != target]
     oof = oof_predictions_for_outer_train(outer_train, args, seed)
-    edge_maps = {
-        (select, conflict): mine_strategy_edges(oof, args, select, conflict)
-        for select, conflict in (("abs_threshold", False), ("bug_quantile", False), ("abs_threshold", True))
-    }
+
+    # Cache edge maps by (select, conflict, quality_weighted, hardest, max_total)
+    edge_map_cache: dict[tuple, dict[str, list[BridgeEdge]]] = {}
+
+    def get_edges(select: str, conflict: bool, quality_weighted: bool,
+                  quality_min: float, top_quality_ratio: float | None,
+                  max_edges_total: int | None, hardest_fragments_only: bool) -> dict[str, list[BridgeEdge]]:
+        cache_key = (select, conflict, quality_weighted, quality_min,
+                     top_quality_ratio, max_edges_total, hardest_fragments_only)
+        if cache_key not in edge_map_cache:
+            edge_map_cache[cache_key] = mine_strategy_edges(
+                oof, args, select, conflict,
+                quality_weighted=quality_weighted, quality_min=quality_min,
+                top_quality_ratio=top_quality_ratio,
+                max_edges_total=max_edges_total,
+                hardest_fragments_only=hardest_fragments_only,
+            )
+        return edge_map_cache[cache_key]
+
     train_features, test_features, train_slices, test_slice, llm_reducer, summary_reducer = prepare_fold_features(
         outer_train, target, args, seed
     )
@@ -254,10 +319,16 @@ def run_outer_fold(args: argparse.Namespace, target: Path, seed: int) -> tuple[l
     for spec in strategy_specs(args):
         config_started = time.perf_counter()
         if spec["select"] == "none":
-            bridge_pairs, bridge_rows = [], []
+            bridge_pairs, bridge_weights, bridge_rows = [], [], []
         else:
-            bridge_pairs, bridge_rows = bridge_pairs_for_final_slices(
-                train_slices, edge_maps[(spec["select"], spec["conflict"])]
+            edge_map = get_edges(
+                spec["select"], spec["conflict"],
+                spec["quality_weighted"], spec["quality_min"],
+                spec.get("top_quality_ratio"), spec.get("max_edges_total"),
+                spec["hardest_fragments_only"],
+            )
+            bridge_pairs, bridge_weights, bridge_rows = bridge_pairs_for_final_slices(
+                train_slices, edge_map
             )
         bridge_X = None
         if bridge_pairs:
@@ -268,6 +339,7 @@ def run_outer_fold(args: argparse.Namespace, target: Path, seed: int) -> tuple[l
             X, pair_data, train_args, "balanced", seed,
             bridge_X=bridge_X, bridge_weight=spec["weight"],
             bridge_batch_ratio=args.bridge_batch_ratio,
+            bridge_weights=bridge_weights if spec["quality_weighted"] and bridge_weights else None,
         )
         prob = unified.predict_probability(pkg, test_features, args.predict_batch_size)
         labels = plf.cluster_from_probability(prob, k)
@@ -296,7 +368,10 @@ def run_outer_fold(args: argparse.Namespace, target: Path, seed: int) -> tuple[l
             "bridge_loss": "none" if spec["weight"] == 0 else "oof",
             "bridge_weight": spec["weight"], "bridge_select": spec["select"],
             "bridge_threshold": args.bridge_threshold, "bridge_quantile": args.bridge_quantile,
-            "conflict_filter": spec["conflict"], "num_bridge_edges": len(bridge_pairs),
+            "conflict_filter": spec["conflict"],
+            "quality_weighted": spec["quality_weighted"],
+            "hardest_fragments_only": spec["hardest_fragments_only"],
+            "num_bridge_edges": len(bridge_pairs),
             "BA": ba, "TPR": tpr, "TNR": tnr,
             "top_fragmented_bug": top["bug_id"], "top_fragment_count": top["num_pred_fragments"],
             "top_largest_fragment_ratio": top["largest_fragment_ratio"],
@@ -350,6 +425,14 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--bridge-batch-ratio", type=float, default=0.25)
     parser.add_argument("--max-edges-per-bug", type=int, default=200)
     parser.add_argument("--max-edges-per-fragment-pair", type=int, default=20)
+    parser.add_argument("--bridge-quality-weighted", action="store_true",
+                        help="Use quality scores to weight bridge edges in loss")
+    parser.add_argument("--bridge-quality-min", type=float, default=0.2,
+                        help="Minimum quality score for bridge edges")
+    parser.add_argument("--bridge-max-edges-total", nargs="+", type=float, default=None,
+                        help="Global budget cap on bridge edges (e.g. 100 200 300)")
+    parser.add_argument("--bridge-hardest-fragments", action="store_true",
+                        help="Only bridge hardest (most separated) fragment pairs")
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--device", choices=("auto", "cpu", "cuda"), default="cuda")
     parser.add_argument("--svd-dim", type=int, default=64)

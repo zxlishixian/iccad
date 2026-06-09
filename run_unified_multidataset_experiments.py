@@ -353,6 +353,7 @@ def train_unified_model(
     bridge_X: np.ndarray | None = None,
     bridge_weight: float = 0.0,
     bridge_batch_ratio: float = 0.25,
+    bridge_weights: list[float] | None = None,
 ) -> dict:
     import torch
     from sklearn.preprocessing import StandardScaler
@@ -384,9 +385,14 @@ def train_unified_model(
     X_all = scaler.transform(X).astype(np.float32)
     X_all_t = torch.from_numpy(X_all)
     bridge_all_t = None
+    bridge_weights_t = None
     if bridge_X is not None and len(bridge_X):
         bridge_scaled = scaler.transform(bridge_X).astype(np.float32)
         bridge_all_t = torch.from_numpy(bridge_scaled)
+        if bridge_weights is not None and len(bridge_weights) == len(bridge_X):
+            bridge_weights_t = torch.from_numpy(
+                np.asarray(bridge_weights, dtype=np.float32)
+            )
     y_all_t = torch.from_numpy(pair_data.labels.astype(np.float32))
     ds_all_t = torch.from_numpy(pair_data.dataset_ids.astype(np.int64))
 
@@ -489,9 +495,17 @@ def train_unified_model(
                 bridge_idx = rng.integers(0, len(bridge_all_t), size=bridge_count)
                 bridge_logits = model(bridge_all_t[bridge_idx].to(device))
                 bridge_targets = torch.ones_like(bridge_logits)
-                bridge_loss = torch.nn.functional.binary_cross_entropy_with_logits(
-                    bridge_logits, bridge_targets
-                )
+                if bridge_weights_t is not None:
+                    # Quality-weighted bridge loss
+                    sample_w = bridge_weights_t[torch.from_numpy(bridge_idx)]
+                    bridge_loss = torch.nn.functional.binary_cross_entropy_with_logits(
+                        bridge_logits, bridge_targets,
+                        weight=sample_w.to(device),
+                    )
+                else:
+                    bridge_loss = torch.nn.functional.binary_cross_entropy_with_logits(
+                        bridge_logits, bridge_targets
+                    )
                 loss = loss + float(bridge_weight) * bridge_loss
                 totals["bridge"] += float(bridge_loss.detach().cpu())
             if teacher_probs is not None and easy_mask is not None:
