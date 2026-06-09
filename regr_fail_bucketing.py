@@ -1579,6 +1579,171 @@ def augment_with_llm_embeddings(
     return combined, combined.shape, True
 
 
+# ── Trace feature augmentation ────────────────────────────────────────────
+
+def _parse_trace_tail_features(trace_path: Path | None, tail_lines: int = 256) -> dict:
+    """Extract compact trace features from the last N instructions.
+
+    Returns dict with scalar features (all 0.0 if trace missing/unparseable).
+    """
+    if trace_path is None or not trace_path.exists():
+        return {"trace_missing": 1.0}
+
+    try:
+        if trace_path.suffix == ".gz":
+            with gzip.open(trace_path, "rt", encoding="utf-8", errors="replace") as fh:
+                lines = [l.rstrip("\n") for l in fh if l.strip()]
+        else:
+            with open(trace_path, encoding="utf-8", errors="replace") as fh:
+                lines = [l.rstrip("\n") for l in fh if l.strip()]
+    except (OSError, gzip.BadGzipFile):
+        return {"trace_missing": 1.0}
+
+    # Parse tab-separated trace lines
+    import re
+    tab_re = re.compile(
+        r"^\s*\d+\s+\d+\s+(?P<pc>[0-9a-fA-F]{6,16})\s+"
+        r"[0-9a-fA-F]+\s+(?P<decoded>.+?)(?:\s{2,}.*)?$",
+        re.IGNORECASE,
+    )
+    opcode_re = re.compile(r"^\s*([a-zA-Z][a-zA-Z0-9_.]*)")
+
+    decoded = []
+    pcs = []
+    for line in lines[-tail_lines * 3:]:
+        m = tab_re.match(line)
+        if m:
+            decoded.append(m.group("decoded").strip())
+            pcs.append(m.group("pc"))
+
+    if not decoded:
+        return {"trace_missing": 1.0}
+
+    tail = decoded[-tail_lines:]
+    tail_pcs = pcs[-tail_lines:] if len(pcs) >= len(tail) else pcs
+
+    # Classify opcodes
+    load_ops = {"lb","lh","lw","lbu","lhu","ld","lwu","c.lw","c.ld","c.lwsp","c.ldsp","flw","fld"}
+    store_ops = {"sb","sh","sw","sd","c.sw","c.sd","c.swsp","c.sdsp","fsw","fsd"}
+    branch_ops = {"beq","bne","blt","bge","bltu","bgeu","beqz","bnez","c.beqz","c.bnez"}
+    jump_ops = {"jal","jalr","c.jal","c.jalr","c.j","c.jr","ret","c.ret"}
+    csr_ops = {"csrrw","csrrs","csrrc","csrrwi","csrrsi","csrrci"}
+    system_ops = {"ecall","ebreak","mret","sret","dret","wfi","fence","fence.i","sfence.vma"}
+
+    n = len(tail)
+    loads = stores = branches = jumps = csrs = systems = compressed = exceptions = 0
+    opcodes_seen = set()
+
+    for instr in tail:
+        om = opcode_re.match(instr)
+        op = om.group(1).lower() if om else ""
+        opcodes_seen.add(op)
+        if op in load_ops: loads += 1
+        elif op in store_ops: stores += 1
+        elif op in branch_ops: branches += 1
+        elif op in jump_ops: jumps += 1
+        elif op in csr_ops: csrs += 1
+        elif op in system_ops: systems += 1
+        if op.startswith("c."): compressed += 1
+        instr_lower = instr.lower()
+        if any(w in instr_lower for w in ("exception","trap","interrupt","illegal","fault")):
+            exceptions += 1
+
+    # Loop detection: check if last 8 instructions repeat
+    has_loop = 0.0
+    if n >= 16:
+        last8 = tuple(tail[-8:])
+        prev8 = tuple(tail[-16:-8])
+        if last8 == prev8:
+            has_loop = 1.0
+
+    # PC region entropy
+    pc_coarse = {pc[:4] for pc in tail_pcs} if tail_pcs else set()
+    pc_regions = len(pc_coarse) / max(1, len(set(tail_pcs))) if tail_pcs else 0.0
+
+    # Normalize to [0,1] range
+    return {
+        "trace_load_ratio": loads / max(1, n),
+        "trace_store_ratio": stores / max(1, n),
+        "trace_branch_ratio": (branches + jumps) / max(1, n),
+        "trace_csr_ratio": csrs / max(1, n),
+        "trace_system_ratio": systems / max(1, n),
+        "trace_compressed_ratio": compressed / max(1, n),
+        "trace_has_loop": has_loop,
+        "trace_exception_ratio": exceptions / max(1, n),
+        "trace_unique_opcodes": len(opcodes_seen) / max(1, n),
+        "trace_pc_regions": pc_regions,
+        "trace_log_instructions": __import__("math").log1p(len(decoded)),
+        "trace_missing": 0.0,
+    }
+
+
+def augment_with_trace_features(
+    X: Any,
+    input_csv: Path,
+    rows: list[dict],
+    fieldnames: list[str],
+    args: argparse.Namespace,
+    sklearn_input: bool,
+) -> Tuple[Any, Tuple[int, int], bool]:
+    """Append compact trace features to case vectors.
+
+    Reads trace.log.gz for each case, extracts lightweight scalar features,
+    and concatenates them to the existing vector matrix.
+    Gracefully handles missing traces (all-zeros).
+    """
+    if not SKLEARN_AVAILABLE or not sklearn_input:
+        warn("[trace] trace augmentation requires scikit-learn; skipping")
+        return X, X.shape if hasattr(X, "shape") else (0, 0), sklearn_input
+
+    import numpy as np
+
+    # Find trace column
+    trace_col = None
+    norm = {"".join(ch for ch in f.lower() if ch.isalnum()): f for f in fieldnames}
+    for cand in ("tracelog", "tracelog.gz", "trace", "trace_log", "tracefile"):
+        key = "".join(ch for ch in cand.lower() if ch.isalnum())
+        if key in norm:
+            trace_col = norm[key]
+            break
+    if not trace_col:
+        for f in fieldnames:
+            if "trace" in "".join(ch for ch in f.lower() if ch.isalnum()):
+                trace_col = f
+                break
+
+    if not trace_col:
+        info("[trace] no trace column found; skipping trace augmentation")
+        return X, X.shape if hasattr(X, "shape") else (0, 0), sklearn_input
+
+    # Extract trace features per case
+    trace_feats = []
+    for row in rows:
+        path_val = row.get(trace_col)
+        path = resolve_log_path(input_csv, path_val) if path_val else None
+        feats = _parse_trace_tail_features(path)
+        trace_feats.append(feats)
+
+    feat_keys = sorted(trace_feats[0].keys()) if trace_feats else []
+    trace_mat = np.array([[f.get(k, 0.0) for k in feat_keys] for f in trace_feats], dtype="float32")
+
+    # Get base vectors (already LLM-augmented if --llm-mode embedding)
+    if sklearn_input:
+        base = to_dense_or_reduced(X, args.svd_dim)
+        base = Normalizer(copy=False).fit_transform(base)
+    else:
+        base = X.toarray() if hasattr(X, "toarray") else np.asarray(X, dtype="float32")
+
+    # Append trace features with lower weight so they're auxiliary, not dominant
+    trace_weight = 0.5
+    combined = np.concatenate([base, trace_mat * trace_weight], axis=1)
+    combined = Normalizer(copy=False).fit_transform(combined)
+
+    info(f"[trace] augmented with {len(feat_keys)} trace features (weight={trace_weight}), "
+         f"shape=({combined.shape[0]}, {combined.shape[1]})")
+    return combined, combined.shape, True
+
+
 def cluster_with_llm_similarity_fusion(
     X: Any,
     feature_counters: Sequence[Counter],
@@ -2267,6 +2432,7 @@ def parse_args(argv: Sequence[str]) -> argparse.Namespace:
     parser.add_argument("--llm-alpha", type=float, default=0.75, help="deterministic similarity weight for --llm-fusion similarity")
     parser.add_argument("--llm-doc-style", choices=("features", "summary"), default="features")
     parser.add_argument("--strict-llm", action="store_true", help="fail instead of fallback when LLM embedding fails")
+    parser.add_argument("--trace", action="store_true", help="augment case vectors with trace.log.gz features")
     parser.add_argument("--completion", choices=("none", "selective"), default="none",
                         help="Post-cluster refinement via completion LLM")
     parser.add_argument("--completion-cache-dir", type=Path,
@@ -2377,6 +2543,15 @@ def main(argv: Sequence[str] | None = None) -> int:
             warn(f"LLM embedding augmentation failed ({exc}); falling back to deterministic baseline")
             if args.strict_llm:
                 return 3
+
+    # Trace feature augmentation
+    if args.trace:
+        try:
+            X, shape, sklearn_input = augment_with_trace_features(
+                X, input_csv, rows, fieldnames, args, sklearn_input)
+        except Exception as exc:
+            warn(f"trace augmentation failed ({exc}); continuing without trace features")
+
     if args.k_selection == "dynamic":
         effective_k = select_dynamic_k_for_vectors(
             X,
