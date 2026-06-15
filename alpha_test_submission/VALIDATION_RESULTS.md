@@ -1,44 +1,56 @@
 # Packaged Model Validation
 
-Validation date: 2026-06-06
+Validation date: 2026-06-15
 
-Environment:
+## Official requirements checked
 
-- Python 3.12
-- scikit-learn 1.8.0
-- NumPy 2.4.4
-- PyTorch 2.7.1
-- embedding model `nomic-embed-text-v1.5`
-- both `features` and `summary` embedding paths returned 768 dimensions
-- no embedding fallback warning
+Sources: `Alpha Test Submission Guideline_ABC.pdf`, `B_20260601.pdf`, and
+`B_QA_20260612.pdf`. The package follows the required executable name/interface,
+RHEL/Alma/CentOS 8-compatible GLIBC 2.28 ceiling, Linux x86_64 target, self-contained
+no-install deployment, no-Docker rule, and Google Drive folder delivery format.
 
-Command:
+The official machine has no GPU, 32 logical CPU cores, approximately 128 GB RAM,
+and no ordinary internet access. LLM calls use the organizer-provided HTTP endpoint.
+Alpha timeouts are 3x the normal limits: public sets are 90 seconds each; hidden sets
+are 300 or 900 seconds according to the benchmark table.
 
-```bash
-./regr_fail_bucketing \
-  --input test_case/problem/benchmark_set_1/input.csv \
-  --output /tmp/set1.csv \
-  --k 2
-```
+## Binary validation
 
-Public golden validation:
+- PyInstaller 6.20.0 onedir executable.
+- Runtime model implementation: NumPy MLP + sklearn logistic/GBDT.
+- Original PyTorch versus NumPy max logit error over all 20 MLP artifacts: `9.54e-7`.
+- Packaged ELF files scanned: 287.
+- Maximum required GLIBC symbol: `2.28`.
+- Symlinks after materialization: 0.
+- Executable mode: 755.
+- Executable SHA-256:
+  `8772045d823720981a07d78413c6edced55877e074422c45391353c1084a91cd`.
 
-| Dataset | Cases | k | Predicted clusters | BA | TPR | TNR | Wall time |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| benchmark_set_1 | 7 | 2 | 2 | 0.722222 | 0.777778 | 0.666667 | 5.11 s |
-| benchmark_set_2 | 25 | 4 | 4 | 0.921255 | 0.957265 | 0.885246 | 9.43 s |
+## End-to-end public validation
 
-The wall times include Python startup, embedding requests, ten model seeds,
-adapter inference, clustering, and CSV output. Both are below the 90-second
-Alpha limit for the two public benchmarks.
+The binary was invoked directly, without `PYTHON_BIN` or an activated environment.
+The local endpoint returned 768-dimensional `features` and `summary` embeddings with
+no fallback warning.
 
-Fallback validation:
+| Dataset | Cases | k | Clusters | BA | TPR | TNR | Wall | Max RSS |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| benchmark_set_1 | 7 | 2 | 2 | 0.722222 | 0.777778 | 0.666667 | 2.55 s | 134 MB |
+| benchmark_set_2 | 25 | 4 | 4 | 0.921255 | 0.957265 | 0.885246 | 6.33 s | 153 MB |
 
-- `LLM_MODEL_CONFIG` removed.
-- Primary route failed closed because embedding vectors were unavailable.
-- Deterministic no-trace fallback completed successfully.
-- Output retained the required `Case,bucket` header and one row per case.
+The resulting CSV files are byte-identical to the previous validated PyTorch package.
 
-The public adapter was trained with released public labels. The packaged
-prediction path contains only the frozen model artifact and never loads label
-files.
+## Fallback validation
+
+With `LLM_MODEL_CONFIG` removed, primary inference failed closed and the bundled
+deterministic no-trace fallback completed benchmark_set_1 in 2.44 seconds. It wrote
+`Case,bucket` plus seven case rows and exited with status 0.
+
+## Residual risks
+
+- The package was assembled on Ubuntu using Conda binaries whose ELF symbol ceiling
+  was explicitly verified at GLIBC 2.28; it was not executed on an actual RHEL 8 host.
+- Hidden 1000/3000-case benchmarks were not available for end-to-end runtime testing.
+  Pair feature construction is O(N^2), so large hidden-set runtime remains the main
+  operational risk.
+- The provided submission deadline is June 12, 2026 at 17:00 GMT+8; acceptance after
+  that timestamp requires organizer confirmation.

@@ -1,78 +1,80 @@
 # ICCAD 2026 Problem B Alpha Submission
 
-## Interface
+## Required interface
 
 ```bash
 ./regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 ```
 
-The output is a CSV with exactly two columns:
-
-```text
-Case,bucket
-```
+`regr_fail_bucketing` is an x86_64 PyInstaller onedir executable. Its runtime is
+contained in `_internal/`; evaluation does not require Python, pip, internet
+package installation, GPU, Docker, or `requirements.txt`. The output has exactly
+`Case,bucket` columns and one row per input case.
 
 ## Submitted model
 
-Primary prediction path:
+The primary no-trace route is:
 
-1. Read `sim.log(.gz)` and `regr.log` referenced by `input.csv`.
-2. Build deterministic SVD features and two LLM embedding views:
-   `features` and `summary`.
-3. Run the 10-seed no-trace calibrated dual-input pairwise blend:
+1. Read bounded samples from `sim.log(.gz)` and `regr.log(.gz)` referenced by `input.csv`.
+2. Build deterministic SVD features and `features`/`summary` LLM embeddings.
+3. Run the 10-seed calibrated dual-input blend:
    - rich residual focal MLP;
-   - logistic/GBDT/shallow-MLP soft-voting ensemble;
-   - rich/ensemble weights `0.88/0.12`;
-   - rich temperature `1.15`;
-   - ensemble temperature `1.00`.
-4. Apply the lightweight official-style root-cause logistic adapter with
-   blend alpha `0.50`.
-5. Cluster the pairwise probability matrix using average-linkage
-   agglomerative clustering and the supplied `k`.
+   - logistic/GBDT/shallow-MLP soft voting;
+   - rich/ensemble alpha `0.88/0.12`;
+   - rich temperature `1.15`; ensemble temperature `1.00`.
+4. Blend the frozen official-style root-cause logistic adapter at alpha `0.50`.
+5. Use average-linkage agglomerative clustering with the supplied soft-hint `k`.
 
-The adapter artifact was trained before packaging. Prediction does not read
-`gold.csv`, `golden.csv`, `meta.csv`, or `trace.log`.
+Frozen MLP checkpoints were exported to framework-independent NPZ files. Runtime
+inference uses a numerically equivalent NumPy implementation, so PyTorch and GPU
+libraries are not part of the executable. The maximum measured logit difference
+against the original PyTorch models is `9.54e-7`.
+
+Prediction does not read `gold.csv`, `golden.csv`, `meta.csv`, or `trace.log`.
+The trace helper modules are packaged only because the no-trace adapter reuses
+anchor parsing on selected sim/regr text; no trace path is opened.
 
 ## LLM configuration
 
-The program reads YAML content from `LLM_MODEL_CONFIG`, as specified by the
-contest:
+The executable reads YAML text from `LLM_MODEL_CONFIG` using the contest format.
+Only the `embedding` endpoint is called; completion is not called. API errors,
+missing configuration, incompatible embedding dimensions, or missing artifacts
+fall back to the deterministic no-trace pipeline and still write a valid CSV.
 
-```python
-yaml.safe_load(os.getenv("LLM_MODEL_CONFIG"))
-```
+The evaluator provides the permitted HTTP LLM endpoints. Ordinary internet access
+is not required. Network latency counts toward the benchmark runtime.
 
-Only the `embedding` endpoint is used. Completion is never called.
+## Packaging compatibility
 
-## Failure handling
+- Target: Linux x86_64.
+- PyInstaller: 6.20.0, onedir layout.
+- Highest GLIBC symbol found across 287 packaged ELF files: `GLIBC_2.28`.
+- No symlinks remain in the submission directory.
+- Executable SHA-256:
+  `8772045d823720981a07d78413c6edced55877e074422c45391353c1084a91cd`.
+- Logical upload size after source/checkpoint cleanup: approximately 360 MiB.
 
-If the embedding endpoint, a model artifact, or an optional dependency fails,
-the entrypoint falls back to the deterministic no-trace pipeline and still
-writes a valid output CSV.
+Python sources and `requirements.txt` are intentionally omitted. The official
+evaluation path is the self-contained executable.
 
-## Public validation provenance
+## Public validation
 
-Leave-one-official-benchmark-out validation of the official-style logistic
-route:
+| Dataset | Cases | k | BA | TPR | TNR | Final binary wall time |
+|---|---:|---:|---:|---:|---:|---:|
+| benchmark_set_1 | 7 | 2 | 0.722222 | 0.777778 | 0.666667 | 2.55 s |
+| benchmark_set_2 | 25 | 4 | 0.921255 | 0.957265 | 0.885246 | 6.33 s |
 
-| Train | Test | BA | TPR | TNR |
-|---|---|---:|---:|---:|
-| benchmark_set_2 | benchmark_set_1 | 0.7222 | 0.7778 | 0.6667 |
-| benchmark_set_1 | benchmark_set_2 | 0.9072 | 0.9402 | 0.8743 |
-
-Adding the calibrated no-trace blend on benchmark_set_2 produced BA `0.9213`.
-These public results are validation references, not guarantees for hidden
-benchmarks.
+Both outputs are byte-identical to the original PyTorch inference package.
+With `LLM_MODEL_CONFIG` removed, the self-contained deterministic fallback completed
+benchmark_set_1 in 2.44 seconds and emitted a valid 8-line CSV.
 
 ## Files
 
-- `regr_fail_bucketing`: required launcher.
-- `regr_fail_bucketing.bin`: standalone executable when present.
-- `submission_main.py`: source fallback and primary orchestration.
-- `regr_fail_bucketing.py`: deterministic baseline and embedding client.
-- `pairwise_features.py`, `pairwise_llm_features.py`: pairwise model features.
-- `official_style_features.py`: root-cause adapter features.
-- `trace_anchor.py`, `trace_features.py`: parsing helpers; trace is not read by
-  the submitted prediction path.
-- `models/`: frozen inference artifacts.
-- `requirements.txt`: source-fallback dependencies.
+- `regr_fail_bucketing`: required self-contained executable.
+- `_internal/`: bundled Python/native runtime.
+- `models/`: frozen NPZ MLP, sklearn, reducer, scaler, and adapter artifacts.
+- `VALIDATION_RESULTS.md`: final package validation record.
+- `SUBMISSION_CHECKLIST.md`: upload checklist.
+
+Python source and `requirements.txt` are intentionally omitted because the official
+submission is executable-only and must not depend on package installation.
