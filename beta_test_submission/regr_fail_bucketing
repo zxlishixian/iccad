@@ -1,0 +1,42 @@
+#!/usr/bin/env sh
+set -eu
+
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+export LOKY_MAX_CPU_COUNT="${LOKY_MAX_CPU_COUNT:-8}"
+export OMP_NUM_THREADS="${OMP_NUM_THREADS:-1}"
+export OPENBLAS_NUM_THREADS="${OPENBLAS_NUM_THREADS:-1}"
+
+INPUT=""
+PREV=""
+for ARG in "$@"; do
+  if [ "$PREV" = "--input" ]; then
+    INPUT="$ARG"
+    break
+  fi
+  case "$ARG" in
+    --input=*)
+      INPUT=${ARG#--input=}
+      break
+      ;;
+  esac
+  PREV="$ARG"
+done
+
+if [ -z "$INPUT" ] || [ ! -f "$INPUT" ]; then
+  exec "$SCRIPT_DIR/regr_fail_bucketing_full" "$@"
+fi
+
+N_CASES=$(($(wc -l < "$INPUT") - 1))
+if [ "$N_CASES" -lt 0 ]; then
+  N_CASES=0
+fi
+
+FAST_BIN="$SCRIPT_DIR/fast/regr_fail_bucketing_fast/regr_fail_bucketing_fast"
+
+if [ "$N_CASES" -le "${BETA_FULL_MAX_CASES:-300}" ]; then
+  exec "$SCRIPT_DIR/regr_fail_bucketing_full" "$@"
+elif [ "$N_CASES" -le "${BETA_AGGLOM_MAX_CASES:-900}" ]; then
+  exec "$FAST_BIN" "$@" --llm-mode none --cluster agglomerative
+else
+  exec "$FAST_BIN" "$@" --llm-mode none --cluster kmeans --cluster-factor 1.0
+fi
