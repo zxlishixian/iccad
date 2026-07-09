@@ -2402,3 +2402,44 @@ Outputs:
 - `/tmp/graph_multiview_stage2_s5_9_all8_complete/summary.csv`
 - `/tmp/graph_multiview_blend_s0_9_all8_complete/summary.csv`
 
+### Stage 4: stronger hard-positive sampling for multi-view GBDT
+
+The next experiment increased the multi-view pair sampler from
+`--view-hard-positive-ratio 0.5` to `1.0`, keeping the same two views (`dual` and
+`quad_event_object_context`), GBDT pair model, complete-link clustering, and eight-dataset
+LODO protocol. This is still sim/regr-only and experimental; it does not use trace or
+completion.
+
+A seeds 0-2 quick check showed that the stronger hard-positive sampler was not just a
+set1 artifact:
+
+| setting | seeds | beta | mean BA | worst BA | mean TPR | mean TNR |
+|---|---:|---:|---:|---:|---:|---:|
+| hpr=1.0 blend | 0-2 | 0.50 | **0.8025** | 0.6606 | **0.7172** | **0.8878** |
+| hpr=0.5 blend | 0-2 | 0.50 | 0.7467 | **0.6763** | 0.6444 | 0.8491 |
+
+The full hpr=1.0 seeds 0-9 fixed-beta blend is now the strongest multi-view result so
+far:
+
+| setting | beta | mean BA | worst BA | mean TPR | mean TNR | key dataset means |
+|---|---:|---:|---:|---:|---:|---|
+| hpr=1.0 quad blend | 0.50 | **0.7811** | 0.6624 | **0.6780** | 0.8842 | set1 0.9444, set2 0.7514, stage2 0.7946, stage3 0.8055, stable 0.6641 |
+| hpr=1.0 quad blend | 0.75 | 0.7772 | **0.6697** | 0.6685 | **0.8859** | set1 0.9444, set2 0.7339, stage2 0.8089, stage3 0.7893, stable 0.6697 |
+| hpr=1.0 quad blend | 0.25 | 0.7693 | 0.6572 | 0.6636 | 0.8750 | set1 0.9444, set2 0.7726, stage2 0.7712, stage3 0.8067, VCS 0.6572 |
+| hpr=0.5 quad blend | 0.50 | 0.7587 | **0.6846** | 0.6510 | 0.8664 | set1 0.8056, set2 0.6846, stage2 0.7884, stage3 0.8093, stable 0.6910 |
+
+Interpretation: stronger hard-positive sampling substantially improves official set1,
+set2, stage2, VCS, and overall TPR. The cost is lower worst-dataset robustness than the
+hpr=0.5 blend, mainly because directed_cross/stable-like cases can still be over-split
+in some seeds. This makes hpr=1.0 + beta=0.50 the current score-seeking experimental
+candidate, while hpr=0.5 + beta=0.50 remains the safer robustness candidate.
+
+Next step: evaluate multi-seed probability averaging and a recall-protecting gate or
+connectivity loss before promoting hpr=1.0 as the submission mainline.
+
+Outputs:
+
+- `/tmp/graph_multiview_hpr1_s0_2_all8_complete/summary.csv`
+- `/tmp/graph_multiview_hpr1_s3_9_all8_complete/summary.csv`
+- `/tmp/graph_multiview_hpr1_blend_s0_9_all8_complete/summary.csv`
+
