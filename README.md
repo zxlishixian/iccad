@@ -2200,3 +2200,205 @@ Implemented lightweight deterministic trace features injected as extra pairwise 
 
 - `/tmp/trace_struct_exp/results.csv` — full trace ablation results
 - `/tmp/trace_struct_exp/summary.csv` — per-dataset per-mode summary
+
+
+## Directed Cross v2 Unified LODO Smoke (July 2026)
+
+`official_format_fake_dataset/directed_cross_v2` was added as an eighth independent
+LODO episode. It contains 37 cases and five labels; `gold.csv` and `golden.csv`
+match exactly. Pair construction remains strictly within each dataset.
+
+The existing beta deterministic fallback with reference `k=5` reached BA 0.647689
+(TPR 0.571429, TNR 0.723949). A CPU-only seed-0 strict-LODO smoke trained on the
+other seven datasets, used both 768-dimensional features/summary embeddings, and
+held directed_cross_v2 out for final scoring:
+
+| objective | BA | TPR | TNR |
+|---|---:|---:|---:|
+| gated MLP balanced | 0.821463 | 0.798319 | 0.844607 |
+| gated MLP hard-positive connectivity | 0.821463 | 0.798319 | 0.844607 |
+| gated MLP hard-positive prototype | 0.803742 | 0.764706 | 0.842779 |
+
+This four-epoch smoke is not a model-selection result, but it shows that the unified
+gated architecture transfers well to the new domain. The next formal run is an
+eight-dataset LODO seeds 0-4 comparison of balanced and hard-positive connectivity,
+followed by seeds 0-9 for the winner. It must use at most two genuinely idle GPUs.
+
+## Graph-Aware Clustering and Multi-View Embedding Experiments (July 2026)
+
+This route is experimental only. The formal `regr_fail_bucketing.py --input --output --k`
+path is unchanged and still does not read gold/meta/trace by default.
+
+### Stage 1: graph-aware clustering on fixed dual-view probabilities
+
+`graph_clustering.py` adds five clustering backends:
+
+| method | purpose |
+|---|---|
+| `agglomerative_avg` | existing fixed-k average-linkage baseline |
+| `agglomerative_complete` | conservative complete-linkage to reduce single-edge false merges |
+| `conservative_merge` | limited postprocess merge from average-linkage clusters |
+| `mutual_knn_cc` | mutual-kNN connected components with fixed-k repair |
+| `signed_graph_greedy` | fixed-k greedy signed-graph node moves with structured conflict penalty |
+
+On the available eight-dataset LODO probability cache (seeds 0-4 where present),
+`signed_graph_greedy` was the best mean-BA graph-only replacement:
+
+| graph | source | mean BA | worst BA | mean TPR | mean TNR | runs |
+|---|---|---:|---:|---:|---:|---:|
+| signed_graph_greedy | hard_pos_connect | **0.7014** | 0.5283 | 0.6101 | 0.7927 | 40 |
+| signed_graph_greedy | balanced | 0.6914 | 0.5383 | 0.5982 | 0.7845 | 40 |
+| agglomerative_complete | balanced | 0.6889 | **0.6055** | 0.5508 | **0.8270** | 40 |
+| agglomerative_avg | balanced | 0.6766 | 0.5463 | 0.5905 | 0.7628 | 40 |
+
+Key finding: signed-graph improves mean BA mostly by raising TNR, while complete-link
+is the most conservative and improves worst BA/TNR at the cost of recall. The current
+`conservative_merge` defaults are too aggressive and can collapse clusters on some
+datasets, so they are not recommended.
+
+Outputs:
+
+- `/tmp/graph_multiview_stage1_available_s0_4/summary.csv`
+- `/tmp/graph_multiview_stage1_available_s0_4/results.csv`
+- `/tmp/graph_multiview_stage1_available_s0_4/cluster_diagnostics.csv`
+
+### Stage 2: multi-view embedding ablation
+
+`run_graph_multiview_experiments.py` now supports real multi-view LODO training with
+GBDT/logistic pair models. Additional embedding views are built from sim/regr only:
+
+| view | content |
+|---|---|
+| `features` | existing high-signal feature document |
+| `summary` | existing case summary document |
+| `event` | failure event order and tags: fatal/error/mismatch/timeout/debug/irq/csr |
+| `object` | hardware/software objects: PC region, opcode pair, register, source file, UVM component |
+| `context` | compact local sim/regr signal windows around fatal/error/mismatch lines |
+
+Each view is embedded with the existing embedding endpoint, reduced to 64 dimensions,
+and converted to pair relation features (`abs(diff)`, product, cosine, distance). No
+trace or completion LLM is used.
+
+Four-dataset 0-4 focus run (`set1`, `set2`, `VCS`, `stable`) showed that more views are
+useful but not uniformly safe:
+
+| graph | view config | mean BA | worst BA | mean TPR | mean TNR | dataset means |
+|---|---|---:|---:|---:|---:|---|
+| complete | quad_event_object_context | **0.7454** | **0.5761** | 0.7143 | **0.7766** | set1 0.8889, set2 0.7911, VCS 0.7257, stable 0.5761 |
+| average | quad_event_object_context | 0.7085 | 0.5597 | **0.7143** | 0.7027 | set1 0.6611, set2 0.8704, VCS 0.7428, stable 0.5597 |
+| average | tri_object | 0.6594 | 0.5174 | 0.6256 | 0.6932 | set1 0.6444, set2 0.8327, VCS 0.6432, stable 0.5174 |
+| signed_graph | quad_event_object_context | 0.6685 | 0.5284 | 0.6552 | 0.6818 | set1 0.6500, set2 0.7529, VCS 0.7428, stable 0.5284 |
+| average | dual | 0.5901 | 0.5278 | 0.5068 | 0.6735 | set1 0.5278, set2 0.5570, VCS 0.6005, stable 0.6753 |
+
+Eight-dataset seed-0 sanity with `quad_event_object_context + complete` reached mean
+BA **0.7563** versus **0.7319** for the same lightweight dual-view GBDT + complete
+setup. The follow-up eight-dataset seeds 0-4 run is the stronger estimate:
+
+| view config | mean BA | worst BA | mean TPR | mean TNR | key dataset means |
+|---|---:|---:|---:|---:|---|
+| quad_event_object_context | **0.7460** | 0.6529 | 0.6205 | **0.8715** | set1 0.8333, set2 0.6690, stage2 0.8161, stable 0.6529 |
+| dual | 0.7431 | **0.6672** | **0.6323** | 0.8539 | set1 0.7778, set2 0.6690, stage2 0.7398, stable 0.7218 |
+| tri_object | 0.7375 | 0.6459 | 0.6186 | 0.8564 | set1 0.7778, set2 0.6459, stage2 0.7461, VCS 0.6892 |
+
+Per-dataset deltas for `quad_event_object_context` vs dual on seeds 0-4:
+
+| dataset | delta BA | note |
+|---|---:|---|
+| stage2 | +0.0762 | strong and stable gain, mainly higher TPR while preserving TNR |
+| set1 | +0.0556 | improves small official benchmark on average |
+| first | +0.0176 | modest gain |
+| VCS | +0.0099 | small gain |
+| set2 | +0.0000 | neutral overall, high seed variance |
+| stage3 | -0.0044 | near-neutral/slight loss |
+| directed_cross | -0.0629 | significant TPR loss |
+| stable | -0.0689 | significant TPR loss |
+
+Key finding: multi-view embeddings carry real additional signal, especially for
+stage2 and set1, but fixed concatenation is not robust enough to become the mainline.
+The object/context views can over-separate stable and directed_cross by lowering TPR.
+This argues for a learned/selective view gate rather than blindly concatenating all
+views as the new mainline.
+
+Current recommendation: keep the existing calibrated dual-input blend as the stable
+submission path. Promote graph-aware clustering and multi-view embedding to candidate
+experimental backends. The next useful step is a view-gated Gated MLP that learns when
+`object/context` views should override the base dual signal, with fake-dataset guardrails.
+
+Outputs:
+
+- `/tmp/graph_multiview_stage2_s0_4_official_vcs_stable/summary.csv`
+- `/tmp/graph_multiview_stage2_s0_4_official_vcs_stable_complete/summary.csv`
+- `/tmp/graph_multiview_stage2_s0_4_official_vcs_stable_signed/summary.csv`
+- `/tmp/graph_multiview_stage2_seed0_all8_complete/summary.csv`
+
+
+### Stage 3: conservative dual/multi-view probability blend
+
+A learned pair-level view gate was implemented experimentally, but seed-0 all-dataset
+sanity did not beat the simpler fixed blend. It reached mean BA 0.7471 with mixed
+behavior: set2 and stage3 improved, but first/stable remained weak. The gate tended to
+trust the expert view too much on stable-like data.
+
+A cheaper cached-probability blend was then evaluated using the seeds 0-4 dual and
+`quad_event_object_context` probability matrices from Stage 2:
+
+```text
+P_blend = (1 - beta) * P_dual + beta * P_quad_event_object_context
+```
+
+Eight-dataset seeds 0-4, complete-link clustering:
+
+| expert | beta | mean BA | worst BA | mean TPR | mean TNR | key dataset means |
+|---|---:|---:|---:|---:|---:|---|
+| quad_event_object_context | 0.75 | **0.7543** | 0.6522 | 0.6360 | **0.8726** | set1 0.8333, stage2 0.8111, stage3 0.7981, stable 0.6522 |
+| quad_event_object_context | 0.50 | 0.7513 | **0.6693** | **0.6434** | 0.8592 | set1 0.7778, stage2 0.7960, stage3 0.8017, stable 0.6998 |
+| quad_event_object_context | 0.25 | 0.7428 | 0.6622 | 0.6343 | 0.8513 | stage3 0.8092, stable 0.7007 |
+| tri_object | 0.50 | 0.7371 | 0.6671 | 0.6319 | 0.8422 | directed_cross 0.7905, stage3 0.8013 |
+
+Compared with the Stage 2 dual baseline (`mean BA 0.7431`, worst BA 0.6672), the
+`quad_event_object_context` blend is the first multi-view variant that improves mean
+BA without worsening worst BA. `beta=0.50` is the preferred candidate because it keeps
+stable/directed_cross much safer than `beta=0.75` while still preserving most of the
+stage2/stage3 gain.
+
+The follow-up seeds 5-9 run retrained the same lightweight GBDT pair models on all
+eight LODO folds, restricted to `dual` and `quad_event_object_context`:
+
+| view config | seeds | mean BA | worst BA | mean TPR | mean TNR | key dataset means |
+|---|---:|---:|---:|---:|---:|---|
+| quad_event_object_context | 5-9 | **0.7518** | 0.6269 | **0.6310** | **0.8727** | set1 0.7944, set2 0.7327, stage2 0.8040, stable 0.6269 |
+| dual | 5-9 | 0.7243 | **0.6606** | 0.6049 | 0.8438 | set1 0.6611, set2 0.6963, stage2 0.7442, stable 0.6606 |
+
+`quad_event_object_context` again improved mean BA, especially on set1/set2/stage2
+and VCS, but its stable/directed_cross recall remained weaker. This confirms that the
+additional views are useful signals but should be blended conservatively.
+
+Combining the 0-4 and 5-9 probability caches, the fixed-beta blend gives the current
+best multi-view 0-9 estimate:
+
+| expert | beta | mean BA | worst BA | mean TPR | mean TNR | key dataset means |
+|---|---:|---:|---:|---:|---:|---|
+| quad_event_object_context | 0.50 | **0.7587** | **0.6846** | **0.6510** | 0.8664 | set1 0.8056, set2 0.6846, stage2 0.7884, stage3 0.8093, stable 0.6910 |
+| quad_event_object_context | 0.75 | 0.7581 | 0.6653 | 0.6410 | **0.8751** | set1 0.8333, set2 0.7004, stage2 0.8117, stable 0.6653 |
+| quad_event_object_context | 0.25 | 0.7422 | 0.6709 | 0.6320 | 0.8523 | stage3 0.8136, directed_cross 0.7631, stable 0.6907 |
+
+The LODO beta selector that chooses beta using only the non-target datasets did not
+beat the fixed `beta=0.50` setting. Its guarded/worst policies reached mean BA 0.7555
+and worst BA 0.6653, mostly because they sometimes selected `beta=0.75` and over-split
+stable-like cases. Fixed `beta=0.50` is therefore the preferred multi-view candidate
+for now.
+
+Current recommendation: do not promote the learned pair gate yet. Use fixed beta=0.5
+as the strongest multi-view candidate. The next improvement should target its remaining
+failure mode with hard-positive/connectivity training or a stronger gate that explicitly
+protects same-bug recall on stable/directed_cross-like data.
+
+Outputs:
+
+- `/tmp/graph_multiview_gate_seed0_all8/summary.csv`
+- `/tmp/graph_multiview_gate_seed0_all8/gate_debug.csv`
+- `/tmp/graph_multiview_blend_s0_4_all8_complete/summary.csv`
+- `/tmp/graph_multiview_blend_s0_4_all8_complete/results.csv`
+- `/tmp/graph_multiview_stage2_s5_9_all8_complete/summary.csv`
+- `/tmp/graph_multiview_blend_s0_9_all8_complete/summary.csv`
+
