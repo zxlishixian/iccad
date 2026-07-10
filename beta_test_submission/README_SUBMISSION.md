@@ -27,9 +27,10 @@ Case count and soft `k` are mapped independently, then the larger scale wins. Th
 
 | Observable class | Conservative Final cap | Primary / deterministic retry |
 |---|---:|---:|
-| resolved scale has max 10/30 cases and `k` 2/4 | 30 s | 18 s / 7 s |
-| resolved scale has max 100–3000 cases, estimated context below 20M lines | 100 s | 85 s / 10 s |
-| resolved scale has max 100–3000 cases, estimated context at least 20M lines | 100 s | 75 s / 15 s |
+| resolved scale has max 10/30 cases, context is 1M-like | 30 s | 18 s / 7 s |
+| resolved scale has max 10/30 cases, context looks larger | 30 s | 15 s / 10 s |
+| resolved scale has max 100–3000 cases, context is 1M/10M-like | 100 s | 85 s / 10 s |
+| resolved scale has max 100–3000 cases, context is 100M-like | 100 s | 75 s / 15 s |
 
 The last row may correspond to an official 100M/300-second benchmark, but remains capped at 100 seconds because the tier cannot be identified safely. Reserving more deterministic-retry time is safer than risking an external 100-second kill after assuming 300 seconds.
 
@@ -37,7 +38,7 @@ The line estimate uses only file sizes under the input directory: ordinary log b
 
 Within those budgets, `n <= 160` uses the canonical five-view model, `161 <= n <= 300` uses the calibrated dual-input backend, `301 <= n <= 900` uses deterministic agglomerative clustering, and larger inputs use deterministic k-means. Missing embeddings go directly to deterministic inference. Timeout, malformed embeddings, incompatible dimensions, invalid header/row count, or backend failure triggers the deterministic retry; if that also fails, the router emits one singleton bucket per case.
 
-Every attempted backend first removes stale output. A result is accepted only if it has the exact `Case,bucket` header and one row per input case. The environment variables `BETA_LONG_CONTEXT_EST_LINES`, `BETA_MULTIVIEW_MAX_CASES`, `BETA_MULTIVIEW_WALL_TIMEOUT`, `BETA_FULL_MAX_CASES`, `BETA_FULL_WALL_TIMEOUT`, and `BETA_AGGLOM_MAX_CASES` are available only for controlled validation overrides.
+Every attempted backend first removes stale output. A result is accepted only if it has the exact `Case,bucket` header and one row per input case. The environment variables `BETA_ONE_M_CONTEXT_EST_LINES`, `BETA_LONG_CONTEXT_EST_LINES`, `BETA_MULTIVIEW_MAX_CASES`, `BETA_MULTIVIEW_WALL_TIMEOUT`, `BETA_FULL_MAX_CASES`, `BETA_FULL_WALL_TIMEOUT`, and `BETA_AGGLOM_MAX_CASES` are available only for controlled validation overrides.
 
 ## Canonical five-view model
 
@@ -59,7 +60,7 @@ For scalable inference, all logs are memoized in-process, case-index-only docume
 - Symlinks: 0 after materialization.
 - Top-level executable mode: 755.
 - Package size: approximately 519 MiB.
-- Router SHA-256: `fc7ed6b79a17058c3ec03074d6b8511fdc5274ee4d888762e1353a7d409df963`.
+- Router SHA-256: `13528c31ffe65f55bc19f1a837c085a02a12c89e2a3ec8694dee6e0b3553e026`.
 
 ## Final validation summary
 

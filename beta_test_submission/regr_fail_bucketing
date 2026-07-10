@@ -59,8 +59,9 @@ CONTEXT_STATS_REST=${CONTEXT_STATS#* }
 GZIP_CONTEXT_BYTES=${CONTEXT_STATS_REST%% *}
 EST_CONTEXT_LINES=${CONTEXT_STATS_REST#* }
 CONTEXT_BYTES=$((PLAIN_CONTEXT_BYTES + GZIP_CONTEXT_BYTES))
-# A 20M trigger leaves margin above the official 10M tier; estimates near the
-# boundary retain the shorter 100-second policy.
+# Keep margins around the official 1M and 10M boundaries because compressed
+# byte-to-line conversion is approximate.
+ONE_M_CONTEXT_EST_LINES="${BETA_ONE_M_CONTEXT_EST_LINES:-1500000}"
 LONG_CONTEXT_EST_LINES="${BETA_LONG_CONTEXT_EST_LINES:-20000000}"
 
 valid_output() {
@@ -179,13 +180,28 @@ case "$OFFICIAL_SCALE" in
   *) SCALE_MAX_CASES=3000 ;;
 esac
 
-if [ "$OFFICIAL_SCALE" -le 4 ]; then
-  RUNTIME_CLASS="public_1m"
-  FINAL_LIMIT=30
-  # Reserve explicit process-kill and emergency-writer grace.
-  PRIMARY_LIMIT=18
-  FAST_FALLBACK_LIMIT=7
+if [ "$EST_CONTEXT_LINES" -le "$ONE_M_CONTEXT_EST_LINES" ]; then
+  CONTEXT_CLASS="one_m_like"
 elif [ "$EST_CONTEXT_LINES" -ge "$LONG_CONTEXT_EST_LINES" ]; then
+  CONTEXT_CLASS="hundred_m_like"
+else
+  CONTEXT_CLASS="ten_m_like"
+fi
+
+if [ "$OFFICIAL_SCALE" -le 4 ]; then
+  FINAL_LIMIT=30
+  if [ "$CONTEXT_CLASS" = "one_m_like" ]; then
+    RUNTIME_CLASS="public_1m"
+    PRIMARY_LIMIT=18
+    FAST_FALLBACK_LIMIT=7
+  else
+    # It can still be a public benchmark, so keep 30 seconds and begin the
+    # deterministic recovery earlier when context size looks anomalous.
+    RUNTIME_CLASS="public_shape_context_anomaly"
+    PRIMARY_LIMIT=15
+    FAST_FALLBACK_LIMIT=10
+  fi
+elif [ "$CONTEXT_CLASS" = "hundred_m_like" ]; then
   # B_QA_20260612 does not expose a benchmark/max-lines tier to the program.
   # A 100M-looking input could still be a 100-second benchmark after an
   # imperfect byte-to-line estimate, so keep the shortest applicable hidden
@@ -195,13 +211,13 @@ elif [ "$EST_CONTEXT_LINES" -ge "$LONG_CONTEXT_EST_LINES" ]; then
   PRIMARY_LIMIT=75
   FAST_FALLBACK_LIMIT=15
 else
-  RUNTIME_CLASS="regular_10m"
+  RUNTIME_CLASS="hidden_10m_conservative"
   FINAL_LIMIT=100
   PRIMARY_LIMIT=85
   FAST_FALLBACK_LIMIT=10
 fi
 
-echo "[beta-router] cases=$N_CASES k=$K scale_k=$OFFICIAL_SCALE scale_max_cases=$SCALE_MAX_CASES context_disk_bytes=$CONTEXT_BYTES estimated_lines=$EST_CONTEXT_LINES class=$RUNTIME_CLASS final_limit=${FINAL_LIMIT}s" >&2
+echo "[beta-router] cases=$N_CASES k=$K case_scale=$CASE_SCALE k_scale=$K_SCALE official_scale=$OFFICIAL_SCALE scale_max_cases=$SCALE_MAX_CASES context_disk_bytes=$CONTEXT_BYTES estimated_lines=$EST_CONTEXT_LINES context_class=$CONTEXT_CLASS class=$RUNTIME_CLASS final_limit=${FINAL_LIMIT}s" >&2
 
 if [ -z "${LLM_MODEL_CONFIG:-}" ]; then
   if [ "$N_CASES" -le "${BETA_AGGLOM_MAX_CASES:-900}" ]; then

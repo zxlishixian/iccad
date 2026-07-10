@@ -14,6 +14,7 @@
 - [x] Only embedding APIs are called; completion is not called.
 - [x] Every routing branch has a process watchdog and validates exact header/row count before accepting output.
 - [x] Runtime class maps case count and reference `k` independently to official scales, uses the larger scale, then applies a metadata-only context-line estimate.
+- [x] A public-shaped context anomaly changes the 18/7 split to 15/10 but never raises the 30-second cap.
 - [x] Q&A provides no 10M/100M tier marker; uncertain/extended inputs remain capped at the conservative 100-second Final limit.
 - [x] Context estimation does not open or parse trace logs.
 - [x] Missing, failed, slow, malformed, or incompatible embedding access falls back to deterministic inference.
@@ -35,5 +36,5 @@
 
 ## Final hashes
 
-- Router SHA-256: `fc7ed6b79a17058c3ec03074d6b8511fdc5274ee4d888762e1353a7d409df963`.
+- Router SHA-256: `13528c31ffe65f55bc19f1a837c085a02a12c89e2a3ec8694dee6e0b3553e026`.
 - Canonical multiview SHA-256: `f69eeae39db888f37a54dcd51f376e21cb340d1c8a7b257f0105d5ecc750779f`.
