@@ -1,30 +1,28 @@
-# Alpha Submission Checklist
+# Beta Submission Checklist
 
 ## Verified locally
 
-- [x] Target folder is named `alpha_test_submission`.
-- [x] No extra compression layer is used.
-- [x] Required executable is exactly `regr_fail_bucketing`.
-- [x] Executable mode is `755`.
+- [x] Target folder is named `beta_test_submission`.
+- [x] Required executable is at the folder top level and named exactly `regr_fail_bucketing`.
+- [x] Executable mode is 755.
 - [x] Interface is `--input <input.csv> --output <output.csv> --k <k>`.
-- [x] Output columns are exactly `Case,bucket`.
-- [x] Package is self-contained; no pip/requirements/environment install is needed.
-- [x] Linux x86_64 executable; packaged ELF maximum is GLIBC 2.28.
+- [x] Output columns are exactly `Case,bucket` with one row per input case.
+- [x] Package is self-contained; no Python/pip/requirements installation is needed.
+- [x] Linux x86_64 package; all 826 ELF files require at most GLIBC 2.28.
 - [x] Package contains no symlinks.
+- [x] Docker is not used.
 - [x] `LLM_MODEL_CONFIG` is parsed as YAML content, not a path.
-- [x] Only the embedding API is called; completion is not called.
-- [x] Missing/failed LLM access falls back to deterministic no-trace inference.
-- [x] Public benchmark runtimes are below the 90-second Alpha limits.
-- [x] Formal prediction does not read gold/golden/meta/trace.
-- [x] No API keys or credentials are included.
+- [x] Only embedding APIs are called; completion is not called.
+- [x] Missing/failed/slow LLM access falls back and still writes valid output.
+- [x] Runtime prediction does not read gold/golden/meta/trace.
+- [x] Package contains no API keys or credentials.
+- [x] Public set1/set2 and 640/3000-case routes complete within Beta limits.
+- [x] Router SHA-256 is `902515919a70120292a6dd14643e6f2a69ea283f86a5377d020e989657071e2e`.
 
 ## User actions before upload
 
-- [ ] Confirm the organizer still accepts the upload. The provided announcement states
-      **June 12, 2026, 17:00 GMT+8**, which is before the current date.
-- [ ] Upload the contents directly into the organizer-provided Google Drive folder
-      named `alpha_test_submission`; do not rename or add a zip/tar layer.
-- [ ] After upload/download, verify the executable bit or organizer-side launch behavior.
-- [ ] Verify SHA-256 of `regr_fail_bucketing`:
-      `8772045d823720981a07d78413c6edced55877e074422c45391353c1084a91cd`.
-- [ ] Keep a local copy because late correction/re-submission may not be accepted.
+- [ ] Confirm the organizer's Beta upload destination and deadline.
+- [ ] Upload the contents directly into the organizer-provided `beta_test_submission` folder; do not add an extra directory or archive layer unless explicitly requested.
+- [ ] After upload/download, verify that `regr_fail_bucketing` remains executable.
+- [ ] Recheck the top-level router SHA-256 against the value above.
+- [ ] Keep an immutable local copy of the submitted folder.

@@ -32,6 +32,22 @@ if [ "$N_CASES" -lt 0 ]; then
 fi
 
 FAST_BIN="$SCRIPT_DIR/fast/regr_fail_bucketing_fast/regr_fail_bucketing_fast"
+MULTIVIEW_BIN="$SCRIPT_DIR/multiview/regr_fail_bucketing_multiview"
+
+if [ "$N_CASES" -le "${BETA_MULTIVIEW_MAX_CASES:-64}" ] \
+  && [ -x "$MULTIVIEW_BIN" ] \
+  && [ -n "${LLM_MODEL_CONFIG:-}" ]; then
+  MULTIVIEW_TIMEOUT="${BETA_MULTIVIEW_WALL_TIMEOUT:-45}"
+  if command -v timeout >/dev/null 2>&1; then
+    if timeout "$MULTIVIEW_TIMEOUT" "$MULTIVIEW_BIN" "$@"; then
+      exit 0
+    fi
+  elif "$MULTIVIEW_BIN" "$@"; then
+    exit 0
+  fi
+  echo "[beta-router] multi-view failed or timed out; using calibrated dual fallback" >&2
+fi
+
 
 if [ "$N_CASES" -le "${BETA_FULL_MAX_CASES:-300}" ]; then
   exec "$SCRIPT_DIR/regr_fail_bucketing_full" "$@"

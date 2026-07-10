@@ -469,9 +469,19 @@ def sample_lodo_train_pairs(
 
 
 def run_view_stage(args: argparse.Namespace, datasets: Sequence[Path]) -> tuple[list[dict], list[dict]]:
-    inputs = [dataset / "input.csv" for dataset in datasets]
     llm_args = make_embedding_args(args)
-    features, _ = plf.build_llm_case_features_for_inputs(inputs, parser=args.parser, svd_dim=args.svd_dim, llm_args=llm_args)
+    # Every benchmark is an independent inference episode. Build its Drain and
+    # deterministic feature documents independently so LODO preprocessing is
+    # reproducible by the single-input formal interface.
+    features = []
+    for dataset in datasets:
+        dataset_features, _ = plf.build_llm_case_features_for_inputs(
+            [dataset / "input.csv"],
+            parser=args.parser,
+            svd_dim=args.svd_dim,
+            llm_args=llm_args,
+        )
+        features.extend(dataset_features)
 
     slices: list[dict] = []
     offset = 0
