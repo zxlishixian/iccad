@@ -43,7 +43,9 @@ The top-level router was invoked directly with the local OpenAI-compatible Nomic
 | cold 160-case stress | 160 | canonical five-view | 16 | n/a | n/a | n/a | 70.13 s | 473 MB |
 | forced 1-second multi-view timeout | 160 | deterministic agglomerative | 14 | n/a | n/a | n/a | 3.88 s | 170 MB |
 
-The 160-case cold run is below the original Final 100-second limit. The guarded router reserves 18 seconds plus a 7-second deterministic retry for `n <= 30`, 85 seconds plus a 10-second retry for `31 <= n <= 300`, and 80 seconds for larger deterministic routes. It removes any stale output before each attempt and validates the exact header and row count before accepting a result.
+The 160-case cold run is below the original Final 100-second limit. Runtime routing now follows both observable size axes. Public-size inputs (`n <= 30`, `k <= 4`) reserve 18 seconds plus a 7-second deterministic retry. Hidden inputs use the shortest applicable 100-second Final cap: 85+10 seconds normally, or 75+15 seconds when a metadata-only estimate exceeds 20M context lines. The official Q&A exposes no 10M/100M tier marker, so the package does not assume a 300-second allowance.
+
+Context-line estimation uses filesystem sizes only and does not open trace logs. On the public sets it estimated 62,668 and 676,277 lines respectively; both correctly selected the 30-second class. A forced extended-context test selected `extended_context_conservative` and still reported `final_limit=100s`.
 
 ## Failure-injection fallback validation
 
@@ -55,6 +57,7 @@ The following tests invoked the top-level executable, never read labels at runti
 | multi-view watchdog = 1 s | 7 | deterministic agglomerative | valid 8-line CSV, exit 0 | 2.72 s |
 | multi-view watchdog = 1 s | 37 | fast then singleton if fast exceeds 10 s | valid 38-line singleton CSV, exit 0 | 10.91 s |
 | calibrated-dual watchdog = 1 s | 240 | deterministic agglomerative | valid 241-line CSV, exit 0 | 7.58 s |
+| extended-context + multi-view watchdog = 1 s | 37 | deterministic agglomerative | valid 38-line CSV, exit 0 | 6.97 s |
 | fast binary deliberately absent | 7 | singleton emergency writer | valid 8-line singleton CSV, exit 0 | < 1 s |
 | force k-means route | 640 | deterministic k-means | valid 641-line CSV, exit 0 | 5.32 s |
 
@@ -74,12 +77,13 @@ The singleton writer uses only the first `Case` column of the supplied input and
 ## Residual risks
 
 - The package was symbol-scanned on Ubuntu, not executed on the organizer's actual RHEL 8 host.
-- Organizer endpoint latency can differ from the local CPU endpoint; 20/85-second primary guards, bounded deterministic retries, result validation, and a singleton writer protect Final limits.
+- Organizer endpoint latency can differ from the local CPU endpoint; 18/85/75-second primary guards, bounded deterministic retries, result validation, and a singleton writer protect Final limits.
+- The interface provides no authoritative 10M/100M tier marker. The metadata estimate may be noisy, so it is used only to shorten the primary attempt; all hidden routes remain capped at 100 seconds.
 - Public labels and known fake labels informed model selection. Public scores are final-artifact sanity scores, not hidden-set generalization estimates.
 
 ## Final hashes
 
-- Router SHA-256: `f0c53ec586d6b46579fec922e8db84311fd8d1c6b085d189bca70b3c56974035`.
+- Router SHA-256: `42e387328dcb9fc90f2f0571b46c9b601eb4f03b24def4c38bb9a1ce8f0d1cb4`.
 - Canonical multiview SHA-256: `f69eeae39db888f37a54dcd51f376e21cb340d1c8a7b257f0105d5ecc750779f`.
 - Calibrated Alpha fallback SHA-256: `8772045d823720981a07d78413c6edced55877e074422c45391353c1084a91cd`.
 - Deterministic fast backend SHA-256: `bf0369c1446ee1f51af2f3f684b8d22df1a92a73087ffe4f02b087364ff97322`.

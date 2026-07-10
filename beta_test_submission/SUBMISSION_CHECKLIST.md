@@ -13,6 +13,9 @@
 - [x] `LLM_MODEL_CONFIG` is parsed as YAML content, not a path.
 - [x] Only embedding APIs are called; completion is not called.
 - [x] Every routing branch has a process watchdog and validates exact header/row count before accepting output.
+- [x] Runtime class uses case count/reference `k` plus a metadata-only context-line estimate.
+- [x] Q&A provides no 10M/100M tier marker; uncertain/extended inputs remain capped at the conservative 100-second Final limit.
+- [x] Context estimation does not open or parse trace logs.
 - [x] Missing, failed, slow, malformed, or incompatible embedding access falls back to deterministic inference.
 - [x] Forced failures of multi-view, calibrated-dual, deterministic, and large k-means branches all produce a valid CSV; the final fallback is singleton buckets.
 - [x] Small-input budget is 18 seconds primary plus 7 seconds fallback, targeting the original 30-second Final limit.
@@ -32,5 +35,5 @@
 
 ## Final hashes
 
-- Router SHA-256: `f0c53ec586d6b46579fec922e8db84311fd8d1c6b085d189bca70b3c56974035`.
+- Router SHA-256: `42e387328dcb9fc90f2f0571b46c9b601eb4f03b24def4c38bb9a1ce8f0d1cb4`.
 - Canonical multiview SHA-256: `f69eeae39db888f37a54dcd51f376e21cb340d1c8a7b257f0105d5ecc750779f`.
