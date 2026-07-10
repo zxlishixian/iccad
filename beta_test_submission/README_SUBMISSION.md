@@ -10,17 +10,18 @@ The top-level executable is a POSIX shell router. Every backend is a self-contai
 
 ## Final-time-aware routing
 
-The router uses the original Final runtime limits as its safety target, rather than the relaxed Beta limits.
+The router uses the original Final runtime limits as its safety target, rather than the relaxed Beta limits. It validates every backend result before accepting it: the file must have the exact `Case,bucket` header and exactly one row for every input case. A stale output is removed before each backend attempt.
 
-- `n <= 64`, embedding configuration present: canonical five-view, five-seed GBDT; 24-second guard.
-- `65 <= n <= 160`, embedding configuration present: the same canonical five-view model; 90-second guard.
-- Multi-view timeout or failure: deterministic Drain/SVD/agglomerative fallback, without a second embedding attempt.
-- `161 <= n <= 300`: calibrated Alpha dual-input backend.
-- `301 <= n <= 900`: deterministic Drain/SVD/agglomerative backend.
-- `n > 900`: deterministic Drain/SVD/k-means backend.
-- Missing embedding configuration: deterministic no-trace backend.
+- `n <= 30`, embedding configuration present: canonical five-view, five-seed GBDT, with an 18-second watchdog.
+- `31 <= n <= 160`, embedding configuration present: the same canonical five-view model, with an 85-second watchdog.
+- `161 <= n <= 300`: calibrated dual-input backend, with an 85-second watchdog.
+- Primary-model failure, timeout, malformed embedding, incompatible embedding dimension, or invalid output: deterministic Drain/SVD/agglomerative retry. Its limit is 8 seconds for `n <= 30` and 10 seconds otherwise.
+- `301 <= n <= 900`: deterministic Drain/SVD/agglomerative backend with an 80-second watchdog.
+- `n > 900`: deterministic Drain/SVD/k-means backend with an 80-second watchdog.
+- Missing embedding configuration: deterministic no-trace backend directly.
+- If the deterministic backend itself fails or yields an invalid CSV, the router emits one singleton bucket per input case. This is a valid scored submission, generally safer than a failed benchmark scoring zero.
 
-The environment variables `BETA_MULTIVIEW_MAX_CASES`, `BETA_MULTIVIEW_WALL_TIMEOUT`, `BETA_FULL_MAX_CASES`, and `BETA_AGGLOM_MAX_CASES` can override these defaults. The router only reads `input.csv` to count cases.
+The `18 + 7` small-input budget leaves explicit watchdog grace within the original 30-second Final limit even when the embedding process is unavailable. Medium routes reserve an 85-second primary attempt plus a 10-second deterministic retry under the original 100-second Final target. Environment variables `BETA_MULTIVIEW_MAX_CASES`, `BETA_MULTIVIEW_WALL_TIMEOUT`, `BETA_FULL_MAX_CASES`, `BETA_FULL_WALL_TIMEOUT`, and `BETA_AGGLOM_MAX_CASES` exist for controlled validation overrides. The router reads only `input.csv` to choose a route; model backends then read the referenced sim/regr logs.
 
 ## Canonical five-view model
 
@@ -32,7 +33,7 @@ For scalable inference, all logs are memoized in-process, case-index-only docume
 
 ## LLM configuration
 
-`LLM_MODEL_CONFIG` must contain YAML content. The package calls only the organizer-provided embedding endpoint; completion is never called. If embeddings are unavailable, malformed, slow, or return an incompatible dimension, the router writes a valid deterministic result instead of failing the benchmark.
+`LLM_MODEL_CONFIG` must contain YAML content. The package calls only the organizer-provided embedding endpoint; completion is never called. If embeddings are unavailable, malformed, slow, or return an incompatible dimension, the router first tries the deterministic backend and finally emits a valid singleton CSV if that backend is also unavailable.
 
 ## Packaging compatibility
 
@@ -42,7 +43,7 @@ For scalable inference, all logs are memoized in-process, case-index-only docume
 - Symlinks: 0 after materialization.
 - Top-level executable mode: 755.
 - Package size: approximately 519 MiB.
-- Router SHA-256: `3ba0024ce225a37f4cf04b761ccf1cb4067a5775241e0f61d4364772e555a134`.
+- Router SHA-256: `f0c53ec586d6b46579fec922e8db84311fd8d1c6b085d189bca70b3c56974035`.
 
 ## Final validation summary
 
@@ -51,9 +52,13 @@ For scalable inference, all logs are memoized in-process, case-index-only docume
 | public benchmark_set_1 | 7 | canonical five-view | 1.000000 | 1.000000 | 1.000000 | 13.00 s |
 | public benchmark_set_2 | 25 | canonical five-view | 0.950469 | 0.982906 | 0.918033 | 17.42 s |
 | cold 160-case stress | 160 | canonical five-view | n/a | n/a | n/a | 70.13 s |
-| forced 1-second guard | 160 | deterministic fallback | n/a | n/a | n/a | 3.88 s |
+| normal set1 recheck | 7 | canonical five-view | n/a | n/a | n/a | 2.49 s |
+| forced 1-second small multi-view guard | 7 | deterministic agglomerative | n/a | n/a | n/a | 2.72 s |
+| forced 1-second 241-case dual guard | 240 | deterministic agglomerative | n/a | n/a | n/a | 7.58 s |
+| forced k-means large route | 640 | deterministic k-means | n/a | n/a | n/a | 5.32 s |
+| disabled deterministic binary | 7 | singleton emergency output | n/a | n/a | n/a | < 1 s |
 
-The 160-case stress input is derived from existing labeled data but uses only `input.csv` and logs during inference. The measurement is a runtime guardrail, not a hidden-score estimate.
+The 160-case stress input is derived from existing labeled data but uses only `input.csv` and logs during inference. The forced-failure rows deliberately use invalid watchdog/binary settings; they validate output continuity, not hidden-score quality. The measurement is a runtime guardrail, not a hidden-score estimate.
 
 ## Files
 

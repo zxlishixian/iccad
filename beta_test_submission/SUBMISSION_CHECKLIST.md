@@ -12,12 +12,15 @@
 - [x] Package contains no symlinks.
 - [x] `LLM_MODEL_CONFIG` is parsed as YAML content, not a path.
 - [x] Only embedding APIs are called; completion is not called.
-- [x] Missing, failed, or slow embedding access falls back to deterministic inference and writes valid output.
+- [x] Every routing branch has a process watchdog and validates exact header/row count before accepting output.
+- [x] Missing, failed, slow, malformed, or incompatible embedding access falls back to deterministic inference.
+- [x] Forced failures of multi-view, calibrated-dual, deterministic, and large k-means branches all produce a valid CSV; the final fallback is singleton buckets.
+- [x] Small-input budget is 18 seconds primary plus 7 seconds fallback, targeting the original 30-second Final limit.
 - [x] Runtime inference does not read gold/golden/meta/trace.
 - [x] No API configuration or credential is packaged.
 - [x] Public set1/set2 pass through the top-level executable.
 - [x] Canonical five-view route passes a fresh-cache 160-case Final-time stress test in 70.13 seconds.
-- [x] Forced timeout fallback produces a valid 160-case output in 3.88 seconds.
+- [x] Forced timeout and unavailable-binary injections produce valid output for 7-, 37-, 240-, and 640-case routes.
 
 ## User actions before upload
 
@@ -29,5 +32,5 @@
 
 ## Final hashes
 
-- Router SHA-256: `3ba0024ce225a37f4cf04b761ccf1cb4067a5775241e0f61d4364772e555a134`.
+- Router SHA-256: `f0c53ec586d6b46579fec922e8db84311fd8d1c6b085d189bca70b3c56974035`.
 - Canonical multiview SHA-256: `f69eeae39db888f37a54dcd51f376e21cb340d1c8a7b257f0105d5ecc750779f`.

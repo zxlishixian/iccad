@@ -43,7 +43,22 @@ The top-level router was invoked directly with the local OpenAI-compatible Nomic
 | cold 160-case stress | 160 | canonical five-view | 16 | n/a | n/a | n/a | 70.13 s | 473 MB |
 | forced 1-second multi-view timeout | 160 | deterministic agglomerative | 14 | n/a | n/a | n/a | 3.88 s | 170 MB |
 
-The 160-case cold run is below the original Final 100-second limit. The medium route has a 90-second process guard; on failure it immediately uses deterministic clustering, avoiding a second embedding call. All validated outputs are exactly `Case,bucket` and have one data row per input case.
+The 160-case cold run is below the original Final 100-second limit. The guarded router reserves 18 seconds plus a 7-second deterministic retry for `n <= 30`, 85 seconds plus a 10-second retry for `31 <= n <= 300`, and 80 seconds for larger deterministic routes. It removes any stale output before each attempt and validates the exact header and row count before accepting a result.
+
+## Failure-injection fallback validation
+
+The following tests invoked the top-level executable, never read labels at runtime, and verified the exact `Case,bucket` header and input-row count.
+
+| Injection | Cases | Expected recovery | Observed result | Wall |
+|---|---:|---|---|---:|
+| no `LLM_MODEL_CONFIG` | 7 | deterministic agglomerative | valid 8-line CSV, exit 0 | 6.80 s |
+| multi-view watchdog = 1 s | 7 | deterministic agglomerative | valid 8-line CSV, exit 0 | 2.72 s |
+| multi-view watchdog = 1 s | 37 | fast then singleton if fast exceeds 10 s | valid 38-line singleton CSV, exit 0 | 10.91 s |
+| calibrated-dual watchdog = 1 s | 240 | deterministic agglomerative | valid 241-line CSV, exit 0 | 7.58 s |
+| fast binary deliberately absent | 7 | singleton emergency writer | valid 8-line singleton CSV, exit 0 | < 1 s |
+| force k-means route | 640 | deterministic k-means | valid 641-line CSV, exit 0 | 5.32 s |
+
+The singleton writer uses only the first `Case` column of the supplied input and makes no quality claim: it normally has TNR = 1 and TPR = 0, hence is generally preferable to the official zero awarded for a failed or timed-out benchmark. It cannot recover from an unreadable input, unwritable output directory, or an external evaluator that kills the entire router before its own guard executes.
 
 ## Binary compatibility and integrity
 
@@ -59,12 +74,12 @@ The 160-case cold run is below the original Final 100-second limit. The medium r
 ## Residual risks
 
 - The package was symbol-scanned on Ubuntu, not executed on the organizer's actual RHEL 8 host.
-- Organizer endpoint latency can differ from the local CPU endpoint; 24/90-second guards and deterministic fallback protect Final limits.
+- Organizer endpoint latency can differ from the local CPU endpoint; 20/85-second primary guards, bounded deterministic retries, result validation, and a singleton writer protect Final limits.
 - Public labels and known fake labels informed model selection. Public scores are final-artifact sanity scores, not hidden-set generalization estimates.
 
 ## Final hashes
 
-- Router SHA-256: `3ba0024ce225a37f4cf04b761ccf1cb4067a5775241e0f61d4364772e555a134`.
+- Router SHA-256: `f0c53ec586d6b46579fec922e8db84311fd8d1c6b085d189bca70b3c56974035`.
 - Canonical multiview SHA-256: `f69eeae39db888f37a54dcd51f376e21cb340d1c8a7b257f0105d5ecc750779f`.
 - Calibrated Alpha fallback SHA-256: `8772045d823720981a07d78413c6edced55877e074422c45391353c1084a91cd`.
 - Deterministic fast backend SHA-256: `bf0369c1446ee1f51af2f3f684b8d22df1a92a73087ffe4f02b087364ff97322`.

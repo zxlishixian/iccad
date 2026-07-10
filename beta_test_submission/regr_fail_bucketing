@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-set -eu
+set -u
 
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 export LOKY_MAX_CPU_COUNT="${LOKY_MAX_CPU_COUNT:-8}"
@@ -7,65 +7,157 @@ export OMP_NUM_THREADS="${OMP_NUM_THREADS:-1}"
 export OPENBLAS_NUM_THREADS="${OPENBLAS_NUM_THREADS:-1}"
 
 INPUT=""
+OUTPUT=""
+K=""
 PREV=""
 for ARG in "$@"; do
-  if [ "$PREV" = "--input" ]; then
-    INPUT="$ARG"
-    break
-  fi
+  case "$PREV" in
+    --input) INPUT="$ARG" ;;
+    --output) OUTPUT="$ARG" ;;
+    --k) K="$ARG" ;;
+  esac
   case "$ARG" in
-    --input=*)
-      INPUT=${ARG#--input=}
-      break
-      ;;
+    --input=*) INPUT=${ARG#--input=} ;;
+    --output=*) OUTPUT=${ARG#--output=} ;;
+    --k=*) K=${ARG#--k=} ;;
   esac
   PREV="$ARG"
 done
 
-if [ -z "$INPUT" ] || [ ! -f "$INPUT" ]; then
-  exec "$SCRIPT_DIR/regr_fail_bucketing_full" "$@"
-fi
-
-N_CASES=$(($(wc -l < "$INPUT") - 1))
-if [ "$N_CASES" -lt 0 ]; then
-  N_CASES=0
-fi
-
-FAST_BIN="$SCRIPT_DIR/fast/regr_fail_bucketing_fast/regr_fail_bucketing_fast"
+FAST_BIN="${BETA_FAST_BIN:-$SCRIPT_DIR/fast/regr_fail_bucketing_fast/regr_fail_bucketing_fast}"
 MULTIVIEW_BIN="$SCRIPT_DIR/multiview/regr_fail_bucketing_multiview"
+FULL_BIN="$SCRIPT_DIR/regr_fail_bucketing_full"
 
-if [ "$N_CASES" -le "${BETA_MULTIVIEW_MAX_CASES:-160}" ] \
-  && [ -x "$MULTIVIEW_BIN" ] \
-  && [ -n "${LLM_MODEL_CONFIG:-}" ]; then
-  if [ "$N_CASES" -le 64 ]; then
-    DEFAULT_MULTIVIEW_TIMEOUT=24
-  else
-    DEFAULT_MULTIVIEW_TIMEOUT=90
-  fi
-  MULTIVIEW_TIMEOUT="${BETA_MULTIVIEW_WALL_TIMEOUT:-$DEFAULT_MULTIVIEW_TIMEOUT}"
-  if command -v timeout >/dev/null 2>&1; then
-    if timeout "$MULTIVIEW_TIMEOUT" "$MULTIVIEW_BIN" "$@"; then
-      exit 0
-    fi
-  elif "$MULTIVIEW_BIN" "$@"; then
-    exit 0
-  fi
-  echo "[beta-router] multi-view failed or timed out; using deterministic fallback" >&2
-  exec "$FAST_BIN" "$@" --llm-mode none --cluster agglomerative
+if [ -z "$INPUT" ] || [ ! -f "$INPUT" ] || [ -z "$OUTPUT" ] || [ -z "$K" ]; then
+  echo "[beta-router] invalid required arguments; delegating to full backend" >&2
+  exec "$FULL_BIN" "$@"
 fi
 
+N_CASES=$(awk 'END { print (NR > 0) ? NR - 1 : 0 }' "$INPUT")
+EXPECTED_LINES=$((N_CASES + 1))
+
+valid_output() {
+  [ -s "$OUTPUT" ] || return 1
+  HEADER=$(sed -n '1{s/\r$//;p;}' "$OUTPUT")
+  [ "$HEADER" = "Case,bucket" ] || return 1
+  ACTUAL_LINES=$(awk 'END { print NR }' "$OUTPUT")
+  [ "$ACTUAL_LINES" -eq "$EXPECTED_LINES" ] || return 1
+}
+
+# A shell watchdog avoids relying on the host's timeout binary. The packaged
+# backends run in one process, so terminating the child also terminates a hung
+# embedding request or pairwise calculation.
+run_timed() {
+  LIMIT=$1
+  shift
+  # A stale output must never be accepted after a failed backend invocation.
+  rm -f "$OUTPUT" 2>/dev/null || true
+  "$@" &
+  CHILD_PID=$!
+  (
+    sleep "$LIMIT"
+    kill -TERM "$CHILD_PID" 2>/dev/null || exit 0
+    sleep 1
+    kill -KILL "$CHILD_PID" 2>/dev/null || true
+  ) &
+  WATCHDOG_PID=$!
+  if wait "$CHILD_PID"; then
+    STATUS=0
+  else
+    STATUS=$?
+  fi
+  kill "$WATCHDOG_PID" 2>/dev/null || true
+  wait "$WATCHDOG_PID" 2>/dev/null || true
+  return "$STATUS"
+}
+
+# Last-resort output: singleton buckets yield TNR=1 and generally BA=0.5,
+# which is materially safer than a failed benchmark scoring zero.
+emergency_singletons() {
+  echo "[beta-router] using emergency singleton output" >&2
+  OUT_DIR=$(dirname -- "$OUTPUT")
+  mkdir -p "$OUT_DIR" 2>/dev/null || true
+  TMP_OUTPUT="${OUTPUT}.emergency.$$"
+  if awk -F',' '
+    BEGIN { print "Case,bucket" }
+    NR > 1 {
+      case_id=$1
+      sub(/^\xef\xbb\xbf/, "", case_id)
+      sub(/^"/, "", case_id)
+      sub(/"$/, "", case_id)
+      sub(/\r$/, "", case_id)
+      printf "%s,bucket_emergency_%06d\n", case_id, NR - 2
+    }
+  ' "$INPUT" > "$TMP_OUTPUT" && mv -f "$TMP_OUTPUT" "$OUTPUT" && valid_output; then
+    return 0
+  fi
+  rm -f "$TMP_OUTPUT" 2>/dev/null || true
+  return 1
+}
+
+run_fast_or_emergency() {
+  METHOD=$1
+  LIMIT=$2
+  shift 2
+  echo "[beta-router] trying deterministic $METHOD fallback (limit=${LIMIT}s)" >&2
+  if run_timed "$LIMIT" "$FAST_BIN" "$@" --llm-mode none --cluster "$METHOD" && valid_output; then
+    return 0
+  fi
+  echo "[beta-router] deterministic fallback failed or produced invalid output" >&2
+  emergency_singletons
+}
+
+if [ "$N_CASES" -le 30 ]; then
+  TOTAL_CLASS="small"
+  # Final public-set budget is 30 seconds. Reserve time for a deterministic
+  # retry and for the emergency writer if the embedding process is unresponsive.
+  PRIMARY_LIMIT=18
+  FAST_FALLBACK_LIMIT=7
+elif [ "$N_CASES" -le 300 ]; then
+  TOTAL_CLASS="medium"
+  PRIMARY_LIMIT=85
+  FAST_FALLBACK_LIMIT=10
+else
+  TOTAL_CLASS="large"
+  PRIMARY_LIMIT=80
+  FAST_FALLBACK_LIMIT=10
+fi
 
 if [ -z "${LLM_MODEL_CONFIG:-}" ]; then
   if [ "$N_CASES" -le "${BETA_AGGLOM_MAX_CASES:-900}" ]; then
-    exec "$FAST_BIN" "$@" --llm-mode none --cluster agglomerative
+    run_fast_or_emergency agglomerative "$PRIMARY_LIMIT" "$@" && exit 0
+  else
+    run_fast_or_emergency kmeans "$PRIMARY_LIMIT" "$@" --cluster-factor 1.0 && exit 0
   fi
-  exec "$FAST_BIN" "$@" --llm-mode none --cluster kmeans --cluster-factor 1.0
+  exit 1
+fi
+
+if [ "$N_CASES" -le "${BETA_MULTIVIEW_MAX_CASES:-160}" ] && [ -x "$MULTIVIEW_BIN" ]; then
+  MULTIVIEW_TIMEOUT="${BETA_MULTIVIEW_WALL_TIMEOUT:-$PRIMARY_LIMIT}"
+  echo "[beta-router] trying canonical multi-view (limit=${MULTIVIEW_TIMEOUT}s)" >&2
+  if run_timed "$MULTIVIEW_TIMEOUT" "$MULTIVIEW_BIN" "$@" && valid_output; then
+    exit 0
+  fi
+  echo "[beta-router] multi-view failed, timed out, or produced invalid output" >&2
+  run_fast_or_emergency agglomerative "$FAST_FALLBACK_LIMIT" "$@" && exit 0
+  exit 1
 fi
 
 if [ "$N_CASES" -le "${BETA_FULL_MAX_CASES:-300}" ]; then
-  exec "$SCRIPT_DIR/regr_fail_bucketing_full" "$@"
-elif [ "$N_CASES" -le "${BETA_AGGLOM_MAX_CASES:-900}" ]; then
-  exec "$FAST_BIN" "$@" --llm-mode none --cluster agglomerative
-else
-  exec "$FAST_BIN" "$@" --llm-mode none --cluster kmeans --cluster-factor 1.0
+  FULL_TIMEOUT="${BETA_FULL_WALL_TIMEOUT:-85}"
+  echo "[beta-router] trying calibrated dual backend (limit=${FULL_TIMEOUT}s)" >&2
+  if run_timed "$FULL_TIMEOUT" "$FULL_BIN" "$@" && valid_output; then
+    exit 0
+  fi
+  echo "[beta-router] calibrated dual failed, timed out, or produced invalid output" >&2
+  run_fast_or_emergency agglomerative 10 "$@" && exit 0
+  exit 1
 fi
+
+if [ "$N_CASES" -le "${BETA_AGGLOM_MAX_CASES:-900}" ]; then
+  run_fast_or_emergency agglomerative "$PRIMARY_LIMIT" "$@" && exit 0
+else
+  run_fast_or_emergency kmeans "$PRIMARY_LIMIT" "$@" --cluster-factor 1.0 && exit 0
+fi
+
+exit 1
