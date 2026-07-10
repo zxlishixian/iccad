@@ -17,12 +17,12 @@
 - [x] Runtime prediction does not read gold/golden/meta/trace.
 - [x] Package contains no API keys or credentials.
 - [x] Public set1/set2 and 640/3000-case routes complete within Beta limits.
-- [x] Router SHA-256 is `902515919a70120292a6dd14643e6f2a69ea283f86a5377d020e989657071e2e`.
+- [x] Router SHA-256 is `e8cb6336522288effeba8315f241ea5afe1c4cbde48c75575aaed915b9f1d9e3`.
 
 ## User actions before upload
 
 - [ ] Confirm the organizer's Beta upload destination and deadline.
 - [ ] Upload the contents directly into the organizer-provided `beta_test_submission` folder; do not add an extra directory or archive layer unless explicitly requested.
 - [ ] After upload/download, verify that `regr_fail_bucketing` remains executable.
-- [ ] Recheck the top-level router SHA-256 against the value above.
+- [x] Rechecked the top-level router SHA-256 against the value above.
 - [ ] Keep an immutable local copy of the submitted folder.

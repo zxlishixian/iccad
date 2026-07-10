@@ -28,7 +28,7 @@ Training builds every benchmark as an independent episode and never constructs p
 
 ## LLM configuration
 
-The binaries parse YAML content from `LLM_MODEL_CONFIG` and call only the organizer-provided embedding endpoint. Completion is not called. Missing configuration skips multi-view; API errors, incompatible dimensions, missing artifacts, or timeout fall back to the calibrated dual model and then its deterministic no-trace fallback.
+The binaries parse YAML content from `LLM_MODEL_CONFIG` and call only the organizer-provided embedding endpoint. Completion is not called. Missing configuration routes directly to deterministic no-trace inference; API errors, incompatible dimensions, missing artifacts, or timeout fall back to the calibrated dual model and then its deterministic no-trace fallback.
 
 ## Packaging compatibility
 
@@ -39,7 +39,7 @@ The binaries parse YAML content from `LLM_MODEL_CONFIG` and call only the organi
 - Symlinks: 0 after materialization.
 - Top-level executable mode: 755.
 - Package size: approximately 520 MiB.
-- Router SHA-256: `902515919a70120292a6dd14643e6f2a69ea283f86a5377d020e989657071e2e`.
+- Router SHA-256: `e8cb6336522288effeba8315f241ea5afe1c4cbde48c75575aaed915b9f1d9e3`.
 
 ## Public validation
 

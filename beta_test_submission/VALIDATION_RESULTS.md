@@ -29,7 +29,7 @@ The final artifacts are trained on the selected seven datasets after model selec
 - Total files: 1825.
 - Package size: approximately 520 MiB.
 - Router and backend executable modes: 755.
-- Router SHA-256: `902515919a70120292a6dd14643e6f2a69ea283f86a5377d020e989657071e2e`.
+- Router SHA-256: `e8cb6336522288effeba8315f241ea5afe1c4cbde48c75575aaed915b9f1d9e3`.
 - Multi-view binary SHA-256: `0578a7be1610dfd2d10151f7bf1b721151bb844ad6a796c83d1828e36a3c3086`.
 - Alpha fallback SHA-256: `8772045d823720981a07d78413c6edced55877e074422c45391353c1084a91cd`.
 - Fast binary SHA-256: `bf0369c1446ee1f51af2f3f684b8d22df1a92a73087ffe4f02b087364ff97322`.

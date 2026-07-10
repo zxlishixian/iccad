@@ -49,6 +49,13 @@ if [ "$N_CASES" -le "${BETA_MULTIVIEW_MAX_CASES:-64}" ] \
 fi
 
 
+if [ -z "${LLM_MODEL_CONFIG:-}" ]; then
+  if [ "$N_CASES" -le "${BETA_AGGLOM_MAX_CASES:-900}" ]; then
+    exec "$FAST_BIN" "$@" --llm-mode none --cluster agglomerative
+  fi
+  exec "$FAST_BIN" "$@" --llm-mode none --cluster kmeans --cluster-factor 1.0
+fi
+
 if [ "$N_CASES" -le "${BETA_FULL_MAX_CASES:-300}" ]; then
   exec "$SCRIPT_DIR/regr_fail_bucketing_full" "$@"
 elif [ "$N_CASES" -le "${BETA_AGGLOM_MAX_CASES:-900}" ]; then
