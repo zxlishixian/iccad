@@ -134,7 +134,52 @@ run_fast_or_emergency() {
   emergency_singletons
 }
 
-if [ "$N_CASES" -le 30 ] && [ "$K" -le 4 ]; then
+# Map both observable signals onto the official (max cases, reference k)
+# scale. Since k is only a soft hint, the larger of the two tiers wins.
+if [ "$N_CASES" -le 10 ]; then
+  CASE_SCALE=2
+elif [ "$N_CASES" -le 30 ]; then
+  CASE_SCALE=4
+elif [ "$N_CASES" -le 100 ]; then
+  CASE_SCALE=8
+elif [ "$N_CASES" -le 300 ]; then
+  CASE_SCALE=16
+elif [ "$N_CASES" -le 1000 ]; then
+  CASE_SCALE=32
+else
+  CASE_SCALE=64
+fi
+
+if [ "$K" -le 2 ]; then
+  K_SCALE=2
+elif [ "$K" -le 4 ]; then
+  K_SCALE=4
+elif [ "$K" -le 8 ]; then
+  K_SCALE=8
+elif [ "$K" -le 16 ]; then
+  K_SCALE=16
+elif [ "$K" -le 32 ]; then
+  K_SCALE=32
+else
+  K_SCALE=64
+fi
+
+if [ "$CASE_SCALE" -ge "$K_SCALE" ]; then
+  OFFICIAL_SCALE=$CASE_SCALE
+else
+  OFFICIAL_SCALE=$K_SCALE
+fi
+
+case "$OFFICIAL_SCALE" in
+  2) SCALE_MAX_CASES=10 ;;
+  4) SCALE_MAX_CASES=30 ;;
+  8) SCALE_MAX_CASES=100 ;;
+  16) SCALE_MAX_CASES=300 ;;
+  32) SCALE_MAX_CASES=1000 ;;
+  *) SCALE_MAX_CASES=3000 ;;
+esac
+
+if [ "$OFFICIAL_SCALE" -le 4 ]; then
   RUNTIME_CLASS="public_1m"
   FINAL_LIMIT=30
   # Reserve explicit process-kill and emergency-writer grace.
@@ -156,7 +201,7 @@ else
   FAST_FALLBACK_LIMIT=10
 fi
 
-echo "[beta-router] cases=$N_CASES k=$K context_disk_bytes=$CONTEXT_BYTES estimated_lines=$EST_CONTEXT_LINES class=$RUNTIME_CLASS final_limit=${FINAL_LIMIT}s" >&2
+echo "[beta-router] cases=$N_CASES k=$K scale_k=$OFFICIAL_SCALE scale_max_cases=$SCALE_MAX_CASES context_disk_bytes=$CONTEXT_BYTES estimated_lines=$EST_CONTEXT_LINES class=$RUNTIME_CLASS final_limit=${FINAL_LIMIT}s" >&2
 
 if [ -z "${LLM_MODEL_CONFIG:-}" ]; then
   if [ "$N_CASES" -le "${BETA_AGGLOM_MAX_CASES:-900}" ]; then

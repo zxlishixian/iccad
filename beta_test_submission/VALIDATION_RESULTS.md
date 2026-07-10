@@ -45,6 +45,8 @@ The top-level router was invoked directly with the local OpenAI-compatible Nomic
 
 The 160-case cold run is below the original Final 100-second limit. Runtime routing now follows both observable size axes. Public-size inputs (`n <= 30`, `k <= 4`) reserve 18 seconds plus a 7-second deterministic retry. Hidden inputs use the shortest applicable 100-second Final cap: 85+10 seconds normally, or 75+15 seconds when a metadata-only estimate exceeds 20M context lines. The official Q&A exposes no 10M/100M tier marker, so the package does not assume a 300-second allowance.
 
+Case count and soft `k` are independently mapped to the official 10/30/100/300/1000/3000-case and 2/4/8/16/32/64-bucket scales; the larger scale wins. Tests confirmed: 7 cases with `k=2` resolves to max-10/30 seconds, the same 7 cases with `k=8` resolves to max-100/100 seconds, and 240 cases with undersized `k=8` resolves to max-300/100 seconds.
+
 Context-line estimation uses filesystem sizes only and does not open trace logs. On the public sets it estimated 62,668 and 676,277 lines respectively; both correctly selected the 30-second class. A forced extended-context test selected `extended_context_conservative` and still reported `final_limit=100s`.
 
 ## Failure-injection fallback validation
@@ -83,7 +85,7 @@ The singleton writer uses only the first `Case` column of the supplied input and
 
 ## Final hashes
 
-- Router SHA-256: `42e387328dcb9fc90f2f0571b46c9b601eb4f03b24def4c38bb9a1ce8f0d1cb4`.
+- Router SHA-256: `fc7ed6b79a17058c3ec03074d6b8511fdc5274ee4d888762e1353a7d409df963`.
 - Canonical multiview SHA-256: `f69eeae39db888f37a54dcd51f376e21cb340d1c8a7b257f0105d5ecc750779f`.
 - Calibrated Alpha fallback SHA-256: `8772045d823720981a07d78413c6edced55877e074422c45391353c1084a91cd`.
 - Deterministic fast backend SHA-256: `bf0369c1446ee1f51af2f3f684b8d22df1a92a73087ffe4f02b087364ff97322`.

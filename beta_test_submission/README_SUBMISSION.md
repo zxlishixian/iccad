@@ -12,13 +12,24 @@ The top-level executable is a POSIX shell router. Every backend is a self-contai
 
 The router uses the original Final runtime limits as its safety target, rather than the relaxed Beta limits. The official interface exposes no benchmark number or `Max Lines` tier. `B_QA_20260612.pdf` confirms only that Alpha/Beta enlarge the outer timeout; it does not define a tier environment variable or extra CLI argument. Therefore the router never assumes that it owns the 300-second tier.
 
-The router combines case count, reference `k`, and a metadata-only context-line estimate:
+The router first maps both observable size signals onto the official scale:
+
+| Scale | Max cases | Reference `k` |
+|---:|---:|---:|
+| 1 | 10 | 2 |
+| 2 | 30 | 4 |
+| 3/7 | 100 | 8 |
+| 4/8 | 300 | 16 |
+| 5/9 | 1000 | 32 |
+| 6/10 | 3000 | 64 |
+
+Case count and soft `k` are mapped independently, then the larger scale wins. Thus an undersized `k` cannot hide a large input, while a large `k` conservatively upgrades a small input. The resolved scale is then combined with a metadata-only context-line estimate:
 
 | Observable class | Conservative Final cap | Primary / deterministic retry |
 |---|---:|---:|
-| `n <= 30` and `k <= 4` (public 1M class) | 30 s | 18 s / 7 s |
-| hidden, estimated context below 20M lines | 100 s | 85 s / 10 s |
-| hidden, estimated context at least 20M lines | 100 s | 75 s / 15 s |
+| resolved scale has max 10/30 cases and `k` 2/4 | 30 s | 18 s / 7 s |
+| resolved scale has max 100–3000 cases, estimated context below 20M lines | 100 s | 85 s / 10 s |
+| resolved scale has max 100–3000 cases, estimated context at least 20M lines | 100 s | 75 s / 15 s |
 
 The last row may correspond to an official 100M/300-second benchmark, but remains capped at 100 seconds because the tier cannot be identified safely. Reserving more deterministic-retry time is safer than risking an external 100-second kill after assuming 300 seconds.
 
@@ -48,7 +59,7 @@ For scalable inference, all logs are memoized in-process, case-index-only docume
 - Symlinks: 0 after materialization.
 - Top-level executable mode: 755.
 - Package size: approximately 519 MiB.
-- Router SHA-256: `42e387328dcb9fc90f2f0571b46c9b601eb4f03b24def4c38bb9a1ce8f0d1cb4`.
+- Router SHA-256: `fc7ed6b79a17058c3ec03074d6b8511fdc5274ee4d888762e1353a7d409df963`.
 
 ## Final validation summary
 
