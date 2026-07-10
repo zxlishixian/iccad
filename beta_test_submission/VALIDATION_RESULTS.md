@@ -2,59 +2,69 @@
 
 Validation date: 2026-07-11
 
-## Official requirements checked
+## Requirements and safety target
 
-Sources: `Alpha Test Submission Guideline_ABC.pdf`, `B_20260601.pdf`, and `B_QA_20260612.pdf`. The package follows the required top-level executable interface, Linux x86_64 and GLIBC 2.28 compatibility, self-contained no-install deployment, no-Docker rule, and Google Drive folder delivery format. The official machine provides 32 logical CPU cores and approximately 128 GB RAM. Beta timeout limits are twice the normal benchmark limits.
+The package was checked against `Alpha Test Submission Guideline_ABC.pdf`, `B_20260601.pdf`, and `B_QA_20260612.pdf`: required top-level executable, self-contained Linux x86_64 deployment, no Docker, output format, and Google Drive folder delivery. Although Beta doubles the standard time limits, all new routing decisions below use the original Final limits as the guardrail.
 
-## Model and protocol
+The official metric is pairwise balanced accuracy averaged over ten benchmarks. A benchmark that fails or times out scores zero, so bounded fallback is part of the model design.
 
-The new route uses sim/regr only, five embedding views, five GBDT seeds, dual/five-view blend `0.50`, seed probability averaging, fixed reference `k`, and average linkage. Training and LODO preprocessing build each benchmark independently. Runtime does not read gold/golden/meta/trace and does not call completion.
+## Model protocol
 
-Corrected seven-dataset episode LODO, seeds 0-4:
+The canonical multi-view route uses only sim/regr evidence and organizer embeddings. It has five views, 64-dimensional train-fitted reducers, five GBDT seeds, dual/five-view probability blend 0.50, seed probability averaging, fixed supplied `k`, and average linkage. Every training benchmark is an independent episode; pairs are sampled only within a dataset. Runtime does not discover or read gold/golden/meta/trace and never calls completion.
+
+Canonicalization removes only arbitrary case-index prefixes from feature/summary documents. This creates exact duplicate documents that are embedded once. Artifacts were retrained with this representation; it is not an inference-only text rewrite.
+
+Historical corrected seven-dataset episode LODO, seeds 0–4, for the original multi-view model:
 
 | Method | Mean BA | Worst BA | Mean TPR | Mean TNR |
 |---|---:|---:|---:|---:|
 | dual | 0.738913 | 0.527778 | 0.634376 | 0.843450 |
 | five-view | 0.785807 | 0.675312 | 0.699148 | 0.872465 |
-| dual/five-view seed mean + average link | 0.7977 | 0.5278 | 0.7502 | 0.8451 |
+| dual/five-view seed mean + average linkage | 0.7977 | 0.5278 | 0.7502 | 0.8451 |
 
-The final artifacts are trained on the selected seven datasets after model selection. Public-set scores below are final-artifact sanity results, not held-out estimates.
+Canonical-artifact external screening, each target dataset fully excluded from its single-seed training fold:
 
-## Binary compatibility
+| Held-out dataset | BA | TPR | TNR |
+|---|---:|---:|---:|
+| stage2, 240 cases | 0.913667 | 0.916667 | 0.910667 |
+| VCS, 40 cases | 0.742771 | 0.641791 | 0.843750 |
+| directed, 37 cases | 0.690282 | 0.579832 | 0.800731 |
+
+These three screens support the runtime artifact but are not a replacement for a full canonical 7-dataset, multi-seed LODO study.
+
+## End-to-end package validation
+
+The top-level router was invoked directly with the local OpenAI-compatible Nomic embedding endpoint. All five views returned 768-dimensional embeddings; no embedding fallback was used.
+
+| Test | Cases | Route | Clusters | BA | TPR | TNR | Wall | Max RSS |
+|---|---:|---|---:|---:|---:|---:|---:|---:|
+| benchmark_set_1 | 7 | canonical five-view | 2 | 1.000000 | 1.000000 | 1.000000 | 13.00 s | 184 MB |
+| benchmark_set_2 | 25 | canonical five-view | 4 | 0.950469 | 0.982906 | 0.918033 | 17.42 s | 196 MB |
+| cold 160-case stress | 160 | canonical five-view | 16 | n/a | n/a | n/a | 70.13 s | 473 MB |
+| forced 1-second multi-view timeout | 160 | deterministic agglomerative | 14 | n/a | n/a | n/a | 3.88 s | 170 MB |
+
+The 160-case cold run is below the original Final 100-second limit. The medium route has a 90-second process guard; on failure it immediately uses deterministic clustering, avoiding a second embedding call. All validated outputs are exactly `Case,bucket` and have one data row per input case.
+
+## Binary compatibility and integrity
 
 - PyInstaller 6.20.0 onedir applications.
 - Packaged ELF files scanned: 826.
 - Maximum required GLIBC symbol: 2.28; symbols above 2.28: 0.
 - Symlinks after materialization: 0.
-- Total files: 1825.
-- Package size: approximately 520 MiB.
-- Router and backend executable modes: 755.
-- Router SHA-256: `e8cb6336522288effeba8315f241ea5afe1c4cbde48c75575aaed915b9f1d9e3`.
-- Multi-view binary SHA-256: `0578a7be1610dfd2d10151f7bf1b721151bb844ad6a796c83d1828e36a3c3086`.
-- Alpha fallback SHA-256: `8772045d823720981a07d78413c6edced55877e074422c45391353c1084a91cd`.
-- Fast binary SHA-256: `bf0369c1446ee1f51af2f3f684b8d22df1a92a73087ffe4f02b087364ff97322`.
-
-## End-to-end validation
-
-The top-level router was invoked directly without an activated Python environment. The local OpenAI-compatible endpoint returned 768-dimensional features, summary, event, object, and context embeddings with no fallback.
-
-| Dataset / test | Cases | Route | Clusters | BA | TPR | TNR | Wall | Max RSS |
-|---|---:|---|---:|---:|---:|---:|---:|---:|
-| benchmark_set_1 | 7 | multi-view | 2 | 1.000000 | 1.000000 | 1.000000 | 11.78 s | 163 MB |
-| benchmark_set_2 | 25 | multi-view | 4 | 0.950469 | 0.982906 | 0.918033 | 17.88 s | 172 MB |
-| stage3 | 640 | deterministic agglomerative | 28 | 0.778823 | 0.847862 | 0.709783 | 5.97 s | 184 MB |
-| repeated stage3 | 3000 | deterministic k-means | 64 | n/a | n/a | n/a | 19.48 s | 272 MB |
-
-All outputs have exactly `Case,bucket`, the expected row count, and the expected route-specific cluster count where fixed k is used. The 3000-case input repeats only 640 unique case identifiers and is runtime-only.
-
-## Failure and fallback validation
-
-- Missing `LLM_MODEL_CONFIG`: multi-view is skipped; the bundled Alpha path completed set1 in 2.14 s and ultimately emitted a valid deterministic result.
-- Forced one-second multi-view wall timeout: router printed a fallback warning, the Alpha model completed, and a valid output was produced in 3.82 s.
-- Multi-view validates all five embedding matrices as 768-dimensional and exits nonzero on fallback vectors, allowing the router to recover.
+- Package size: approximately 519 MiB.
+- Top-level router and multiview backend modes: 755.
+- No `gold.csv`, `golden.csv`, `meta.csv`, trace logs, Python source files, or API configuration files are packaged.
+- Credential-pattern hits were manually traced to required scikit-learn HTML/CSS representation assets; no API key or credential is packaged.
 
 ## Residual risks
 
-- The package was assembled on Ubuntu and symbol-scanned, but not executed on an actual RHEL 8 host.
-- Official endpoint latency may differ from the local CPU-compatible endpoint; the wall-time guard protects small-set execution.
-- Public labels were used in final training, so public sanity scores must not be interpreted as hidden-set generalization estimates.
+- The package was symbol-scanned on Ubuntu, not executed on the organizer's actual RHEL 8 host.
+- Organizer endpoint latency can differ from the local CPU endpoint; 24/90-second guards and deterministic fallback protect Final limits.
+- Public labels and known fake labels informed model selection. Public scores are final-artifact sanity scores, not hidden-set generalization estimates.
+
+## Final hashes
+
+- Router SHA-256: `3ba0024ce225a37f4cf04b761ccf1cb4067a5775241e0f61d4364772e555a134`.
+- Canonical multiview SHA-256: `f69eeae39db888f37a54dcd51f376e21cb340d1c8a7b257f0105d5ecc750779f`.
+- Calibrated Alpha fallback SHA-256: `8772045d823720981a07d78413c6edced55877e074422c45391353c1084a91cd`.
+- Deterministic fast backend SHA-256: `bf0369c1446ee1f51af2f3f684b8d22df1a92a73087ffe4f02b087364ff97322`.

@@ -19,12 +19,17 @@ import numpy as np
 
 import official_style_features as osf
 import pairwise_llm_features as plf
+import regr_fail_bucketing as rfb
 import train_pairwise_llm as tpl
+from beta_multiview_inference import (
+    build_feature_documents,
+    canonicalize_document,
+    install_log_sample_cache,
+)
 from run_experiments import read_gold
 from run_graph_multiview_experiments import (
     build_all_view_documents,
     build_multiview_pair_feature_matrix,
-    fetch_view_embeddings,
     make_embedding_args,
     train_view_model,
     views_for_config,
@@ -62,8 +67,9 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--svd-dim", type=int, default=64)
     parser.add_argument("--llm-doc-max-features", type=int, default=80)
     parser.add_argument("--llm-cache-dir", type=Path, default=Path("/tmp/regr_fail_llm_cache"))
-    parser.add_argument("--llm-batch-size", type=int, default=64)
+    parser.add_argument("--llm-batch-size", type=int, default=128)
     parser.add_argument("--llm-timeout-sec", type=float, default=600.0)
+    parser.add_argument("--canonicalize-case-indices", action="store_true")
     return parser.parse_args(argv)
 
 
@@ -91,25 +97,62 @@ def sample_training_pairs(features, slices, args, seed: int):
 
 
 def main(argv: Sequence[str] | None = None) -> int:
+    install_log_sample_cache()
     args = parse_args(argv)
     datasets = [resolve(path) for path in args.train_datasets]
     args.output_dir.mkdir(parents=True, exist_ok=True)
     llm_args = make_embedding_args(args)
     # Each benchmark is an independent episode at inference time. Build its
-    # Drain/deterministic documents independently during training as well;
-    # joining all input CSVs here creates a transductive vocabulary that cannot
-    # be reproduced by the formal single-input interface.
+    # Drain/deterministic features independently during training as well.
     features = []
+    docs = {view: [] for view in ("features", "summary", "event", "object", "context")}
     for dataset in datasets:
         dataset_features, _ = plf.build_llm_case_features_for_inputs(
             [dataset / "input.csv"],
             parser=args.parser,
             svd_dim=args.svd_dim,
-            llm_args=llm_args,
+            llm_args=None,
+            log_llm_disabled=False,
         )
         features.extend(dataset_features)
-    if not features or features[0].llm_vec.size != 768 or features[0].llm_summary_vec.size != 768:
-        raise RuntimeError("features/summary embedding_dim must both be 768; refusing fallback artifacts")
+        feature_docs, summary_docs = build_feature_documents(
+            dataset / "input.csv", args.parser, args.llm_doc_max_features
+        )
+        custom_docs = build_all_view_documents(dataset)
+        dataset_docs = {"features": feature_docs, "summary": summary_docs, **custom_docs}
+        for view, values in dataset_docs.items():
+            docs[view].extend(
+                canonicalize_document(view, doc) if args.canonicalize_case_indices else doc
+                for doc in values
+            )
+
+    counts = {view: len(values) for view, values in docs.items()}
+    combined_docs = [doc for values in docs.values() for doc in values]
+    unique_docs = list(dict.fromkeys(combined_docs))
+    unique_index = {doc: idx for idx, doc in enumerate(unique_docs)}
+    inverse = np.fromiter(
+        (unique_index[doc] for doc in combined_docs), dtype=np.int64, count=len(combined_docs)
+    )
+    embeddings, model_name = rfb.fetch_llm_embeddings(unique_docs, llm_args)
+    unique_matrix = np.asarray(embeddings, dtype=np.float32)
+    if unique_matrix.ndim != 2 or unique_matrix.shape != (len(unique_docs), 768):
+        raise RuntimeError(f"combined embedding shape {unique_matrix.shape}; refusing fallback artifacts")
+    matrix = unique_matrix[inverse]
+    matrix /= np.maximum(np.linalg.norm(matrix, axis=1, keepdims=True), np.float32(1e-12))
+    raw_views = {}
+    offset = 0
+    for view, count in counts.items():
+        raw_views[view] = matrix[offset : offset + count].astype(np.float32, copy=False)
+        offset += count
+        print(
+            f"[final-train] view={view} model={model_name} docs={count} "
+            f"unique_total={len(unique_docs)} embedding_dim={raw_views[view].shape[1]}",
+            flush=True,
+        )
+    for idx, feature in enumerate(features):
+        feature.llm_vec = raw_views["features"][idx]
+        feature.llm_summary_vec = raw_views["summary"][idx]
+    raw_custom = {view: raw_views[view] for view in ("event", "object", "context")}
 
     slices = []
     offset = 0
@@ -122,17 +165,6 @@ def main(argv: Sequence[str] | None = None) -> int:
             "labels": labels,
         })
         offset += len(labels)
-
-    raw_custom: dict[str, np.ndarray] = {}
-    docs = {view: [] for view in ("event", "object", "context")}
-    for dataset in datasets:
-        dataset_docs = build_all_view_documents(dataset)
-        for view in docs:
-            docs[view].extend(dataset_docs[view])
-    for view in docs:
-        raw_custom[view] = fetch_view_embeddings(docs[view], args, view)
-        if raw_custom[view].shape != (len(features), 768):
-            raise RuntimeError(f"{view} embedding shape {raw_custom[view].shape}; refusing fallback artifacts")
 
     manifest = {
         "schema_version": 1,
@@ -147,6 +179,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         "source_clusterer": "agglomerative_complete",
         "final_clusterer": "agglomerative_avg",
         "embedding_dim": 768,
+        "canonicalized_docs": bool(args.canonicalize_case_indices),
         "training_dataset_names": [dataset.name for dataset in datasets],
         "training_case_count": len(features),
         "models": [],

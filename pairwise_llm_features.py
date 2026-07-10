@@ -323,6 +323,7 @@ def build_llm_case_features_for_inputs(
     parser: str = "drain",
     svd_dim: int = 64,
     llm_args: argparse.Namespace | None = None,
+    log_llm_disabled: bool = True,
 ) -> tuple[list[LLMCaseFeature], pf.VectorizerBundle]:
     """Build deterministic features for one or more inputs and attach LLM embeddings.
 
@@ -393,7 +394,8 @@ def build_llm_case_features_for_inputs(
             llm_vecs = [np.zeros(0, dtype=np.float32) for _ in det_features]
             llm_summary_vecs = [np.zeros(0, dtype=np.float32) for _ in det_features]
     else:
-        print("[llm_features] LLM disabled; using zero llm_vec", file=sys.stderr)
+        if log_llm_disabled:
+            print("[llm_features] LLM disabled; using zero llm_vec", file=sys.stderr)
         llm_vecs = [np.zeros(0, dtype=np.float32) for _ in det_features]
         llm_summary_vecs = [np.zeros(0, dtype=np.float32) for _ in det_features]
 

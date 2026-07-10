@@ -1,6 +1,7 @@
 {
+  "canonicalized_docs": true,
   "consensus_weight": 0.0,
-  "created_unix": 1783666678.3047597,
+  "created_unix": 1783710522.59073,
   "embedding_dim": 768,
   "final_clusterer": "agglomerative_avg",
   "models": [
@@ -81,7 +82,7 @@
       ],
       "pairs": 44449,
       "preprocess_file": "preprocess_seed0.pkl",
-      "runtime_sec": 11.266447913832963,
+      "runtime_sec": 19.32015382964164,
       "seed": 0,
       "view_config": "dual"
     },
@@ -162,7 +163,7 @@
       ],
       "pairs": 44449,
       "preprocess_file": "preprocess_seed0.pkl",
-      "runtime_sec": 13.453061814419925,
+      "runtime_sec": 42.39961316436529,
       "seed": 0,
       "view_config": "quad_event_object_context"
     },
@@ -243,7 +244,7 @@
       ],
       "pairs": 44449,
       "preprocess_file": "preprocess_seed1.pkl",
-      "runtime_sec": 10.581187869422138,
+      "runtime_sec": 19.98305268306285,
       "seed": 1,
       "view_config": "dual"
     },
@@ -324,7 +325,7 @@
       ],
       "pairs": 44449,
       "preprocess_file": "preprocess_seed1.pkl",
-      "runtime_sec": 13.459939223714173,
+      "runtime_sec": 41.18393092416227,
       "seed": 1,
       "view_config": "quad_event_object_context"
     },
@@ -405,7 +406,7 @@
       ],
       "pairs": 44449,
       "preprocess_file": "preprocess_seed2.pkl",
-      "runtime_sec": 10.686145555227995,
+      "runtime_sec": 19.840304042212665,
       "seed": 2,
       "view_config": "dual"
     },
@@ -486,7 +487,7 @@
       ],
       "pairs": 44449,
       "preprocess_file": "preprocess_seed2.pkl",
-      "runtime_sec": 14.102667117491364,
+      "runtime_sec": 41.14991660322994,
       "seed": 2,
       "view_config": "quad_event_object_context"
     },
@@ -567,7 +568,7 @@
       ],
       "pairs": 44449,
       "preprocess_file": "preprocess_seed3.pkl",
-      "runtime_sec": 11.345850783400238,
+      "runtime_sec": 19.869890443980694,
       "seed": 3,
       "view_config": "dual"
     },
@@ -648,7 +649,7 @@
       ],
       "pairs": 44449,
       "preprocess_file": "preprocess_seed3.pkl",
-      "runtime_sec": 14.02110546734184,
+      "runtime_sec": 41.86856861412525,
       "seed": 3,
       "view_config": "quad_event_object_context"
     },
@@ -729,7 +730,7 @@
       ],
       "pairs": 44449,
       "preprocess_file": "preprocess_seed4.pkl",
-      "runtime_sec": 10.793220014311373,
+      "runtime_sec": 21.511881666257977,
       "seed": 4,
       "view_config": "dual"
     },
@@ -810,7 +811,7 @@
       ],
       "pairs": 44449,
       "preprocess_file": "preprocess_seed4.pkl",
-      "runtime_sec": 14.284105048514903,
+      "runtime_sec": 41.53334277495742,
       "seed": 4,
       "view_config": "quad_event_object_context"
     }

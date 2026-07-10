@@ -34,10 +34,15 @@ fi
 FAST_BIN="$SCRIPT_DIR/fast/regr_fail_bucketing_fast/regr_fail_bucketing_fast"
 MULTIVIEW_BIN="$SCRIPT_DIR/multiview/regr_fail_bucketing_multiview"
 
-if [ "$N_CASES" -le "${BETA_MULTIVIEW_MAX_CASES:-64}" ] \
+if [ "$N_CASES" -le "${BETA_MULTIVIEW_MAX_CASES:-160}" ] \
   && [ -x "$MULTIVIEW_BIN" ] \
   && [ -n "${LLM_MODEL_CONFIG:-}" ]; then
-  MULTIVIEW_TIMEOUT="${BETA_MULTIVIEW_WALL_TIMEOUT:-45}"
+  if [ "$N_CASES" -le 64 ]; then
+    DEFAULT_MULTIVIEW_TIMEOUT=24
+  else
+    DEFAULT_MULTIVIEW_TIMEOUT=90
+  fi
+  MULTIVIEW_TIMEOUT="${BETA_MULTIVIEW_WALL_TIMEOUT:-$DEFAULT_MULTIVIEW_TIMEOUT}"
   if command -v timeout >/dev/null 2>&1; then
     if timeout "$MULTIVIEW_TIMEOUT" "$MULTIVIEW_BIN" "$@"; then
       exit 0
@@ -45,7 +50,8 @@ if [ "$N_CASES" -le "${BETA_MULTIVIEW_MAX_CASES:-64}" ] \
   elif "$MULTIVIEW_BIN" "$@"; then
     exit 0
   fi
-  echo "[beta-router] multi-view failed or timed out; using calibrated dual fallback" >&2
+  echo "[beta-router] multi-view failed or timed out; using deterministic fallback" >&2
+  exec "$FAST_BIN" "$@" --llm-mode none --cluster agglomerative
 fi
 
 
