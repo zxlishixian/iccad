@@ -21,6 +21,7 @@ import official_style_features as osf
 import pairwise_llm_features as plf
 import regr_fail_bucketing as rfb
 import train_pairwise_llm as tpl
+from evaluation_leakage_guard import dataset_identity
 from beta_multiview_inference import (
     build_feature_documents,
     canonicalize_document,
@@ -181,6 +182,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         "embedding_dim": 768,
         "canonicalized_docs": bool(args.canonicalize_case_indices),
         "training_dataset_names": [dataset.name for dataset in datasets],
+        "training_datasets": [dataset_identity(dataset, include_case_logs=True) for dataset in datasets],
         "training_case_count": len(features),
         "models": [],
     }
