@@ -28,6 +28,7 @@ DEFAULT_DATASETS = [
     Path("old_fake_dataset/stage3_dataset_32bugs_640cases"),
     Path("official_format_fake_dataset/official_vcs_stage1_dataset_v1"),
     Path("official_format_fake_dataset/stable_official_like_multitest_v1"),
+    Path("official_format_fake_dataset/directed_cross_v2"),
     Path("test_case/problem/benchmark_set_1"),
     Path("test_case/problem/benchmark_set_2"),
 ]

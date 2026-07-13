@@ -20,6 +20,7 @@ import numpy as np
 import graph_clustering as gc
 import official_style_features as osf
 from run_experiments import pairwise_scores, read_gold
+from run_graph_multiview_experiments import conflict_matrix_from_records
 from run_official_full_retrain_experiments import write_csv, write_pred
 
 
@@ -176,6 +177,16 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--safe-weights", nargs="+", type=float, default=[0.25, 0.50, 0.75])
     parser.add_argument("--guard-consensus", nargs="+", type=float, default=[0.60, 0.70, 0.80, 0.90])
     parser.add_argument("--guard-strengths", nargs="+", type=float, default=[0.25, 0.50, 1.00])
+    parser.add_argument("--signed-conflict-penalty", type=float, default=1.0)
+    parser.add_argument("--signed-max-iter", type=int, default=20)
+    parser.add_argument("--signed-keep-k", action=argparse.BooleanOptionalAction, default=True)
+    parser.add_argument("--merge-top-m", type=int, default=5)
+    parser.add_argument("--merge-threshold", type=float, default=0.75)
+    parser.add_argument("--merge-conflict-threshold", type=float, default=0.20)
+    parser.add_argument("--merge-internal-threshold", type=float, default=0.55)
+    parser.add_argument("--merge-max-merges", type=int, default=2)
+    parser.add_argument("--mknn-k", type=int, default=5)
+    parser.add_argument("--mknn-threshold", type=float, default=0.65)
     return parser.parse_args(argv)
 
 
@@ -194,6 +205,9 @@ def main(argv: Sequence[str] | None = None) -> int:
         cases = osf.read_cases(dataset / "input.csv")
         gold = read_gold(osf.gold_path(dataset))
         k = len(set(gold))
+        conflict = conflict_matrix_from_records(
+            osf.build_case_records(name, dataset / "input.csv", gold_csv=None)
+        )
         load_started = time.perf_counter()
         primary_stack = _load_seed_blends(
             primary_dirs, name, args.seeds, args.primary_beta, args.base_view,
@@ -214,7 +228,22 @@ def main(argv: Sequence[str] | None = None) -> int:
         for policy, prob, diagnostics in candidates:
             for clusterer in args.clusterers:
                 started = time.perf_counter()
-                result = gc.cluster_probability_graph(prob, k, clusterer)
+                result = gc.cluster_probability_graph(
+                    prob,
+                    k,
+                    clusterer,
+                    conflict_matrix=conflict,
+                    signed_conflict_penalty=args.signed_conflict_penalty,
+                    signed_max_iter=args.signed_max_iter,
+                    signed_keep_k=args.signed_keep_k,
+                    merge_top_m=args.merge_top_m,
+                    merge_threshold=args.merge_threshold,
+                    merge_conflict_threshold=args.merge_conflict_threshold,
+                    merge_internal_threshold=args.merge_internal_threshold,
+                    merge_max_merges=args.merge_max_merges,
+                    mknn_k=args.mknn_k,
+                    mknn_threshold=args.mknn_threshold,
+                )
                 cluster_sec = time.perf_counter() - started
                 pred_path = args.output_dir / "preds" / f"{name}_{policy}_{clusterer}.csv"
                 pred = write_pred(pred_path, cases, result.labels)

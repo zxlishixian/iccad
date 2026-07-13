@@ -37,6 +37,7 @@ DEFAULT_DATASETS = [
     Path("old_fake_dataset/stage3_dataset_32bugs_640cases"),
     Path("official_format_fake_dataset/official_vcs_stage1_dataset_v1"),
     Path("official_format_fake_dataset/stable_official_like_multitest_v1"),
+    Path("official_format_fake_dataset/directed_cross_v2"),
     Path("test_case/problem/benchmark_set_1"),
     Path("test_case/problem/benchmark_set_2"),
 ]
@@ -685,6 +686,8 @@ def run_fold(
         llm_mode="embedding",
         llm_doc_style="features",
         llm_cache_dir=args.llm_cache_dir,
+        llm_batch_size=args.llm_batch_size,
+        llm_timeout_sec=args.llm_timeout_sec,
         svd_dim=args.svd_dim,
         llm_dual=True,
     )
@@ -875,6 +878,8 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     p.add_argument("--svd-dim", type=int, default=64)
     p.add_argument("--llm-reduce-dim", type=int, default=64)
     p.add_argument("--llm-cache-dir", type=Path, default=Path("/tmp/regr_fail_llm_cache"))
+    p.add_argument("--llm-batch-size", type=int, default=64)
+    p.add_argument("--llm-timeout-sec", type=float, default=20.0)
     p.add_argument("--hard-positive-fraction", type=float, default=0.40)
     p.add_argument("--positive-mass", type=float, default=1.0 / 3.0)
     p.add_argument("--connectivity-weight", type=float, default=0.20)

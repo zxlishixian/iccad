@@ -2443,3 +2443,56 @@ Outputs:
 - `/tmp/graph_multiview_hpr1_s3_9_all8_complete/summary.csv`
 - `/tmp/graph_multiview_hpr1_blend_s0_9_all8_complete/summary.csv`
 
+### Runtime-only unseen-log stress validation
+
+An unlabeled official-profile stress suite now validates cold-cache embedding,
+watchdog, memory, and output behavior without using the generated cases for
+training or score reporting. With normalization-resistant unique failure
+documents, five-view inference completed within the Final limit for 10 and 100
+cases, but a two-seed selective model did not finish the 300-case profile within
+95 seconds. The experimental anytime policy therefore enables the current
+embedding expert only for `n <= 100`; larger profiles publish the deterministic
+baseline without waiting for an unsafe expert. All tested profiles from 10 to
+3000 cases produced valid `Case,bucket` output within their Final limits.
+
+See `RUNTIME_ONLY_STRESS_REPORT.md` for the timing table, limitations, and
+routing recommendation. Existing Alpha and Beta submission directories were
+not modified.
+
+### Deterministic-first sparse multi-view refinement
+
+The first medium-scale improvement experiment removes the main cost in the
+older selective implementation: it no longer embeds the features/summary views
+for every case. The deployable experimental path first publishes the packaged
+deterministic result, selects up to 40 difficult cases using only deterministic
+sim/regr evidence, adds two representative anchors per baseline bucket, and
+requests all five embedding views only for that sparse active set. The expert
+can only reassign selected cases when its best bucket clears both a probability
+floor and a margin over the current bucket; moves that would empty a bucket are
+forbidden. Missing configuration, API failure, or incompatible dimensions
+preserve the already-written baseline.
+
+On the 240-case stage2 dataset, a cold-cache two-seed artifact run embedded 57
+active cases (285 documents), evaluated 757 expert edges, and finished in
+47.30 seconds. BA improved from 0.7657 for the packaged deterministic baseline
+to 0.7772, with both TPR and TNR improving. On the normalization-resistant
+300-case runtime-only profile, 294 of 295 documents were unique and inference
+finished in 65.25 seconds with a valid 301-line output. A sequential
+baseline-reuse router completed in 71.35 seconds; the valid baseline was
+available after about 9 seconds and the expert then atomically upgraded it.
+
+An eight-dataset seeds 0-9 strict-LODO sparse-edge simulation improved the
+deterministic proxy macro BA from 0.6889 to 0.6955. Stage2 and VCS improved, stage3 decreased
+by 0.0018, and official set1/set2 were unchanged. This is promising as a
+`101-300` case intermediate expert, but it is not yet promoted into
+`beta_test_submission_v2`; the next step is packaging this route as a self-contained candidate and running the full submission guardrail.
+
+Outputs and implementation:
+
+- `sparse_multiview_inference.py`
+- `run_sparse_anchor_refinement_experiments.py`
+- `/tmp/sparse_inference_stage2/`
+- `/tmp/sparse_inference_runtime_b4/`
+- `/tmp/sparse_anchor_lodo_all8/`
+- `/tmp/sparse_anchor_lodo_all8_s0_9/`
+

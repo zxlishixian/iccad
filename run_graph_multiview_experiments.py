@@ -390,10 +390,29 @@ def build_multiview_pair_feature_matrix(
     pairs: Sequence[tuple[int, int]],
 ) -> np.ndarray:
     mats: dict[str, np.ndarray] = dict(view_mats)
+
+    def _safe_vstack(vecs: list[np.ndarray]) -> np.ndarray:
+        """vstack with zero-padding for missing (size-0) vectors."""
+        dims = {v.shape[0] for v in vecs if v.size > 0 and v.ndim == 1}
+        dim = max(dims) if dims else 64  # default to 64 if all zero
+        padded = []
+        for v in vecs:
+            if v.size == 0 or v.ndim == 0:
+                padded.append(np.zeros(dim, dtype=np.float32))
+            elif v.shape[0] == dim:
+                padded.append(v.astype(np.float32, copy=False))
+            else:
+                # pad or trim
+                arr = np.zeros(dim, dtype=np.float32)
+                n = min(v.shape[0], dim)
+                arr[:n] = v.astype(np.float32)[:n]
+                padded.append(arr)
+        return np.array(padded, dtype=np.float32)
+
     if "features" in view_names:
-        mats["features"] = np.vstack([f.effective_llm_vec for f in features]).astype(np.float32)
+        mats["features"] = _safe_vstack([f.effective_llm_vec for f in features])
     if "summary" in view_names:
-        mats["summary"] = np.vstack([f.effective_llm_summary_vec for f in features]).astype(np.float32)
+        mats["summary"] = _safe_vstack([f.effective_llm_summary_vec for f in features])
     if not pairs:
         sample = build_multiview_pair_feature_matrix(features, view_mats, view_names, [(0, 0)]) if features else np.zeros((1, 0), dtype=np.float32)
         return np.zeros((0, sample.shape[1]), dtype=np.float32)

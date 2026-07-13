@@ -1,0 +1,4 @@
+#!/bin/sh
+# Beta v3 LODO multi-view inference wrapper
+export BETA_MULTIVIEW_MODEL_DIR="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)/models_multiview_lodo"
+exec /home/lishixian/miniforge3/envs/collab-overcooked/bin/python /home/lishixian/iccad/beta_v3_multiview_inference.py "$@"
