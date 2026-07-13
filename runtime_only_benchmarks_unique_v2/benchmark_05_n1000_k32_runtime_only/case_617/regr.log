@@ -1,0 +1,21 @@
+UVM_FATAL /runtime_only_unique_aaws.sv(1) @ 1: runtime_only_unique_failure_aaws normalization resistant timing marker
+RUNTIME_ONLY_CASE=617 SOURCE_A=benchmark_set_2:2
+riscv_csr_test.0 : [FAILED]
+RUNTIME_ONLY_COMBINE SOURCE_B=benchmark_set_2:8
+riscv_debug_ebreakmu_test.0 : [FAILED]
+000000000 RUNTIME_ONLY neutral retire case=00617 pc=0x80013bb8 opcode=xor x9=0x80013bb8
+000000001 RUNTIME_ONLY neutral retire case=00617 pc=0x80013bbc opcode=addi x10=0x80013bbd
+000000002 RUNTIME_ONLY neutral retire case=00617 pc=0x80013bc0 opcode=lw x11=0x80013bc2
+000000003 RUNTIME_ONLY neutral retire case=00617 pc=0x80013bc4 opcode=sw x12=0x80013bc7
+000000004 RUNTIME_ONLY neutral retire case=00617 pc=0x80013bc8 opcode=beq x13=0x80013bcc
+000000005 RUNTIME_ONLY neutral retire case=00617 pc=0x80013bcc opcode=csrrw x14=0x80013bc9
+000000006 RUNTIME_ONLY neutral retire case=00617 pc=0x80013bd0 opcode=xor x15=0x80013bd6
+000000007 RUNTIME_ONLY neutral retire case=00617 pc=0x80013bd4 opcode=addi x16=0x80013bd3
+000000008 RUNTIME_ONLY neutral retire case=00617 pc=0x80013bd8 opcode=lw x17=0x80013bd0
+000000009 RUNTIME_ONLY neutral retire case=00617 pc=0x80013bdc opcode=sw x18=0x80013bd5
+000000010 RUNTIME_ONLY neutral retire case=00617 pc=0x80013be0 opcode=beq x19=0x80013bea
+000000011 RUNTIME_ONLY neutral retire case=00617 pc=0x80013be4 opcode=csrrw x20=0x80013bef
+000000012 RUNTIME_ONLY neutral retire case=00617 pc=0x80013be8 opcode=xor x21=0x80013be4
+000000013 RUNTIME_ONLY neutral retire case=00617 pc=0x80013bec opcode=addi x22=0x80013be1
+000000014 RUNTIME_ONLY neutral retire case=00617 pc=0x80013bf0 opcode=lw x23=0x80013bfe
+000000015 RUNTIME_ONLY neutral retire case=00617 pc=0x80013bf4 opcode=sw x24=0x80013bfb

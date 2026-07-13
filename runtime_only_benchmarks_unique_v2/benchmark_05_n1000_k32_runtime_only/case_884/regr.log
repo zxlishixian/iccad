@@ -1,0 +1,24 @@
+UVM_FATAL /runtime_only_unique_aagz.sv(1) @ 1: runtime_only_unique_failure_aagz normalization resistant timing marker
+RUNTIME_ONLY_CASE=884 SOURCE_A=benchmark_set_2:13
+Mismatch[1]:
+ibex[151] : pc[800109e8] sra x22,x17,x13: s6:00000001
+RUNTIME_ONLY_COMBINE SOURCE_B=benchmark_set_2:21
+spike[1194] : pc[ffffffff800009b6] mulh a6, sp, a3: a6:00000040
+[FAILED]: 678 matched, 1696 mismatch
+000000000 RUNTIME_ONLY neutral retire case=00884 pc=0x8001c45c opcode=sw x20=0x8001c45c
+000000001 RUNTIME_ONLY neutral retire case=00884 pc=0x8001c460 opcode=beq x21=0x8001c461
+000000002 RUNTIME_ONLY neutral retire case=00884 pc=0x8001c464 opcode=csrrw x22=0x8001c466
+000000003 RUNTIME_ONLY neutral retire case=00884 pc=0x8001c468 opcode=xor x23=0x8001c46b
+000000004 RUNTIME_ONLY neutral retire case=00884 pc=0x8001c46c opcode=addi x24=0x8001c468
+000000005 RUNTIME_ONLY neutral retire case=00884 pc=0x8001c470 opcode=lw x25=0x8001c475
+000000006 RUNTIME_ONLY neutral retire case=00884 pc=0x8001c474 opcode=sw x26=0x8001c472
+000000007 RUNTIME_ONLY neutral retire case=00884 pc=0x8001c478 opcode=beq x27=0x8001c47f
+000000008 RUNTIME_ONLY neutral retire case=00884 pc=0x8001c47c opcode=csrrw x28=0x8001c474
+000000009 RUNTIME_ONLY neutral retire case=00884 pc=0x8001c480 opcode=xor x29=0x8001c489
+000000010 RUNTIME_ONLY neutral retire case=00884 pc=0x8001c484 opcode=addi x30=0x8001c48e
+000000011 RUNTIME_ONLY neutral retire case=00884 pc=0x8001c488 opcode=lw x31=0x8001c483
+000000012 RUNTIME_ONLY neutral retire case=00884 pc=0x8001c48c opcode=sw x0=0x8001c480
+000000013 RUNTIME_ONLY neutral retire case=00884 pc=0x8001c490 opcode=beq x1=0x8001c49d
+000000014 RUNTIME_ONLY neutral retire case=00884 pc=0x8001c494 opcode=csrrw x2=0x8001c49a
+000000015 RUNTIME_ONLY neutral retire case=00884 pc=0x8001c498 opcode=xor x3=0x8001c497
+000000016 RUNTIME_ONLY neutral retire case=00884 pc=0x8001c49c opcode=addi x4=0x8001c48c

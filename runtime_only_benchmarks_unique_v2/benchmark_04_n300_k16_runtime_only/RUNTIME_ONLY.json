@@ -1,0 +1,18 @@
+{
+  "benchmark_id": 4,
+  "cases": 300,
+  "final_limit_sec": 100,
+  "k": 16,
+  "labels_available": false,
+  "lines_per_case": 334,
+  "materialization_ratio": 0.01002,
+  "materialized_lines": 100200,
+  "max_lines": 10000000,
+  "runtime_only": true,
+  "score_reporting_allowed": false,
+  "source_datasets": [
+    "benchmark_set_1",
+    "benchmark_set_2"
+  ],
+  "training_allowed": false
+}

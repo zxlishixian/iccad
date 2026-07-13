@@ -1,0 +1,6 @@
+UVM_FATAL /runtime_only_unique_aarp.sv(1) @ 1: runtime_only_unique_failure_aarp normalization resistant timing marker
+RUNTIME_ONLY_CASE=484 SOURCE_A=benchmark_set_1:4
+riscv_debug_basic_test.0 : [FAILED]
+RUNTIME_ONLY_COMBINE SOURCE_B=benchmark_set_2:8
+riscv_debug_ebreakmu_test.0 : [FAILED]
+000000000 RUNTIME_ONLY neutral retire case=00484 pc=0x8000f7ac opcode=csrrw x4=0x8000f7ac

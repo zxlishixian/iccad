@@ -1,0 +1,8 @@
+UVM_FATAL /runtime_only_unique_aaos.sv(1) @ 1: runtime_only_unique_failure_aaos normalization resistant timing marker
+RUNTIME_ONLY_CASE=1085 SOURCE_A=benchmark_set_2:22
+Mismatch[1]:
+ibex[231] : pc[80000474] c.or x14,x8: a4:00ef9e4f
+RUNTIME_ONLY_COMBINE SOURCE_B=benchmark_set_2:23
+spike[167] : pc[ffffffff80000370] ori s7, zero, 190: s7:000000be
+[FAILED]: 153 matched, 3219 mismatch
+000000000 RUNTIME_ONLY neutral retire case=01085 pc=0x80022b34 opcode=xor x29=0x80022b34

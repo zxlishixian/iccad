@@ -1,0 +1,83 @@
+UVM_FATAL /runtime_only_unique_aadh.sv(1) @ 1: runtime_only_unique_failure_aadh normalization resistant timing marker
+RUNTIME_ONLY_CASE=112 SOURCE_A=benchmark_set_2:9
+Mismatch[1]:
+ibex[653] : pc[80000ab2] remu x26,x17,x10: s10:0000005d
+RUNTIME_ONLY_COMBINE SOURCE_B=benchmark_set_2:22
+spike[231] : pc[ffffffff80000464] c.lui t3, 0x9: t3:00009000
+[FAILED]: 377 matched, 11187 mismatch
+000000000 RUNTIME_ONLY neutral retire case=00112 pc=0x80003950 opcode=csrrw x16=0x80003950
+000000001 RUNTIME_ONLY neutral retire case=00112 pc=0x80003954 opcode=xor x17=0x80003955
+000000002 RUNTIME_ONLY neutral retire case=00112 pc=0x80003958 opcode=addi x18=0x8000395a
+000000003 RUNTIME_ONLY neutral retire case=00112 pc=0x8000395c opcode=lw x19=0x8000395f
+000000004 RUNTIME_ONLY neutral retire case=00112 pc=0x80003960 opcode=sw x20=0x80003964
+000000005 RUNTIME_ONLY neutral retire case=00112 pc=0x80003964 opcode=beq x21=0x80003961
+000000006 RUNTIME_ONLY neutral retire case=00112 pc=0x80003968 opcode=csrrw x22=0x8000396e
+000000007 RUNTIME_ONLY neutral retire case=00112 pc=0x8000396c opcode=xor x23=0x8000396b
+000000008 RUNTIME_ONLY neutral retire case=00112 pc=0x80003970 opcode=addi x24=0x80003978
+000000009 RUNTIME_ONLY neutral retire case=00112 pc=0x80003974 opcode=lw x25=0x8000397d
+000000010 RUNTIME_ONLY neutral retire case=00112 pc=0x80003978 opcode=sw x26=0x80003972
+000000011 RUNTIME_ONLY neutral retire case=00112 pc=0x8000397c opcode=beq x27=0x80003977
+000000012 RUNTIME_ONLY neutral retire case=00112 pc=0x80003980 opcode=csrrw x28=0x8000398c
+000000013 RUNTIME_ONLY neutral retire case=00112 pc=0x80003984 opcode=xor x29=0x80003989
+000000014 RUNTIME_ONLY neutral retire case=00112 pc=0x80003988 opcode=addi x30=0x80003986
+000000015 RUNTIME_ONLY neutral retire case=00112 pc=0x8000398c opcode=lw x31=0x80003983
+000000016 RUNTIME_ONLY neutral retire case=00112 pc=0x80003990 opcode=sw x0=0x80003980
+000000017 RUNTIME_ONLY neutral retire case=00112 pc=0x80003994 opcode=beq x1=0x80003985
+000000018 RUNTIME_ONLY neutral retire case=00112 pc=0x80003998 opcode=csrrw x2=0x8000398a
+000000019 RUNTIME_ONLY neutral retire case=00112 pc=0x8000399c opcode=xor x3=0x8000398f
+000000020 RUNTIME_ONLY neutral retire case=00112 pc=0x800039a0 opcode=addi x4=0x800039b4
+000000021 RUNTIME_ONLY neutral retire case=00112 pc=0x800039a4 opcode=lw x5=0x800039b1
+000000022 RUNTIME_ONLY neutral retire case=00112 pc=0x800039a8 opcode=sw x6=0x800039be
+000000023 RUNTIME_ONLY neutral retire case=00112 pc=0x800039ac opcode=beq x7=0x800039bb
+000000024 RUNTIME_ONLY neutral retire case=00112 pc=0x800039b0 opcode=csrrw x8=0x800039a8
+000000025 RUNTIME_ONLY neutral retire case=00112 pc=0x800039b4 opcode=xor x9=0x800039ad
+000000026 RUNTIME_ONLY neutral retire case=00112 pc=0x800039b8 opcode=addi x10=0x800039a2
+000000027 RUNTIME_ONLY neutral retire case=00112 pc=0x800039bc opcode=lw x11=0x800039a7
+000000028 RUNTIME_ONLY neutral retire case=00112 pc=0x800039c0 opcode=sw x12=0x800039dc
+000000029 RUNTIME_ONLY neutral retire case=00112 pc=0x800039c4 opcode=beq x13=0x800039d9
+000000030 RUNTIME_ONLY neutral retire case=00112 pc=0x800039c8 opcode=csrrw x14=0x800039d6
+000000031 RUNTIME_ONLY neutral retire case=00112 pc=0x800039cc opcode=xor x15=0x800039d3
+000000032 RUNTIME_ONLY neutral retire case=00112 pc=0x800039d0 opcode=addi x16=0x800039f0
+000000033 RUNTIME_ONLY neutral retire case=00112 pc=0x800039d4 opcode=lw x17=0x800039f5
+000000034 RUNTIME_ONLY neutral retire case=00112 pc=0x800039d8 opcode=sw x18=0x800039fa
+000000035 RUNTIME_ONLY neutral retire case=00112 pc=0x800039dc opcode=beq x19=0x800039ff
+000000036 RUNTIME_ONLY neutral retire case=00112 pc=0x800039e0 opcode=csrrw x20=0x800039c4
+000000037 RUNTIME_ONLY neutral retire case=00112 pc=0x800039e4 opcode=xor x21=0x800039c1
+000000038 RUNTIME_ONLY neutral retire case=00112 pc=0x800039e8 opcode=addi x22=0x800039ce
+000000039 RUNTIME_ONLY neutral retire case=00112 pc=0x800039ec opcode=lw x23=0x800039cb
+000000040 RUNTIME_ONLY neutral retire case=00112 pc=0x800039f0 opcode=sw x24=0x800039d8
+000000041 RUNTIME_ONLY neutral retire case=00112 pc=0x800039f4 opcode=beq x25=0x800039dd
+000000042 RUNTIME_ONLY neutral retire case=00112 pc=0x800039f8 opcode=csrrw x26=0x800039d2
+000000043 RUNTIME_ONLY neutral retire case=00112 pc=0x800039fc opcode=xor x27=0x800039d7
+000000044 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a00 opcode=addi x28=0x80003a2c
+000000045 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a04 opcode=lw x29=0x80003a29
+000000046 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a08 opcode=sw x30=0x80003a26
+000000047 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a0c opcode=beq x31=0x80003a23
+000000048 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a10 opcode=csrrw x0=0x80003a20
+000000049 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a14 opcode=xor x1=0x80003a25
+000000050 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a18 opcode=addi x2=0x80003a2a
+000000051 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a1c opcode=lw x3=0x80003a2f
+000000052 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a20 opcode=sw x4=0x80003a14
+000000053 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a24 opcode=beq x5=0x80003a11
+000000054 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a28 opcode=csrrw x6=0x80003a1e
+000000055 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a2c opcode=xor x7=0x80003a1b
+000000056 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a30 opcode=addi x8=0x80003a08
+000000057 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a34 opcode=lw x9=0x80003a0d
+000000058 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a38 opcode=sw x10=0x80003a02
+000000059 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a3c opcode=beq x11=0x80003a07
+000000060 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a40 opcode=csrrw x12=0x80003a7c
+000000061 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a44 opcode=xor x13=0x80003a79
+000000062 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a48 opcode=addi x14=0x80003a76
+000000063 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a4c opcode=lw x15=0x80003a73
+000000064 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a50 opcode=sw x16=0x80003a10
+000000065 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a54 opcode=beq x17=0x80003a15
+000000066 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a58 opcode=csrrw x18=0x80003a1a
+000000067 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a5c opcode=xor x19=0x80003a1f
+000000068 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a60 opcode=addi x20=0x80003a24
+000000069 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a64 opcode=lw x21=0x80003a21
+000000070 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a68 opcode=sw x22=0x80003a2e
+000000071 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a6c opcode=beq x23=0x80003a2b
+000000072 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a70 opcode=csrrw x24=0x80003a38
+000000073 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a74 opcode=xor x25=0x80003a3d
+000000074 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a78 opcode=addi x26=0x80003a32
+000000075 RUNTIME_ONLY neutral retire case=00112 pc=0x80003a7c opcode=lw x27=0x80003a37

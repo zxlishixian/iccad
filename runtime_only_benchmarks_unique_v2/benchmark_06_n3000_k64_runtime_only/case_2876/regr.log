@@ -1,0 +1,7 @@
+UVM_FATAL /runtime_only_unique_adfp.sv(1) @ 1: runtime_only_unique_failure_adfp normalization resistant timing marker
+RUNTIME_ONLY_CASE=2876 SOURCE_A=benchmark_set_2:21
+Mismatch[1]:
+ibex[1194] : pc[800009aa] c.xor x8,x12: s0:800142d3
+RUNTIME_ONLY_COMBINE SOURCE_B=benchmark_set_2:16
+riscv_debug_ebreak_test.0 : [FAILED]
+000000000 RUNTIME_ONLY neutral retire case=02876 pc=0x8005bfb4 opcode=sw x28=0x8005bfb4

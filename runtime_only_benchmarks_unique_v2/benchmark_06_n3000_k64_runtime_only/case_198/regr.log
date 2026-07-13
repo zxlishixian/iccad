@@ -1,0 +1,8 @@
+UVM_FATAL /runtime_only_unique_aagp.sv(1) @ 1: runtime_only_unique_failure_aagp normalization resistant timing marker
+RUNTIME_ONLY_CASE=198 SOURCE_A=benchmark_set_1:6
+Mismatch[1]:
+ibex[371] : pc[800005ae] sltu x29,x22,x26: t4:00000001
+RUNTIME_ONLY_COMBINE SOURCE_B=benchmark_set_2:22
+spike[231] : pc[ffffffff80000464] c.lui t3, 0x9: t3:00009000
+[FAILED]: 377 matched, 11187 mismatch
+000000000 RUNTIME_ONLY neutral retire case=00198 pc=0x80006550 opcode=addi x6=0x80006550

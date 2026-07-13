@@ -1,0 +1,6 @@
+UVM_FATAL /runtime_only_unique_aape.sv(1) @ 1: runtime_only_unique_failure_aape normalization resistant timing marker
+RUNTIME_ONLY_CASE=1097 SOURCE_A=benchmark_set_2:2
+riscv_csr_test.0 : [FAILED]
+RUNTIME_ONLY_COMBINE SOURCE_B=benchmark_set_2:11
+spike[186] : pc[ffffffff800002be] c.addi tp, -2: tp:fffffffe
+[FAILED]: 228 matched, 7623 mismatch

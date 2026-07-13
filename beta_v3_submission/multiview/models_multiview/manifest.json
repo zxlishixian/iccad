@@ -1,0 +1,846 @@
+{
+  "canonicalized_docs": true,
+  "consensus_weight": 0.0,
+  "created_unix": 1783880713.2058234,
+  "embedding_dim": 768,
+  "final_clusterer": "agglomerative_complete",
+  "models": [
+    {
+      "feature_dim": 293,
+      "model_file": "model_dual_seed0.pkl",
+      "pair_stats": [
+        {
+          "dataset": "first_batch_dataset",
+          "hard_negative_pairs": 720,
+          "hard_positive_oversampled": 360,
+          "negative_pairs": 720,
+          "negative_sampling": "confusable",
+          "pairs": 1080,
+          "positive_pairs": 360,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "stage2_dataset_working",
+          "hard_negative_pairs": 3360,
+          "hard_positive_oversampled": 1680,
+          "negative_pairs": 3360,
+          "negative_sampling": "confusable",
+          "pairs": 5040,
+          "positive_pairs": 1680,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "stage3_dataset_32bugs_640cases",
+          "hard_negative_pairs": 12160,
+          "hard_positive_oversampled": 6080,
+          "negative_pairs": 12160,
+          "negative_sampling": "confusable",
+          "pairs": 18240,
+          "positive_pairs": 6080,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "official_vcs_stage1_dataset_v1",
+          "hard_negative_pairs": 512,
+          "hard_positive_oversampled": 268,
+          "negative_pairs": 512,
+          "negative_sampling": "confusable",
+          "pairs": 780,
+          "positive_pairs": 268,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "directed_cross_v2",
+          "hard_negative_pairs": 238,
+          "hard_positive_oversampled": 119,
+          "negative_pairs": 238,
+          "negative_sampling": "confusable",
+          "pairs": 357,
+          "positive_pairs": 119,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "benchmark_set_1",
+          "hard_negative_pairs": 12,
+          "hard_positive_oversampled": 9,
+          "negative_pairs": 12,
+          "negative_sampling": "confusable",
+          "pairs": 21,
+          "positive_pairs": 9,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "benchmark_set_2",
+          "hard_negative_pairs": 183,
+          "hard_positive_oversampled": 117,
+          "negative_pairs": 183,
+          "negative_sampling": "confusable",
+          "pairs": 300,
+          "positive_pairs": 117,
+          "positive_sampling": "diverse"
+        }
+      ],
+      "pairs": 25818,
+      "preprocess_file": "preprocess_seed0.pkl",
+      "runtime_sec": 7.004970871843398,
+      "seed": 0,
+      "view_config": "dual"
+    },
+    {
+      "feature_dim": 683,
+      "model_file": "model_quad_event_object_context_seed0.pkl",
+      "pair_stats": [
+        {
+          "dataset": "first_batch_dataset",
+          "hard_negative_pairs": 720,
+          "hard_positive_oversampled": 360,
+          "negative_pairs": 720,
+          "negative_sampling": "confusable",
+          "pairs": 1080,
+          "positive_pairs": 360,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "stage2_dataset_working",
+          "hard_negative_pairs": 3360,
+          "hard_positive_oversampled": 1680,
+          "negative_pairs": 3360,
+          "negative_sampling": "confusable",
+          "pairs": 5040,
+          "positive_pairs": 1680,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "stage3_dataset_32bugs_640cases",
+          "hard_negative_pairs": 12160,
+          "hard_positive_oversampled": 6080,
+          "negative_pairs": 12160,
+          "negative_sampling": "confusable",
+          "pairs": 18240,
+          "positive_pairs": 6080,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "official_vcs_stage1_dataset_v1",
+          "hard_negative_pairs": 512,
+          "hard_positive_oversampled": 268,
+          "negative_pairs": 512,
+          "negative_sampling": "confusable",
+          "pairs": 780,
+          "positive_pairs": 268,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "directed_cross_v2",
+          "hard_negative_pairs": 238,
+          "hard_positive_oversampled": 119,
+          "negative_pairs": 238,
+          "negative_sampling": "confusable",
+          "pairs": 357,
+          "positive_pairs": 119,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "benchmark_set_1",
+          "hard_negative_pairs": 12,
+          "hard_positive_oversampled": 9,
+          "negative_pairs": 12,
+          "negative_sampling": "confusable",
+          "pairs": 21,
+          "positive_pairs": 9,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "benchmark_set_2",
+          "hard_negative_pairs": 183,
+          "hard_positive_oversampled": 117,
+          "negative_pairs": 183,
+          "negative_sampling": "confusable",
+          "pairs": 300,
+          "positive_pairs": 117,
+          "positive_sampling": "diverse"
+        }
+      ],
+      "pairs": 25818,
+      "preprocess_file": "preprocess_seed0.pkl",
+      "runtime_sec": 7.537320234812796,
+      "seed": 0,
+      "view_config": "quad_event_object_context"
+    },
+    {
+      "feature_dim": 293,
+      "model_file": "model_dual_seed1.pkl",
+      "pair_stats": [
+        {
+          "dataset": "first_batch_dataset",
+          "hard_negative_pairs": 720,
+          "hard_positive_oversampled": 360,
+          "negative_pairs": 720,
+          "negative_sampling": "confusable",
+          "pairs": 1080,
+          "positive_pairs": 360,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "stage2_dataset_working",
+          "hard_negative_pairs": 3360,
+          "hard_positive_oversampled": 1680,
+          "negative_pairs": 3360,
+          "negative_sampling": "confusable",
+          "pairs": 5040,
+          "positive_pairs": 1680,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "stage3_dataset_32bugs_640cases",
+          "hard_negative_pairs": 12160,
+          "hard_positive_oversampled": 6080,
+          "negative_pairs": 12160,
+          "negative_sampling": "confusable",
+          "pairs": 18240,
+          "positive_pairs": 6080,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "official_vcs_stage1_dataset_v1",
+          "hard_negative_pairs": 512,
+          "hard_positive_oversampled": 268,
+          "negative_pairs": 512,
+          "negative_sampling": "confusable",
+          "pairs": 780,
+          "positive_pairs": 268,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "directed_cross_v2",
+          "hard_negative_pairs": 238,
+          "hard_positive_oversampled": 119,
+          "negative_pairs": 238,
+          "negative_sampling": "confusable",
+          "pairs": 357,
+          "positive_pairs": 119,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "benchmark_set_1",
+          "hard_negative_pairs": 12,
+          "hard_positive_oversampled": 9,
+          "negative_pairs": 12,
+          "negative_sampling": "confusable",
+          "pairs": 21,
+          "positive_pairs": 9,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "benchmark_set_2",
+          "hard_negative_pairs": 183,
+          "hard_positive_oversampled": 117,
+          "negative_pairs": 183,
+          "negative_sampling": "confusable",
+          "pairs": 300,
+          "positive_pairs": 117,
+          "positive_sampling": "diverse"
+        }
+      ],
+      "pairs": 25818,
+      "preprocess_file": "preprocess_seed1.pkl",
+      "runtime_sec": 5.779874075204134,
+      "seed": 1,
+      "view_config": "dual"
+    },
+    {
+      "feature_dim": 683,
+      "model_file": "model_quad_event_object_context_seed1.pkl",
+      "pair_stats": [
+        {
+          "dataset": "first_batch_dataset",
+          "hard_negative_pairs": 720,
+          "hard_positive_oversampled": 360,
+          "negative_pairs": 720,
+          "negative_sampling": "confusable",
+          "pairs": 1080,
+          "positive_pairs": 360,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "stage2_dataset_working",
+          "hard_negative_pairs": 3360,
+          "hard_positive_oversampled": 1680,
+          "negative_pairs": 3360,
+          "negative_sampling": "confusable",
+          "pairs": 5040,
+          "positive_pairs": 1680,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "stage3_dataset_32bugs_640cases",
+          "hard_negative_pairs": 12160,
+          "hard_positive_oversampled": 6080,
+          "negative_pairs": 12160,
+          "negative_sampling": "confusable",
+          "pairs": 18240,
+          "positive_pairs": 6080,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "official_vcs_stage1_dataset_v1",
+          "hard_negative_pairs": 512,
+          "hard_positive_oversampled": 268,
+          "negative_pairs": 512,
+          "negative_sampling": "confusable",
+          "pairs": 780,
+          "positive_pairs": 268,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "directed_cross_v2",
+          "hard_negative_pairs": 238,
+          "hard_positive_oversampled": 119,
+          "negative_pairs": 238,
+          "negative_sampling": "confusable",
+          "pairs": 357,
+          "positive_pairs": 119,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "benchmark_set_1",
+          "hard_negative_pairs": 12,
+          "hard_positive_oversampled": 9,
+          "negative_pairs": 12,
+          "negative_sampling": "confusable",
+          "pairs": 21,
+          "positive_pairs": 9,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "benchmark_set_2",
+          "hard_negative_pairs": 183,
+          "hard_positive_oversampled": 117,
+          "negative_pairs": 183,
+          "negative_sampling": "confusable",
+          "pairs": 300,
+          "positive_pairs": 117,
+          "positive_sampling": "diverse"
+        }
+      ],
+      "pairs": 25818,
+      "preprocess_file": "preprocess_seed1.pkl",
+      "runtime_sec": 7.403878076933324,
+      "seed": 1,
+      "view_config": "quad_event_object_context"
+    },
+    {
+      "feature_dim": 293,
+      "model_file": "model_dual_seed2.pkl",
+      "pair_stats": [
+        {
+          "dataset": "first_batch_dataset",
+          "hard_negative_pairs": 720,
+          "hard_positive_oversampled": 360,
+          "negative_pairs": 720,
+          "negative_sampling": "confusable",
+          "pairs": 1080,
+          "positive_pairs": 360,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "stage2_dataset_working",
+          "hard_negative_pairs": 3360,
+          "hard_positive_oversampled": 1680,
+          "negative_pairs": 3360,
+          "negative_sampling": "confusable",
+          "pairs": 5040,
+          "positive_pairs": 1680,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "stage3_dataset_32bugs_640cases",
+          "hard_negative_pairs": 12160,
+          "hard_positive_oversampled": 6080,
+          "negative_pairs": 12160,
+          "negative_sampling": "confusable",
+          "pairs": 18240,
+          "positive_pairs": 6080,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "official_vcs_stage1_dataset_v1",
+          "hard_negative_pairs": 512,
+          "hard_positive_oversampled": 268,
+          "negative_pairs": 512,
+          "negative_sampling": "confusable",
+          "pairs": 780,
+          "positive_pairs": 268,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "directed_cross_v2",
+          "hard_negative_pairs": 238,
+          "hard_positive_oversampled": 119,
+          "negative_pairs": 238,
+          "negative_sampling": "confusable",
+          "pairs": 357,
+          "positive_pairs": 119,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "benchmark_set_1",
+          "hard_negative_pairs": 12,
+          "hard_positive_oversampled": 9,
+          "negative_pairs": 12,
+          "negative_sampling": "confusable",
+          "pairs": 21,
+          "positive_pairs": 9,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "benchmark_set_2",
+          "hard_negative_pairs": 183,
+          "hard_positive_oversampled": 117,
+          "negative_pairs": 183,
+          "negative_sampling": "confusable",
+          "pairs": 300,
+          "positive_pairs": 117,
+          "positive_sampling": "diverse"
+        }
+      ],
+      "pairs": 25818,
+      "preprocess_file": "preprocess_seed2.pkl",
+      "runtime_sec": 5.89661708381027,
+      "seed": 2,
+      "view_config": "dual"
+    },
+    {
+      "feature_dim": 683,
+      "model_file": "model_quad_event_object_context_seed2.pkl",
+      "pair_stats": [
+        {
+          "dataset": "first_batch_dataset",
+          "hard_negative_pairs": 720,
+          "hard_positive_oversampled": 360,
+          "negative_pairs": 720,
+          "negative_sampling": "confusable",
+          "pairs": 1080,
+          "positive_pairs": 360,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "stage2_dataset_working",
+          "hard_negative_pairs": 3360,
+          "hard_positive_oversampled": 1680,
+          "negative_pairs": 3360,
+          "negative_sampling": "confusable",
+          "pairs": 5040,
+          "positive_pairs": 1680,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "stage3_dataset_32bugs_640cases",
+          "hard_negative_pairs": 12160,
+          "hard_positive_oversampled": 6080,
+          "negative_pairs": 12160,
+          "negative_sampling": "confusable",
+          "pairs": 18240,
+          "positive_pairs": 6080,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "official_vcs_stage1_dataset_v1",
+          "hard_negative_pairs": 512,
+          "hard_positive_oversampled": 268,
+          "negative_pairs": 512,
+          "negative_sampling": "confusable",
+          "pairs": 780,
+          "positive_pairs": 268,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "directed_cross_v2",
+          "hard_negative_pairs": 238,
+          "hard_positive_oversampled": 119,
+          "negative_pairs": 238,
+          "negative_sampling": "confusable",
+          "pairs": 357,
+          "positive_pairs": 119,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "benchmark_set_1",
+          "hard_negative_pairs": 12,
+          "hard_positive_oversampled": 9,
+          "negative_pairs": 12,
+          "negative_sampling": "confusable",
+          "pairs": 21,
+          "positive_pairs": 9,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "benchmark_set_2",
+          "hard_negative_pairs": 183,
+          "hard_positive_oversampled": 117,
+          "negative_pairs": 183,
+          "negative_sampling": "confusable",
+          "pairs": 300,
+          "positive_pairs": 117,
+          "positive_sampling": "diverse"
+        }
+      ],
+      "pairs": 25818,
+      "preprocess_file": "preprocess_seed2.pkl",
+      "runtime_sec": 7.385959416627884,
+      "seed": 2,
+      "view_config": "quad_event_object_context"
+    },
+    {
+      "feature_dim": 293,
+      "model_file": "model_dual_seed3.pkl",
+      "pair_stats": [
+        {
+          "dataset": "first_batch_dataset",
+          "hard_negative_pairs": 720,
+          "hard_positive_oversampled": 360,
+          "negative_pairs": 720,
+          "negative_sampling": "confusable",
+          "pairs": 1080,
+          "positive_pairs": 360,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "stage2_dataset_working",
+          "hard_negative_pairs": 3360,
+          "hard_positive_oversampled": 1680,
+          "negative_pairs": 3360,
+          "negative_sampling": "confusable",
+          "pairs": 5040,
+          "positive_pairs": 1680,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "stage3_dataset_32bugs_640cases",
+          "hard_negative_pairs": 12160,
+          "hard_positive_oversampled": 6080,
+          "negative_pairs": 12160,
+          "negative_sampling": "confusable",
+          "pairs": 18240,
+          "positive_pairs": 6080,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "official_vcs_stage1_dataset_v1",
+          "hard_negative_pairs": 512,
+          "hard_positive_oversampled": 268,
+          "negative_pairs": 512,
+          "negative_sampling": "confusable",
+          "pairs": 780,
+          "positive_pairs": 268,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "directed_cross_v2",
+          "hard_negative_pairs": 238,
+          "hard_positive_oversampled": 119,
+          "negative_pairs": 238,
+          "negative_sampling": "confusable",
+          "pairs": 357,
+          "positive_pairs": 119,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "benchmark_set_1",
+          "hard_negative_pairs": 12,
+          "hard_positive_oversampled": 9,
+          "negative_pairs": 12,
+          "negative_sampling": "confusable",
+          "pairs": 21,
+          "positive_pairs": 9,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "benchmark_set_2",
+          "hard_negative_pairs": 183,
+          "hard_positive_oversampled": 117,
+          "negative_pairs": 183,
+          "negative_sampling": "confusable",
+          "pairs": 300,
+          "positive_pairs": 117,
+          "positive_sampling": "diverse"
+        }
+      ],
+      "pairs": 25818,
+      "preprocess_file": "preprocess_seed3.pkl",
+      "runtime_sec": 5.766968653537333,
+      "seed": 3,
+      "view_config": "dual"
+    },
+    {
+      "feature_dim": 683,
+      "model_file": "model_quad_event_object_context_seed3.pkl",
+      "pair_stats": [
+        {
+          "dataset": "first_batch_dataset",
+          "hard_negative_pairs": 720,
+          "hard_positive_oversampled": 360,
+          "negative_pairs": 720,
+          "negative_sampling": "confusable",
+          "pairs": 1080,
+          "positive_pairs": 360,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "stage2_dataset_working",
+          "hard_negative_pairs": 3360,
+          "hard_positive_oversampled": 1680,
+          "negative_pairs": 3360,
+          "negative_sampling": "confusable",
+          "pairs": 5040,
+          "positive_pairs": 1680,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "stage3_dataset_32bugs_640cases",
+          "hard_negative_pairs": 12160,
+          "hard_positive_oversampled": 6080,
+          "negative_pairs": 12160,
+          "negative_sampling": "confusable",
+          "pairs": 18240,
+          "positive_pairs": 6080,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "official_vcs_stage1_dataset_v1",
+          "hard_negative_pairs": 512,
+          "hard_positive_oversampled": 268,
+          "negative_pairs": 512,
+          "negative_sampling": "confusable",
+          "pairs": 780,
+          "positive_pairs": 268,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "directed_cross_v2",
+          "hard_negative_pairs": 238,
+          "hard_positive_oversampled": 119,
+          "negative_pairs": 238,
+          "negative_sampling": "confusable",
+          "pairs": 357,
+          "positive_pairs": 119,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "benchmark_set_1",
+          "hard_negative_pairs": 12,
+          "hard_positive_oversampled": 9,
+          "negative_pairs": 12,
+          "negative_sampling": "confusable",
+          "pairs": 21,
+          "positive_pairs": 9,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "benchmark_set_2",
+          "hard_negative_pairs": 183,
+          "hard_positive_oversampled": 117,
+          "negative_pairs": 183,
+          "negative_sampling": "confusable",
+          "pairs": 300,
+          "positive_pairs": 117,
+          "positive_sampling": "diverse"
+        }
+      ],
+      "pairs": 25818,
+      "preprocess_file": "preprocess_seed3.pkl",
+      "runtime_sec": 7.410410163924098,
+      "seed": 3,
+      "view_config": "quad_event_object_context"
+    },
+    {
+      "feature_dim": 293,
+      "model_file": "model_dual_seed4.pkl",
+      "pair_stats": [
+        {
+          "dataset": "first_batch_dataset",
+          "hard_negative_pairs": 720,
+          "hard_positive_oversampled": 360,
+          "negative_pairs": 720,
+          "negative_sampling": "confusable",
+          "pairs": 1080,
+          "positive_pairs": 360,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "stage2_dataset_working",
+          "hard_negative_pairs": 3360,
+          "hard_positive_oversampled": 1680,
+          "negative_pairs": 3360,
+          "negative_sampling": "confusable",
+          "pairs": 5040,
+          "positive_pairs": 1680,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "stage3_dataset_32bugs_640cases",
+          "hard_negative_pairs": 12160,
+          "hard_positive_oversampled": 6080,
+          "negative_pairs": 12160,
+          "negative_sampling": "confusable",
+          "pairs": 18240,
+          "positive_pairs": 6080,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "official_vcs_stage1_dataset_v1",
+          "hard_negative_pairs": 512,
+          "hard_positive_oversampled": 268,
+          "negative_pairs": 512,
+          "negative_sampling": "confusable",
+          "pairs": 780,
+          "positive_pairs": 268,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "directed_cross_v2",
+          "hard_negative_pairs": 238,
+          "hard_positive_oversampled": 119,
+          "negative_pairs": 238,
+          "negative_sampling": "confusable",
+          "pairs": 357,
+          "positive_pairs": 119,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "benchmark_set_1",
+          "hard_negative_pairs": 12,
+          "hard_positive_oversampled": 9,
+          "negative_pairs": 12,
+          "negative_sampling": "confusable",
+          "pairs": 21,
+          "positive_pairs": 9,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "benchmark_set_2",
+          "hard_negative_pairs": 183,
+          "hard_positive_oversampled": 117,
+          "negative_pairs": 183,
+          "negative_sampling": "confusable",
+          "pairs": 300,
+          "positive_pairs": 117,
+          "positive_sampling": "diverse"
+        }
+      ],
+      "pairs": 25818,
+      "preprocess_file": "preprocess_seed4.pkl",
+      "runtime_sec": 5.86985038779676,
+      "seed": 4,
+      "view_config": "dual"
+    },
+    {
+      "feature_dim": 683,
+      "model_file": "model_quad_event_object_context_seed4.pkl",
+      "pair_stats": [
+        {
+          "dataset": "first_batch_dataset",
+          "hard_negative_pairs": 720,
+          "hard_positive_oversampled": 360,
+          "negative_pairs": 720,
+          "negative_sampling": "confusable",
+          "pairs": 1080,
+          "positive_pairs": 360,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "stage2_dataset_working",
+          "hard_negative_pairs": 3360,
+          "hard_positive_oversampled": 1680,
+          "negative_pairs": 3360,
+          "negative_sampling": "confusable",
+          "pairs": 5040,
+          "positive_pairs": 1680,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "stage3_dataset_32bugs_640cases",
+          "hard_negative_pairs": 12160,
+          "hard_positive_oversampled": 6080,
+          "negative_pairs": 12160,
+          "negative_sampling": "confusable",
+          "pairs": 18240,
+          "positive_pairs": 6080,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "official_vcs_stage1_dataset_v1",
+          "hard_negative_pairs": 512,
+          "hard_positive_oversampled": 268,
+          "negative_pairs": 512,
+          "negative_sampling": "confusable",
+          "pairs": 780,
+          "positive_pairs": 268,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "directed_cross_v2",
+          "hard_negative_pairs": 238,
+          "hard_positive_oversampled": 119,
+          "negative_pairs": 238,
+          "negative_sampling": "confusable",
+          "pairs": 357,
+          "positive_pairs": 119,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "benchmark_set_1",
+          "hard_negative_pairs": 12,
+          "hard_positive_oversampled": 9,
+          "negative_pairs": 12,
+          "negative_sampling": "confusable",
+          "pairs": 21,
+          "positive_pairs": 9,
+          "positive_sampling": "diverse"
+        },
+        {
+          "dataset": "benchmark_set_2",
+          "hard_negative_pairs": 183,
+          "hard_positive_oversampled": 117,
+          "negative_pairs": 183,
+          "negative_sampling": "confusable",
+          "pairs": 300,
+          "positive_pairs": 117,
+          "positive_sampling": "diverse"
+        }
+      ],
+      "pairs": 25818,
+      "preprocess_file": "preprocess_seed4.pkl",
+      "runtime_sec": 7.317655271850526,
+      "seed": 4,
+      "view_config": "quad_event_object_context"
+    }
+  ],
+  "parser": "drain",
+  "primary_beta": 0.5,
+  "schema_version": 1,
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "source_clusterer": "agglomerative_complete",
+  "svd_dim": 64,
+  "training_case_count": 1069,
+  "training_dataset_names": [
+    "first_batch_dataset",
+    "stage2_dataset_working",
+    "stage3_dataset_32bugs_640cases",
+    "official_vcs_stage1_dataset_v1",
+    "directed_cross_v2",
+    "benchmark_set_1",
+    "benchmark_set_2"
+  ],
+  "view_configs": [
+    "dual",
+    "quad_event_object_context"
+  ],
+  "view_dim": 64
+}

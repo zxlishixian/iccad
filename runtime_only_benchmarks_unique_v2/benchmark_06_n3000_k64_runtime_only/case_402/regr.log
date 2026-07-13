@@ -1,0 +1,8 @@
+UVM_FATAL /runtime_only_unique_aaol.sv(1) @ 1: runtime_only_unique_failure_aaol normalization resistant timing marker
+RUNTIME_ONLY_CASE=402 SOURCE_A=benchmark_set_2:11
+Mismatch[1]:
+ibex[186] : pc[800002c4] rem x30,x5,x4: t5:8001de1c
+RUNTIME_ONLY_COMBINE SOURCE_B=benchmark_set_2:10
+spike[74] : pc[ffffffff80011080] addi t0, t0, -124: t0:80021da0
+[FAILED]: 64 matched, 3458 mismatch
+000000000 RUNTIME_ONLY neutral retire case=00402 pc=0x8000cdb4 opcode=addi x18=0x8000cdb4

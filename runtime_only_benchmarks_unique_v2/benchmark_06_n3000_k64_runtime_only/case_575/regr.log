@@ -1,0 +1,7 @@
+UVM_FATAL /runtime_only_unique_aavc.sv(1) @ 1: runtime_only_unique_failure_aavc normalization resistant timing marker
+RUNTIME_ONLY_CASE=575 SOURCE_A=benchmark_set_2:24
+Mismatch[1]:
+ibex[727] : pc[80000b98] remu x28,x20,x30: t3:00000fff
+RUNTIME_ONLY_COMBINE SOURCE_B=benchmark_set_2:5
+spike[937] : pc[ffffffff80000ca2] c.mv s0, sp: s0:00000338
+[FAILED]: 883 matched, 64810 mismatch
