@@ -1,6 +1,5 @@
 #!/usr/bin/env sh
-# Experimental baseline-first anytime router.  It deliberately lives outside
-# beta_test_submission until the new policy passes cold-cache validation.
+# Score-first all-scale five-view router with baseline-first recovery.
 set -u
 
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
@@ -36,7 +35,6 @@ done
 
 FAST_BIN="${BETA_V2_FAST_BIN:-$PACKAGE_ROOT/fast/regr_fail_bucketing_fast/regr_fail_bucketing_fast}"
 MULTIVIEW_BIN="${BETA_V2_MULTIVIEW_BIN:-$PACKAGE_ROOT/multiview/regr_fail_bucketing_multiview}"
-FULL_BIN="${BETA_V2_FULL_BIN:-$PACKAGE_ROOT/regr_fail_bucketing_full}"
 
 if [ -z "$INPUT" ] || [ ! -f "$INPUT" ] || [ -z "$OUTPUT" ] || [ -z "$K" ]; then
   echo "[beta-v2] invalid required arguments" >&2
@@ -51,6 +49,7 @@ BASELINE_CANDIDATE="${OUTPUT}.baseline.$$.candidate"
 EXPERT_CANDIDATE="${OUTPUT}.expert.$$.candidate"
 ACTIVE_CHILD=""
 ACTIVE_WATCHDOG=""
+ACTIVE_PROCESS_GROUP=0
 SELECTED="singleton"
 
 monotonic_sec() {
@@ -69,9 +68,17 @@ valid_output() {
 
 cleanup_processes() {
   if [ -n "$ACTIVE_CHILD" ]; then
-    kill -TERM "$ACTIVE_CHILD" 2>/dev/null || true
+    if [ "$ACTIVE_PROCESS_GROUP" -eq 1 ]; then
+      kill -TERM "-$ACTIVE_CHILD" 2>/dev/null || true
+    else
+      kill -TERM "$ACTIVE_CHILD" 2>/dev/null || true
+    fi
     sleep 1
-    kill -KILL "$ACTIVE_CHILD" 2>/dev/null || true
+    if [ "$ACTIVE_PROCESS_GROUP" -eq 1 ]; then
+      kill -KILL "-$ACTIVE_CHILD" 2>/dev/null || true
+    else
+      kill -KILL "$ACTIVE_CHILD" 2>/dev/null || true
+    fi
   fi
   if [ -n "$ACTIVE_WATCHDOG" ]; then
     kill "$ACTIVE_WATCHDOG" 2>/dev/null || true
@@ -124,13 +131,27 @@ run_candidate() {
   CANDIDATE=$2
   shift 2
   rm -f "$CANDIDATE" 2>/dev/null || true
-  "$@" &
+  ACTIVE_PROCESS_GROUP=0
+  if command -v setsid >/dev/null 2>&1; then
+    setsid "$@" &
+    ACTIVE_PROCESS_GROUP=1
+  else
+    "$@" &
+  fi
   ACTIVE_CHILD=$!
   (
     sleep "$LIMIT"
-    kill -TERM "$ACTIVE_CHILD" 2>/dev/null || exit 0
+    if [ "$ACTIVE_PROCESS_GROUP" -eq 1 ]; then
+      kill -TERM "-$ACTIVE_CHILD" 2>/dev/null || exit 0
+    else
+      kill -TERM "$ACTIVE_CHILD" 2>/dev/null || exit 0
+    fi
     sleep 1
-    kill -KILL "$ACTIVE_CHILD" 2>/dev/null || true
+    if [ "$ACTIVE_PROCESS_GROUP" -eq 1 ]; then
+      kill -KILL "-$ACTIVE_CHILD" 2>/dev/null || true
+    else
+      kill -KILL "$ACTIVE_CHILD" 2>/dev/null || true
+    fi
   ) &
   ACTIVE_WATCHDOG=$!
   if wait "$ACTIVE_CHILD"; then
@@ -142,6 +163,7 @@ run_candidate() {
   wait "$ACTIVE_WATCHDOG" 2>/dev/null || true
   ACTIVE_CHILD=""
   ACTIVE_WATCHDOG=""
+  ACTIVE_PROCESS_GROUP=0
   return "$STATUS"
 }
 
@@ -223,11 +245,6 @@ if [ -z "${LLM_MODEL_CONFIG:-}" ]; then
   echo "[beta-v2] embedding config unavailable; keeping $SELECTED" >&2
   exit 0
 fi
-if [ "$N_CASES" -gt "${BETA_V2_EXPERT_MAX_CASES:-300}" ]; then
-  echo "[beta-v2] dataset too large for expert; keeping $SELECTED" >&2
-  exit 0
-fi
-
 NOW_SEC=$(monotonic_sec)
 REMAINING=$((DEADLINE_SEC - NOW_SEC))
 if [ "$REMAINING" -lt 5 ]; then
@@ -236,15 +253,16 @@ if [ "$REMAINING" -lt 5 ]; then
 fi
 if [ "$DESIRED_EXPERT_LIMIT" -lt "$REMAINING" ]; then EXPERT_LIMIT=$DESIRED_EXPERT_LIMIT; else EXPERT_LIMIT=$REMAINING; fi
 
-if [ "$N_CASES" -le "${BETA_V2_MULTIVIEW_MAX_CASES:-160}" ] && [ -x "$MULTIVIEW_BIN" ]; then
-  EXPERT_BIN=$MULTIVIEW_BIN
-  EXPERT_NAME=multiview
-else
-  EXPERT_BIN=$FULL_BIN
-  EXPERT_NAME=calibrated_dual
+if [ ! -x "$MULTIVIEW_BIN" ]; then
+  echo "[beta-v2] canonical five-view backend unavailable; keeping $SELECTED" >&2
+  exit 0
 fi
+EXPERT_NAME=multiview_all_scales
 echo "[beta-v2] trying $EXPERT_NAME candidate (limit=${EXPERT_LIMIT}s), baseline remains published" >&2
-if run_candidate "$EXPERT_LIMIT" "$EXPERT_CANDIDATE" "$EXPERT_BIN" "$@" --output "$EXPERT_CANDIDATE"; then
+run_candidate "$EXPERT_LIMIT" "$EXPERT_CANDIDATE" \
+  "$MULTIVIEW_BIN" "$@" --output "$EXPERT_CANDIDATE"
+EXPERT_STATUS=$?
+if [ "$EXPERT_STATUS" -eq 0 ]; then
   publish_candidate "$EXPERT_CANDIDATE" "$EXPERT_NAME" || true
 else
   echo "[beta-v2] expert failed or timed out; keeping $SELECTED" >&2

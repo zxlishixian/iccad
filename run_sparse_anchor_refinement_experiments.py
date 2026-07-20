@@ -19,6 +19,7 @@ from typing import Sequence
 import numpy as np
 
 import graph_clustering as gc
+from bounded_evidence import build_bounded_evidence
 import official_style_features as osf
 import pairwise_llm_features as plf
 from run_experiments import pairwise_scores, read_gold
@@ -27,6 +28,11 @@ from run_selective_multiview_experiments import (
     deterministic_proxy_stack,
     load_seed_stack,
     select_expert_cases,
+)
+from sparse_refinement import (
+    centroid_sparse_plan,
+    normalized_det_vectors,
+    sparse_refine_from_edges,
 )
 
 
@@ -162,12 +168,32 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--datasets", nargs="+", type=Path, default=DEFAULT_DATASETS)
     parser.add_argument("--seeds", nargs="+", type=int, default=[0, 1, 2, 3, 4])
     parser.add_argument("--fractions", nargs="+", type=float, default=[0.15, 0.25])
+    parser.add_argument(
+        "--selector-modes", nargs="+", choices=("matrix", "centroid", "evidence"),
+        default=["matrix"],
+    )
     parser.add_argument("--max-selected", nargs="+", type=int, default=[40, 80])
     parser.add_argument("--anchors-per-cluster", nargs="+", type=int, default=[1, 2])
     parser.add_argument("--expert-weights", nargs="+", type=float, default=[0.50, 0.75])
     parser.add_argument("--min-probabilities", nargs="+", type=float, default=[0.55, 0.65])
     parser.add_argument("--margins", nargs="+", type=float, default=[0.05, 0.10])
+    parser.add_argument("--min-supports", nargs="+", type=int, default=[1])
+    parser.add_argument("--support-probabilities", nargs="+", type=float, default=[0.0])
+    parser.add_argument("--max-conflict-ratios", nargs="+", type=float, default=[1.0])
+    parser.add_argument("--min-det-margins", nargs="+", type=float, default=[-1.0])
+    parser.add_argument(
+        "--veto-blend-weights", nargs="*", type=float, default=[],
+        help="Optional expert probability weights for fixed-k conservative blend ablation.",
+    )
+    parser.add_argument("--structured-agreement", action="store_true")
+    parser.add_argument("--evidence-max-bytes", type=int, default=64 * 1024)
+    parser.add_argument("--evidence-dim", type=int, default=256)
     parser.add_argument("--model-type", default="gbdt")
+    parser.add_argument(
+        "--expert-view-configs", nargs="+",
+        choices=("dual", "dual_evidence_tail", "quad_event_object_context"),
+        default=["quad_event_object_context"],
+    )
     parser.add_argument("--graph-tag", default="agglomerative_complete")
     parser.add_argument("--source-clusterer", default="agglomerative_complete")
     return parser.parse_args(argv)
@@ -192,15 +218,28 @@ def main(argv: Sequence[str] | None = None) -> int:
         difficulty, _components, det_similarity = case_difficulty(
             det_stack, k, args.source_clusterer
         )
+        det_vectors = normalized_det_vectors(det_features)
+        evidence_vectors = None
+        evidence_infos = None
+        if "evidence" in args.selector_modes:
+            evidence = build_bounded_evidence(
+                dataset / "input.csv",
+                max_bytes=args.evidence_max_bytes,
+                dim=args.evidence_dim,
+            )
+            evidence_vectors = np.vstack([item.vector for item in evidence]).astype(np.float32)
+            evidence_infos = [item.info for item in evidence]
         base_labels = np.asarray(
             gc.cluster_probability_graph(det_similarity, k, args.source_clusterer).labels,
             dtype=np.int32,
         )
-        five_stack = load_seed_stack(
-            prob_dir, name, "quad_event_object_context", args.seeds,
-            args.model_type, args.graph_tag,
-        )
-        five_probability = np.mean(five_stack, axis=0).astype(np.float32)
+        probabilities = {
+            view_config: np.mean(load_seed_stack(
+                prob_dir, name, view_config, args.seeds,
+                args.model_type, args.graph_tag,
+            ), axis=0).astype(np.float32)
+            for view_config in args.expert_view_configs
+        }
         total_pairs = max(1, len(cases) * (len(cases) - 1) // 2)
 
         base_ba, base_tpr, base_tnr = pairwise_scores(gold, [str(v) for v in base_labels])
@@ -212,19 +251,76 @@ def main(argv: Sequence[str] | None = None) -> int:
             "pair_coverage": 0.0,
         })
 
-        for fraction, max_selected, anchors_per_cluster, expert_weight, min_prob, margin in itertools.product(
-            args.fractions, args.max_selected, args.anchors_per_cluster,
+        for view_config, expert_probability in probabilities.items():
+            for weight in args.veto_blend_weights:
+                blended = (
+                    (1.0 - float(weight)) * det_similarity
+                    + float(weight) * expert_probability
+                ).astype(np.float32)
+                np.fill_diagonal(blended, 1.0)
+                blend_labels = np.asarray(
+                    gc.cluster_probability_graph(
+                        blended, k, args.source_clusterer
+                    ).labels,
+                    dtype=np.int32,
+                )
+                ba, tpr, tnr = pairwise_scores(
+                    gold, [str(value) for value in blend_labels]
+                )
+                rows.append({
+                    "dataset": name,
+                    "combo": f"veto_blend_{view_config}_w{weight:.2f}",
+                    "BA": ba, "TPR": tpr, "TNR": tnr,
+                    "cases": len(cases), "k": k, "selected_cases": 0,
+                    "anchor_cases": 0, "moved_cases": 0, "expert_edges": 0,
+                    "pair_coverage": 1.0,
+                })
+
+        for view_config, selector_mode, fraction, max_selected, anchors_per_cluster, expert_weight, min_prob, margin, min_support, support_probability, max_conflict_ratio, min_det_margin in itertools.product(
+            args.expert_view_configs, args.selector_modes, args.fractions,
+            args.max_selected, args.anchors_per_cluster,
             args.expert_weights, args.min_probabilities, args.margins,
+            args.min_supports, args.support_probabilities,
+            args.max_conflict_ratios, args.min_det_margins,
         ):
-            selected = select_expert_cases(difficulty, fraction, 2, max_selected)
-            labels, stats = sparse_refine_labels(
-                base_labels, det_similarity, five_probability, selected,
-                anchors_per_cluster, expert_weight, min_prob, margin,
-            )
+            expert_probability = probabilities[view_config]
+            if selector_mode == "matrix":
+                selected = select_expert_cases(difficulty, fraction, 2, max_selected)
+                labels, stats = sparse_refine_labels(
+                    base_labels, det_similarity, expert_probability, selected,
+                    anchors_per_cluster, expert_weight, min_prob, margin,
+                )
+            else:
+                selector_vectors = evidence_vectors if selector_mode == "evidence" else det_vectors
+                if selector_vectors is None:
+                    raise RuntimeError("evidence selector vectors were not built")
+                selected, anchors, _selection_stats = centroid_sparse_plan(
+                    base_labels, selector_vectors, fraction, max_selected, anchors_per_cluster
+                )
+                edge_values = {}
+                anchor_indices = sorted({idx for values in anchors.values() for idx in values})
+                for idx in np.flatnonzero(selected):
+                    for anchor in anchor_indices:
+                        if int(idx) == anchor:
+                            continue
+                        edge = (min(int(idx), anchor), max(int(idx), anchor))
+                        edge_values[edge] = float(expert_probability[edge])
+                labels, stats = sparse_refine_from_edges(
+                    base_labels, selector_vectors, edge_values, selected, anchors,
+                    expert_weight, min_prob, margin,
+                    structured_infos=evidence_infos if selector_mode == "evidence" else None,
+                    min_support=min_support,
+                    support_probability=support_probability,
+                    max_conflict_ratio=max_conflict_ratio,
+                    min_det_margin=min_det_margin,
+                    require_structured_agreement=args.structured_agreement,
+                )
             ba, tpr, tnr = pairwise_scores(gold, [str(v) for v in labels])
             combo = (
-                f"sparse_f{fraction:.2f}_cap{max_selected}_a{anchors_per_cluster}_"
-                f"w{expert_weight:.2f}_p{min_prob:.2f}_m{margin:.2f}"
+                f"sparse_{view_config}_{selector_mode}_f{fraction:.2f}_cap{max_selected}_a{anchors_per_cluster}_"
+                f"w{expert_weight:.2f}_p{min_prob:.2f}_m{margin:.2f}_"
+                f"sup{min_support}x{support_probability:.2f}_c{max_conflict_ratio:.2f}_"
+                f"dm{min_det_margin:.2f}_sa{int(args.structured_agreement)}"
             )
             rows.append({
                 "dataset": name, "combo": combo,

@@ -40,6 +40,8 @@ class BetaV2RouterTests(unittest.TestCase):
         self.fast = self.package / "fast/regr_fail_bucketing_fast/regr_fail_bucketing_fast"
         self.multiview = self.package / "multiview/regr_fail_bucketing_multiview"
         self.full = self.package / "regr_fail_bucketing_full"
+        self.sparse = self.package / "multiview/regr_fail_bucketing_sparse"
+        self.sparse_models = self.package / "multiview/models_multiview"
         self.input_csv = self.root / "input.csv"
         with self.input_csv.open("w", newline="", encoding="utf-8") as handle:
             writer = csv.writer(handle)
@@ -50,6 +52,9 @@ class BetaV2RouterTests(unittest.TestCase):
         self._write_backend(self.fast, backend_source("bucket_baseline"))
         self._write_backend(self.multiview, backend_source("bucket_expert"))
         self._write_backend(self.full, backend_source("bucket_dual"))
+        self._write_backend(self.sparse, backend_source("bucket_sparse"))
+        self.sparse_models.mkdir(parents=True, exist_ok=True)
+        (self.sparse_models / "manifest.json").write_text("{}", encoding="utf-8")
 
     def tearDown(self):
         self.tempdir.cleanup()
@@ -60,7 +65,7 @@ class BetaV2RouterTests(unittest.TestCase):
         path.write_text(source, encoding="utf-8")
         path.chmod(0o755)
 
-    def _run(self, **overrides: str) -> subprocess.CompletedProcess[str]:
+    def _run(self, k: str = "2", **overrides: str) -> subprocess.CompletedProcess[str]:
         env = os.environ.copy()
         env.update({
             "BETA_V2_PACKAGE_ROOT": str(self.package),
@@ -73,7 +78,7 @@ class BetaV2RouterTests(unittest.TestCase):
         return subprocess.run(
             [
                 str(ROUTER), "--input", str(self.input_csv),
-                "--output", str(self.output), "--k", "2",
+                "--output", str(self.output), "--k", k,
             ],
             env=env,
             text=True,
@@ -92,7 +97,7 @@ class BetaV2RouterTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(self._buckets(), ["bucket_expert", "bucket_expert"])
         self.assertIn("published baseline output", result.stderr)
-        self.assertIn("published multiview output", result.stderr)
+        self.assertIn("published multiview_all_scales output", result.stderr)
 
     def test_expert_timeout_preserves_baseline(self):
         self._write_backend(self.multiview, backend_source("bucket_expert", sleep_sec=5.0))
@@ -105,6 +110,52 @@ class BetaV2RouterTests(unittest.TestCase):
         result = self._run(LLM_MODEL_CONFIG="")
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(self._buckets(), ["bucket_baseline", "bucket_baseline"])
+
+    def _write_sized_input(self, count: int) -> None:
+        with self.input_csv.open("w", newline="", encoding="utf-8") as handle:
+            writer = csv.writer(handle)
+            writer.writerow(["Case", "Regr Log", "Sim Log", "Trace Log"])
+            for case_id in range(count):
+                writer.writerow([
+                    str(case_id + 1), f"c{case_id}/regr.log",
+                    f"c{case_id}/sim.log", f"c{case_id}/trace.log",
+                ])
+
+    def test_official_100_case_scale_uses_full_multiview(self):
+        self._write_sized_input(100)
+        result = self._run(k="8")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(set(self._buckets()), {"bucket_expert"})
+        self.assertIn("trying multiview_all_scales candidate", result.stderr)
+
+    def test_official_1000_case_scale_uses_full_multiview(self):
+        self._write_sized_input(1000)
+        result = self._run(k="32")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(set(self._buckets()), {"bucket_expert"})
+        self.assertIn("trying multiview_all_scales candidate", result.stderr)
+
+    def test_official_300_case_scale_uses_full_multiview(self):
+        self._write_sized_input(300)
+        result = self._run(k="16")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(set(self._buckets()), {"bucket_expert"})
+        self.assertIn("trying multiview_all_scales candidate", result.stderr)
+
+    def test_large_multiview_timeout_preserves_baseline(self):
+        self._write_backend(self.multiview, backend_source("bucket_expert", sleep_sec=5.0))
+        self._write_sized_input(300)
+        result = self._run(k="16", BETA_V2_EXPERT_LIMIT="1")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(set(self._buckets()), {"bucket_baseline"})
+        self.assertIn("expert failed or timed out; keeping baseline", result.stderr)
+
+    def test_official_3000_case_scale_uses_full_multiview(self):
+        self._write_sized_input(3000)
+        result = self._run(k="64")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(set(self._buckets()), {"bucket_expert"})
+        self.assertIn("trying multiview_all_scales candidate", result.stderr)
 
     def test_invalid_backends_leave_valid_singletons(self):
         self._write_backend(self.fast, backend_source("bad", valid=False))
