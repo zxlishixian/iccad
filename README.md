@@ -2,6 +2,8 @@
 
 这个项目用于处理 EDA/ICCAD 风格的 regression failure bucketing 任务：给定一批 Ibex RISC-V CPU 回归仿真的失败日志，把由同一根因 bug 导致的 case 尽量分到同一个 bucket。
 
+仓库代码、数据、竞赛文件和提交包的导航见 [`MATERIALS_INDEX.md`](MATERIALS_INDEX.md)。
+
 正式预测程序是 `regr_fail_bucketing.py`，接口兼容赛题要求：
 
 ```bash
@@ -2496,3 +2498,115 @@ Outputs and implementation:
 - `/tmp/sparse_anchor_lodo_all8/`
 - `/tmp/sparse_anchor_lodo_all8_s0_9/`
 
+
+### Beta v2 official-scale sparse routing (2026-07-13)
+
+Beta v2 routing now uses the official observable case/soft-`k` scales instead of the earlier local `n<=160` boundary. Scales up to 100 cases use full five-view inference; the 300-case/k16 scale publishes deterministic clustering first and then embeds only a bounded difficult-case/anchor set; 1000/3000-case scales retain deterministic k-means until a large-set expert passes both runtime and TPR guardrails. The 300/1000/3000 runtime-only profiles completed in 70.31/6.88/8.22 seconds under the original Final limits, with valid outputs.
+
+The sparse backend now supports an `O(n*k)` centroid selector and active-only document construction. Independent five-domain LODO simulation improved deterministic-proxy macro BA from 0.6601 to 0.6739, but a 640-case sanity run still reduced BA from 0.7788 to 0.7703 by trading TPR for TNR. Consequently centroid refinement above 300 cases remains experimental and disabled. The 300-case matrix selector is packaged because its cold run completed in 70.31 seconds; on the 240-case stage2 package sanity it improved BA from 0.7657 to 0.7772.
+
+All routes keep the anytime contract: singleton CSV first, validated deterministic CSV second, optional expert replacement last. Timeout and failure kill the complete expert process group and preserve the best valid output. Runtime-only profiles are not training or score datasets.
+
+
+### Sparse dual-view large-scale screen (2026-07-13)
+
+A follow-up tested whether the medium-scale sparse expert could be extended to
+the official 1000/3000-case scales by embedding only the `features` and
+`summary` views. The experimental backend now accepts `--expert-views dual|five`;
+`five` remains its compatibility default, and Beta v2 routing is unchanged.
+
+On the five independent-domain LODO screen (VCS, directed, stable, official
+set1, official set2), the best fixed centroid policy improved the deterministic
+proxy macro BA from `0.6601` to `0.6802`. It was only marginally above the
+matched five-view policy (`0.6798`), while requiring two document views instead
+of five. The gain was concentrated in stable/directed; set1, set2, and VCS were
+mostly unchanged.
+
+The large-set guardrails did not pass. The exact LODO-selected cap-20 policy was
+neutral on held-out stage3 (`0.7181` to `0.7179`). A deployable-artifact
+640-case run moved 34 cases, reduced BA to `0.7577`, and took `399.2 s`; feature
+and document reconstruction alone took `267.4 s`. A standalone 1000-case cold
+stress attempt also exceeded `110 s`. Therefore dual sparse refinement is not
+packaged or enabled above 300 cases. Future large-scale work must share a single
+bounded log parse between baseline and expert and use a stricter no-regression
+move gate before another routing trial.
+
+Outputs:
+
+- `/tmp/sparse_dual_five_independent_lodo/`
+- `/tmp/sparse_dual_stage3_guardrail_sim/`
+- `/tmp/sparse_dual_640_guardrail.json`
+### Production-matched bounded-evidence student screen (2026-07-13)
+
+The large-set sparse path was reworked to avoid rebuilding full-dataset
+TF-IDF/SVD features merely to select a bounded active set. `bounded_evidence.py`
+now reads bounded sim/regr samples, derives a stable hashed evidence vector and
+structured fields, and supplies both the centroid selector and active pair tail.
+Plain logs use bounded head/tail bytes; gzip logs use a bounded decompressed
+head so the selector does not scan the entire compressed stream.
+
+This reduced the 1000-case evidence preparation from `38.75 s` to `13.89 s`.
+On normalization-resistant runtime-only inputs, deterministic baseline plus
+dual sparse expert completed in about `74.6 s` for 1000 cases and `70.5 s` for
+3000 cases, both below the original Final 100-second limit. Valid baseline
+output was already present before the optional expert ran.
+
+However, a strict held-out check exposed a train/serve mismatch: the existing
+artifact was trained with the full deterministic pair tail, while production
+used the bounded evidence approximation. On held-out stable, the full tail
+improved BA from `0.5972` to `0.6954`, but the deployable evidence tail made no
+moves and stayed at `0.5972`.
+
+A production-matched dual evidence-tail GBDT student was therefore trained and
+evaluated with strict eight-dataset seed-0 LODO. Features/summary embeddings
+were both 768-dimensional with no fallback; reducers were fit only on training
+domains and the pair schema was asserted to be 293 dimensions.
+
+| dataset | BA | TPR | TNR |
+|---|---:|---:|---:|
+| first | 0.7261 | 0.5639 | 0.8882 |
+| stage2 | 0.6824 | 0.4333 | 0.9314 |
+| stage3 | 0.6323 | 0.3178 | 0.9469 |
+| VCS | 0.6796 | 0.5858 | 0.7734 |
+| directed | 0.6715 | 0.5714 | 0.7715 |
+| stable | 0.5972 | 0.6667 | 0.5278 |
+| official set1 | 0.5278 | 0.5556 | 0.5000 |
+| official set2 | 0.7931 | 0.8376 | 0.7486 |
+| macro | 0.6637 | 0.5665 | 0.7610 |
+
+The student is strongly conservative: it raises TNR but fragments same-bug
+groups. The preselected conservative sparse gate made no accepted moves. A
+fixed low-weight veto blend was also insufficient: weight 0.10 changed macro BA
+from `0.6889` to `0.6896`, and weight 0.30 reached `0.6903` only by lowering
+mean TPR from `0.6584` to `0.6218`; stage3 regressed substantially. These gains
+are too small and domain-dependent to justify more seeds or Beta routing.
+
+Conclusion: retain bounded evidence as a runtime/selection primitive, but do
+not deploy the current evidence-tail student or extend the sparse expert above
+300 cases. Beta v2 routing remains unchanged.
+
+Outputs:
+
+- `/tmp/evidence_tail_student_lodo_seed0/`
+- `/tmp/evidence_tail_student_sparse_gate_seed0/`
+- `/tmp/evidence_tail_student_veto_blend_seed0/`
+
+### Beta v2 all-scale five-view feedback route (2026-07-13)
+
+For organizer-machine runtime feedback, Beta v2 now attempts the score-leading
+canonical five-view backend on every official case/soft-`k` scale, including
+300, 1000, and 3000 cases. Size-based selection of sparse, calibrated-dual, or
+deterministic-only inference has been removed from the default Stage 2 route.
+
+This is still an anytime pipeline: a valid singleton CSV is written first, a
+validated deterministic result is published second, and five-view output is
+accepted only after process success plus exact `Case,bucket` header and row-count
+validation. The conservative Final-time watchdog remains active. Therefore an
+API error, timeout, malformed embedding, dimension mismatch, process failure, or
+invalid expert CSV leaves the deterministic output in place.
+
+Router tests cover full five-view selection at 100/300/1000/3000 cases and
+large-expert timeout recovery. A real package smoke on public set1 returned all
+five embedding views at 768 dimensions without fallback and completed in 3.93
+seconds. Large-scale full-five-view completion is intentionally left for Beta
+organizer feedback because local timing is not representative.

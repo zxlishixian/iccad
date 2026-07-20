@@ -1,5 +1,11 @@
 # Beta v2 Baseline-First Validation
 
+> Historical record (superseded 2026-07-13): the timing table below describes
+> the earlier size-routed candidate. The current feedback build attempts the
+> canonical five-view backend at every official case/`k` scale while retaining
+> the same baseline-first watchdog. See `VALIDATION_RESULTS.md` and
+> `README_SUBMISSION.md` for the active policy and hashes.
+
 Validation date: 2026-07-12.
 
 This candidate preserves the frozen Beta models and binaries. Only the router

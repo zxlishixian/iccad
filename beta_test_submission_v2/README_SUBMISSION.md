@@ -25,20 +25,20 @@ The router first maps both observable size signals onto the official scale:
 
 Case count and soft `k` are mapped independently, then the larger scale wins. Thus an undersized `k` cannot hide a large input, while a large `k` conservatively upgrades a small input. The resolved scale is then combined with a metadata-only context-line estimate:
 
-| Observable class | Conservative Final cap | Primary / deterministic retry |
+| Observable class | Conservative Final cap | Baseline / expert budget |
 |---|---:|---:|
-| resolved scale has max 10/30 cases, context is 1M-like | 30 s | 18 s / 7 s |
-| resolved scale has max 10/30 cases, context looks larger | 30 s | 15 s / 10 s |
-| resolved scale has max 100–3000 cases, context is 1M/10M-like | 100 s | 85 s / 10 s |
-| resolved scale has max 100–3000 cases, context is 100M-like | 100 s | 75 s / 15 s |
+| resolved scale has max 10/30 cases | 30 s | 7 s / 18 s |
+| resolved scale has max 100 cases, non-100M-like context | 100 s | 12 s / 72 s |
+| resolved scale has max 300–3000 cases, non-100M-like context | 100 s | 12 s / 70 s |
+| resolved scale has max 100–3000 cases, context is 100M-like | 100 s | 15 s / 60 s |
 
 The last row may correspond to an official 100M/300-second benchmark, but remains capped at 100 seconds because the tier cannot be identified safely. Reserving more deterministic-retry time is safer than risking an external 100-second kill after assuming 300 seconds.
 
 The line estimate uses only file sizes under the input directory: ordinary log bytes are divided by 128 and compressed-log bytes by 24, calibrated from the public data. It does not open or parse trace logs. The estimate controls only how early recovery starts and can never increase the watchdog above 100 seconds.
 
-Within those budgets, `n <= 160` uses the canonical five-view model, `161 <= n <= 300` uses the calibrated dual-input backend, `301 <= n <= 900` uses deterministic agglomerative clustering, and larger inputs use deterministic k-means. Missing embeddings go directly to deterministic inference. Timeout, malformed embeddings, incompatible dimensions, invalid header/row count, or backend failure triggers the deterministic retry; if that also fails, the router emits one singleton bucket per case.
+This Beta feedback build deliberately attempts the canonical five-view model at every official case/`k` scale, including 300, 1000, and 3000 cases. It no longer selects sparse, calibrated-dual, or deterministic-only output merely because an input is large. The router still publishes singleton and validated deterministic results before the five-view request. Missing embeddings, timeout, malformed embeddings, incompatible dimensions, invalid header/row count, or backend failure therefore preserve the already-published deterministic result; if that also fails, the initial singleton output remains valid.
 
-Every attempted backend first removes stale output. A result is accepted only if it has the exact `Case,bucket` header and one row per input case. The environment variables `BETA_ONE_M_CONTEXT_EST_LINES`, `BETA_LONG_CONTEXT_EST_LINES`, `BETA_MULTIVIEW_MAX_CASES`, `BETA_MULTIVIEW_WALL_TIMEOUT`, `BETA_FULL_MAX_CASES`, `BETA_FULL_WALL_TIMEOUT`, and `BETA_AGGLOM_MAX_CASES` are available only for controlled validation overrides.
+Every attempted backend first removes stale output. A result is accepted only if it has the exact `Case,bucket` header and one row per input case. `BETA_V2_BASELINE_LIMIT`, `BETA_V2_EXPERT_LIMIT`, and `BETA_V2_EXIT_RESERVE` are available only for controlled validation overrides.
 
 ## Canonical five-view model
 
@@ -52,6 +52,8 @@ For scalable inference, all logs are memoized in-process, case-index-only docume
 
 `LLM_MODEL_CONFIG` must contain YAML content. The package calls only the organizer-provided embedding endpoint; completion is never called. If embeddings are unavailable, malformed, slow, or return an incompatible dimension, the router first tries the deterministic backend and finally emits a valid singleton CSV if that backend is also unavailable.
 
+The frozen five-view artifacts expect 768-dimensional embeddings. The public Nomic-compatible path was verified at 768 dimensions. If another organizer endpoint returns a different dimension, the expert result is rejected and the already-published deterministic CSV is preserved; the package never reshapes unknown embeddings silently.
+
 ## Packaging compatibility
 
 - Target: Linux x86_64, RHEL/Alma/CentOS 8 compatible.
@@ -59,29 +61,35 @@ For scalable inference, all logs are memoized in-process, case-index-only docume
 - All packaged ELF files require at most `GLIBC_2.28`.
 - Symlinks: 0 after materialization.
 - Top-level executable mode: 755.
-- Package size: approximately 519 MiB.
-- Router SHA-256: `13528c31ffe65f55bc19f1a837c085a02a12c89e2a3ec8694dee6e0b3553e026`.
+- Package size: approximately 943 MiB apparent file bytes (about 536 MiB allocated on the local filesystem).
+- Entry SHA-256: `f6fadf592fb3ff2468d846c5b6d5c37a1bd10da62da0420ffdadb40c9992f64d`.
+- Router policy SHA-256: `27c009f33d02b6681eb6cc126051d9cb74f683dcfff1c911bd020d803e592dae`.
+- Sparse multiview SHA-256: `a3ecec3e411e29d21b377d45da873a84d2fcf5c474973e3a28cb7d7f05854ff9`.
 
 ## Final validation summary
 
 | Test | Cases | Route | BA | TPR | TNR | Wall |
 |---|---:|---|---:|---:|---:|---:|
 | public benchmark_set_1 | 7 | canonical five-view | 1.000000 | 1.000000 | 1.000000 | 13.00 s |
+| all-scale router smoke, set1 | 7 | canonical five-view | n/a | n/a | n/a | 3.93 s |
 | public benchmark_set_2 | 25 | canonical five-view | 0.950469 | 0.982906 | 0.918033 | 17.42 s |
-| cold 160-case stress | 160 | canonical five-view | n/a | n/a | n/a | 70.13 s |
+| previous B4 fallback guardrail | 300 | sparse five-view (superseded) | n/a | n/a | n/a | 70.31 s |
+| previous B5 fallback guardrail | 1000 | deterministic k-means (fallback) | n/a | n/a | n/a | 6.88 s |
+| previous B6 fallback guardrail | 3000 | deterministic k-means (fallback) | n/a | n/a | n/a | 8.22 s |
 | normal set1 recheck | 7 | canonical five-view | n/a | n/a | n/a | 2.49 s |
 | forced 1-second small multi-view guard | 7 | deterministic agglomerative | n/a | n/a | n/a | 2.72 s |
 | forced 1-second 241-case dual guard | 240 | deterministic agglomerative | n/a | n/a | n/a | 7.58 s |
 | forced k-means large route | 640 | deterministic k-means | n/a | n/a | n/a | 5.32 s |
 | disabled deterministic binary | 7 | singleton emergency output | n/a | n/a | n/a | < 1 s |
 
-The 160-case stress input is derived from existing labeled data but uses only `input.csv` and logs during inference. The forced-failure rows deliberately use invalid watchdog/binary settings; they validate output continuity, not hidden-score quality. The measurement is a runtime guardrail, not a hidden-score estimate.
+The 300/1000/3000-case stress inputs are runtime-only synthetic profiles and are never used for score claims or model training. The forced-failure rows deliberately use invalid watchdog/binary settings; they validate output continuity, not hidden-score quality. The measurement is a runtime guardrail, not a hidden-score estimate.
 
 ## Files
 
 - `regr_fail_bucketing`: required timeout-aware router.
 - `multiview/`: canonical five-view binary and frozen five-seed artifacts.
-- `regr_fail_bucketing_full`, `_internal/`, `models/`: calibrated Alpha dual-input backend for 161–300 cases.
+- `multiview/regr_fail_bucketing_sparse`: retained inactive sparse backend for rollback experiments; the default all-scale policy does not select it.
+- `regr_fail_bucketing_full`, `_internal/`, `models/`: calibrated Alpha dual-input compatibility backend, retained as a fallback candidate.
 - `fast/`: deterministic-only large-set backend and multi-view failure fallback.
 - `VALIDATION_RESULTS.md`: detailed protocol and validation record.
 - `SUBMISSION_CHECKLIST.md`: upload checklist.
