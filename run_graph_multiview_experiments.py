@@ -324,7 +324,7 @@ def build_all_view_documents(dataset: Path) -> dict[str, list[str]]:
 
 
 def make_embedding_args(args: argparse.Namespace) -> argparse.Namespace:
-    return plf._make_llm_args(
+    llm_args = plf._make_llm_args(
         llm_mode="embedding",
         llm_fusion="concat",
         llm_weight=4.0,
@@ -336,6 +336,46 @@ def make_embedding_args(args: argparse.Namespace) -> argparse.Namespace:
         svd_dim=args.svd_dim,
         llm_dual=True,
     )
+    llm_args.llm_cache_only = bool(getattr(args, "embedding_cache_only", False))
+    llm_args.llm_expected_dim = int(getattr(args, "embedding_expected_dim", 768))
+    return llm_args
+
+
+def fetch_cached_llm_embeddings(
+    docs: Sequence[str], llm_args: argparse.Namespace
+) -> tuple[list[list[float]], str]:
+    """Load a complete embedding batch without any endpoint access."""
+    cfg = rfb.load_llm_embedding_config()
+    if cfg is None:
+        raise RuntimeError("LLM_MODEL_CONFIG is required to identify cached embedding keys")
+    model = str(cfg["model"])
+    model_name = str(cfg["model_name"])
+    cache_dir = Path(llm_args.llm_cache_dir)
+    expected_dim = int(getattr(llm_args, "llm_expected_dim", 768))
+    embeddings: list[list[float]] = []
+    missing: list[str] = []
+    for doc in docs:
+        key = rfb.cache_key_for_llm_doc(model, doc)
+        path = cache_dir / f"{key}.json"
+        try:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            embedding = payload["embedding"]
+            if not isinstance(embedding, list) or len(embedding) != expected_dim:
+                raise ValueError(f"expected {expected_dim} values")
+            embeddings.append(embedding)
+        except Exception as exc:
+            missing.append(f"{path.name}: {exc}")
+    if missing:
+        preview = "; ".join(missing[:5])
+        raise RuntimeError(
+            f"strict embedding cache miss/corruption for {len(missing)}/{len(docs)} docs: {preview}"
+        )
+    print(
+        f"[llm-cache] strict offline hit model={model_name} docs={len(docs)} "
+        f"embedding_dim={expected_dim}",
+        flush=True,
+    )
+    return embeddings, model_name
 
 
 def fetch_view_embeddings(docs: Sequence[str], args: argparse.Namespace, view_name: str) -> np.ndarray:
@@ -432,11 +472,61 @@ def build_multiview_pair_feature_matrix(
     return out
 
 
-def train_view_model(X: np.ndarray, y: np.ndarray, model_type: str, seed: int) -> dict:
+def train_view_model(
+    X: np.ndarray,
+    y: np.ndarray,
+    model_type: str,
+    seed: int,
+    sample_weight: np.ndarray | None = None,
+    train_args: argparse.Namespace | None = None,
+) -> dict:
     if model_type == "logistic":
-        return plf.train_logistic_model(X, y, random_state=seed)
+        from sklearn.linear_model import LogisticRegression
+        from sklearn.preprocessing import StandardScaler
+
+        scaler = StandardScaler()
+        X_scaled = scaler.fit_transform(X)
+        model = LogisticRegression(
+            max_iter=2000, class_weight="balanced", random_state=seed, solver="lbfgs"
+        )
+        model.fit(X_scaled, y, sample_weight=sample_weight)
+        return {"model": model, "scaler": scaler, "model_type": "logistic"}
     if model_type == "gbdt":
-        return plf.train_gbdt_model(X, y, random_state=seed)
+        from sklearn.ensemble import HistGradientBoostingClassifier
+
+        model = HistGradientBoostingClassifier(
+            max_iter=200,
+            max_depth=5,
+            learning_rate=0.05,
+            early_stopping=False,
+            class_weight="balanced",
+            random_state=seed,
+        )
+        model.fit(X, y, sample_weight=sample_weight)
+        return {"model": model, "scaler": None, "model_type": "gbdt"}
+    if model_type == "gated_mlp":
+        if train_args is None:
+            raise ValueError("gated_mlp requires runner training arguments")
+        import train_theta as theta_train
+
+        mlp_args = argparse.Namespace(
+            random_state=int(seed),
+            device=str(train_args.view_device),
+            epochs=int(train_args.view_epochs),
+            batch_size=int(train_args.view_batch_size),
+            lr=float(train_args.view_lr),
+            weight_decay=float(train_args.view_weight_decay),
+            dropout=float(train_args.view_dropout),
+            early_stop_patience=int(train_args.view_early_stop_patience),
+            focal_gamma=float(train_args.view_focal_gamma),
+            gate_reg=float(train_args.view_gate_reg),
+        )
+        weights = (
+            np.ones(len(y), dtype=np.float32)
+            if sample_weight is None
+            else np.asarray(sample_weight, dtype=np.float32)
+        )
+        return theta_train.train_weighted_gated_mlp(X, y, weights, mlp_args)
     raise ValueError(f"unknown view model type: {model_type}")
 
 
@@ -444,7 +534,20 @@ def predict_view_probabilities(model_pkg: dict, X: np.ndarray, pairs: Sequence[t
     model = model_pkg["model"]
     scaler = model_pkg.get("scaler")
     X_eff = scaler.transform(X) if scaler is not None else X
-    if hasattr(model, "predict_proba"):
+    if model_pkg.get("model_type") == "theta_gated_mlp":
+        import torch
+
+        batch_size = 65536
+        chunks = []
+        model.eval()
+        with torch.no_grad():
+            for start in range(0, len(X_eff), batch_size):
+                batch = torch.from_numpy(
+                    np.asarray(X_eff[start : start + batch_size], dtype=np.float32)
+                )
+                chunks.append(torch.sigmoid(model(batch)).cpu().numpy())
+        flat = np.concatenate(chunks).astype(np.float32) if chunks else np.zeros(0, dtype=np.float32)
+    elif hasattr(model, "predict_proba"):
         flat = model.predict_proba(X_eff)[:, 1].astype(np.float32)
     else:
         flat = np.clip(model.predict(X_eff).astype(np.float32), 1e-6, 1.0 - 1e-6)
@@ -460,9 +563,10 @@ def sample_lodo_train_pairs(
     holdout_name: str,
     args: argparse.Namespace,
     seed: int,
-) -> tuple[list[tuple[int, int]], np.ndarray, list[dict]]:
+) -> tuple[list[tuple[int, int]], np.ndarray, np.ndarray, list[dict]]:
     all_pairs: list[tuple[int, int]] = []
     all_y: list[np.ndarray] = []
+    all_weights: list[np.ndarray] = []
     stats: list[dict] = []
     for ds_idx, ds in enumerate(slices):
         if ds["name"] == holdout_name:
@@ -478,13 +582,51 @@ def sample_lodo_train_pairs(
             random_state=seed * 1009 + ds_idx * 97 + 31,
             positive_sampling="diverse",
             negative_sampling="confusable",
+            connectivity_positive_fraction=float(
+                getattr(args, "view_connectivity_positive_fraction", 0.0)
+            ),
         )
         all_pairs.extend((i + start, j + start) for i, j in local_pairs)
         all_y.append(y)
+        weights = np.ones(len(y), dtype=np.float32)
+        balance_power = max(
+            0.0, min(1.0, float(getattr(args, "view_dataset_balance_power", 0.0)))
+        )
+        if balance_power > 0.0 and len(y):
+            weights *= float(len(y)) ** (-balance_power)
+            for target in (0.0, 1.0):
+                mask = y == target
+                count = int(np.sum(mask))
+                if count:
+                    weights[mask] *= len(y) / (2.0 * count)
+        if ds["name"] in {"benchmark_set_1", "benchmark_set_2"}:
+            weights *= float(getattr(args, "view_official_weight", 1.0))
+        connectivity_weight = float(getattr(args, "view_connectivity_positive_weight", 1.0))
+        connectivity_weighted = 0
+        if connectivity_weight != 1.0 and len(y):
+            connectivity = set(tpl.build_connectivity_positive_pairs(
+                features[start:stop], ds["labels"], positive_sampling="diverse"
+            ))
+            mask = np.asarray(
+                [label > 0.5 and tuple(sorted(pair)) in connectivity
+                 for pair, label in zip(local_pairs, y)],
+                dtype=bool,
+            )
+            weights[mask] *= connectivity_weight
+            connectivity_weighted = int(np.sum(mask))
+        all_weights.append(weights)
         item = dict(pair_stats)
-        item.update({"dataset": ds["name"], "pairs": len(y)})
+        item.update({
+            "dataset": ds["name"],
+            "pairs": len(y),
+            "raw_weight_mean": float(np.mean(weights)) if len(weights) else 0.0,
+            "connectivity_positive_weighted": connectivity_weighted,
+        })
         stats.append(item)
-    return all_pairs, np.concatenate(all_y).astype(np.float32), stats
+    labels = np.concatenate(all_y).astype(np.float32)
+    weights = np.concatenate(all_weights).astype(np.float32)
+    weights /= max(float(np.mean(weights)), 1e-12)
+    return all_pairs, labels, weights, stats
 
 
 def run_view_stage(args: argparse.Namespace, datasets: Sequence[Path]) -> tuple[list[dict], list[dict]]:
@@ -525,6 +667,8 @@ def run_view_stage(args: argparse.Namespace, datasets: Sequence[Path]) -> tuple[
     diagnostics_rows: list[dict] = []
     for seed in args.seeds:
         for holdout in slices:
+            if args.holdout_datasets and holdout["name"] not in args.holdout_datasets:
+                continue
             train_indices = [idx for ds in slices if ds["name"] != holdout["name"] for idx in range(ds["start"], ds["stop"])]
             train_features = [features[idx] for idx in train_indices]
             hold_indices = list(range(holdout["start"], holdout["stop"]))
@@ -534,7 +678,9 @@ def run_view_stage(args: argparse.Namespace, datasets: Sequence[Path]) -> tuple[
             plf.apply_llm_reducer(hold_features, feature_reducer, args.view_dim)
             plf.apply_llm_summary_reducer(hold_features, summary_reducer, args.view_dim)
             reduced_custom = {view: fit_apply_reduced_matrix(raw, train_indices, args.view_dim, seed + 101) for view, raw in raw_custom.items()}
-            train_pairs, y, pair_stats = sample_lodo_train_pairs(features, slices, holdout["name"], args, seed)
+            train_pairs, y, sample_weight, pair_stats = sample_lodo_train_pairs(
+                features, slices, holdout["name"], args, seed
+            )
             hold_pairs = osf.all_pairs(len(hold_features))
             hold_conflict = conflict_matrix_from_records(osf.build_case_records(holdout["name"], holdout["path"] / "input.csv", gold_csv=None))
             k = len(set(holdout["labels"]))
@@ -545,7 +691,10 @@ def run_view_stage(args: argparse.Namespace, datasets: Sequence[Path]) -> tuple[
                 hold_X = build_multiview_pair_feature_matrix(hold_features, hold_custom, view_names, hold_pairs)
                 for model_type in args.view_model_types:
                     t0 = time.perf_counter()
-                    model_pkg = train_view_model(train_X, y, model_type, seed)
+                    model_pkg = train_view_model(
+                        train_X, y, model_type, seed, sample_weight=sample_weight,
+                        train_args=args,
+                    )
                     prob = predict_view_probabilities(model_pkg, hold_X, hold_pairs, len(hold_features))
                     result = gc.cluster_probability_graph(
                         prob,
@@ -555,6 +704,9 @@ def run_view_stage(args: argparse.Namespace, datasets: Sequence[Path]) -> tuple[
                         signed_conflict_penalty=args.signed_conflict_penalty,
                         signed_max_iter=args.signed_max_iter,
                         signed_keep_k=args.signed_keep_k,
+                        signed_move_margin=args.signed_move_margin,
+                        selector_balance_weight=args.selector_balance_weight,
+                        selector_conflict_weight=args.selector_conflict_weight,
                     )
                     runtime = time.perf_counter() - t0
                     pred_path = args.output_dir / "preds" / f"{holdout['name']}_{view_config}_{model_type}_{args.view_graph_method}_seed{seed}.csv"
@@ -563,6 +715,11 @@ def run_view_stage(args: argparse.Namespace, datasets: Sequence[Path]) -> tuple[
                     prob_path.parent.mkdir(parents=True, exist_ok=True)
                     np.save(prob_path, prob)
                     ba, tpr, tnr = pairwise_scores(holdout["labels"], pred)
+                    model_debug = {
+                        key: model_pkg[key]
+                        for key in ("best_epoch", "best_val_loss")
+                        if key in model_pkg
+                    }
                     row = {
                         "dataset": holdout["name"],
                         "seed": seed,
@@ -582,7 +739,11 @@ def run_view_stage(args: argparse.Namespace, datasets: Sequence[Path]) -> tuple[
                         "runtime_sec": runtime,
                         "pred_path": str(pred_path),
                         "prob_path": str(prob_path),
-                        "notes": json.dumps({"views": view_names, "pair_stats": pair_stats[:3]}, sort_keys=True),
+                        "notes": json.dumps({
+                            "views": view_names,
+                            "pair_stats": pair_stats,
+                            "model_debug": model_debug,
+                        }, sort_keys=True),
                     }
                     rows.append(row)
                     mixed, fragmented, false_merges = _pair_bug_counts(holdout["labels"], pred)
@@ -609,6 +770,18 @@ def predict_view_probabilities_flat(model_pkg: dict, X: np.ndarray) -> np.ndarra
     model = model_pkg["model"]
     scaler = model_pkg.get("scaler")
     X_eff = scaler.transform(X) if scaler is not None else X
+    if model_pkg.get("model_type") == "theta_gated_mlp":
+        import torch
+
+        chunks = []
+        model.eval()
+        with torch.no_grad():
+            for start in range(0, len(X_eff), 65536):
+                batch = torch.from_numpy(
+                    np.asarray(X_eff[start : start + 65536], dtype=np.float32)
+                )
+                chunks.append(torch.sigmoid(model(batch)).cpu().numpy())
+        return np.concatenate(chunks).astype(np.float32) if chunks else np.zeros(0, dtype=np.float32)
     if hasattr(model, "predict_proba"):
         return model.predict_proba(X_eff)[:, 1].astype(np.float32)
     return np.clip(model.predict(X_eff).astype(np.float32), 1e-6, 1.0 - 1e-6)
@@ -694,7 +867,9 @@ def train_eval_gate_for_holdout(
     seed: int,
 ) -> tuple[dict, list[dict]]:
     rng = np.random.default_rng(seed * 100003 + len(holdout["labels"]))
-    train_pairs, y, pair_stats = sample_lodo_train_pairs(features, slices, holdout["name"], args, seed)
+    train_pairs, y, sample_weight, pair_stats = sample_lodo_train_pairs(
+        features, slices, holdout["name"], args, seed
+    )
     y = np.asarray(y, dtype=np.float32)
     pos = np.flatnonzero(y > 0.5)
     neg = np.flatnonzero(y < 0.5)
@@ -716,8 +891,14 @@ def train_eval_gate_for_holdout(
     expert_views = views_for_config(expert_view)
     X_base_all = build_multiview_pair_feature_matrix(features, reduced_custom, base_views, train_pairs)
     X_expert_all = build_multiview_pair_feature_matrix(features, reduced_custom, expert_views, train_pairs)
-    base_model = train_view_model(X_base_all[model_idx], y[model_idx], args.gate_model_type, seed)
-    expert_model = train_view_model(X_expert_all[model_idx], y[model_idx], args.gate_model_type, seed + 53)
+    base_model = train_view_model(
+        X_base_all[model_idx], y[model_idx], args.gate_model_type, seed,
+        sample_weight=sample_weight[model_idx],
+    )
+    expert_model = train_view_model(
+        X_expert_all[model_idx], y[model_idx], args.gate_model_type, seed + 53,
+        sample_weight=sample_weight[model_idx],
+    )
     gate_pairs = [train_pairs[int(idx)] for idx in gate_idx]
     p_base_gate = predict_view_probabilities_flat(base_model, X_base_all[gate_idx])
     p_expert_gate = predict_view_probabilities_flat(expert_model, X_expert_all[gate_idx])
@@ -779,6 +960,8 @@ def run_view_gate_stage(args: argparse.Namespace, datasets: Sequence[Path]) -> t
     gate_debug_rows: list[dict] = []
     for seed in args.seeds:
         for holdout in slices:
+            if args.holdout_datasets and holdout["name"] not in args.holdout_datasets:
+                continue
             train_indices = [idx for ds in slices if ds["name"] != holdout["name"] for idx in range(ds["start"], ds["stop"])]
             train_features = [features[idx] for idx in train_indices]
             hold_indices = list(range(holdout["start"], holdout["stop"]))
@@ -804,6 +987,9 @@ def run_view_gate_stage(args: argparse.Namespace, datasets: Sequence[Path]) -> t
                     signed_conflict_penalty=args.signed_conflict_penalty,
                     signed_max_iter=args.signed_max_iter,
                     signed_keep_k=args.signed_keep_k,
+                    signed_move_margin=args.signed_move_margin,
+                    selector_balance_weight=args.selector_balance_weight,
+                    selector_conflict_weight=args.selector_conflict_weight,
                 )
                 runtime = time.perf_counter() - t0
                 pred_path = args.output_dir / "preds" / f"{holdout['name']}_gate_{expert_view}_{args.view_graph_method}_seed{seed}.csv"
@@ -899,6 +1085,9 @@ def run_graph_stage(args: argparse.Namespace, datasets: Sequence[Path]) -> tuple
                         signed_conflict_penalty=args.signed_conflict_penalty,
                         signed_max_iter=args.signed_max_iter,
                         signed_keep_k=args.signed_keep_k,
+                        signed_move_margin=args.signed_move_margin,
+                        selector_balance_weight=args.selector_balance_weight,
+                        selector_conflict_weight=args.selector_conflict_weight,
                     )
                     runtime = time.perf_counter() - t0
                     pred_path = (
@@ -984,6 +1173,8 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
         "conservative_merge",
         "mutual_knn_cc",
         "signed_graph_greedy",
+        "signed_graph_balanced",
+        "quality_selected",
     ])
     p.add_argument("--embedding-view-configs", nargs="+", default=[
         "dual",
@@ -1001,23 +1192,60 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     p.add_argument("--mknn-threshold", type=float, default=0.65)
     p.add_argument("--signed-conflict-penalty", type=float, default=1.0)
     p.add_argument("--signed-max-iter", type=int, default=20)
+    p.add_argument("--signed-move-margin", type=float, default=0.0)
+    p.add_argument("--selector-balance-weight", type=float, default=0.2)
+    p.add_argument("--selector-conflict-weight", type=float, default=0.0)
     p.add_argument("--signed-keep-k", action=argparse.BooleanOptionalAction, default=True)
     p.add_argument("--skip-graph-stage", action="store_true")
     p.add_argument("--doc-examples-per-dataset", type=int, default=4)
     p.add_argument("--run-view-stage", action="store_true")
+    p.add_argument(
+        "--holdout-datasets", nargs="*", default=[],
+        help="Optional dataset names to evaluate while retaining all others for training.",
+    )
     p.add_argument("--view-model-types", nargs="+", default=["gbdt"])
+    p.add_argument("--view-device", default="cpu")
+    p.add_argument("--view-epochs", type=int, default=30)
+    p.add_argument("--view-batch-size", type=int, default=4096)
+    p.add_argument("--view-lr", type=float, default=1e-3)
+    p.add_argument("--view-weight-decay", type=float, default=1e-4)
+    p.add_argument("--view-dropout", type=float, default=0.2)
+    p.add_argument("--view-early-stop-patience", type=int, default=8)
+    p.add_argument("--view-focal-gamma", type=float, default=2.0)
+    p.add_argument("--view-gate-reg", type=float, default=1e-4)
     p.add_argument("--view-graph-method", default="agglomerative_avg")
     p.add_argument("--view-dim", type=int, default=64)
     p.add_argument("--view-max-pairs-per-dataset", type=int, default=60000)
     p.add_argument("--view-negative-ratio", type=float, default=2.0)
     p.add_argument("--view-hard-negative-ratio", type=float, default=0.5)
     p.add_argument("--view-hard-positive-ratio", type=float, default=0.5)
+    p.add_argument(
+        "--view-connectivity-positive-fraction", type=float, default=0.0,
+        help="Reserve this fraction of positive budget for per-bug connectivity/bridge edges.",
+    )
+    p.add_argument(
+        "--view-connectivity-positive-weight", type=float, default=1.0,
+        help="Additional loss weight for sampled per-bug connectivity edges.",
+    )
+    p.add_argument(
+        "--view-dataset-balance-power", type=float, default=0.0,
+        help="0 keeps historical pair weighting; 1 gives every source episode equal loss mass.",
+    )
+    p.add_argument(
+        "--view-official-weight", type=float, default=1.0,
+        help="Global training weight for public benchmark_set_1/2 pairs.",
+    )
     p.add_argument("--parser", default="drain")
     p.add_argument("--svd-dim", type=int, default=64)
     p.add_argument("--llm-doc-max-features", type=int, default=80)
     p.add_argument("--llm-cache-dir", type=Path, default=Path("/tmp/regr_fail_llm_cache"))
     p.add_argument("--llm-batch-size", type=int, default=64)
     p.add_argument("--llm-timeout-sec", type=float, default=20.0)
+    p.add_argument(
+        "--embedding-cache-only", action="store_true",
+        help="Require every embedding in the local cache and never contact an endpoint.",
+    )
+    p.add_argument("--embedding-expected-dim", type=int, default=768)
     p.add_argument("--run-view-gate-stage", action="store_true")
     p.add_argument("--gate-base-view-config", default="dual")
     p.add_argument("--gate-expert-view-configs", nargs="+", default=["quad_event_object_context"])
@@ -1029,6 +1257,8 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
 
 def main(argv: Sequence[str] | None = None) -> int:
     args = parse_args(argv)
+    if args.embedding_cache_only:
+        rfb.fetch_llm_embeddings = fetch_cached_llm_embeddings
     args.output_dir.mkdir(parents=True, exist_ok=True)
     datasets = [resolve(path) for path in args.datasets]
     missing = [str(ds) for ds in datasets if not (ds / "input.csv").exists()]
@@ -1149,8 +1379,31 @@ def main(argv: Sequence[str] | None = None) -> int:
         "embedding_view_configs": args.embedding_view_configs,
         "run_view_stage": args.run_view_stage,
         "view_model_types": args.view_model_types,
+        "view_device": args.view_device,
+        "view_epochs": args.view_epochs,
+        "view_batch_size": args.view_batch_size,
+        "view_lr": args.view_lr,
+        "view_weight_decay": args.view_weight_decay,
+        "view_dropout": args.view_dropout,
+        "view_early_stop_patience": args.view_early_stop_patience,
+        "view_focal_gamma": args.view_focal_gamma,
+        "view_gate_reg": args.view_gate_reg,
         "view_graph_method": args.view_graph_method,
         "view_dim": args.view_dim,
+        "view_max_pairs_per_dataset": args.view_max_pairs_per_dataset,
+        "view_negative_ratio": args.view_negative_ratio,
+        "view_hard_negative_ratio": args.view_hard_negative_ratio,
+        "view_hard_positive_ratio": args.view_hard_positive_ratio,
+        "holdout_datasets": args.holdout_datasets,
+        "view_dataset_balance_power": args.view_dataset_balance_power,
+        "view_official_weight": args.view_official_weight,
+        "selector_balance_weight": args.selector_balance_weight,
+        "selector_conflict_weight": args.selector_conflict_weight,
+        "parser": args.parser,
+        "svd_dim": args.svd_dim,
+        "llm_doc_max_features": args.llm_doc_max_features,
+        "embedding_cache_only": args.embedding_cache_only,
+        "embedding_expected_dim": args.embedding_expected_dim,
         "run_view_gate_stage": args.run_view_gate_stage,
         "gate_base_view_config": args.gate_base_view_config,
         "gate_expert_view_configs": args.gate_expert_view_configs,
@@ -1163,4 +1416,3 @@ def main(argv: Sequence[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

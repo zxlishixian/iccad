@@ -62,11 +62,27 @@ def _load_seed_blends(
     matrices: list[np.ndarray] = []
     for seed in seeds:
         suffix = f"{model_type}_{source_graph_method}_seed{seed}.npy"
-        p_base = np.load(_find_prob(prob_dirs, f"{dataset}_{base_view}_{suffix}")).astype(np.float32)
-        p_expert = np.load(_find_prob(prob_dirs, f"{dataset}_{expert_view}_{suffix}")).astype(np.float32)
-        if p_base.shape != p_expert.shape:
-            raise ValueError(f"shape mismatch for {dataset} seed={seed}: {p_base.shape} vs {p_expert.shape}")
-        prob = ((1.0 - beta) * p_base + beta * p_expert).astype(np.float32)
+        if beta <= 1e-9:
+            prob = np.load(
+                _find_prob(prob_dirs, f"{dataset}_{base_view}_{suffix}")
+            ).astype(np.float32)
+        elif beta >= 1.0 - 1e-9:
+            prob = np.load(
+                _find_prob(prob_dirs, f"{dataset}_{expert_view}_{suffix}")
+            ).astype(np.float32)
+        else:
+            p_base = np.load(
+                _find_prob(prob_dirs, f"{dataset}_{base_view}_{suffix}")
+            ).astype(np.float32)
+            p_expert = np.load(
+                _find_prob(prob_dirs, f"{dataset}_{expert_view}_{suffix}")
+            ).astype(np.float32)
+            if p_base.shape != p_expert.shape:
+                raise ValueError(
+                    f"shape mismatch for {dataset} seed={seed}: "
+                    f"{p_base.shape} vs {p_expert.shape}"
+                )
+            prob = ((1.0 - beta) * p_base + beta * p_expert).astype(np.float32)
         prob = (prob + prob.T) * 0.5
         np.fill_diagonal(prob, 1.0)
         matrices.append(prob)
@@ -179,6 +195,9 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--guard-strengths", nargs="+", type=float, default=[0.25, 0.50, 1.00])
     parser.add_argument("--signed-conflict-penalty", type=float, default=1.0)
     parser.add_argument("--signed-max-iter", type=int, default=20)
+    parser.add_argument("--signed-move-margin", type=float, default=0.0)
+    parser.add_argument("--selector-balance-weight", type=float, default=0.2)
+    parser.add_argument("--selector-conflict-weight", type=float, default=0.0)
     parser.add_argument("--signed-keep-k", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--merge-top-m", type=int, default=5)
     parser.add_argument("--merge-threshold", type=float, default=0.75)
@@ -236,6 +255,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                     signed_conflict_penalty=args.signed_conflict_penalty,
                     signed_max_iter=args.signed_max_iter,
                     signed_keep_k=args.signed_keep_k,
+                    signed_move_margin=args.signed_move_margin,
+                    selector_balance_weight=args.selector_balance_weight,
+                    selector_conflict_weight=args.selector_conflict_weight,
                     merge_top_m=args.merge_top_m,
                     merge_threshold=args.merge_threshold,
                     merge_conflict_threshold=args.merge_conflict_threshold,
@@ -251,6 +273,23 @@ def main(argv: Sequence[str] | None = None) -> int:
                 if not prob_path.exists():
                     np.save(prob_path, prob)
                 ba, tpr, tnr = pairwise_scores(gold, pred)
+                selection_debug = {}
+                if result.trajectory:
+                    selected = next(
+                        (
+                            item for item in reversed(result.trajectory)
+                            if item.get("action") == "quality_selected"
+                        ),
+                        None,
+                    )
+                    if selected is not None:
+                        selection_debug = {
+                            "selected_clusterer": selected.get("candidate", ""),
+                            "selector_quality": selected.get("quality_score", ""),
+                            "selector_pair_ll": selected.get("pair_log_likelihood", ""),
+                            "selector_entropy": selected.get("cluster_entropy", ""),
+                            "selector_max_cluster_fraction": selected.get("max_cluster_fraction", ""),
+                        }
                 row = {
                     "dataset": name,
                     "policy": policy,
@@ -266,6 +305,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     "runtime_sec": cluster_sec,
                     "pred_path": str(pred_path),
                     "prob_path": str(prob_path),
+                    **selection_debug,
                     **diagnostics,
                 }
                 rows.append(row)

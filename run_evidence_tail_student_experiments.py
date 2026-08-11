@@ -181,7 +181,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             # case so train and serving pair vectors share the same 293d schema.
             plf.apply_llm_reducer(features, feature_reducer, args.view_dim)
             plf.apply_llm_summary_reducer(features, summary_reducer, args.view_dim)
-            train_pairs, y, pair_stats = gm.sample_lodo_train_pairs(
+            train_pairs, y, _sample_weight, pair_stats = gm.sample_lodo_train_pairs(
                 features, slices, holdout["name"], args, seed
             )
             hold_pairs = osf.all_pairs(len(hold_features))

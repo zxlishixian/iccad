@@ -110,6 +110,85 @@ def _negative_hard_score(features: Sequence[plf.LLMCaseFeature], sim: np.ndarray
     return score
 
 
+def build_connectivity_positive_pairs(
+    features: Sequence[plf.LLMCaseFeature],
+    labels: Sequence[str],
+    positive_sampling: str = "diverse",
+) -> list[tuple[int, int]]:
+    """Build per-bug positive backbones plus cross-view bridge edges.
+
+    The maximum-similarity tree gives every case a learnable route to its bug
+    component.  One low-similarity bridge per case then exposes surface-form
+    changes that ordinary random positive sampling tends to miss.  Pairs are
+    always local to the supplied episode.
+    """
+    by_bug: dict[str, list[int]] = defaultdict(list)
+    for index, label in enumerate(labels):
+        by_bug[str(label)].append(index)
+    det_sim, combined_sim = _build_similarity_matrix(features)
+    similarity = combined_sim if positive_sampling == "diverse" else det_sim
+    grouped_pairs: list[list[tuple[int, int]]] = []
+    for indices in by_bug.values():
+        if len(indices) < 2:
+            continue
+        local: list[tuple[int, int]] = []
+        local_matrix = similarity[np.ix_(indices, indices)] if similarity.size else None
+        if local_matrix is None:
+            center_position = 0
+        else:
+            center_position = int(np.argmax(np.mean(local_matrix, axis=1)))
+        visited = {indices[center_position]}
+        remaining = set(indices) - visited
+        while remaining:
+            best = max(
+                (
+                    float(similarity[left, right]) if similarity.size else 0.0,
+                    -right,
+                    left,
+                    right,
+                )
+                for left in visited
+                for right in remaining
+            )
+            left, right = int(best[2]), int(best[3])
+            local.append(tuple(sorted((left, right))))
+            visited.add(right)
+            remaining.remove(right)
+        # The hard bridge is deliberately different from the easy tree: it
+        # teaches invariance between distinct surface manifestations.
+        for left in indices:
+            candidates = [right for right in indices if right != left]
+            right = min(
+                candidates,
+                key=lambda value: (
+                    float(similarity[left, value]) if similarity.size else 0.0,
+                    value,
+                ),
+            )
+            local.append(tuple(sorted((left, right))))
+        grouped_pairs.append(list(dict.fromkeys(local)))
+
+    # Round-robin across bugs so a large bug cannot consume the reserve before
+    # small bugs receive any connectivity edge.
+    output: list[tuple[int, int]] = []
+    seen: set[tuple[int, int]] = set()
+    position = 0
+    while True:
+        added = False
+        for group in grouped_pairs:
+            if position >= len(group):
+                continue
+            pair = group[position]
+            if pair not in seen:
+                seen.add(pair)
+                output.append(pair)
+            added = True
+        if not added:
+            break
+        position += 1
+    return output
+
+
 def sample_pairs(
     features: list[plf.LLMCaseFeature],
     labels: Sequence[str],
@@ -120,6 +199,7 @@ def sample_pairs(
     random_state: int,
     positive_sampling: str = "det_low",
     negative_sampling: str = "det_high",
+    connectivity_positive_fraction: float = 0.0,
 ) -> tuple[list[tuple[int, int]], np.ndarray, dict]:
     rng = random.Random(random_state)
     np_rng = np.random.default_rng(random_state)
@@ -132,35 +212,70 @@ def sample_pairs(
     pos_sim = combined_sim if positive_sampling == "diverse" else det_sim
     neg_sim = combined_sim if negative_sampling == "confusable" else det_sim
 
-    positives: list[tuple[int, int]] = []
+    unique_positives: list[tuple[int, int]] = []
     for indices in by_bug.values():
         for pos, i in enumerate(indices):
             for j in indices[pos + 1:]:
-                positives.append((i, j))
+                unique_positives.append((i, j))
 
     hard_positive_added = 0
-    if positives and hard_positive_ratio > 0 and features:
-        pos_set_base = {tuple(sorted(p)) for p in positives}
-        hard_candidates = sorted(
-            [
-                (_positive_hard_score(features, pos_sim, i, j, positive_sampling), (i, j))
-                for (i, j) in pos_set_base
-            ],
-            key=lambda x: x[0],
+    hard_positive_selected = 0
+    ratio = max(0.0, float(negative_ratio))
+    positive_budget = max_train_pairs if ratio <= 0.0 else max(1, int(max_train_pairs // (1.0 + ratio)))
+    hard_candidates = sorted(
+        [
+            (_positive_hard_score(features, pos_sim, i, j, positive_sampling), (i, j))
+            for i, j in unique_positives
+        ],
+        key=lambda item: item[0],
+    )
+    hard_fraction = (
+        max(0.0, float(hard_positive_ratio)) / (1.0 + max(0.0, float(hard_positive_ratio)))
+        if hard_positive_ratio > 0
+        else 0.0
+    )
+    if len(unique_positives) > positive_budget:
+        connectivity_candidates = build_connectivity_positive_pairs(
+            features, labels, positive_sampling=positive_sampling
         )
-        target_hard_pos = min(
-            int(round(len(positives) * hard_positive_ratio)),
-            max(0, max_train_pairs - len(positives)),
+        connectivity_keep = min(
+            len(connectivity_candidates),
+            int(round(positive_budget * max(0.0, min(1.0, connectivity_positive_fraction)))),
         )
-        if hard_candidates and target_hard_pos > 0:
-            extras = []
-            while len(extras) < target_hard_pos:
+        connectivity_pairs = connectivity_candidates[:connectivity_keep]
+        reserved = set(connectivity_pairs)
+        hard_keep = min(
+            positive_budget - len(connectivity_pairs),
+            int(round(positive_budget * hard_fraction)),
+        )
+        hard_pairs = [
+            pair for _, pair in hard_candidates if pair not in reserved
+        ][:hard_keep]
+        reserved.update(hard_pairs)
+        remaining = [pair for pair in unique_positives if pair not in reserved]
+        random_keep = positive_budget - len(connectivity_pairs) - len(hard_pairs)
+        random_pairs = rng.sample(remaining, random_keep) if random_keep < len(remaining) else remaining
+        positives = connectivity_pairs + hard_pairs + random_pairs
+        hard_positive_selected = len(hard_pairs)
+        connectivity_selected = len(connectivity_pairs)
+    else:
+        positives = list(unique_positives)
+        extra_budget = max(0, positive_budget - len(positives))
+        target_extra = min(int(round(len(unique_positives) * max(0.0, hard_positive_ratio))), extra_budget)
+        if hard_candidates and target_extra > 0:
+            extras: list[tuple[int, int]] = []
+            while len(extras) < target_extra:
                 for _, pair in hard_candidates:
                     extras.append(pair)
-                    if len(extras) >= target_hard_pos:
+                    if len(extras) >= target_extra:
                         break
             positives.extend(extras)
             hard_positive_added = len(extras)
+            hard_positive_selected = len(extras)
+        connectivity_selected = min(
+            len(build_connectivity_positive_pairs(features, labels, positive_sampling)),
+            len(unique_positives),
+        ) if connectivity_positive_fraction > 0 else 0
 
     pos_set = {tuple(sorted(p)) for p in positives}
     target_neg = min(
@@ -232,6 +347,8 @@ def sample_pairs(
         "positive_pairs": int((y == 1.0).sum()),
         "negative_pairs": int((y == 0.0).sum()),
         "hard_positive_oversampled": hard_positive_added,
+        "hard_positive_selected": hard_positive_selected,
+        "connectivity_positive_selected": connectivity_selected,
         "hard_negative_pairs": min(len(negatives), target_hard),
         "positive_sampling": positive_sampling,
         "negative_sampling": negative_sampling,

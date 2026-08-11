@@ -411,6 +411,210 @@ def signed_graph_greedy(
     )
 
 
+def signed_graph_balanced(
+    prob: np.ndarray,
+    k: int,
+    conflict_matrix: np.ndarray | None = None,
+    signed_conflict_penalty: float = 1.0,
+    signed_max_iter: int = 20,
+    signed_keep_k: bool = True,
+    signed_move_margin: float = 0.0,
+) -> GraphClusterResult:
+    """Refine average-link clusters without favoring large destinations.
+
+    The original signed objective sums all incident edges.  That makes a move
+    into a large bucket easier even when most destination edges are mediocre.
+    This variant compares mean signed evidence to the source and destination,
+    so a single strong edge cannot drag a case into an otherwise incompatible
+    bucket merely because that bucket is large.
+    """
+    n = int(prob.shape[0])
+    if n <= 1:
+        return GraphClusterResult(list(range(n)), "signed_graph_balanced", n)
+    requested_k = max(1, min(int(k), n))
+    labels = _agglomerative(prob, requested_k, "average")
+    conflict = (
+        np.zeros_like(prob, dtype=np.float32)
+        if conflict_matrix is None
+        else np.asarray(conflict_matrix, dtype=np.float32)
+    )
+    p = np.clip(np.asarray(prob, dtype=np.float32), 1e-5, 1.0 - 1e-5)
+    logits = np.log(p / (1.0 - p)) - float(signed_conflict_penalty) * conflict
+    np.fill_diagonal(logits, 0.0)
+    margin = max(0.0, float(signed_move_margin))
+    trajectory: list[dict] = []
+    seen = {tuple(map(int, labels))}
+
+    def build_members(current_labels: Sequence[int]) -> dict[int, list[int]]:
+        out: dict[int, list[int]] = {}
+        for idx, label in enumerate(current_labels):
+            out.setdefault(int(label), []).append(idx)
+        return out
+
+    for iteration in range(int(signed_max_iter)):
+        members = build_members(labels)
+        existing = sorted(members)
+        best: tuple[float, int, int, float, float] | None = None
+        for node in range(n):
+            old = int(labels[node])
+            old_peers = [idx for idx in members[old] if idx != node]
+            if signed_keep_k and not old_peers:
+                continue
+            old_score = float(np.mean(logits[node, old_peers])) if old_peers else 0.0
+            for target in existing:
+                if target == old or not members[target]:
+                    continue
+                target_score = float(np.mean(logits[node, members[target]]))
+                gain = target_score - old_score
+                if best is None or gain > best[0]:
+                    best = (gain, int(node), int(target), old_score, target_score)
+        if best is None or best[0] <= margin + 1e-8:
+            break
+        gain, node, target, old_score, target_score = best
+        old = int(labels[node])
+        proposal = list(labels)
+        proposal[node] = target
+        remap = {label: idx for idx, label in enumerate(sorted(set(proposal)))}
+        proposal = [remap[int(label)] for label in proposal]
+        state = tuple(map(int, proposal))
+        if state in seen:
+            break
+        seen.add(state)
+        labels = proposal
+        trajectory.append({
+            "action": "balanced_move",
+            "iteration": iteration,
+            "node": int(node),
+            "old_label": int(old),
+            "new_label": int(target),
+            "gain": float(gain),
+            "old_mean_evidence": float(old_score),
+            "target_mean_evidence": float(target_score),
+        })
+    return GraphClusterResult(
+        labels=labels,
+        method="signed_graph_balanced",
+        num_clusters=len(set(labels)),
+        trajectory=trajectory,
+    )
+
+
+def _candidate_quality(
+    prob: np.ndarray,
+    labels: Sequence[int],
+    k: int,
+    conflict_matrix: np.ndarray | None,
+    balance_weight: float,
+    conflict_weight: float,
+) -> tuple[float, dict]:
+    labels_arr = np.asarray(labels, dtype=np.int32)
+    n = len(labels_arr)
+    if n <= 1:
+        return 0.0, {"pair_log_likelihood": 0.0, "cluster_entropy": 1.0}
+    left, right = np.triu_indices(n, 1)
+    same = labels_arr[left] == labels_arr[right]
+    pair_prob = np.clip(np.asarray(prob, dtype=np.float32)[left, right], 1e-6, 1.0 - 1e-6)
+    within_ll = float(np.mean(np.log(pair_prob[same]))) if np.any(same) else 0.0
+    between_ll = float(np.mean(np.log1p(-pair_prob[~same]))) if np.any(~same) else 0.0
+    pair_ll = 0.5 * (within_ll + between_ll)
+    sizes = np.bincount(labels_arr)
+    fractions = sizes[sizes > 0].astype(np.float64) / max(1, n)
+    entropy = float(-np.sum(fractions * np.log(np.maximum(fractions, 1e-12))))
+    entropy /= float(np.log(max(2, int(k))))
+    conflict_inside = 0.0
+    if conflict_matrix is not None and np.any(same):
+        conflict = np.asarray(conflict_matrix, dtype=np.float32)[left, right]
+        conflict_inside = float(np.mean(conflict[same]))
+    score = (
+        pair_ll
+        + float(balance_weight) * entropy
+        - float(conflict_weight) * conflict_inside
+    )
+    return float(score), {
+        "pair_log_likelihood": pair_ll,
+        "within_log_likelihood": within_ll,
+        "between_log_likelihood": between_ll,
+        "cluster_entropy": entropy,
+        "within_conflict": conflict_inside,
+        "quality_score": float(score),
+        "max_cluster_fraction": float(np.max(fractions)) if fractions.size else 1.0,
+    }
+
+
+def quality_selected_clustering(
+    prob: np.ndarray,
+    k: int,
+    conflict_matrix: np.ndarray | None = None,
+    signed_conflict_penalty: float = 1.0,
+    signed_max_iter: int = 20,
+    signed_keep_k: bool = True,
+    signed_move_margin: float = 0.0,
+    selector_balance_weight: float = 0.2,
+    selector_conflict_weight: float = 0.0,
+) -> GraphClusterResult:
+    """Choose one graph partition using only probability-derived quality.
+
+    Candidate selection is episode-local and label-free.  Pair likelihood is
+    class-balanced so the numerous between-cluster pairs do not dominate, and
+    a small entropy term prevents a high-scoring giant bucket from winning.
+    """
+    requested_k = max(1, min(int(k), int(prob.shape[0])))
+    candidates = [
+        agglomerative_avg(prob, requested_k),
+        agglomerative_complete(prob, requested_k),
+        signed_graph_greedy(
+            prob,
+            requested_k,
+            conflict_matrix=conflict_matrix,
+            signed_conflict_penalty=signed_conflict_penalty,
+            signed_max_iter=signed_max_iter,
+            signed_keep_k=signed_keep_k,
+        ),
+        signed_graph_balanced(
+            prob,
+            requested_k,
+            conflict_matrix=conflict_matrix,
+            signed_conflict_penalty=signed_conflict_penalty,
+            signed_max_iter=signed_max_iter,
+            signed_keep_k=signed_keep_k,
+            signed_move_margin=signed_move_margin,
+        ),
+    ]
+    scored: list[tuple[float, float, int, GraphClusterResult, dict]] = []
+    for order, candidate in enumerate(candidates):
+        score, diagnostics = _candidate_quality(
+            prob,
+            candidate.labels,
+            requested_k,
+            conflict_matrix,
+            selector_balance_weight,
+            selector_conflict_weight,
+        )
+        scored.append((score, diagnostics["cluster_entropy"], -order, candidate, diagnostics))
+    _, _, _, selected, selected_diagnostics = max(scored, key=lambda item: item[:3])
+    trajectory = []
+    for score, _, _, candidate, diagnostics in scored:
+        trajectory.append({
+            "action": "quality_candidate",
+            "candidate": candidate.method,
+            "selected": candidate is selected,
+            **diagnostics,
+        })
+    trajectory.append({
+        "action": "quality_selected",
+        "candidate": selected.method,
+        **selected_diagnostics,
+    })
+    return GraphClusterResult(
+        labels=list(map(int, selected.labels)),
+        method="quality_selected",
+        num_clusters=len(set(selected.labels)),
+        num_merges=selected.num_merges,
+        num_splits=selected.num_splits,
+        trajectory=trajectory,
+    )
+
+
 def cluster_probability_graph(
     prob: np.ndarray,
     k: int,
@@ -453,5 +657,32 @@ def cluster_probability_graph(
             conflict_matrix=conflict_matrix,
             **{key: value for key, value in kwargs.items() if key in allowed},
         )
+    if method == "signed_graph_balanced":
+        allowed = {
+            "signed_conflict_penalty",
+            "signed_max_iter",
+            "signed_keep_k",
+            "signed_move_margin",
+        }
+        return signed_graph_balanced(
+            prob,
+            k,
+            conflict_matrix=conflict_matrix,
+            **{key: value for key, value in kwargs.items() if key in allowed},
+        )
+    if method == "quality_selected":
+        allowed = {
+            "signed_conflict_penalty",
+            "signed_max_iter",
+            "signed_keep_k",
+            "signed_move_margin",
+            "selector_balance_weight",
+            "selector_conflict_weight",
+        }
+        return quality_selected_clustering(
+            prob,
+            k,
+            conflict_matrix=conflict_matrix,
+            **{key: value for key, value in kwargs.items() if key in allowed},
+        )
     raise ValueError(f"unknown graph cluster method: {method}")
-

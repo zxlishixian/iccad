@@ -2610,3 +2610,290 @@ large-expert timeout recovery. A real package smoke on public set1 returned all
 five embedding views at 768 dimensions without fallback and completed in 3.93
 seconds. Large-scale full-five-view completion is intentionally left for Beta
 organizer feedback because local timing is not representative.
+
+### Theta v1 unified compact-student prototype (2026-08-10)
+
+`Theta` is a new experimental route for one model across source families. It
+does not route by dataset name and is not connected to the formal
+`regr_fail_bucketing.py` entry point. Inference reads only the input CSV and
+its referenced sim/regr logs; gold/golden/meta/trace remain training or
+evaluation concerns outside the predictor.
+
+The first implementation consists of:
+
+- a compact evidence view encoding ordered failure events, states, PC regions,
+  opcodes, registers, and CSRs;
+- a separate local-context view containing only the strongest sim/regr event
+  windows;
+- independent 768-dimensional embeddings and independent 64-dimensional
+  reducers for those two views;
+- pair relations from both embeddings plus multigranular, structured, and
+  deterministic scalar features (313 dimensions in the embedding build);
+- dataset-local pair sampling, source-family deduplication, and equal
+  family/class loss mass;
+- fixed-`k` average agglomerative or sparse signed-graph clustering;
+- strict family-grouped LODO checks, with the two public official benchmarks
+  held out together as one family.
+
+The training and inference entry points are `train_theta.py`,
+`theta_inference.py`, and `run_theta_grouped_lofo.py`. PyTorch artifacts keep
+only model state and architecture in `pair_student.pt`; sklearn preprocessing
+is stored separately. Unit tests cover exact-`k` graph output, conflict edges,
+family deduplication, candidate anchors, and both sklearn and Gated-MLP
+artifact round trips.
+
+An initial strict held-out screen trained on old stage3, VCS, stable, directed
+v2, and public set1/set2, while excluding directed v4 and benchmark5. The
+family-balanced GBDT results were:
+
+| held-out dataset | clusterer | BA | TPR | TNR | runtime |
+|---|---|---:|---:|---:|---:|
+| directed v4 (65 cases) | signed graph | 0.8200 | 0.6865 | 0.9536 | 2.7 s |
+| directed v4 (65 cases) | average | 0.7981 | 0.6595 | 0.9367 | 2.6 s |
+| benchmark5 (933 cases) | signed graph | 0.5339 | 0.1012 | 0.9665 | 28.6 s |
+| benchmark5 (933 cases) | average | 0.5597 | 0.1847 | 0.9347 | 28.5 s |
+
+A multi-view prototype-anchor candidate graph improved benchmark5 true-bug
+connectivity from 4/32 to 24-27/32 bugs, but the newly retrieved edges had only
+about 0.58 pair AUC and reduced clustering BA. It remains an ablation option;
+the safer concat top-48 candidate graph is the default. A family-weighted Gated
+Residual MLP also underperformed the GBDT on directed v4 (`0.6310` BA) and did
+not improve benchmark5 average clustering (`0.5533` BA), so network depth is
+not the current bottleneck.
+
+A small five-dataset family-grouped LODO smoke produced family-macro BA
+`0.6501` for average clustering and `0.6252` for the signed graph. These are
+protocol-validation results, not a new best. Theta v1 therefore remains an
+experimental scaffold. The next useful step is a stronger out-of-fold pair
+teacher or distillation objective that raises cross-domain pair AUC and same-bug
+recall before retrying anchor retrieval or graph refinement. The existing
+production and Beta routes remain unchanged.
+
+Experimental outputs:
+
+- `/tmp/theta_v1_balanced_holdout_model/`
+- `/tmp/theta_v1_gated_holdout_model/`
+- `/tmp/theta_v1_grouped_lofo_smoke/`
+- `/tmp/theta_anchor_candidate_eval/`
+
+### Theta v2 five-view teacher and label-free cluster selection (2026-08-10)
+
+Theta v2 keeps one model across source domains and focuses on model quality;
+it is experimental and is not wired into the formal predictor or the Alpha/Beta
+submission packages.  The seven independent LODO episodes are old stage3,
+VCS, stable, directed v4, benchmark5, and public benchmark sets 1/2.  Nested
+old first/stage2 subsets and overlapping directed variants are excluded from
+this protocol.  Every pair is formed inside one episode, reducers are fit on
+the six training episodes, and the held-out episode contributes no training
+pairs.  Public set1 and set2 are reciprocal LODO folds, so one may train the
+other; this is weaker than holding the complete official family out together
+and is reported explicitly.
+
+The selected pair teacher uses five independent 768-dimensional embedding
+views (`features`, `summary`, `event`, `object`, and local `context`), separate
+train-only SVD64 reducers, structured/deterministic pair tails, source-episode
+loss balancing, official training-pair weight 4, hard-positive ratio 1.0, and
+a HistGradientBoosting pair model.  A strict offline-cache mode now verifies
+every cache key and exact 768-dimensional vector and fails on a miss instead of
+contacting an endpoint or silently substituting zeros.  All five-seed runs had
+complete cache hits and no fallback.
+
+The final experimental clusterer evaluates average linkage, complete linkage,
+sum-based signed refinement, and a new size-balanced signed refinement.  It
+selects one partition using only class-balanced pair log-likelihood plus a
+cluster-entropy regularizer; it does not use dataset names or gold labels.
+With entropy weight 0.2, the 5-seed probability average gives:
+
+| strict LODO target | BA | TPR | TNR | selected clusterer |
+|---|---:|---:|---:|---|
+| old stage3 | 0.7150 | 0.5821 | 0.8480 | signed graph |
+| VCS | 0.7428 | 0.6418 | 0.8438 | average |
+| stable | 0.6593 | 0.7167 | 0.6019 | average |
+| directed v4 | 0.7421 | 0.5892 | 0.8950 | average |
+| benchmark5 | 0.5416 | 0.1249 | 0.9583 | complete |
+| official set1 | **1.0000** | 1.0000 | 1.0000 | complete |
+| official set2 | **0.7566** | 0.5897 | 0.9235 | balanced signed graph |
+| seven-domain macro | **0.7368** | 0.6063 | 0.8672 | label-free selector |
+
+Weights 0.1 and 0.2 produce the same partitions and official mean BA 0.8783.
+Weight 0.4 has a slightly higher seven-domain macro (0.7381) but a lower
+official mean (0.8492).  Selecting the entropy weight using the other six
+domains chooses the more conservative 0.4 family and yields LODO-selected
+macro/official means 0.7222/0.8492.  Therefore 0.2 is the official-priority
+candidate, while 0.4 is the stricter generalization setting; neither result is
+presented as an unseen-final estimate.
+
+A weighted focal Gated MLP was also connected to exactly the same five-view
+features and sampling.  Its 5-seed official probability average scored set1
+0.5278 and set2 0.8575.  On held-out old stage3, seed 0 collapsed to BA 0.5026
+with TNR 0.0948, showing severe cross-domain over-merging.  The remaining fake
+folds were stopped by the guardrail.  Gated MLP is therefore not promoted; its
+set2 recall is useful evidence for future distillation, not a deployable branch.
+
+Implementation and outputs:
+
+- `run_graph_multiview_experiments.py` (episode weighting, strict cache, Gated MLP option)
+- `graph_clustering.py` (`signed_graph_balanced`, `quality_selected`)
+- `run_multiview_guardrail_experiments.py` (pure-view seed ensembles and selector diagnostics)
+- `/tmp/theta_v2_7lodo_w4_d64_hpr1_s0/`
+- `/tmp/theta_v2_7lodo_w4_d64_hpr1_s1_4/`
+- `/tmp/theta_v2_7lodo_w4_d64_hpr1_seedavg5/`
+- `/tmp/theta_v2_quality_selector_w020_diag/`
+
+### Theta v3 always-on TriLog prototype (2026-08-11)
+
+Theta v3 is an experimental attempt to use all three organizer-provided logs
+as primary model inputs. It is not a trace veto/refiner and it does not route
+by dataset name. The formal `regr_fail_bucketing.py` path and the Alpha/Beta
+packages are unchanged; their default inference still reads neither trace nor
+gold/golden/meta.
+
+The new trace encoder in `theta_trace_features.py` scans each available trace
+from start to end and builds four complementary representations: normalized
+global execution statistics, relative execution segments, sim/regr-anchored
+multi-scale windows (32/64/128 retired instructions), and an anchor-minus-global
+residual intended to remove program behavior while retaining failure-local
+anomalies. Fixed structural vectors and compact TF-IDF/SVD documents are fit
+using training folds only. The residual is paired with the existing five
+sim/regr embedding views in `run_theta_trilog_lodo.py`.
+
+A second backend in `theta_trilog_model.py` uses a sim/regr tower and a trace
+tower on every pair. Their latent vectors are fused as `base`, `trace`,
+`abs(base-trace)`, and `base*trace` before a residual classification head.
+Trace is therefore part of the normal forward pass rather than a postprocess
+or optional probability replacement. `run_theta_trilog_consensus.py` provides
+an auditable seed co-association experiment whose blend/cluster candidate is
+selected from the other LODO episodes, never the target episode's labels.
+
+While implementing this route, the shared capped pair sampler was found to let
+positive pairs consume the full cap before generating negatives on large
+episodes. It now reserves positive and negative budgets before sampling. For a
+30,000-pair budget and ratio 2.0, the result is 10,000 positives and 20,000
+negatives when available. This affects experimental training only, not the
+formal deterministic predictor. Historical Theta v2 scores above were produced
+before this correction and are retained as historical records, not clean
+apples-to-apples references for the corrected runs.
+
+The full seven-episode parse covered 1,734/1,734 traces, including organizer
+gzip inputs, with no missing/corrupt fallback. All five sim/regr embedding
+views were strict cache hits at exactly 768 dimensions and had no fallback.
+Corrected-sampler seed-0 GBDT LODO results were:
+
+| held-out episode | no-trace BA | TriLog residual BA | no-trace AUC | TriLog AUC |
+|---|---:|---:|---:|---:|
+| old stage3 | 0.6759 | 0.6708 | 0.7789 | 0.8098 |
+| VCS | 0.7428 | 0.7428 | 0.6932 | 0.7227 |
+| stable | 0.6972 | 0.7102 | 0.7390 | 0.7410 |
+| directed v4 | 0.7250 | 0.7194 | 0.8806 | 0.8774 |
+| benchmark5 | 0.5468 | 0.5557 | 0.5917 | 0.5996 |
+| official set1 | **1.0000** | 0.7222 | 0.9352 | 0.8426 |
+| official set2 | 0.7375 | **0.8076** | 0.7919 | **0.8174** |
+| seven-episode macro | **0.7322** | 0.7041 | 0.7729 | 0.7729 |
+
+Excluding the anomalous seven-case set1 fold, trace residual raises mean pair
+AUC by 0.0154. Across five seeds it raises set2 mean BA from 0.6627 to 0.7107,
+and a label-free five-seed trace co-association raises set2 to 0.7762. However,
+set1 remains 0.7222 under the same trace consensus. A 10% blend inspected with
+official labels could reach official mean 0.9181, but a strict nested
+episode-selected blend achieved only 0.5786; the former is therefore a tuning
+diagnostic and is not reported as a valid new best.
+
+The always-on two-tower neural ablation confirmed that trace can matter but is
+not yet domain invariant. With the same architecture, adding trace changed BA
+from 0.7297 to 0.7666 on directed v4 and from 0.8575 to 0.8420 on official set2,
+while set1 fell from 0.7222 to 0.5278. A connectivity-positive sampling/weight
+experiment also increased pair AUC but reduced official clustering BA, so it
+is retained only as a negative ablation.
+
+Conclusion: full-trace and failure-local trace contain real transferable
+signal, particularly for set2 and directed cases, but the present supervised
+structural representation has a set1 domain-shift failure and is not a new
+experimental best. The next justified iteration is self-supervised trace
+pretraining followed by anchor-relative contrastive alignment with sim/regr,
+plus official-family-held-out validation. More fixed blend thresholds or
+target-label-selected consensus weights are not justified.
+
+Implementation and outputs:
+
+- `theta_trace_features.py`
+- `theta_trilog_model.py`
+- `run_theta_trilog_lodo.py`
+- `run_theta_trilog_consensus.py`
+- `test_theta_trilog.py`
+- `/tmp/theta_trilog_fake_seed0_guardrail/`
+- `/tmp/theta_trilog_seed0_residual/`
+- `/tmp/theta_trilog_residual_s1_4/`
+- `/tmp/theta_trilog_tower_seed0/`
+- `/tmp/theta_trilog_tower_fake_seed0/`
+- `/tmp/theta_trilog_nested_consensus_seed0/`
+
+### Theta v4 official pair-probability adaptation (2026-08-12)
+
+The two public official episodes are too small for clustering BA alone to be a
+useful training signal. Theta v4 therefore tests the stronger supervision
+available inside each source episode: every within-episode case pair is a
+same-bug/different-bug target. Fake episodes pretrain the always-on three-log
+two-tower model; public official source pairs then adapt either two affine
+calibration scalars, the final classifier layer with a ranking objective, or
+the fusion head with ranking/connectivity/transitivity objectives. Fake replay
+distillation constrains the adapted model. Pairs are never constructed across
+datasets, and reducers are fit without the held-out episode.
+
+The official evaluation is reciprocal and strict: set2 pair labels may adapt a
+model evaluated on held-out set1, and set1 may adapt a model evaluated on
+held-out set2. The target gold/golden file is used only for final pair and
+clustering metrics. Fake guardrails use both official episodes as adaptation
+sources and hold out the complete fake episode. All 1,734 traces were present;
+all five sim/regr embedding views were strict 768-dimensional cache hits with
+no fallback.
+
+Seed-0 average-link results are:
+
+| held-out episode | fake pretrain BA | official last+rank BA | base Brier | adapted Brier |
+|---|---:|---:|---:|---:|
+| official set1 | 0.4583 | 0.4583 | 0.2400 | **0.2196** |
+| official set2 | 0.8575 | 0.8575 | **0.1876** | 0.1900 |
+| VCS | 0.5933 | 0.5933 | 0.2549 | **0.2076** |
+| stable | 0.8500 | 0.8500 | 0.5546 | **0.4779** |
+| directed v4 | 0.7986 | 0.7986 | **0.1755** | 0.1793 |
+| old stage3 | **0.5967** | 0.5864 | **0.3559** | 0.3614 |
+| benchmark5 | 0.5465 | **0.5473** | **0.1823** | 0.2148 |
+| seven-episode macro BA | **0.6716** | 0.6702 | 0.2787 | **0.2644** |
+
+The constrained last-layer adaptation improves aggregate probability
+calibration but not clustering. On set1 it raises the hardest same-bug pair
+probabilities and lowers several hard negative probabilities, whereas the same
+set1 supervision transfers in the wrong direction to held-out set2. The less
+constrained head/connectivity variant raises set1 BA to 0.5278 but lowers set2
+to 0.7478, stable to 0.7551, and directed v4 to 0.6649. This is source
+overfitting, not a usable gain.
+
+`quality_selected` is an additional label-free clustering ablation. It chooses
+among average, complete, greedy signed-graph, and balanced signed-graph
+partitions using only class-balanced pair likelihood and cluster entropy. With
+the last+rank probabilities its seven-episode macro BA is 0.6859, versus 0.6702
+for average linkage. That apparent gain is not stable: VCS rises from 0.5933 to
+0.7428, but directed v4 falls from 0.7986 to 0.7706 and benchmark5 falls from
+0.5473 to 0.5352; official set1/set2 are unchanged. It is therefore not a new
+default or experimental best.
+
+Conclusion: the user's pair-probability proposal is validated as a much more
+informative diagnostic than final BA on tiny official episodes, and constrained
+adaptation can improve Brier score without target leakage. However, the two
+public official pair distributions disagree enough that direct supervised
+post-training does not yet generalize. Multi-seed expansion is intentionally
+skipped because seed 0 improves neither official BA nor the large-fake
+guardrail. The next justified experiment is an episode-level meta-objective or
+official-style low-dimensional adapter selected on source episodes, with an
+explicit positive-connectivity guardrail for fragmented large datasets.
+
+Implementation and outputs:
+
+- `theta_trilog_model.py`
+- `run_theta_official_pair_finetune.py`
+- `graph_clustering.py`
+- `test_theta_trilog.py`
+- `/tmp/theta_v4_pair_ft_seed0/`
+- `/tmp/theta_v4_pair_ft_fake_small_seed0/`
+- `/tmp/theta_v4_pair_ft_fake_large_seed0/`
+- `/tmp/theta_v4_pair_ft_quality_rescore.csv`
