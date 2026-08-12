@@ -1,0 +1,4 @@
+Mismatch[1]:
+ibex[11266] : pc[80011bf6] c.li	x7,-1: t2:ffffffff
+spike[11266] : pc[ffffffff80011c28] srl     s7, s1, a3: s7:ffffffff
+[FAILED]: 10898 matched, 18570 mismatch

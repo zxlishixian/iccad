@@ -1,0 +1,4 @@
+Mismatch[1]:
+ibex[371] : pc[800005ae] sltu	x29,x22,x26: t4:00000001
+spike[371] : pc[ffffffff80012080] addi    t0, t0, -124: t0:80022da0
+[FAILED]: 358 matched, 63165 mismatch

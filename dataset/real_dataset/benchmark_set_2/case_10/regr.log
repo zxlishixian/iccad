@@ -1,0 +1,4 @@
+Mismatch[1]:
+ibex[74] : pc[8000019c] c.addi	x29,6: t4:00000000
+spike[74] : pc[ffffffff80011080] addi    t0, t0, -124: t0:80021da0
+[FAILED]: 64 matched, 3458 mismatch

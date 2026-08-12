@@ -1,0 +1,4 @@
+Mismatch[1]:
+ibex[151] : pc[800109e8] sra	x22,x17,x13: s6:00000001
+spike[151] : pc[ffffffff80010a1c] c.addi16sp sp, 400: sp:a019f190
+[FAILED]: 453 matched, 16844 mismatch

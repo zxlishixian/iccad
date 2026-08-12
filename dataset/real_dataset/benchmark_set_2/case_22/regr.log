@@ -1,0 +1,4 @@
+Mismatch[1]:
+ibex[231] : pc[80000474] c.or	x14,x8: a4:00ef9e4f
+spike[231] : pc[ffffffff80000464] c.lui   t3, 0x9: t3:00009000
+[FAILED]: 377 matched, 11187 mismatch

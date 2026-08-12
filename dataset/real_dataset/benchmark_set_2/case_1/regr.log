@@ -1,0 +1,4 @@
+Mismatch[1]:
+ibex[31157] : pc[8002c47c] ori	x16,x3,903: a6:00000387
+spike[31157] : pc[ffffffff8002c484] add     s10, s8, a5: s10:b38e86a1
+[FAILED]: 29586 matched, 106747 mismatch
