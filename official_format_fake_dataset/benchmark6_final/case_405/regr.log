@@ -1,0 +1,20 @@
+Mismatch[1]:
+ibex[1] : pc[80000086] lui	x2,0xcd026: sp:cd026000 
+spike[1] : pc[800000ba] lui     a1, 0xd2c4b: a1:d2c4b000 
+Mismatch[2]:
+ibex[2] : pc[8000008a] addi	x2,x2,-1858: sp:cd0258be 
+spike[2] : pc[800000be] addi    a1, a1, -421: a1:d2c4ae5b 
+Mismatch[3]:
+ibex[3] : pc[8000008e] lui	x3,0xf251d: gp:f251d000 
+spike[3] : pc[800000c2] lui     a2, 0xfdb9d: a2:fdb9d000 
+Mismatch[4]:
+ibex[4] : pc[80000092] addi	x3,x3,-50: gp:f251cfce 
+spike[4] : pc[800000c6] addi    a2, a2, 1520: a2:fdb9d5f0 
+Mismatch[5]:
+ibex[5] : pc[80000096] lui	x4,0x80000: tp:80000000 
+spike[5] : pc[800000ca] lui     a3, 0x161ff: a3:161ff000 
+Mismatch[3661]:
+[4145] ibex : pc[800046ba] c.sub	x9,x13: s1:f002810b 
+[FAILED]: 8 matched, 3661 mismatch
+
+0 PASSED, 1 FAILED
