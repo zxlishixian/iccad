@@ -684,7 +684,7 @@ def _fit_dense_view(matrix: np.ndarray, train_indices: Sequence[int], dim: int, 
     else:
         reducer = None
         transformed = scaled[:, : max(1, n_components)]
-    return {"scaler": scaler, "reducer": reducer, "dim": int(dim)}, _pad_columns(transformed, int(dim))
+    return {"scaler": scaler, "reducer": reducer, "dim": int(dim), "n_components": int(n_components)}, _pad_columns(transformed, int(dim))
 
 
 def _fit_text_view(documents: Sequence[str], train_indices: Sequence[int], dim: int, seed: int) -> tuple[dict[str, Any], np.ndarray]:
@@ -711,7 +711,7 @@ def _fit_text_view(documents: Sequence[str], train_indices: Sequence[int], dim: 
         reducer = None
         transformed = sparse[:, : max(1, n_components)].toarray()
     transformed = Normalizer(copy=False).fit_transform(transformed)
-    return {"vectorizer": vectorizer, "reducer": reducer, "dim": int(dim)}, _pad_columns(transformed, int(dim))
+    return {"vectorizer": vectorizer, "reducer": reducer, "dim": int(dim), "n_components": int(n_components)}, _pad_columns(transformed, int(dim))
 
 
 def fit_transform_trace_views(
@@ -725,12 +725,11 @@ def fit_transform_trace_views(
     residual_struct_dim: int = 48,
     residual_text_dim: int = 48,
 ) -> tuple[dict[str, Any], dict[str, np.ndarray]]:
-    global_struct = np.vstack([feature.global_struct for feature in features]).astype(np.float32)
-    anchor_struct = np.vstack([feature.anchor_struct for feature in features]).astype(np.float32)
-    global_docs = [feature.global_document for feature in features]
-    anchor_docs = [feature.anchor_document for feature in features]
-    residual_struct = np.vstack([build_trace_residual_struct(feature) for feature in features]).astype(np.float32)
-    residual_docs = [build_trace_residual_document(feature) for feature in features]
+    raw = build_trace_raw_views(features)
+    global_struct, anchor_struct = raw["global_struct"], raw["anchor_struct"]
+    residual_struct = raw["residual_struct"]
+    global_docs, anchor_docs = raw["global_text"], raw["anchor_text"]
+    residual_docs = raw["residual_text"]
     bundle: dict[str, Any] = {}
     matrices: dict[str, np.ndarray] = {}
     bundle["global_struct"], matrices["global_struct"] = _fit_dense_view(global_struct, train_indices, global_struct_dim, seed + 11)
@@ -740,6 +739,53 @@ def fit_transform_trace_views(
     bundle["residual_struct"], matrices["residual_struct"] = _fit_dense_view(residual_struct, train_indices, residual_struct_dim, seed + 67)
     bundle["residual_text"], matrices["residual_text"] = _fit_text_view(residual_docs, train_indices, residual_text_dim, seed + 79)
     return bundle, matrices
+
+
+def build_trace_raw_views(features: Sequence[HierarchicalTraceFeature]) -> dict[str, Any]:
+    return {
+        "global_struct": np.vstack([feature.global_struct for feature in features]).astype(np.float32),
+        "anchor_struct": np.vstack([feature.anchor_struct for feature in features]).astype(np.float32),
+        "residual_struct": np.vstack([build_trace_residual_struct(feature) for feature in features]).astype(np.float32),
+        "global_text": [feature.global_document for feature in features],
+        "anchor_text": [feature.anchor_document for feature in features],
+        "residual_text": [build_trace_residual_document(feature) for feature in features],
+    }
+
+
+def _apply_dense_view(matrix: np.ndarray, bundle: dict[str, Any]) -> np.ndarray:
+    matrix = np.asarray(matrix, dtype=np.float32)
+    scaled = bundle["scaler"].transform(matrix)
+    reducer = bundle.get("reducer")
+    if reducer is not None:
+        transformed = reducer.transform(scaled)
+    else:
+        transformed = scaled[:, : max(1, int(bundle.get("n_components", 1)))]
+    return _pad_columns(transformed, int(bundle["dim"]))
+
+
+def _apply_text_view(documents: Sequence[str], bundle: dict[str, Any]) -> np.ndarray:
+    from sklearn.preprocessing import Normalizer
+
+    sparse = bundle["vectorizer"].transform(documents)
+    reducer = bundle.get("reducer")
+    if reducer is not None:
+        transformed = reducer.transform(sparse)
+    else:
+        transformed = sparse[:, : max(1, int(bundle.get("n_components", 1)))].toarray()
+    transformed = Normalizer().transform(transformed)
+    return _pad_columns(transformed, int(bundle["dim"]))
+
+
+def apply_trace_reducers(bundle: dict[str, Any], features: Sequence[HierarchicalTraceFeature]) -> dict[str, np.ndarray]:
+    raw = build_trace_raw_views(features)
+    return {
+        "global_struct": _apply_dense_view(raw["global_struct"], bundle["global_struct"]),
+        "global_text": _apply_text_view(raw["global_text"], bundle["global_text"]),
+        "anchor_struct": _apply_dense_view(raw["anchor_struct"], bundle["anchor_struct"]),
+        "anchor_text": _apply_text_view(raw["anchor_text"], bundle["anchor_text"]),
+        "residual_struct": _apply_dense_view(raw["residual_struct"], bundle["residual_struct"]),
+        "residual_text": _apply_text_view(raw["residual_text"], bundle["residual_text"]),
+    }
 
 
 def _relation(matrix: np.ndarray, left: int, right: int) -> np.ndarray:
