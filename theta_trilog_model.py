@@ -7,6 +7,8 @@ import copy
 from typing import Any
 
 import numpy as np
+import torch
+from torch import nn
 
 
 def supcon_loss(features, targets, temperature: float = 0.1):
@@ -33,69 +35,68 @@ def supcon_loss(features, targets, temperature: float = 0.1):
     return -log_prob[mask].mean()
 
 
-def _build_network(input_dim: int, base_dim: int, dropout: float, fusion: str = "concat"):
-    import torch
-    from torch import nn
+class _ResidualBlock(nn.Module):
+    def __init__(self, dim: int, dropout: float) -> None:
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(dim, dim), nn.LayerNorm(dim), nn.GELU(), nn.Dropout(dropout),
+            nn.Linear(dim, dim), nn.LayerNorm(dim),
+        )
+        self.activation = nn.GELU()
 
+    def forward(self, value):
+        return self.activation(value + self.net(value))
+
+
+class _Tower(nn.Module):
+    def __init__(self, source_dim: int, hidden: int, dropout: float) -> None:
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(source_dim, hidden), nn.LayerNorm(hidden), nn.GELU(),
+            nn.Dropout(dropout), _ResidualBlock(hidden, dropout),
+        )
+
+    def forward(self, value):
+        return self.net(value)
+
+
+class TriLogPairNet(nn.Module):
+    def __init__(self, base_dim: int, trace_dim: int, dropout: float, fusion: str) -> None:
+        super().__init__()
+        self.base_dim = int(base_dim)
+        self.trace_dim = int(trace_dim)
+        self.fusion = str(fusion)
+        self.base_tower = _Tower(self.base_dim, 256, dropout) if self.base_dim else None
+        self.trace_tower = _Tower(self.trace_dim, 256, dropout) if self.trace_dim else None
+        both = self.base_tower is not None and self.trace_tower is not None
+        fused_dim = 256 * 4 if both and self.fusion == "concat" else 256
+        self.head = nn.Sequential(
+            nn.Linear(fused_dim, 512), nn.LayerNorm(512), nn.GELU(),
+            nn.Dropout(dropout), _ResidualBlock(512, dropout),
+            nn.Linear(512, 256), nn.LayerNorm(256), nn.GELU(),
+            nn.Dropout(dropout), _ResidualBlock(256, dropout), nn.Linear(256, 1),
+        )
+
+    def forward_features(self, value):
+        base = self.base_tower(value[:, : self.base_dim]) if self.base_tower is not None else None
+        trace = self.trace_tower(value[:, self.base_dim :]) if self.trace_tower is not None else None
+        if base is not None and trace is not None:
+            if self.fusion == "sum":
+                return base + trace
+            return torch.cat([base, trace, torch.abs(base - trace), base * trace], dim=1)
+        return base if base is not None else trace
+
+    def forward(self, value):
+        return self.head(self.forward_features(value)).squeeze(-1)
+
+
+def _build_network(input_dim: int, base_dim: int, dropout: float, fusion: str = "concat"):
     trace_dim = int(input_dim) - int(base_dim)
     if base_dim < 0 or trace_dim < 0 or input_dim <= 0:
         raise ValueError(f"invalid TriLog dimensions input={input_dim} base={base_dim}")
     if fusion not in ("concat", "sum"):
         raise ValueError(f"unknown fusion mode: {fusion}")
-
-    class ResidualBlock(nn.Module):
-        def __init__(self, dim: int) -> None:
-            super().__init__()
-            self.net = nn.Sequential(
-                nn.Linear(dim, dim), nn.LayerNorm(dim), nn.GELU(), nn.Dropout(dropout),
-                nn.Linear(dim, dim), nn.LayerNorm(dim),
-            )
-            self.activation = nn.GELU()
-
-        def forward(self, value):
-            return self.activation(value + self.net(value))
-
-    class Tower(nn.Module):
-        def __init__(self, source_dim: int, hidden: int = 256) -> None:
-            super().__init__()
-            self.net = nn.Sequential(
-                nn.Linear(source_dim, hidden), nn.LayerNorm(hidden), nn.GELU(),
-                nn.Dropout(dropout), ResidualBlock(hidden),
-            )
-
-        def forward(self, value):
-            return self.net(value)
-
-    class TriLogPairNet(nn.Module):
-        def __init__(self) -> None:
-            super().__init__()
-            self.base_dim = int(base_dim)
-            self.trace_dim = int(trace_dim)
-            self.fusion = str(fusion)
-            self.base_tower = Tower(self.base_dim) if self.base_dim else None
-            self.trace_tower = Tower(self.trace_dim) if self.trace_dim else None
-            both = self.base_tower is not None and self.trace_tower is not None
-            fused_dim = 256 * 4 if both and self.fusion == "concat" else 256
-            self.head = nn.Sequential(
-                nn.Linear(fused_dim, 512), nn.LayerNorm(512), nn.GELU(),
-                nn.Dropout(dropout), ResidualBlock(512),
-                nn.Linear(512, 256), nn.LayerNorm(256), nn.GELU(),
-                nn.Dropout(dropout), ResidualBlock(256), nn.Linear(256, 1),
-            )
-
-        def forward_features(self, value):
-            base = self.base_tower(value[:, : self.base_dim]) if self.base_tower is not None else None
-            trace = self.trace_tower(value[:, self.base_dim :]) if self.trace_tower is not None else None
-            if base is not None and trace is not None:
-                if self.fusion == "sum":
-                    return base + trace
-                return torch.cat([base, trace, torch.abs(base - trace), base * trace], dim=1)
-            return base if base is not None else trace
-
-        def forward(self, value):
-            return self.head(self.forward_features(value)).squeeze(-1)
-
-    return TriLogPairNet()
+    return TriLogPairNet(int(base_dim), int(trace_dim), float(dropout), str(fusion))
 
 
 def train_trilog_pair_model(
