@@ -9,6 +9,30 @@ from typing import Any
 import numpy as np
 
 
+def supcon_loss(features, targets, temperature: float = 0.1):
+    """Supervised contrastive loss on batch representations.
+
+    Pulls same-label rows together and pushes different-label rows apart. Targets
+    are binary same/different labels; every same-label pair is a positive.
+    """
+    import torch
+    from torch.nn import functional as F
+
+    normalized = F.normalize(features, dim=1)
+    similarity = torch.matmul(normalized, normalized.T) / max(float(temperature), 1e-6)
+    exp_sim = torch.exp(similarity - similarity.max(dim=1, keepdim=True).values.detach())
+    eye = torch.eye(similarity.shape[0], device=similarity.device, dtype=torch.bool)
+    same = targets[:, None] == targets[None, :]
+    positive = same & ~eye
+    denominator = exp_sim.sum(dim=1) - exp_sim.diagonal()
+    numerator = (exp_sim * positive.float()).sum(dim=1)
+    log_prob = torch.log(numerator / torch.clamp(denominator, min=1e-9))
+    mask = positive.any(dim=1)
+    if not bool(mask.any()):
+        return features.new_zeros(())
+    return -log_prob[mask].mean()
+
+
 def _build_network(input_dim: int, base_dim: int, dropout: float, fusion: str = "concat"):
     import torch
     from torch import nn
@@ -94,6 +118,8 @@ def train_trilog_pair_model(
     labels = np.asarray(labels, dtype=np.float32)
     sample_weight = np.asarray(sample_weight, dtype=np.float32)
     seed = int(args.random_state)
+    supcon_weight = float(getattr(args, "supcon_weight", 0.0))
+    supcon_temperature = float(getattr(args, "supcon_temperature", 0.1))
     torch.manual_seed(seed)
     np.random.seed(seed)
     indices = np.arange(len(labels))
@@ -151,7 +177,11 @@ def train_trilog_pair_model(
             batch_y = batch_y.to(device)
             batch_w = batch_w.to(device)
             optimizer.zero_grad(set_to_none=True)
-            loss = focal_loss(model(batch_x), batch_y, batch_w)
+            features = model.forward_features(batch_x)
+            logits = model.head(features).squeeze(-1)
+            loss = focal_loss(logits, batch_y, batch_w)
+            if supcon_weight > 0.0:
+                loss = loss + supcon_weight * supcon_loss(features, batch_y, supcon_temperature)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=5.0)
             optimizer.step()
@@ -185,6 +215,7 @@ def train_trilog_pair_model(
         "trace_dim": int(matrix.shape[1] - base_dim),
         "dropout": float(args.dropout),
         "fusion": fusion,
+        "supcon_weight": supcon_weight,
         "best_epoch": best_epoch,
         "best_validation_loss": best_loss,
         "history": history,
