@@ -147,6 +147,8 @@ def parse_args(argv: Sequence[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--final-clusterer", default="correlation_cluster")
     parser.add_argument("--source-clusterer", default="agglomerative_avg")
     parser.add_argument("--cannot-link-weight", type=float, default=100.0)
+    parser.add_argument("--sanity-max-cases", type=int, default=400,
+                        help="skip the O(n^2) held-out sanity score when the held-out dataset exceeds this")
     return parser.parse_args(argv)
 
 
@@ -309,46 +311,59 @@ def main(argv: Sequence[str] | None = None) -> int:
             joblib.dump(preprocess, output_dir / "models" / f"preprocess_{fold}_seed{seed}.pkl")
 
             # Fold sanity check: score this fold-model on its held-out fake dataset.
+            # O(n^2) in the held-out case count, so skip it for large datasets.
             fold_episode = next(ep for ep in slices if ep["name"] == fold)
-            hold_pairs = osf.all_pairs(len(hold_indices))
-            hold_y = _pair_labels(fold_episode["labels"], hold_pairs)
-            hold_base_features = [base_features[index] for index in hold_indices]
-            plf.apply_llm_reducer(hold_base_features, feature_reducer, args.view_dim)
-            plf.apply_llm_summary_reducer(hold_base_features, summary_reducer, args.view_dim)
-            hold_custom = {name: matrix[hold_indices] for name, matrix in reduced_custom.items()}
-            hold_base = gm.build_multiview_pair_feature_matrix(
-                hold_base_features, hold_custom, view_names, hold_pairs
-            )
-            hold_trace_features = [trace_features[index] for index in hold_indices]
-            hold_trace_matrices = {name: matrix[hold_indices] for name, matrix in trace_matrices.items()}
-            hold_trace = ttf.build_trace_pair_feature_components(
-                hold_trace_features, hold_trace_matrices, hold_pairs
-            )["residual"]
-            hold_matrix = _config_matrix(
-                "trilog_residual", hold_base,
-                np.zeros((len(hold_pairs), 0), dtype=np.float32),
-                np.zeros((len(hold_pairs), 0), dtype=np.float32),
-                hold_trace, np.zeros((len(hold_pairs), 0), dtype=np.float32),
-                np.zeros((len(hold_pairs), 0), dtype=np.float32),
-            )
-            flat = ttm.predict_trilog_pair_model(package, hold_matrix)
-            probability = _probability_matrix(hold_pairs, flat, len(hold_indices))
-            clustered = gc.cluster_with_fallback(
-                probability, len(set(fold_episode["labels"])), cannot_link_weight=args.cannot_link_weight
-            )
-            pred = write_pred(output_dir / "preds" / f"{fold}_seed{seed}.csv", fold_episode["cases"], clustered.labels)
-            ba, tpr, tnr = pairwise_scores(fold_episode["labels"], pred)
-            rows.append({
-                "fold": fold, "seed": seed, "BA": ba, "TPR": tpr, "TNR": tnr,
-                "clusters": clustered.num_clusters, "k": len(set(fold_episode["labels"])),
-                "runtime_sec": time.perf_counter() - started,
-            })
-            print(
-                f"[final-train] fold={fold} seed={seed} BA={ba:.4f} "
-                f"clusters={clustered.num_clusters}/{len(set(fold_episode['labels']))} "
-                f"t={time.perf_counter() - started:.1f}s",
-                flush=True,
-            )
+            if len(hold_indices) <= args.sanity_max_cases:
+                hold_pairs = osf.all_pairs(len(hold_indices))
+                hold_y = _pair_labels(fold_episode["labels"], hold_pairs)
+                hold_base_features = [base_features[index] for index in hold_indices]
+                plf.apply_llm_reducer(hold_base_features, feature_reducer, args.view_dim)
+                plf.apply_llm_summary_reducer(hold_base_features, summary_reducer, args.view_dim)
+                hold_custom = {name: matrix[hold_indices] for name, matrix in reduced_custom.items()}
+                hold_base = gm.build_multiview_pair_feature_matrix(
+                    hold_base_features, hold_custom, view_names, hold_pairs
+                )
+                hold_trace_features = [trace_features[index] for index in hold_indices]
+                hold_trace_matrices = {name: matrix[hold_indices] for name, matrix in trace_matrices.items()}
+                hold_trace = ttf.build_trace_pair_feature_components(
+                    hold_trace_features, hold_trace_matrices, hold_pairs
+                )["residual"]
+                hold_matrix = _config_matrix(
+                    "trilog_residual", hold_base,
+                    np.zeros((len(hold_pairs), 0), dtype=np.float32),
+                    np.zeros((len(hold_pairs), 0), dtype=np.float32),
+                    hold_trace, np.zeros((len(hold_pairs), 0), dtype=np.float32),
+                    np.zeros((len(hold_pairs), 0), dtype=np.float32),
+                )
+                flat = ttm.predict_trilog_pair_model(package, hold_matrix)
+                probability = _probability_matrix(hold_pairs, flat, len(hold_indices))
+                clustered = gc.cluster_with_fallback(
+                    probability, len(set(fold_episode["labels"])), cannot_link_weight=args.cannot_link_weight
+                )
+                pred = write_pred(output_dir / "preds" / f"{fold}_seed{seed}.csv", fold_episode["cases"], clustered.labels)
+                ba, tpr, tnr = pairwise_scores(fold_episode["labels"], pred)
+                rows.append({
+                    "fold": fold, "seed": seed, "BA": ba, "TPR": tpr, "TNR": tnr,
+                    "clusters": clustered.num_clusters, "k": len(set(fold_episode["labels"])),
+                    "runtime_sec": time.perf_counter() - started,
+                })
+                print(
+                    f"[final-train] fold={fold} seed={seed} BA={ba:.4f} "
+                    f"clusters={clustered.num_clusters}/{len(set(fold_episode['labels']))} "
+                    f"t={time.perf_counter() - started:.1f}s",
+                    flush=True,
+                )
+            else:
+                rows.append({
+                    "fold": fold, "seed": seed, "BA": None, "TPR": None, "TNR": None,
+                    "clusters": None, "k": len(set(fold_episode["labels"])),
+                    "runtime_sec": time.perf_counter() - started,
+                })
+                print(
+                    f"[final-train] fold={fold} seed={seed} skip-sanity n={len(hold_indices)} "
+                    f"> {args.sanity_max_cases} t={time.perf_counter() - started:.1f}s",
+                    flush=True,
+                )
 
     manifest = {
         "folds": fold_names,
