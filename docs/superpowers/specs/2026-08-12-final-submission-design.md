@@ -65,9 +65,15 @@ Fusion Head
 ```
 
 - Loss: focal loss (γ=2.0), class-balanced pair sampling.
+  - Optional SupCon (supervised contrastive) auxiliary loss to improve embedding
+    space separability (research-backed; DP-CCL). Test as ablation; enable only if
+    it improves held-out BA without regressing TNR.
 - Base and Trace towers both participate in gradient updates.
 - All three log types used: sim.log + regr.log feed the Base Tower; trace.log.gz
   feeds the Trace Tower.
+- Embedding fusion ablation: concat (current) vs. sum-of-normalized (GPTrace). GPTrace
+  sums normalized per-view embeddings into one vector to avoid high-dim degradation;
+  test both, keep the better on held-out LODO.
 
 ## 4. Two-Stage Training
 
@@ -119,7 +125,7 @@ read input.csv -> parse sim/regr/trace logs
   -> build pair feature matrix
   -> load 9 fold-models -> predict pair probabilities
   -> fold ensemble (mean) + seed consensus (co-association)
-  -> quality-gated agglomerative clustering
+  -> correlation clustering (fallback: quality-gated agglomerative)
   -> write Case,bucket CSV
 ```
 
@@ -130,19 +136,34 @@ read input.csv -> parse sim/regr/trace logs
   is only for local validation.
 - On any LLM failure: degrade to deterministic-only features.
 
-## 6. Clustering Improvement: Quality-Gated Agglomerative
+## 6. Clustering: Correlation Clustering (research-backed)
 
-Addresses the chaining problem (A~B, B~C but A≁C get merged wrongly).
+Key theoretical insight: BA = (TPR + TNR)/2 = 1 − (FN/P + FP/N)/2, where (FN + FP)
+is exactly the "disagreement" count that correlation clustering minimizes. Therefore
+correlation clustering's objective is **directly aligned with the evaluation metric**,
+unlike agglomerative clustering (greedy, hierarchical).
 
-- Keep consensus co-association matrix + agglomerative clustering (average linkage).
-- Add a deterministic quality gate before each merge:
-  - if the representative pair across the two candidate clusters has strong conflict
-    (primary_type both nonempty & different, mismatch_type both nonempty & different,
-    fatal_file both nonempty & different) → refuse the merge.
-- This is deterministic, adds no training cost, and directly prevents false merges.
+### Primary method: weighted correlation clustering
+- Input: consensus co-association matrix (fold ensemble + seed consensus).
+- Each pair has weight w(i,j) ∈ [0,1] (probability of same-bug).
+- Objective: minimize Σ_{i,j in different clusters} w(i,j) + Σ_{i,j in same cluster} (1 − w(i,j)).
+- Algorithm: deterministic pivot/local-search approximation (fixed seed), a standard
+  polynomial 3-approximation. `k` is a soft hint, so the cluster count is not forced.
+- Hard cannot-link constraints from deterministic conflict features (primary_type,
+  mismatch_type, fatal_file all nonempty & different) are enforced.
 
-Further research directions (optional, not required for v1): signed-graph clustering,
-correlation clustering (objective aligns with BA), learned bucket-merge scorer.
+### Fallback: quality-gated agglomerative
+- If correlation clustering fails or produces degenerate output (e.g. 1 giant cluster
+  or all singletons), fall back to agglomerative (average linkage) with the same
+  conflict-based quality gate.
+- This preserves the deterministic safety path from the original design.
+
+### Evaluation
+- Compare correlation clustering vs. agglomerative on all 11 held-out LODO datasets.
+- Keep whichever maximizes mean BA without degrading worst-dataset BA.
+
+Further optional directions (not required for v1): signed-graph clustering,
+learned bucket-merge scorer.
 
 ## 7. Fault Tolerance Chain
 
@@ -168,3 +189,6 @@ After training, run full LODO evaluation on all 11 datasets and verify:
 - Completion LLM for cluster merging (runtime risk; embedding only).
 - FT-Transformer and other backbone alternatives.
 - Static hard-positive mining (proven harmful in prior experiments).
+- Full trace-transformer (holistic PLM over trace sequences) — deferred as experimental;
+  the hierarchical trace tower is retained for v1. Revisit only if trace signal is the
+  bottleneck after the correlation-clustering and SupCon changes land.
