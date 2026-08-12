@@ -1,0 +1,20 @@
+[beta-v2] published singleton output cases=65
+[beta-v2] cases=65 k=10 scale=16 context=one_m_like final=100s baseline=12s desired_expert=70s
+[beta-v2] trying deterministic agglomerative baseline
+[config] parser=drain cluster=agglomerative cluster_factor=0.875 k_selection=factor feature_level=baseline normalizer=v1 line_mode=default template_weighting=quality llm_mode=none token_weight_mode=none token_weights=None
+[config] primary_signature=enabled
+[data] cases=65 templates=66 vector_shape=(65, 32768)
+[cluster] requested_k=10 effective_k=9 method=agglomerative
+[output] buckets=9 path=/tmp/beta_v2_new_dataset_eval/directed_cross_v4_pred.csv.baseline.233834.candidate runtime_sec=0.742
+[beta-v2] published baseline output
+[beta-v2] trying multiview_all_scales candidate (limit=70s), baseline remains published
+[view] embedding_docs=325 unique_docs=158
+[view] features model=nomic-embed-text-v1.5 embedding_dim=768 docs=65
+[view] summary model=nomic-embed-text-v1.5 embedding_dim=768 docs=65
+[view] event model=nomic-embed-text-v1.5 embedding_dim=768 docs=65
+[view] object model=nomic-embed-text-v1.5 embedding_dim=768 docs=65
+[view] context model=nomic-embed-text-v1.5 embedding_dim=768 docs=65
+[beta-multiview] cases=65 seeds=5 embedding_dim=768 clusters=10
+[beta-timing] parse=0.938s embedding=23.051s pair_tail=0.216s model_cluster=0.707s total=24.912s
+[beta-v2] published multiview_all_scales output
+[beta-v2] completed selected=multiview_all_scales total=29s

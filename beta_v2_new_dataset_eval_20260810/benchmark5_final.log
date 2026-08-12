@@ -1,0 +1,13 @@
+[beta-v2] published singleton output cases=933
+[beta-v2] cases=933 k=32 scale=32 context=ten_m_like final=100s baseline=12s desired_expert=70s
+[beta-v2] trying deterministic kmeans baseline
+[config] parser=drain cluster=kmeans cluster_factor=1.0 k_selection=factor feature_level=baseline normalizer=v1 line_mode=default template_weighting=quality llm_mode=none token_weight_mode=none token_weights=None
+[config] primary_signature=enabled
+[data] cases=933 templates=62 vector_shape=(933, 32768)
+[cluster] requested_k=32 effective_k=32 method=kmeans
+[output] buckets=32 path=/tmp/beta_v2_new_dataset_eval/benchmark5_final_pred.csv.baseline.573212.candidate runtime_sec=5.488
+[beta-v2] published baseline output
+[beta-v2] trying multiview_all_scales candidate (limit=70s), baseline remains published
+Terminated
+[beta-v2] expert failed or timed out; keeping baseline
+[beta-v2] completed selected=baseline total=77s
