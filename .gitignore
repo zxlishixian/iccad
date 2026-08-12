@@ -18,3 +18,8 @@ token_weights*.json
 *.log.tmp
 *.candidate
 *.tar.gz
+
+# final_submission/ generated artifacts (assembled by package_final_submission.py)
+final_submission/*.py
+final_submission/manifest.json
+final_submission/inference.log

@@ -72,15 +72,8 @@ def load_models(model_dir: Path, manifest: dict):
     return models, preprocessors
 
 
-def main(argv=None):
+def _run_ensemble(args):
     started = time.perf_counter()
-    p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--input", type=Path, required=True)
-    p.add_argument("--output", type=Path, required=True)
-    p.add_argument("--k", type=int, required=True)
-    p.add_argument("--model-dir", type=Path, required=True)
-    args = p.parse_args(argv)
-
     cases = osf.read_cases(args.input)
     n = len(cases)
     k = max(1, min(int(args.k), n))
@@ -177,6 +170,26 @@ def main(argv=None):
         file=sys.stderr,
     )
     return 0
+
+
+def main(argv=None):
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument("--input", type=Path, required=True)
+    p.add_argument("--output", type=Path, required=True)
+    p.add_argument("--k", type=int, required=True)
+    p.add_argument("--model-dir", type=Path, required=True)
+    args = p.parse_args(argv)
+
+    try:
+        return _run_ensemble(args)
+    except Exception as exc:  # noqa: BLE001 - deterministic last-resort fallback
+        import regr_fail_bucketing as rfb
+
+        print(
+            f"[final-inference] ensemble failed ({exc}); falling back to deterministic baseline",
+            file=sys.stderr,
+        )
+        return rfb.main(["--input", str(args.input), "--output", str(args.output), "--k", str(args.k)])
 
 
 if __name__ == "__main__":
