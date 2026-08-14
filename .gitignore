@@ -12,12 +12,17 @@ __pycache__/
 **/auth.json
 **/credentials.json
 models/
+# 提交包内 _internal/models 是打包好的编码器权重（~3.6MB），必须入库，否则二进制回退基线
+!submission_files/final/final_submission/_internal/models/
+!submission_files/final/final_submission/_internal/models/**
 token_weights*.json
 *.pt
 *.pth
 *.log.tmp
 *.candidate
 *.tar.gz
+# dateutil 打包自带时区数据，必须入库（被上面 *.tar.gz 误伤）
+!submission_files/final/final_submission/_internal/dateutil/zoneinfo/dateutil-zoneinfo.tar.gz
 
 # final_submission/ 生成物（manifest/inference.log 只是诊断残留，不入库）
 final_submission/manifest.json
