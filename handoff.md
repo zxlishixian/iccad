@@ -89,7 +89,8 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 
 **当前产物（都在）：**
 - 训练输出：`/tmp/theta_final_real_5seed/`（results.csv 45 行 + manifest.json + models/ 45 个 .pt + 45 个 .pkl + preds/）
-- 打包好的最终提交：`/home/lishixian/iccad/final_submission/`（746MB，结构见 §4）
+- 打包好的最终提交：`/home/lishixian/iccad/submission_files/final/final_submission/`（253MB，结构见 §4）
+- 废弃的 pair 提交包：`/home/lishixian/iccad/submission_files/final/final_submission_pair_old/`（746MB，未入库）
 - 验证输出：`/tmp/theta_final_validate2/`（定向验证结果）、`/tmp/theta_final_validate/`（部分）
 
 ## 3. 数据集（11 个，⚠️ 有嵌套泄漏）
@@ -142,7 +143,7 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 - **benchmark5 剪枝**：837 个与 benchmark6 重复的 case 目录移到 `dataset/_removed_20260813/benchmark5_duplicates/`，并重生成 `benchmark5_final/{input,golden,meta}.csv`（各 96 行，Case 序列与 case 目录一一对应）。
 - **脚本同步**：`run_final_submission_train.py` 的 `FINAL_DATASETS`、`run_final_submission_validate.py` 的 `DATASETS` 都已删掉这 3 个集，benchmark5 保留（现 96 例）。
 
-**结果：剩余 6 fake + 2 official 内容级零重叠，训练集 = 3809 唯一 case（640+40+65+24+96+2944）。** 之前的 5-seed 45 模型（`/tmp/theta_final_real_5seed` 与 `final_submission/`）仍是在**未去重的 9 集**上训的，**尚未用去重后的数据重训**——重训留作下一步。
+**结果：剩余 6 fake + 2 official 内容级零重叠，训练集 = 3809 唯一 case（640+40+65+24+96+2944）。** 之前的 5-seed 45 模型（`/tmp/theta_final_real_5seed` 与 `submission_files/final/final_submission/`）仍是在**未去重的 9 集**上训的，**尚未用去重后的数据重训**——重训留作下一步。
 
 ## 3.6 真实桶数严查（2026-08-13）
 
@@ -186,9 +187,9 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 - 验证集早停：`train_siamese_model` 有 stratified train/val split + val-loss 早停，自动选最优 epoch（40ep 会过拟合，别手调）。
 - **分数（干净，只训 4 fake 测 official）**：official mean ≈ 0.53（set1≈0.55、set2≈0.51）；fake LODO 小集 0.60~0.70，benchmark6(64bug)=0.52（难，TPR=0.056 严重欠聚类）。train-on-dev（官方进训练）会飙到 0.868 但那是过拟合（见坑 #16），不可取。
 
-### 当前提交包（final_submission/，2026-08-14 打包完成）
+### 当前提交包（submission_files/final/final_submission/，2026-08-14 打包完成）
 
-- **入口** `final_submission/regr_fail_bucketing`（PyInstaller onedir，mode 755，顶层）
+- **入口** `submission_files/final/final_submission/regr_fail_bucketing`（PyInstaller onedir，mode 755，顶层）
 - **模型**：siamese 5-seed 集成（NumPy 前向，无 torch）
 - **接口** `--input --output --k` → `Case,bucket`
 - **LLM** 通过 `LLM_MODEL_CONFIG`，失败回落确定性基线
@@ -258,7 +259,7 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 
 **决策：接受当前模型为最终版本（用户选定）。** 5 类方法（子中心/正样本聚合/UVM_FATAL/加数据/域对抗）都边际或负面，模型迭代已达数据与方法瓶颈。
 
-**最终提交**：`final_submission/`（siamese + 原型 + trace + 测试名，B 版 fakes+official 一起训）
+**最终提交**：`submission_files/final/final_submission/`（siamese + 原型 + trace + 测试名，B 版 fakes+official 一起训）
 
 - 架构：per-case 编码器 → SupCon + 原型损失 → k-means，O(N)，PyInstaller 自包含，GLIBC 2.28 达标
 - 特征：LLM 64 + 失败签名（家族+分歧类型）14 + 测试名类别 14 + trace residual 96 = 188 维
@@ -268,10 +269,10 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 
 **2026-08-14 深夜改动（提交前最后一轮）**：
 
-- **二进制与 `_internal/` 已改为入库**（.gitignore 放行）：用户最终流程是「队友 clone 仓库 → 从自己电脑上传 Google Drive」，服务器无 sudo、跑不了 docker，所以打包产物必须走 git。队友上传时只传 `final_submission/` 目录内容（二进制 + `_internal/` + README + `regr_fail_bucketing.py` 后备源码），不要传整个仓库。
+- **二进制与 `_internal/` 已改为入库**（.gitignore 放行）：用户最终流程是「队友 clone 仓库 → 从自己电脑上传 Google Drive」，服务器无 sudo、跑不了 docker，所以打包产物必须走 git。队友上传时只传 `submission_files/final/final_submission/` 目录内容（二进制 + `_internal/` + README + `regr_fail_bucketing.py` 后备源码），不要传整个仓库。
 - **修复无 LLM 静默退化**（坑 #19）：`pairwise_llm_features.py` 无 LLM 分支 `zeros(0)`→`zeros(768)`。修复后无 LLM 也是模型分（set1 BA=1.0、set2 BA=0.90）。
 - **LLM 调用量优化**：`siamese_predict.py` 默认 `--llm-batch-size` 64→512、`--llm-timeout-sec` 60→20（官方网络延迟计入运行时，benchmark6 从 ~94 次调用降到 ~6 次）。
-- **f-string 兼容修复**：`regr_fail_bucketing.py:836` 反斜杠 f-string 拆成变量（Python<3.12 解析兼容），并复制进 `final_submission/` 作为官方「源码后备」。
+- **f-string 兼容修复**：`regr_fail_bucketing.py:836` 反斜杠 f-string 拆成变量（Python<3.12 解析兼容），并复制进 `submission_files/final/final_submission/` 作为官方「源码后备」。
 - **重打包 + GLIBC 2.28 修复已重做**（重打包后必须重换 libstdc++/libgcc，见 §8）。
 - **仍未做的**：AlmaLinux 8 容器真机测试（服务器无 sudo，只能队友在本机跑；容器命令见 §8）。
 
@@ -298,7 +299,7 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 17. **「per-seed 平均」≠「集成（平均 embedding 再聚类）」**：per-seed 平均是 5 个 seed 各自聚类取平均 BA；集成是 5 个 encoder 先平均 embedding、再聚类一次。两者分数不同（集成通常更稳、更高，如 set1 per-seed 0.833 → 集成 1.0）。**最终提交 `siamese_predict.py` 用的是集成**，别拿 per-seed 平均当提交分数。
 18. **GLIBC 打包风险（关键）**：官方机要求 ELF 符号上限 GLIBC 2.28（RHEL/Alma/CentOS 8），但本开发机是 glibc 2.39，PyInstaller 打包出的 `_internal/libgcc_s.so.1`（GLIBC_2.35）和 `_internal/libstdc++.so.6`（GLIBC_2.38）**超标**。**已修复（2026-08-14）**：用 conda 的 `libgcc-15.2.0`（GLIBC_2.14）和 `libstdcxx-15.2.0`（GLIBC_2.17）替换，替换后全包最高 GLIBC = 2.28（达标）。注意：libstdc++ ABI 是稳定的（GCC 3.4 起），旧 glibc 版本可安全替换新版本。
 19. **无 LLM 时提交包静默跌到基线（关键，2026-08-14 发现）**：`pairwise_llm_features.py` 无 LLM 分支造 `llm_vec=zeros(0)`（0 维），`apply_llm_reducer` 见 `has_llm=False` 就把 LLM 块整个丢掉 → 188 维编码器收到 124 维输入 → siamese 崩 → **静默回落确定性基线**。冒烟测试「输出正常」会掩盖真相（基线也能出合法 CSV）：无 LLM set1 BA=0.52 vs 有 LLM 1.0。**已修**：`zeros(0)`→`zeros(dim=768)`（与 fetch-fail 分支同宽）。**教训：验证提交包一定要看 stderr 有没有 `[siamese] failed`，不能只看 CSV 头**。另外注意坑 #1 是同一类问题在别处的变体——所有 LLM 兜底零向量必须满 768 维。
-20. **队友 clone 里没有二进制是预期行为**：`final_submission/regr_fail_bucketing` 和 `_internal/` 被 .gitignore 排除（打包产物不入库），git 同步永远带不过去。要真机测试只能 scp/U 盘拷贝整个 `final_submission/` 目录（二进制+_internal 必须同目录）。官方测评跑的是**可执行文件**（§1.7），源码只是「无法启动」时的后备。
+20. **打包产物曾不进 git，后改为入库（2026-08-14）**：最初 `.gitignore` 排除二进制+`_internal/`，导致队友 clone 拿不到二进制、无法 clone→上传。**已改为入库**（队友流程是「clone 仓库 → 上传 `submission_files/final/final_submission/` 内容到 Google Drive」）。教训：提交物必须跟着仓库走，别依赖 scp/U 盘传。注意 `final_submission_pair_old/`（废弃 746MB）仍被 .gitignore 排除（模式无前导斜杠，按目录名任意层级匹配）。官方测评跑的是**可执行文件**（§1.7），源码只是「无法启动」时的后备。
 
 ## 8. 关键命令速查
 
@@ -322,31 +323,31 @@ $PY run_siamese_ensemble_eval.py --seed-dirs /tmp/siamese_seed0 ... /tmp/siamese
   --output-dir /tmp/ens --use-trace
 
 # 打包（PyInstaller onedir，排除 torch）
-# 注意：--add-data 的源 final_submission/models 目前不存在（被 .gitignore 排除）。
-# 重打包前先从 _internal/models 拷回：cp -r final_submission/_internal/models final_submission/models
+# 注意：--add-data 的源 submission_files/final/final_submission/models 目前不存在（被 .gitignore 排除）。
+# 重打包前先从 _internal/models 拷回：cp -r submission_files/final/final_submission/_internal/models submission_files/final/final_submission/models
 $PY -m PyInstaller --name regr_fail_bucketing --onedir \
-  --add-data "/home/lishixian/iccad/final_submission/models:models" \
+  --add-data "/home/lishixian/iccad/submission_files/final/final_submission/models:models" \
   --exclude-module torch --exclude-module torchvision --exclude-module torchaudio \
   --paths /home/lishixian/iccad \
   --distpath /tmp/pyinstaller_dist --workpath /tmp/pyinstaller_work --specpath /tmp \
   --log-level WARN siamese_predict.py
 # 产物回拷（二进制+_internal 必须同目录，_internal 会覆盖旧目录）
-cp -r /tmp/pyinstaller_dist/regr_fail_bucketing/_internal final_submission/
-cp /tmp/pyinstaller_dist/regr_fail_bucketing/regr_fail_bucketing final_submission/
-chmod 755 final_submission/regr_fail_bucketing
+cp -r /tmp/pyinstaller_dist/regr_fail_bucketing/_internal submission_files/final/final_submission/
+cp /tmp/pyinstaller_dist/regr_fail_bucketing/regr_fail_bucketing submission_files/final/final_submission/
+chmod 755 submission_files/final/final_submission/regr_fail_bucketing
 
 # GLIBC 2.28 修复（每次重打包后必须重做）：用 conda 老库替换 bundled 新库
 STDCXX=$(find /home/lishixian/miniforge3/pkgs/libstdcxx-15.2.0* -name "libstdc++.so.6" | head -1)
 GCC=$(find /home/lishixian/miniforge3/pkgs/libgcc-15.2.0* -name "libgcc_s.so.1" | head -1)
-cp "$STDCXX" final_submission/_internal/libstdc++.so.6
-cp "$GCC" final_submission/_internal/libgcc_s.so.1
+cp "$STDCXX" submission_files/final/final_submission/_internal/libstdc++.so.6
+cp "$GCC" submission_files/final/final_submission/_internal/libgcc_s.so.1
 # 验证全包 GLIBC 符号上限 ≤ 2.28
-find final_submission -type f \( -name "*.so*" -o -name "regr_fail_bucketing" \) \
+find submission_files/final/final_submission -type f \( -name "*.so*" -o -name "regr_fail_bucketing" \) \
   | while read f; do objdump -T "$f" 2>/dev/null | grep -oE "GLIBC_[0-9]+\.[0-9]+(\.[0-9]+)?"; done | sort -Vu | tail -5
 
 # 提交包实测（两种都要跑，且必须看 stderr 有没有 [siamese] failed）
-env -u LLM_MODEL_CONFIG final_submission/regr_fail_bucketing --input <csv> --output /tmp/o1.csv --k <k>
-LLM_MODEL_CONFIG="$(cat /tmp/llm_local.yaml)" final_submission/regr_fail_bucketing --input <csv> --output /tmp/o2.csv --k <k>
+env -u LLM_MODEL_CONFIG submission_files/final/final_submission/regr_fail_bucketing --input <csv> --output /tmp/o1.csv --k <k>
+LLM_MODEL_CONFIG="$(cat /tmp/llm_local.yaml)" submission_files/final/final_submission/regr_fail_bucketing --input <csv> --output /tmp/o2.csv --k <k>
 ```
 
 ## 9. 关键文件索引
@@ -358,7 +359,7 @@ LLM_MODEL_CONFIG="$(cat /tmp/llm_local.yaml)" final_submission/regr_fail_bucketi
 - `theta_trace_features.py` + `trace_anchor.py`：层次化 trace（mismatch 聚焦，已被 siamese 用）
 - `pairwise_llm_features.py` + `run_graph_multiview_experiments.py`：LLM 特征 + 降维 reducer
 - `information_files/`：**竞赛关键文件**（B_20260601.pdf 等，见 §1.6）
-- `final_submission/`：打包好的提交包
+- `submission_files/final/final_submission/`：打包好的提交包
 
 **已退役（pair 模型，仅历史参考）：**
 - `run_final_submission_train.py` / `final_inference.py` / `package_final_submission.py` / `theta_trilog_model.py`
