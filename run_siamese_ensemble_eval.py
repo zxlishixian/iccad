@@ -53,6 +53,7 @@ def parse_args(argv=None):
     p.add_argument("--trace-anchor-sizes", nargs="+", type=int, default=[32, 64, 128])
     p.add_argument("--use-trace", action="store_true", default=False)
     p.add_argument("--use-mismatch-llm", action="store_true", default=False)
+    p.add_argument("--use-fatal-llm", action="store_true", default=False)
     return p.parse_args(argv)
 
 
@@ -70,7 +71,7 @@ def main(argv=None):
         gold = None
         k = 0
         for enc, pre in zip(encoders, preps):
-            cm, case_labels, _, _, _, _ = rst.build_case_matrix(
+            cm, case_labels, _, _, _, _, _, _ = rst.build_case_matrix(
                 args, [ds], reducer=pre["reducer"], trace_bundle=pre["trace_bundle"],
                 snippet_reducer=pre["snippet_reducer"], test_name_vocab=pre.get("test_name_vocab"),
             )

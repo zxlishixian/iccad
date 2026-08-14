@@ -18,7 +18,28 @@
 
 ## 二、下一批要优先修的（按重要性排序）
 
-### 问题 1（最重要）：3 个测试名 → bug 的 1:1 捷径
+### 问题 0（最根本，最重要）：消除歧义数据（diff-bugs-same-syndrome）
+
+官方 Q5（`information_files/QA/B_QA_20260612.pdf`）明确说：他们造 benchmark 时专门**剔除了
+「不同 bug 产生完全相同症状」的冲突 case**——原话 "we have excluded all these conflicting cases
+... diff-bugs-same-syndrome"。原因很直接：**如果两个 bug 在 sim / regr / trace 三种日志里打出来的
+东西一模一样，那任何算法都分不对它们**；这类 case 只会污染训练、拉低分数，也无法用来评估模型。
+
+我们旧 benchmark6 就是活生生的反例：56 个 mismatch bug 全部从 cycle-0 `lui` 开始级联，第一个
+mismatch 全是 `lui`/`c.li`，日志同质到不可分 → TPR 只有 0.13。**这不是模型不行，是数据本身没有
+可区分的信号**，正是官方「消歧」要避免的那类数据。
+
+**造数据的铁律：每个 bug 必须在至少一个特征维度上有唯一、稳定的「症状签名」**（首个 mismatch
+opcode / UVM_FATAL 消息文本 + file:line / 分歧 PC 区域 / trace 分歧模式 / 测试名类别…任选其一，越多越稳）。
+生成后必须跑一个「歧义自检」：
+
+> **若两个不同 bug 的所有 case 在全部可观测维度上两两不可区分（same syndrome），就删掉其中一个
+> bug，或删掉导致冲突的那些 case——绝不留 diff-bugs-same-syndrome 的数据。**
+
+这条优先级高于下面所有问题：下面问题 1/2 本质上是「捷径 / 区分度不足」，而歧义数据是「根本不可能
+分对」，属于数据里的硬伤。
+
+### 问题 1（重要）：3 个测试名 → bug 的 1:1 捷径
 
 下面 3 个测试各只覆盖 **1 个 bug**，共 53/500 = **10.6%** 的 case 可以靠「背测试名」直接分对：
 
@@ -63,11 +84,13 @@ bug_073/074/078/079/080/081 这 6 个 bug：
 
 ## 三、下一批数据的检查清单（建议内置到生成脚本）
 
-1. 每个 bug 出现在 ≥2 个测试、每个测试覆盖 ≥2 个 bug（**别再有 1:1 测试名捷径**）。
-2. 同家族 bug（ALU/MUL/CSR/...）的测试覆盖尽量错开，别让 6 个 bug 共用同一套测试。
-3. 保持 late first-mismatch（首个 mismatch index > 32，杜绝 cycle-0 `lui`）。
-4. 日志里 0 个 bug label / 真实绝对路径。
-5. 每个 bug 的 case 数均衡（50 左右），每个 bug 的首个 opcode / UVM_FATAL 消息可区分。
+1. **歧义自检（最优先）**：确认任意两个不同 bug 在所有可观测维度（opcode / fatal 消息 / PC 区域 /
+   trace 模式 / 测试名）上至少有一个可区分信号；若有 same-syndrome 的冲突 case，**删掉**（见问题 0）。
+2. 每个 bug 出现在 ≥2 个测试、每个测试覆盖 ≥2 个 bug（**别再有 1:1 测试名捷径**）。
+3. 同家族 bug（ALU/MUL/CSR/...）的测试覆盖尽量错开，别让 6 个 bug 共用同一套测试。
+4. 保持 late first-mismatch（首个 mismatch index > 32，杜绝 cycle-0 `lui`）。
+5. 日志里 0 个 bug label / 真实绝对路径。
+6. 每个 bug 的 case 数均衡（50 左右），每个 bug 的首个 opcode / UVM_FATAL 消息可区分。
 
 ## 四、参考
 
