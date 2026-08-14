@@ -20,14 +20,10 @@ from run_experiments import pairwise_scores, read_gold
 PROJECT_ROOT = Path(__file__).resolve().parent
 
 DATASETS = [
-    Path("dataset/fake_dataset/old_fake_dataset/first_batch_dataset"),
-    Path("dataset/fake_dataset/old_fake_dataset/stage2_dataset_working"),
     Path("dataset/fake_dataset/old_fake_dataset/stage3_dataset_32bugs_640cases"),
     Path("dataset/fake_dataset/official_format_fake_dataset/official_vcs_stage1_dataset_v1"),
-    Path("dataset/fake_dataset/official_format_fake_dataset/directed_cross_v2"),
     Path("dataset/fake_dataset/official_format_fake_dataset/directed_cross_v4"),
     Path("dataset/fake_dataset/official_format_fake_dataset/stable_official_like_multitest_v1"),
-    Path("dataset/fake_dataset/official_format_fake_dataset/benchmark5_final"),
     Path("dataset/fake_dataset/official_format_fake_dataset/benchmark6_final"),
     Path("dataset/real_dataset/benchmark_set_1"),
     Path("dataset/real_dataset/benchmark_set_2"),

@@ -38,15 +38,16 @@ from run_theta_trilog_lodo import (
 
 OFFICIAL_NAMES = {"benchmark_set_1", "benchmark_set_2"}
 
+# Deduplicated training datasets (2026-08-13): removed the nested subsets
+# first_batch/stage2 (⊂ stage3) and directed_cross_v2 (⊂ directed_cross_v4).
+# benchmark5 is EXCLUDED: after pruning to 96 unique cases it spans 32 bugs with
+# 37.5% of bugs having <=2 cases (too sparse to cluster/train on). Remaining
+# fakes are mutually content-disjoint (verified via regr.log + sim.log.gz hash).
 FINAL_DATASETS = [
-    Path("dataset/fake_dataset/old_fake_dataset/first_batch_dataset"),
-    Path("dataset/fake_dataset/old_fake_dataset/stage2_dataset_working"),
     Path("dataset/fake_dataset/old_fake_dataset/stage3_dataset_32bugs_640cases"),
     Path("dataset/fake_dataset/official_format_fake_dataset/official_vcs_stage1_dataset_v1"),
-    Path("dataset/fake_dataset/official_format_fake_dataset/directed_cross_v2"),
     Path("dataset/fake_dataset/official_format_fake_dataset/directed_cross_v4"),
     Path("dataset/fake_dataset/official_format_fake_dataset/stable_official_like_multitest_v1"),
-    Path("dataset/fake_dataset/official_format_fake_dataset/benchmark5_final"),
     Path("dataset/fake_dataset/official_format_fake_dataset/benchmark6_final"),
     Path("dataset/real_dataset/benchmark_set_1"),
     Path("dataset/real_dataset/benchmark_set_2"),
@@ -220,6 +221,12 @@ def main(argv: Sequence[str] | None = None) -> int:
             train_base_features = [base_features[index] for index in train_indices]
             feature_reducer = plf.fit_llm_reducer(train_base_features, args.view_dim, random_state=seed)
             summary_reducer = plf.fit_llm_summary_reducer(train_base_features, args.view_dim, random_state=seed + 17)
+            # Reduce ALL features (train + hold) so the train and hold pair matrices
+            # share one width. Otherwise the unreduced 768-d llm_vec on held-out
+            # cases makes `_safe_vstack` widen the train matrix's features/summary
+            # views to 768-d while the hold sanity matrix stays 64-d (scaler mismatch).
+            plf.apply_llm_reducer(base_features, feature_reducer, args.view_dim)
+            plf.apply_llm_summary_reducer(base_features, summary_reducer, args.view_dim)
 
             custom_reducers: dict[str, object] = {}
             reduced_custom: dict[str, np.ndarray] = {}

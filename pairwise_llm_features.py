@@ -391,8 +391,9 @@ def build_llm_case_features_for_inputs(
                 )
         except Exception as exc:
             print(f"[llm_features] LLM fetch failed ({exc}); using zero llm_vec", file=sys.stderr)
-            llm_vecs = [np.zeros(0, dtype=np.float32) for _ in det_features]
-            llm_summary_vecs = [np.zeros(0, dtype=np.float32) for _ in det_features]
+            dim = int(getattr(llm_args, "llm_expected_dim", 768))
+            llm_vecs = [np.zeros(dim, dtype=np.float32) for _ in det_features]
+            llm_summary_vecs = [np.zeros(dim, dtype=np.float32) for _ in det_features]
     else:
         if log_llm_disabled:
             print("[llm_features] LLM disabled; using zero llm_vec", file=sys.stderr)
@@ -489,6 +490,29 @@ def _apply_reducer_to_matrix(matrix: np.ndarray, reducer: Any, reduce_dim: int) 
     return _pad_or_trim(transformed, int(reduce_dim))
 
 
+def _stack_llm_vectors(vectors: Sequence[np.ndarray]) -> np.ndarray:
+    """Stack 1-D LLM vectors, padding empty/short ones to a common width.
+
+    A partial LLM fetch failure can leave some cases with ``llm_vec`` of width 0
+    while others hold the real ``embedding_dim``-wide vector. ``np.vstack`` raises
+    on that mixed-width input, so we pad to the observed maximum width instead.
+    """
+    if not vectors:
+        return np.zeros((0, 0), dtype=np.float32)
+    width = max(int(v.size) for v in vectors)
+    if width == 0:
+        return np.zeros((len(vectors), 0), dtype=np.float32)
+    rows = []
+    for v in vectors:
+        if v.size == width:
+            rows.append(v.astype(np.float32, copy=False))
+        elif v.size == 0:
+            rows.append(np.zeros(width, dtype=np.float32))
+        else:
+            rows.append(np.pad(v.astype(np.float32, copy=False), (0, width - v.size)))
+    return np.vstack(rows).astype(np.float32, copy=False)
+
+
 def fit_llm_reducer(
     features: list[LLMCaseFeature],
     reduce_dim: int,
@@ -499,7 +523,7 @@ def fit_llm_reducer(
         for feat in features:
             feat.llm_vec_reduced = np.zeros(0, dtype=np.float32)
         return None
-    llm = np.vstack([feat.llm_vec for feat in features]).astype(np.float32)
+    llm = _stack_llm_vectors([feat.llm_vec for feat in features])
     reducer, transformed = _fit_reducer_for_matrix(llm, reduce_dim, random_state)
     for feat, vec in zip(features, transformed):
         feat.llm_vec_reduced = vec.astype(np.float32, copy=False)
@@ -516,7 +540,7 @@ def fit_llm_summary_reducer(
         for feat in features:
             feat.llm_summary_vec_reduced = np.zeros(0, dtype=np.float32)
         return None
-    llm = np.vstack([feat.llm_summary_vec for feat in features]).astype(np.float32)
+    llm = _stack_llm_vectors([feat.llm_summary_vec for feat in features])
     reducer, transformed = _fit_reducer_for_matrix(llm, reduce_dim, random_state)
     for feat, vec in zip(features, transformed):
         feat.llm_summary_vec_reduced = vec.astype(np.float32, copy=False)
@@ -532,7 +556,7 @@ def apply_llm_reducer(
         for feat in features:
             feat.llm_vec_reduced = np.zeros(0, dtype=np.float32)
         return
-    llm = np.vstack([feat.llm_vec for feat in features]).astype(np.float32)
+    llm = _stack_llm_vectors([feat.llm_vec for feat in features])
     transformed = _apply_reducer_to_matrix(llm, reducer, int(reduce_dim))
     for feat, vec in zip(features, transformed):
         feat.llm_vec_reduced = vec.astype(np.float32, copy=False)
@@ -547,7 +571,7 @@ def apply_llm_summary_reducer(
         for feat in features:
             feat.llm_summary_vec_reduced = np.zeros(0, dtype=np.float32)
         return
-    llm = np.vstack([feat.llm_summary_vec for feat in features]).astype(np.float32)
+    llm = _stack_llm_vectors([feat.llm_summary_vec for feat in features])
     transformed = _apply_reducer_to_matrix(llm, reducer, int(reduce_dim))
     for feat, vec in zip(features, transformed):
         feat.llm_summary_vec_reduced = vec.astype(np.float32, copy=False)

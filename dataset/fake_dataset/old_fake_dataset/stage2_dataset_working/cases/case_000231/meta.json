@@ -1,9 +1,0 @@
-{
-  "case_id": "case_000231",
-  "bug_id": "bug_019",
-  "group": "system",
-  "family": "ebreak_decode_wrong",
-  "test": "riscv_machine_mode_rand_test",
-  "seed": 896,
-  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_first_batch/bug_019/riscv_machine_mode_rand_test/seed_000896"
-}

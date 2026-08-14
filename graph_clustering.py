@@ -744,13 +744,47 @@ def correlation_cluster(
     )
 
 
+def _enforce_requested_k(prob: np.ndarray, result: GraphClusterResult, k: int) -> GraphClusterResult:
+    """Softly steer a clusterer's output toward ``k`` clusters.
+
+    ``correlation_cluster`` treats ``k`` as a hint only: its pivot + local
+    search optimizes pair agreement and produces a *free* cluster count, which
+    can land well above or below the requested ``k``.  We correct the count only
+    when it is **grossly** off (more than 2x over, or less than half under).
+    Forcing exact ``k`` on near-k partitions can harm BA — a greedy merge/split
+    may pick a wrong pair when the model's probabilities are imperfect (observed
+    on benchmark_set_2: free 5 clusters scored higher than forced 4).  So near-k
+    results are left untouched.
+    """
+    n = int(prob.shape[0])
+    requested_k = max(1, min(int(k), n))
+    clusters = clusters_from_labels(result.labels)
+    free = len(clusters)
+    if free == requested_k:
+        return result
+    if not (free > 2 * requested_k or free * 2 < requested_k):
+        return result
+    merges = splits = 0
+    if free > requested_k:
+        clusters, merges, extra = _merge_clusters_to_k(prob, clusters, requested_k)
+        result.trajectory.extend(extra)
+    else:
+        clusters, splits, extra = _split_clusters_to_k(prob, clusters, requested_k)
+        result.trajectory.extend(extra)
+    result.labels = dense_labels_from_clusters(clusters, n)
+    result.num_clusters = len(clusters)
+    result.num_merges = merges
+    result.num_splits = splits
+    return result
+
+
 def cluster_with_fallback(prob: np.ndarray, k: int, conflict_matrix: np.ndarray | None = None, **kwargs) -> GraphClusterResult:
     result = correlation_cluster(prob, k, conflict_matrix=conflict_matrix, **kwargs)
     if result.diagnostics.get("degenerate"):
         fallback = agglomerative_avg(prob, k)
         fallback.trajectory.append({"action": "fallback_from_correlation", "reason": "degenerate"})
         return fallback
-    return result
+    return _enforce_requested_k(prob, result, k)
 
 
 def cluster_probability_graph(

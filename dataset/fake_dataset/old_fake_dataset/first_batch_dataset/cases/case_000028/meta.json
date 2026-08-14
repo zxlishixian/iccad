@@ -1,9 +1,0 @@
-{
-  "case_id": "case_000028",
-  "bug_id": "bug_003",
-  "group": "alu",
-  "family": "alu_shift_arithmetic_wrong",
-  "test": "riscv_machine_mode_rand_test",
-  "seed": 523,
-  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_first_batch/bug_003/riscv_machine_mode_rand_test/seed_000523"
-}
