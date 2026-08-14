@@ -19,13 +19,10 @@ token_weights*.json
 *.candidate
 *.tar.gz
 
-# final_submission/ generated artifacts (assembled by package_final_submission.py)
-final_submission/*.py
+# final_submission/ 生成物（manifest/inference.log 只是诊断残留，不入库）
 final_submission/manifest.json
 final_submission/inference.log
 
 # 大体积生成物 / 本地备份（不进远程）
-final_submission/_internal/
-final_submission/regr_fail_bucketing
 final_submission_pair_old/
 dataset/_removed_20260813/

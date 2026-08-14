@@ -136,8 +136,11 @@ def parse_args(argv=None):
     p.add_argument("--svd-dim", type=int, default=64)
     p.add_argument("--llm-cache-dir", type=Path, default=Path("/tmp/regr_fail_llm_cache"))
     p.add_argument("--llm-doc-max-features", type=int, default=80)
-    p.add_argument("--llm-batch-size", type=int, default=64)
-    p.add_argument("--llm-timeout-sec", type=float, default=60.0)
+    # Large batches + short per-batch timeout: official eval counts network latency
+    # toward the runtime limit, and excessive API calls can zero the benchmark.
+    # benchmark6 (3000 cases) needs ~6 calls at 512 instead of ~94 at 64.
+    p.add_argument("--llm-batch-size", type=int, default=512)
+    p.add_argument("--llm-timeout-sec", type=float, default=20.0)
     p.add_argument("--embedding-expected-dim", type=int, default=768)
     return p.parse_args(argv)
 

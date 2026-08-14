@@ -397,8 +397,11 @@ def build_llm_case_features_for_inputs(
     else:
         if log_llm_disabled:
             print("[llm_features] LLM disabled; using zero llm_vec", file=sys.stderr)
-        llm_vecs = [np.zeros(0, dtype=np.float32) for _ in det_features]
-        llm_summary_vecs = [np.zeros(0, dtype=np.float32) for _ in det_features]
+        # Same width as the fetch-failed path above: keep the LLM block 768-wide so
+        # downstream reducers/encoders always see the full feature dimension.
+        dim = int(getattr(llm_args, "llm_expected_dim", 768))
+        llm_vecs = [np.zeros(dim, dtype=np.float32) for _ in det_features]
+        llm_summary_vecs = [np.zeros(dim, dtype=np.float32) for _ in det_features]
 
     result: list[LLMCaseFeature] = []
     for det_feat, llm_vec, llm_summary_vec, rich_info in zip(det_features, llm_vecs, llm_summary_vecs, rich_infos):

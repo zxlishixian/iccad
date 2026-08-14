@@ -25,8 +25,15 @@ no PyTorch is bundled.
 ## LLM configuration
 
 Reads `LLM_MODEL_CONFIG` (YAML content). Only the `embedding` endpoint is
-called. On missing config / API failure / incompatible dims, falls back to the
-deterministic no-trace baseline and still writes a valid CSV.
+called, batched (512 docs/call, 20 s/call timeout) so official-eval network
+latency stays inside the runtime limits. On missing config / API failure /
+incompatible dims, the LLM feature block is zero-filled and the siamese model
+still runs (verified BA 1.0 on benchmark_set_1 and 0.90 on benchmark_set_2
+with no LLM); a valid CSV is always written.
+
+`regr_fail_bucketing.py` is the stdlib-first source fallback, included per the
+official rule that the evaluator tries the source only if the executable cannot
+start. It is not the primary path.
 
 ## GLIBC compatibility
 
