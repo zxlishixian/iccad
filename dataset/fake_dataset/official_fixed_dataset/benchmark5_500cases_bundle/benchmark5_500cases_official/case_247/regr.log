@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[428] : pc[80000924] mul	x17,x22,x22: a7:400008c6 
+spike[428] : pc[80000924] mul     a7, s6, s6: a7:004cf924 
+[FAILED]: 1476 matched, 31633 mismatch
+
+0 PASSED, 1 FAILED

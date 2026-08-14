@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1174] : pc[800018b6] xor	x3,x27,x16: gp:0000021d 
+spike[1174] : pc[800018b6] xor     gp, s11, a6: gp:00000200 
+[FAILED]: 1463 matched, 2478 mismatch
+
+0 PASSED, 1 FAILED

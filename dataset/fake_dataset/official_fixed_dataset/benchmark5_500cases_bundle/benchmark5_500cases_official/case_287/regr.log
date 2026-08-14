@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[151] : pc[80001cb6] mulhsu	x13,x14,x18: a3:ffffffff 
+spike[151] : pc[80001cb6] mulhsu  a3, a4, s2: a3:00000000 
+Mismatch[3761]:
+[4783] ibex : pc[80001922] add	x4,x11,x19: tp:00000002 
+[FAILED]: 189 matched, 3761 mismatch
+
+0 PASSED, 1 FAILED

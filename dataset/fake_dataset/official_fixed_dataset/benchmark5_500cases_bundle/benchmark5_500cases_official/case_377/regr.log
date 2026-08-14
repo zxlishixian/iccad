@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[60] : pc[80000160] and	x4,x26,x12: tp:ffffe05d 
+spike[60] : pc[80000160] and     tp, s10, a2: tp:9b626009 
+Mismatch[3751]:
+[4398] ibex : pc[80003b6c] c.lui	x4,0x4: tp:00004000 
+[FAILED]: 98 matched, 3751 mismatch
+
+0 PASSED, 1 FAILED

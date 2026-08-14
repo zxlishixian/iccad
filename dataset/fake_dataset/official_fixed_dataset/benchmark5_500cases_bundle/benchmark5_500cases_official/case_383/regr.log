@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[121] : pc[80000332] c.and	x14,x15: a4:ff0003dc 
+spike[121] : pc[80000338] csrrc   a4, mscratch, t2: a4:00000018 
+Mismatch[4334]:
+[5021] ibex : pc[8000792c] sll	x16,x20,x16: a6:00000000 
+[FAILED]: 104 matched, 4334 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[143] : pc[80001046] and	x12,x18,x4: a2:ffffff1e 
+spike[143] : pc[8000104a] c.lui   s1, 0x18: s1:00018000 
+Mismatch[7869]:
+[9241] ibex : pc[80000d50] sltu	x29,x25,x17: t4:00000001 
+[FAILED]: 217 matched, 7869 mismatch
+
+0 PASSED, 1 FAILED

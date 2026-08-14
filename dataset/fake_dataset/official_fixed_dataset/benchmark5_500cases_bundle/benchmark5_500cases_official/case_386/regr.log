@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[85] : pc[800001b8] c.and	x12,x11: a2:8000000c 
+spike[85] : pc[800001b8] c.and   a2, a1: a2:00000000 
+Mismatch[2073]:
+[2498] ibex : pc[8000093a] mul	x18,x8,x7: s2:ffffffc0 
+[FAILED]: 89 matched, 2073 mismatch
+
+0 PASSED, 1 FAILED

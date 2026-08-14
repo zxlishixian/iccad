@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[81] : pc[80000194] c.and	x15,x11: a5:80000000 
+spike[81] : pc[80000196] and     a2, t4, t0: a2:00000001 
+Mismatch[7809]:
+[9182] ibex : pc[80008072] remu	x17,x13,x16: a7:0000000f 
+[FAILED]: 75 matched, 7809 mismatch
+
+0 PASSED, 1 FAILED

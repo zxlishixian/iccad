@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[91] : pc[800001c0] or	x20,x8,x1: s4:830150ec 
+spike[91] : pc[800001c0] or      s4, s0, ra: s4:830150fc 
+Mismatch[7565]:
+[9437] ibex : pc[800083d2] xori	x9,x13,-947: s1:8000bd4b 
+[FAILED]: 368 matched, 7565 mismatch
+
+0 PASSED, 1 FAILED

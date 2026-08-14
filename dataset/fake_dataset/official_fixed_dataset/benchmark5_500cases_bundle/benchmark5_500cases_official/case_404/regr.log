@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[66] : pc[80000186] c.or	x14,x11: a4:772cdcea 
+spike[66] : pc[80000186] c.or    a4, a1: a4:f72ddefe 
+[FAILED]: 351 matched, 7759 mismatch
+
+0 PASSED, 1 FAILED

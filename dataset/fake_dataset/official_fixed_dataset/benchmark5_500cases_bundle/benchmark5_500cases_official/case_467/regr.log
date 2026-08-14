@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[94] : pc[80000248] c.sub	x9,x14: s1:7ffe1187 
+spike[94] : pc[8000023e] slt     sp, t6, s7: sp:00000001 
+Mismatch[4162]:
+[4997] ibex : pc[80001a64] sub	x17,x14,x27: a7:8001ebaf 
+[FAILED]: 108 matched, 4162 mismatch
+
+0 PASSED, 1 FAILED

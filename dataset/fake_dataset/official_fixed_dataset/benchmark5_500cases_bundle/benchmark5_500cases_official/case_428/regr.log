@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[139] : pc[80000516] c.or	x10,x10: a0:00000000 
+spike[139] : pc[80000518] xor     a7, s8, s0: a7:0000001f 
+[FAILED]: 151 matched, 1178 mismatch
+
+0 PASSED, 1 FAILED

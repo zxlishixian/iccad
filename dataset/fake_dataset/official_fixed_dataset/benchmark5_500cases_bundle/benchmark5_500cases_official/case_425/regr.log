@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[64] : pc[80000170] c.or	x8,x15: s0:b0238527 
+spike[64] : pc[80000170] c.or    s0, a5: s0:f837f77f 
+Mismatch[4554]:
+[5716] ibex : pc[80005d6c] c.add	x8,x14: s0:f9ba043e 
+[FAILED]: 500 matched, 4554 mismatch
+
+0 PASSED, 1 FAILED

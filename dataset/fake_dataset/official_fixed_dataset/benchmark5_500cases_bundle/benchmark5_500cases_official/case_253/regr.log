@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[569] : pc[800008a0] mulhsu	x3,x18,x21: gp:ffffffff 
+spike[569] : pc[800008a0] mulhsu  gp, s2, s5: gp:0029b57e 
+Mismatch[7443]:
+[9450] ibex : pc[800084c0] or	x20,x17,x13: s4:ffffffff 
+[FAILED]: 667 matched, 7443 mismatch
+
+0 PASSED, 1 FAILED

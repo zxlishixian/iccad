@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[89] : pc[800002a8] c.or	x9,x14: s1:af307b90 
+spike[89] : pc[800002a8] c.or    s1, a4: s1:bffafb90 
+[FAILED]: 430 matched, 1660 mismatch
+
+0 PASSED, 1 FAILED

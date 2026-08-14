@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[403] : pc[80000b5a] mulhsu	x19,x14,x26: s3:fffffff2 
+spike[403] : pc[80000b5a] mulhsu  s3, a4, s10: s3:0000000d 
+Mismatch[6121]:
+[8066] ibex : pc[80001582] xori	x20,x17,-748: s4:000002e9 
+[FAILED]: 716 matched, 6121 mismatch
+
+0 PASSED, 1 FAILED

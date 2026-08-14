@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[126] : pc[800002d6] and	x14,x9,x11: a4:00000004 
+spike[126] : pc[800002d6] and     a4, s1, a1: a4:00000000 
+Mismatch[19525]:
+[21622] ibex : pc[80001556] mulh	x10,x2,x10: a0:00000000 
+[FAILED]: 168 matched, 19525 mismatch
+
+0 PASSED, 1 FAILED

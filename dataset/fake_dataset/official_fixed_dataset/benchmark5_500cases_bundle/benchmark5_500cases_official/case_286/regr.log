@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[126] : pc[80006c5e] mulhsu	x19,x2,x19: s3:da800001 
+spike[126] : pc[80006c5e] mulhsu  s3, sp, s3: s3:257fffff 
+[FAILED]: 611 matched, 1554 mismatch
+
+0 PASSED, 1 FAILED

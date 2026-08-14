@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[96] : pc[800001e6] and	x10,x29,x25: a0:ffffff3d 
+spike[96] : pc[800001e6] and     a0, t4, s9: a0:fda13f00 
+Mismatch[7887]:
+[9258] ibex : pc[8000820c] srai	x18,x23,0x14: s2:00000000 
+[FAILED]: 223 matched, 7887 mismatch
+
+0 PASSED, 1 FAILED

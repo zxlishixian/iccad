@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[226] : pc[80000680] or	x28,x5,x4: t3:8001ce7c 
+spike[226] : pc[80000680] or      t3, t0, tp: t3:8001ee7c 
+Mismatch[760]:
+[1492] ibex : pc[80002954] xor	x14,x5,x19: a4:00002020 
+[FAILED]: 496 matched, 760 mismatch
+
+0 PASSED, 1 FAILED

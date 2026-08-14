@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[60] : pc[8000015a] and	x8,x21,x13: s0:fe146363 
+spike[60] : pc[8000015e] auipc   s5, 0x10: s5:8001015e 
+Mismatch[2284]:
+[2515] ibex : pc[80002de0] csrrsi	x23,mscratch,23: s7:fe146363 
+[FAILED]: 55 matched, 2284 mismatch
+
+0 PASSED, 1 FAILED

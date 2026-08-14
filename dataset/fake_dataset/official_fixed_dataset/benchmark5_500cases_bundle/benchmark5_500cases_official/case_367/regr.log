@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[75] : pc[800001a4] c.and	x8,x14: s0:fabbfefd 
+spike[75] : pc[800001a4] c.and   s0, a4: s0:80006470 
+Mismatch[4128]:
+[4919] ibex : pc[8000177e] mulh	x4,x11,x16: tp:ffffffe3 
+[FAILED]: 142 matched, 4128 mismatch
+
+0 PASSED, 1 FAILED

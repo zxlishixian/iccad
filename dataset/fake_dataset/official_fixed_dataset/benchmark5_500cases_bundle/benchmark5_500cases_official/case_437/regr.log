@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[136] : pc[80001c06] c.or	x10,x11: a0:000000d9 
+spike[136] : pc[80001c06] c.or    a0, a1: a0:1bf1bbfd 
+[FAILED]: 215 matched, 3739 mismatch
+
+0 PASSED, 1 FAILED

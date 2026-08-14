@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[88] : pc[800001be] xor	x22,x22,x16: s6:ffdffbff 
+spike[88] : pc[800001be] xor     s6, s6, a6: s6:e81ffa7a 
+Mismatch[7703]:
+[9427] ibex : pc[8000837a] csrrs	x30,mscratch,x4: t5:00000008 
+[FAILED]: 404 matched, 7703 mismatch
+
+0 PASSED, 1 FAILED

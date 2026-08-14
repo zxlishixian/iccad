@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[300] : pc[800005ae] and	x17,x12,x24: a7:00000001 
+spike[300] : pc[800005be] mulh    s2, tp, a1: s2:fffffe36 
+Mismatch[3689]:
+[5220] ibex : pc[800025a6] or	x18,x20,x13: s2:ffffff7f 
+[FAILED]: 241 matched, 3689 mismatch
+
+0 PASSED, 1 FAILED

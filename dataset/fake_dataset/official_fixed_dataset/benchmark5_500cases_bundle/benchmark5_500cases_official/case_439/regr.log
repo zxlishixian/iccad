@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[826] : pc[8000114c] or	x9,x8,x12: s1:ffffffe5 
+spike[826] : pc[8000114c] or      s1, s0, a2: s1:ffffffef 
+[FAILED]: 2439 matched, 5741 mismatch
+
+0 PASSED, 1 FAILED

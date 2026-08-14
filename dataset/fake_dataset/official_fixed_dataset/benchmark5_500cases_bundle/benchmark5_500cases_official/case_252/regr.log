@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[154] : pc[8000029a] mulhsu	x12,x21,x2: a2:ffffffe6 
+spike[154] : pc[8000029a] mulhsu  a2, s5, sp: a2:3c4d68af 
+[FAILED]: 393 matched, 7798 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[111] : pc[800001fc] mul	x22,x26,x30: s6:80015e7b 
+spike[111] : pc[800001fc] mul     s6, s10, t5: s6:7ffea184 
+[FAILED]: 604 matched, 7440 mismatch
+
+0 PASSED, 1 FAILED

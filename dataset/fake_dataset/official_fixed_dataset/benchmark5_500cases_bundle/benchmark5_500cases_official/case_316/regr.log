@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[141] : pc[80000392] xor	x1,x11,x28: ra:0000001e 
+spike[141] : pc[80000392] xor     ra, a1, t3: ra:0000000e 
+Mismatch[1510]:
+[2579] ibex : pc[80001a5c] addi	x30,x12,328: t5:00000148 
+[FAILED]: 675 matched, 1510 mismatch
+
+0 PASSED, 1 FAILED

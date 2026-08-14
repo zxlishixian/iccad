@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[66] : pc[80000178] sltu	x10,x16,x25: a0:00000001 
+spike[66] : pc[80000178] sltu    a0, a6, s9: a0:00000000 
+Mismatch[2397]:
+[2966] ibex : pc[8000342e] ori	x29,x0,724: t4:000002d4 
+[FAILED]: 73 matched, 2397 mismatch
+
+0 PASSED, 1 FAILED

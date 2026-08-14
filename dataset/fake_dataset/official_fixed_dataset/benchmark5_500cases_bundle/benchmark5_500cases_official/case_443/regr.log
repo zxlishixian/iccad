@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[410] : pc[80000802] or	x31,x30,x30: t6:00000000 
+spike[410] : pc[80000802] or      t6, t5, t5: t6:80027e7c 
+[FAILED]: 347 matched, 4861 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[84] : pc[80000200] mulhsu	x12,x16,x15: a2:206a2cdd 
+spike[84] : pc[80000200] mulhsu  a2, a6, a5: a2:df94f948 
+Mismatch[1805]:
+[2640] ibex : pc[80006ebc] xori	x31,x28,950: t6:fffffc49 
+[FAILED]: 380 matched, 1805 mismatch
+
+0 PASSED, 1 FAILED

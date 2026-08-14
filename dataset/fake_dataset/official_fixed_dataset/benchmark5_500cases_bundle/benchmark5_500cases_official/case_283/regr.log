@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[147] : pc[800003ae] mulhsu	x6,x23,x29: t1:e918f191 
+spike[147] : pc[800003ae] mulhsu  t1, s7, t4: t1:16e70e6f 
+[FAILED]: 302 matched, 4137 mismatch
+
+0 PASSED, 1 FAILED

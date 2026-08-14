@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[162] : pc[800002d2] c.addi16sp	x2,272: sp:0000011a 
+spike[162] : pc[800002ce] mul     a6, a1, sp: a6:00000028 
+[FAILED]: 223 matched, 7665 mismatch
+
+0 PASSED, 1 FAILED

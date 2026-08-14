@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[80] : pc[800001dc] or	x22,x16,x30: s6:73fd4bf5 
+spike[80] : pc[800001dc] or      s6, a6, t5: s6:f3fd4bf5 
+[FAILED]: 135 matched, 4058 mismatch
+
+0 PASSED, 1 FAILED

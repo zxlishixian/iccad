@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[169] : pc[8000052a] slt	x13,x11,x31: a3:00000001 
+spike[169] : pc[8000052e] srl     a7, a1, tp: a7:0000000b 
+Mismatch[1931]:
+[2617] ibex : pc[80006dae] c.addi	x13,3: a3:0006b003 
+[FAILED]: 254 matched, 1931 mismatch
+
+0 PASSED, 1 FAILED

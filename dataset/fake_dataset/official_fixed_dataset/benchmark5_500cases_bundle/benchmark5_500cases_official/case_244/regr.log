@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[62] : pc[80000166] mul	x15,x24,x22: a5:70da9f56 
+spike[62] : pc[80000166] mul     a5, s8, s6: a5:15872313 
+Mismatch[10210]:
+[11890] ibex : pc[8000097e] and	x6,x10,x10: t1:00000000 
+[FAILED]: 262 matched, 10210 mismatch
+
+0 PASSED, 1 FAILED

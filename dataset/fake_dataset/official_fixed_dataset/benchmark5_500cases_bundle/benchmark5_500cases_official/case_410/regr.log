@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[60] : pc[8000016a] or	x1,x13,x8: ra:b48483ff 
+spike[60] : pc[8000016a] or      ra, a3, s0: ra:f6ae8fff 
+Mismatch[6903]:
+[9423] ibex : pc[8000839c] add	x24,x20,x18: s8:2bc80000 
+[FAILED]: 1195 matched, 6903 mismatch
+
+0 PASSED, 1 FAILED

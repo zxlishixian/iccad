@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[158] : pc[800002b0] sltu	x20,x13,x10: s4:00000000 
+spike[158] : pc[800002b0] sltu    s4, a3, a0: s4:00000001 
+Mismatch[7516]:
+[9459] ibex : pc[80008342] rem	x3,x21,x15: gp:80015e7c 
+[FAILED]: 599 matched, 7516 mismatch
+
+0 PASSED, 1 FAILED

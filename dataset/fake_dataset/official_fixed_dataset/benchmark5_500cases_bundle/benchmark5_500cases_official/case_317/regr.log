@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[290] : pc[800006ba] c.xor	x8,x15: s0:ffffffff 
+spike[290] : pc[800006ba] c.xor   s0, a5: s0:0000001f 
+[FAILED]: 433 matched, 3852 mismatch
+
+0 PASSED, 1 FAILED

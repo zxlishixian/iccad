@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[106] : pc[80000f88] c.or	x9,x13: s1:7ffe1162 
+spike[106] : pc[80000f88] c.or    s1, a3: s1:ffffff7e 
+Mismatch[7608]:
+[9460] ibex : pc[80000ec8] c.mv	x19,x6: s3:00000000 
+[FAILED]: 478 matched, 7608 mismatch
+
+0 PASSED, 1 FAILED

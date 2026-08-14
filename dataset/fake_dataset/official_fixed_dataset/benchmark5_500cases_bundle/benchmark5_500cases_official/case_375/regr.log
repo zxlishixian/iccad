@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[88] : pc[8000027e] c.and	x14,x11: a4:0000019f 
+spike[88] : pc[8000027e] c.and   a4, a1: a4:00000010 
+Mismatch[4843]:
+[5645] ibex : pc[800001ce] andi	x28,x3,-884: t3:fffffc80 
+[FAILED]: 211 matched, 4843 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[79] : pc[800001a8] or	x3,x18,x11: gp:8001ee08 
+spike[79] : pc[800001a8] or      gp, s2, a1: gp:8001ee09 
+Mismatch[1847]:
+[2475] ibex : pc[80001f68] auipc	x19,0xeeff9: s3:6effaf68 
+[FAILED]: 237 matched, 1847 mismatch
+
+0 PASSED, 1 FAILED

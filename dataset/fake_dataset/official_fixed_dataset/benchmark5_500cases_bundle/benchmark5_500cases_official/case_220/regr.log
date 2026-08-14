@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[100] : pc[80007d5e] mul	x4,x9,x29: tp:00012e91 
+spike[100] : pc[80007d5e] mul     tp, s1, t4: tp:47b38000 
+[FAILED]: 584 matched, 2055 mismatch
+
+0 PASSED, 1 FAILED

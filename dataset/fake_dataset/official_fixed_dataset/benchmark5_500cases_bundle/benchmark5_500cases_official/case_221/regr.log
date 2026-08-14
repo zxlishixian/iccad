@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[116] : pc[8000028a] mul	x21,x2,x14: s5:00000002 
+spike[116] : pc[8000028a] mul     s5, sp, a4: s5:3745e5c2 
+[FAILED]: 1027 matched, 22422 mismatch
+
+0 PASSED, 1 FAILED

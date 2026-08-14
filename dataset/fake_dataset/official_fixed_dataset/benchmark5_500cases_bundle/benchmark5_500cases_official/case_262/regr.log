@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[186] : pc[8000031c] mulhsu	x22,x20,x2: s6:00000000 
+spike[186] : pc[8000031c] mulhsu  s6, s4, sp: s6:fffffd5b 
+[FAILED]: 1827 matched, 6285 mismatch
+
+0 PASSED, 1 FAILED

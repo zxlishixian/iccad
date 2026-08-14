@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[146] : pc[80000472] slt	x29,x22,x5: t4:00000000 
+spike[146] : pc[80000472] slt     t4, s6, t0: t4:00000001 
+[FAILED]: 321 matched, 4737 mismatch
+
+0 PASSED, 1 FAILED

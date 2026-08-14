@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[145] : pc[800003aa] c.xor	x12,x10: a2:0000001e 
+spike[145] : pc[800003aa] c.xor   a2, a0: a2:0000001a 
+[FAILED]: 400 matched, 4048 mismatch
+
+0 PASSED, 1 FAILED

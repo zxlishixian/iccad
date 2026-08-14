@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[168] : pc[8000039c] sltu	x7,x14,x7: t2:00000001 
+spike[168] : pc[800003a0] sub     t2, s9, t2: t2:000000bc 
+Mismatch[11274]:
+[12730] ibex : pc[8000bc16] mulhsu	x26,x16,x28: s10:d2a22961 
+[FAILED]: 185 matched, 11274 mismatch
+
+0 PASSED, 1 FAILED

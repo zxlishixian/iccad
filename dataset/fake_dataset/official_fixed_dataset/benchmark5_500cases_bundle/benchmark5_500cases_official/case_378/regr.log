@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[81] : pc[800003ac] c.and	x15,x12: a5:b56edafb 
+spike[81] : pc[800003ac] c.and   a5, a2: a5:0000004b 
+Mismatch[1187]:
+[1472] ibex : pc[8000866a] sub	x3,x4,x25: gp:7fffef40 
+[FAILED]: 135 matched, 1187 mismatch
+
+0 PASSED, 1 FAILED

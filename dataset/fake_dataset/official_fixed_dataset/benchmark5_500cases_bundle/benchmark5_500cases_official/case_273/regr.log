@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[135] : pc[80000730] mulhsu	x31,x5,x4: t6:ffffffff 
+spike[135] : pc[80000730] mulhsu  t6, t0, tp: t6:00000000 
+[FAILED]: 204 matched, 443 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[152] : pc[8000049a] c.xor	x11,x9: a1:8001eefc 
+spike[152] : pc[8000049a] c.xor   a1, s1: a1:8001eee4 
+[FAILED]: 217 matched, 4841 mismatch
+
+0 PASSED, 1 FAILED

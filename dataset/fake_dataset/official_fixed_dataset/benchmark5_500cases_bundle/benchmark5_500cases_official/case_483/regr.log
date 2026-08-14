@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[73] : pc[8000018a] slt	x1,x24,x8: ra:00000001 
+spike[73] : pc[8000018a] slt     ra, s8, s0: ra:00000000 
+[FAILED]: 271 matched, 4171 mismatch
+
+0 PASSED, 1 FAILED

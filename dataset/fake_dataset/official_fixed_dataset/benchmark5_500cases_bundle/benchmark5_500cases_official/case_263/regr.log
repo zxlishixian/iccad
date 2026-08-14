@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[146] : pc[800002a0] mulhsu	x19,x30,x22: s3:10e6e0e8 
+spike[146] : pc[800002a0] mulhsu  s3, t5, s6: s3:90e83f64 
+Mismatch[7406]:
+[9424] ibex : pc[800083da] slt	x13,x12,x7: a3:00000000 
+[FAILED]: 544 matched, 7406 mismatch
+
+0 PASSED, 1 FAILED

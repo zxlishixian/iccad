@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[154] : pc[80000352] add	x21,x22,x30: s5:fffffef0 
+spike[154] : pc[8000034a] sltu    s6, s6, t5: s6:00000001 
+Mismatch[5108]:
+[7386] ibex : pc[80008824] csrrsi	x20,mscratch,1: s4:052a8320 
+[FAILED]: 158 matched, 5108 mismatch
+
+0 PASSED, 1 FAILED

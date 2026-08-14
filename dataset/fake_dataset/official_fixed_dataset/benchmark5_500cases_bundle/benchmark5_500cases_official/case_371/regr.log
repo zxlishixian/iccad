@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[147] : pc[80000342] and	x30,x25,x5: t5:ffffffff 
+spike[147] : pc[80000342] and     t5, s9, t0: t5:00000001 
+Mismatch[23178]:
+[26593] ibex : pc[800086de] slt	x15,x15,x28: a5:00000001 
+[FAILED]: 269 matched, 23178 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[89] : pc[80000226] c.xor	x8,x15: s0:8001ae1c 
+spike[89] : pc[80000222] mul     t6, s6, s3: t6:ffffffff 
+Mismatch[6753]:
+[8067] ibex : pc[80001600] addi	x25,x20,797: s9:0000231d 
+[FAILED]: 84 matched, 6753 mismatch
+
+0 PASSED, 1 FAILED

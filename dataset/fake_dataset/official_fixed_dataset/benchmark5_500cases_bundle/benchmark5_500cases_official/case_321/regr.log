@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[130] : pc[800002be] xor	x28,x10,x10: t3:f45d1746 
+spike[130] : pc[80000300] remu    t5, t1, s2: t5:00000000 
+[FAILED]: 224 matched, 23252 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[58] : pc[80000154] c.and	x12,x13: a2:80011e1c 
+spike[58] : pc[80000156] xor     a0, s2, a2: a0:92a72775 
+Mismatch[8043]:
+[9223] ibex : pc[800080b0] srl	x16,x20,x29: a6:ffffffff 
+[FAILED]: 64 matched, 8043 mismatch
+
+0 PASSED, 1 FAILED

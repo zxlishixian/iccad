@@ -1,0 +1,437 @@
+{
+  "dataset_root": "/home/yian/iccad/dataset/benchmark7_500cases_official",
+  "analysis_root": "/home/yian/iccad/dataset/benchmark7_quality_gate/benchmark7_500",
+  "features_csv": "/home/yian/iccad/dataset/benchmark7_quality_gate/benchmark7_500/benchmark7_500_features.csv",
+  "selected_csv": "/home/yian/iccad/dataset/benchmark7_quality_gate/benchmark7_500/benchmark7_500_selected.csv",
+  "feature_summary": {
+    "num_cases": 500,
+    "num_bugs": 10,
+    "bug_counts": {
+      "bug_037": 50,
+      "bug_038": 50,
+      "bug_056": 50,
+      "bug_057": 50,
+      "bug_073": 50,
+      "bug_074": 50,
+      "bug_078": 50,
+      "bug_079": 50,
+      "bug_080": 50,
+      "bug_081": 50
+    },
+    "test_counts": {
+      "riscv_debug_csr_entry_test": 17,
+      "riscv_debug_ebreak_test": 16,
+      "riscv_debug_ebreakmu_test": 47,
+      "riscv_multiple_interrupt_test": 30,
+      "riscv_single_interrupt_test": 70,
+      "riscv_debug_branch_jump_test": 20,
+      "riscv_arithmetic_basic_test": 78,
+      "riscv_machine_mode_rand_test": 78,
+      "riscv_rand_instr_test": 72,
+      "riscv_rv32im_instr_test": 72
+    },
+    "primary_type_counts": {
+      "UVM_FATAL": 183,
+      "UVM_ERROR": 17,
+      "REGR_MISMATCH": 300
+    },
+    "mismatch_type_counts": {
+      "pc_same": 230,
+      "pc_diff": 70
+    },
+    "op_pair_counts": {
+      "mul|mul": 45,
+      "c.addi16sp|mul": 1,
+      "c.xor|mul": 1,
+      "mul|c.addi": 1,
+      "csrrsi|mul": 1,
+      "mul|csrrw": 1,
+      "mulhsu|mulhsu": 47,
+      "mulhsu|csrrwi": 1,
+      "mulhsu|csrrci": 1,
+      "mulhsu|auipc": 1,
+      "xor|xor": 27,
+      "sub|c.xor": 2,
+      "c.xor|c.xor": 12,
+      "mulh|xor": 1,
+      "csrrsi|c.xor": 1,
+      "csrrwi|xor": 1,
+      "csrrw|c.xor": 1,
+      "xor|remu": 1,
+      "rem|c.xor": 1,
+      "mulhsu|c.xor": 1,
+      "jalr|c.xor": 1,
+      "auipc|xor": 1,
+      "c.and|c.and": 10,
+      "and|and": 18,
+      "c.and|and": 1,
+      "c.and|ori": 1,
+      "and|csrrs": 2,
+      "c.and|csrrs": 1,
+      "c.and|xor": 1,
+      "c.and|c.srli": 1,
+      "sltu|c.and": 1,
+      "c.slli|c.and": 1,
+      "and|c.lui": 1,
+      "c.and|auipc": 1,
+      "csrrw|c.and": 1,
+      "c.sub|c.and": 1,
+      "c.and|c.lui": 1,
+      "c.and|csrrc": 1,
+      "slt|and": 1,
+      "slti|and": 1,
+      "and|lbu": 1,
+      "and|mulh": 1,
+      "and|lui": 1,
+      "and|lb": 1,
+      "and|auipc": 1,
+      "c.or|rem": 1,
+      "or|or": 29,
+      "c.or|c.or": 11,
+      "c.or|srli": 1,
+      "c.or|csrrc": 1,
+      "c.or|mulh": 1,
+      "c.or|xor": 1,
+      "c.or|add": 1,
+      "c.or|c.xor": 1,
+      "c.or|srai": 1,
+      "lbu|or": 1,
+      "addi|or": 1,
+      "sltu|sltu": 16,
+      "remu|slt": 1,
+      "slt|csrrw": 1,
+      "slt|c.addi4spn": 1,
+      "c.xor|sltu": 1,
+      "slt|slt": 16,
+      "sltu|xori": 1,
+      "sll|slt": 1,
+      "slt|srl": 1,
+      "c.sub|slt": 1,
+      "sltu|c.lui": 1,
+      "slt|remu": 1,
+      "sltu|andi": 1,
+      "srl|sltu": 1,
+      "sltu|snez": 1,
+      "sltu|sub": 1,
+      "slt|lhu": 1,
+      "lbu|sltu": 1,
+      "add|sltu": 1,
+      "auipc|slt": 1
+    },
+    "dual_compare_count": 300,
+    "simplified_ibex_count": 0,
+    "op_pair_nonempty_count": 300,
+    "pc_region_count": 2,
+    "pc_regions": [
+      "8000",
+      "8001"
+    ],
+    "regr_template_unique_count": 307,
+    "sim_template_unique_count": 468,
+    "trace_unique_count": 500,
+    "max_sim_lines": 346848,
+    "min_sim_lines": 103,
+    "avg_sim_lines": 835.65,
+    "by_bug": {
+      "bug_037": {
+        "cases": 50,
+        "primary:UVM_FATAL": 50
+      },
+      "bug_038": {
+        "cases": 50,
+        "primary:UVM_FATAL": 50
+      },
+      "bug_056": {
+        "cases": 50,
+        "primary:UVM_ERROR": 17,
+        "primary:UVM_FATAL": 33
+      },
+      "bug_057": {
+        "cases": 50,
+        "primary:UVM_FATAL": 50
+      },
+      "bug_073": {
+        "cases": 50,
+        "primary:REGR_MISMATCH": 50,
+        "dual_compare": 50,
+        "op_pair_nonempty": 50
+      },
+      "bug_074": {
+        "cases": 50,
+        "primary:REGR_MISMATCH": 50,
+        "dual_compare": 50,
+        "op_pair_nonempty": 50
+      },
+      "bug_078": {
+        "cases": 50,
+        "primary:REGR_MISMATCH": 50,
+        "dual_compare": 50,
+        "op_pair_nonempty": 50
+      },
+      "bug_079": {
+        "cases": 50,
+        "primary:REGR_MISMATCH": 50,
+        "dual_compare": 50,
+        "op_pair_nonempty": 50
+      },
+      "bug_080": {
+        "cases": 50,
+        "primary:REGR_MISMATCH": 50,
+        "dual_compare": 50,
+        "op_pair_nonempty": 50
+      },
+      "bug_081": {
+        "cases": 50,
+        "primary:REGR_MISMATCH": 50,
+        "dual_compare": 50,
+        "op_pair_nonempty": 50
+      }
+    }
+  },
+  "pair_report": {
+    "num_cases": 500,
+    "num_bugs": 10,
+    "bug_counts": {
+      "bug_037": 50,
+      "bug_038": 50,
+      "bug_056": 50,
+      "bug_057": 50,
+      "bug_073": 50,
+      "bug_074": 50,
+      "bug_078": 50,
+      "bug_079": 50,
+      "bug_080": 50,
+      "bug_081": 50
+    },
+    "positive_pairs": 12250,
+    "negative_pairs": 112500,
+    "positive_pair_population": 12250,
+    "negative_pair_population": 112500,
+    "positive_metrics": {
+      "same_test": 0.3546938775510204,
+      "same_primary_type": 0.954204081632653,
+      "same_uvm_level": 0.35420408163265305,
+      "same_fatal_file": 0.30759183673469387,
+      "same_fatal_line": 0.28922448979591836,
+      "same_mismatch_type": 0.4037551020408163,
+      "same_op_pair": 0.2766530612244898,
+      "same_pc_region": 0.588,
+      "same_ibex_opcode": 0.3449795918367347,
+      "same_spike_opcode": 0.32824489795918366,
+      "same_sim_template_hash": 0.0,
+      "same_regr_template_hash": 0.21208163265306124,
+      "same_trace_hash": 0.0,
+      "token_jaccard": 0.4585715397502408,
+      "deterministic_cosine": 0.9685560834779262
+    },
+    "negative_metrics": {
+      "same_test": 0.09911111111111111,
+      "same_primary_type": 0.444,
+      "same_uvm_level": 0.11066666666666666,
+      "same_fatal_file": 0.04710222222222222,
+      "same_fatal_line": 0.016133333333333333,
+      "same_mismatch_type": 0.21159111111111112,
+      "same_op_pair": 0.0,
+      "same_pc_region": 0.32672,
+      "same_ibex_opcode": 0.0010844444444444445,
+      "same_spike_opcode": 0.0007822222222222222,
+      "same_sim_template_hash": 0.00032888888888888887,
+      "same_regr_template_hash": 0.015644444444444443,
+      "same_trace_hash": 0.0,
+      "token_jaccard": 0.08636114637644163,
+      "deterministic_cosine": 0.7883408099592263
+    },
+    "gaps": {
+      "same_test": 0.2555827664399093,
+      "same_primary_type": 0.510204081632653,
+      "same_uvm_level": 0.24353741496598638,
+      "same_fatal_file": 0.26048961451247166,
+      "same_fatal_line": 0.273091156462585,
+      "same_mismatch_type": 0.1921639909297052,
+      "same_op_pair": 0.2766530612244898,
+      "same_pc_region": 0.26127999999999996,
+      "same_ibex_opcode": 0.34389514739229027,
+      "same_spike_opcode": 0.3274626757369614,
+      "same_sim_template_hash": -0.00032888888888888887,
+      "same_regr_template_hash": 0.1964371882086168,
+      "same_trace_hash": 0.0,
+      "token_jaccard": 0.37221039337379913,
+      "deterministic_cosine": 0.18021527351869993
+    },
+    "warnings": [
+      "test_single_bug:riscv_debug_branch_jump_test:bug_056",
+      "test_single_bug:riscv_debug_csr_entry_test:bug_037",
+      "test_single_bug:riscv_debug_ebreak_test:bug_037"
+    ]
+  },
+  "selection_report": {
+    "num_selected": 500,
+    "bug_counts": {
+      "bug_037": 50,
+      "bug_038": 50,
+      "bug_056": 50,
+      "bug_057": 50,
+      "bug_073": 50,
+      "bug_074": 50,
+      "bug_078": 50,
+      "bug_079": 50,
+      "bug_080": 50,
+      "bug_081": 50
+    },
+    "test_counts": {
+      "riscv_arithmetic_basic_test": 78,
+      "riscv_debug_branch_jump_test": 20,
+      "riscv_debug_csr_entry_test": 17,
+      "riscv_debug_ebreak_test": 16,
+      "riscv_debug_ebreakmu_test": 47,
+      "riscv_machine_mode_rand_test": 78,
+      "riscv_multiple_interrupt_test": 30,
+      "riscv_rand_instr_test": 72,
+      "riscv_rv32im_instr_test": 72,
+      "riscv_single_interrupt_test": 70
+    },
+    "primary_type_counts": {
+      "REGR_MISMATCH": 300,
+      "UVM_ERROR": 17,
+      "UVM_FATAL": 183
+    },
+    "mismatch_type_counts": {
+      "pc_diff": 70,
+      "pc_same": 230
+    },
+    "dual_compare_count": 300,
+    "dual_compare_rate": 0.6,
+    "op_pair_nonempty_count": 300,
+    "op_pair_nonempty_rate": 0.6,
+    "same_test_pair_gap": 0.2555827664399093,
+    "bug_to_tests": {
+      "bug_037": [
+        "riscv_debug_csr_entry_test",
+        "riscv_debug_ebreak_test",
+        "riscv_debug_ebreakmu_test"
+      ],
+      "bug_038": [
+        "riscv_multiple_interrupt_test",
+        "riscv_single_interrupt_test"
+      ],
+      "bug_056": [
+        "riscv_debug_branch_jump_test",
+        "riscv_debug_ebreakmu_test"
+      ],
+      "bug_057": [
+        "riscv_multiple_interrupt_test",
+        "riscv_single_interrupt_test"
+      ],
+      "bug_073": [
+        "riscv_arithmetic_basic_test",
+        "riscv_machine_mode_rand_test",
+        "riscv_rand_instr_test",
+        "riscv_rv32im_instr_test"
+      ],
+      "bug_074": [
+        "riscv_arithmetic_basic_test",
+        "riscv_machine_mode_rand_test",
+        "riscv_rand_instr_test",
+        "riscv_rv32im_instr_test"
+      ],
+      "bug_078": [
+        "riscv_arithmetic_basic_test",
+        "riscv_machine_mode_rand_test",
+        "riscv_rand_instr_test",
+        "riscv_rv32im_instr_test"
+      ],
+      "bug_079": [
+        "riscv_arithmetic_basic_test",
+        "riscv_machine_mode_rand_test",
+        "riscv_rand_instr_test",
+        "riscv_rv32im_instr_test"
+      ],
+      "bug_080": [
+        "riscv_arithmetic_basic_test",
+        "riscv_machine_mode_rand_test",
+        "riscv_rand_instr_test",
+        "riscv_rv32im_instr_test"
+      ],
+      "bug_081": [
+        "riscv_arithmetic_basic_test",
+        "riscv_machine_mode_rand_test",
+        "riscv_rand_instr_test",
+        "riscv_rv32im_instr_test"
+      ]
+    },
+    "test_to_bugs": {
+      "riscv_arithmetic_basic_test": [
+        "bug_073",
+        "bug_074",
+        "bug_078",
+        "bug_079",
+        "bug_080",
+        "bug_081"
+      ],
+      "riscv_debug_branch_jump_test": [
+        "bug_056"
+      ],
+      "riscv_debug_csr_entry_test": [
+        "bug_037"
+      ],
+      "riscv_debug_ebreak_test": [
+        "bug_037"
+      ],
+      "riscv_debug_ebreakmu_test": [
+        "bug_037",
+        "bug_056"
+      ],
+      "riscv_machine_mode_rand_test": [
+        "bug_073",
+        "bug_074",
+        "bug_078",
+        "bug_079",
+        "bug_080",
+        "bug_081"
+      ],
+      "riscv_multiple_interrupt_test": [
+        "bug_038",
+        "bug_057"
+      ],
+      "riscv_rand_instr_test": [
+        "bug_073",
+        "bug_074",
+        "bug_078",
+        "bug_079",
+        "bug_080",
+        "bug_081"
+      ],
+      "riscv_rv32im_instr_test": [
+        "bug_073",
+        "bug_074",
+        "bug_078",
+        "bug_079",
+        "bug_080",
+        "bug_081"
+      ],
+      "riscv_single_interrupt_test": [
+        "bug_038",
+        "bug_057"
+      ]
+    },
+    "warnings": [
+      "test_single_or_low_bug:riscv_debug_branch_jump_test:bug_056",
+      "test_single_or_low_bug:riscv_debug_csr_entry_test:bug_037",
+      "test_single_or_low_bug:riscv_debug_ebreak_test:bug_037"
+    ]
+  },
+  "gate_status": {
+    "pass": true,
+    "hard_warnings": [],
+    "selection_warnings": [
+      "test_single_or_low_bug:riscv_debug_branch_jump_test:bug_056",
+      "test_single_or_low_bug:riscv_debug_csr_entry_test:bug_037",
+      "test_single_or_low_bug:riscv_debug_ebreak_test:bug_037"
+    ],
+    "pair_warnings": [
+      "test_single_bug:riscv_debug_branch_jump_test:bug_056",
+      "test_single_bug:riscv_debug_csr_entry_test:bug_037",
+      "test_single_bug:riscv_debug_ebreak_test:bug_037"
+    ]
+  }
+}

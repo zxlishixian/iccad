@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[64] : pc[800001b0] sltu	x24,x16,x24: s8:00000001 
+spike[64] : pc[800001b8] c.lui   t4, 0x13: t4:00013000 
+Mismatch[2580]:
+[3078] ibex : pc[800006fe] mulhu	x16,x26,x28: a6:00040017 
+[FAILED]: 59 matched, 2580 mismatch
+
+0 PASSED, 1 FAILED

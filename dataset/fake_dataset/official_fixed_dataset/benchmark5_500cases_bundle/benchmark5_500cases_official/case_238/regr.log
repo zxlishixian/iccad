@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[123] : pc[8000033c] mul	x15,x27,x10: a5:00000190 
+spike[123] : pc[8000033c] mul     a5, s11, a0: a5:05401780 
+[FAILED]: 727 matched, 4109 mismatch
+
+0 PASSED, 1 FAILED

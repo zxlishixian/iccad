@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[178] : pc[80006de4] or	x20,x1,x13: s4:1907c29a 
+spike[178] : pc[80006de4] or      s4, ra, a3: s4:5bffdefe 
+[FAILED]: 439 matched, 1726 mismatch
+
+0 PASSED, 1 FAILED

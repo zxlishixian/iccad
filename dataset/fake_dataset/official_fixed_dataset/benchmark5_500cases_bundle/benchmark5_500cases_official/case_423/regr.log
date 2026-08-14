@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[108] : pc[80000696] or	x8,x14,x4: s0:0f47dd36 
+spike[108] : pc[80000696] or      s0, a4, tp: s0:ffffffff 
+Mismatch[511]:
+[737] ibex : pc[80000bd2] csrrw	x16,mscratch,x18: a6:0000090d 
+[FAILED]: 136 matched, 511 mismatch
+
+0 PASSED, 1 FAILED

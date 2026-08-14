@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1095] : pc[80000ffa] mulhsu	x2,x21,x17: sp:fffff673 
+spike[1095] : pc[80000ffa] mulhsu  sp, s5, a7: sp:000232ab 
+[FAILED]: 1550 matched, 6548 mismatch
+
+0 PASSED, 1 FAILED

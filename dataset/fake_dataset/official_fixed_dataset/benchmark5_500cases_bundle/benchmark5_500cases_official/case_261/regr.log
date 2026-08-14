@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[141] : pc[80000284] mulhsu	x11,x27,x4: a1:00000000 
+spike[141] : pc[80000284] mulhsu  a1, s11, tp: a1:8dff7d9f 
+[FAILED]: 244 matched, 7783 mismatch
+
+0 PASSED, 1 FAILED

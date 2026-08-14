@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[70] : pc[80002a16] c.xor	x9,x14: s1:dd8a22cd 
+spike[70] : pc[80002a16] c.xor   s1, a4: s1:dd8a22c5 
+Mismatch[3349]:
+[4808] ibex : pc[800017d8] c.addi	x16,-1: a6:82170c2a 
+[FAILED]: 601 matched, 3349 mismatch
+
+0 PASSED, 1 FAILED

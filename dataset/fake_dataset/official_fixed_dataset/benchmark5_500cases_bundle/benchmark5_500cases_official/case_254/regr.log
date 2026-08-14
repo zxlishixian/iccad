@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[312] : pc[800004e8] mulhsu	x14,x25,x16: a4:ffffffff 
+spike[312] : pc[800004ec] csrrwi  s1, mscratch, 1: s1:0001e000 
+[FAILED]: 279 matched, 7607 mismatch
+
+0 PASSED, 1 FAILED

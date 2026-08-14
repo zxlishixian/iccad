@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[86] : pc[80000208] mul	x18,x1,x17: s2:11bf436b 
+spike[86] : pc[80000208] mul     s2, ra, a7: s2:4d799e54 
+Mismatch[1748]:
+[2696] ibex : pc[80006fdc] mulh	x24,x27,x1: s8:00000000 
+[FAILED]: 437 matched, 1748 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[98] : pc[800001f2] csrrsi	x4,mscratch,5: tp:00000000 
+spike[98] : pc[800001f0] c.xor   a3, a0: a3:f22a0c40 
+[FAILED]: 261 matched, 7842 mismatch
+
+0 PASSED, 1 FAILED

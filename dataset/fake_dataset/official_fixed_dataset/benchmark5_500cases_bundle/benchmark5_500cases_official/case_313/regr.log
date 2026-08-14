@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[66] : pc[80000180] c.xor	x11,x8: a1:d7feff3d 
+spike[66] : pc[80000180] c.xor   a1, s0: a1:576afc14 
+Mismatch[6835]:
+[9437] ibex : pc[80008404] mulhsu	x9,x3,x10: s1:ffffffff 
+[FAILED]: 1115 matched, 6835 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[173] : pc[800002fc] slt	x19,x28,x6: s3:00000000 
+spike[173] : pc[800002fc] slt     s3, t3, t1: s3:00000001 
+Mismatch[7670]:
+[9432] ibex : pc[80008306] srai	x22,x15,0x3: s6:00000000 
+[FAILED]: 347 matched, 7670 mismatch
+
+0 PASSED, 1 FAILED

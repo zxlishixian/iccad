@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[86] : pc[800001c6] mul	x24,x1,x15: s8:486f5f66 
+spike[86] : pc[800001c6] mul     s8, ra, a5: s8:3d29ac68 
+[FAILED]: 363 matched, 7740 mismatch
+
+0 PASSED, 1 FAILED

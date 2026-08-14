@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[129] : pc[80000306] rem	x23,x2,x15: s7:00000000 
+spike[129] : pc[80000304] c.xor   s1, s0: s1:7a539f00 
+[FAILED]: 116 matched, 4062 mismatch
+
+0 PASSED, 1 FAILED

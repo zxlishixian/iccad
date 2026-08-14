@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[77] : pc[800001f0] c.or	x11,x15: a1:72346eb4 
+spike[77] : pc[800001f0] c.or    a1, a5: a1:f235eebc 
+Mismatch[6519]:
+[8057] ibex : pc[80001660] lui	x18,0xc77ec: s2:c77ec000 
+[FAILED]: 318 matched, 6519 mismatch
+
+0 PASSED, 1 FAILED

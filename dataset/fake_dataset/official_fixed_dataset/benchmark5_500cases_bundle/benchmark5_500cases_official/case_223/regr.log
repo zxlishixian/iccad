@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[197] : pc[8000050e] mul	x26,x6,x18: s10:0000000b 
+spike[197] : pc[8000050e] mul     s10, t1, s2: s10:b9474000 
+Mismatch[1883]:
+[2671] ibex : pc[8000423e] xor	x21,x25,x1: s5:000172f2 
+[FAILED]: 432 matched, 1883 mismatch
+
+0 PASSED, 1 FAILED

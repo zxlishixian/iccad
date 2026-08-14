@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[127] : pc[800002e6] or	x5,x14,x19: t0:7ffd81f7 
+spike[127] : pc[800002e6] or      t0, a4, s3: t0:ffffffff 
+Mismatch[8195]:
+[12782] ibex : pc[8000c89c] sub	x6,x15,x29: t1:80000000 
+[FAILED]: 3264 matched, 8195 mismatch
+
+0 PASSED, 1 FAILED

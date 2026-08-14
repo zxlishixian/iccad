@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[81] : pc[800001e6] or	x2,x18,x17: sp:0c5c9f11 
+spike[81] : pc[800001e6] or      sp, s2, a7: sp:fc5dbfd3 
+Mismatch[4885]:
+[5947] ibex : pc[80003312] sll	x30,x21,x28: t5:0000000c 
+[FAILED]: 227 matched, 4885 mismatch
+
+0 PASSED, 1 FAILED

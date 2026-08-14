@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[860] : pc[80000ff0] xor	x29,x15,x24: t4:8003ff7f 
+spike[860] : pc[80000ff0] xor     t4, a5, s8: t4:0003f763 
+Mismatch[276]:
+[2154] ibex : pc[800033d6] sltu	x29,x31,x5: t4:00000001 
+[FAILED]: 1232 matched, 276 mismatch
+
+0 PASSED, 1 FAILED

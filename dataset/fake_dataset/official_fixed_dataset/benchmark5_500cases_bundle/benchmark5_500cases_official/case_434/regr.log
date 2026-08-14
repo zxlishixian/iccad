@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[200] : pc[800005e8] c.or	x10,x10: a0:00000000 
+spike[200] : pc[800005ea] srai    s1, s7, 31: s1:00000000 
+Mismatch[2264]:
+[2965] ibex : pc[80003494] addi	x24,x30,-291: s8:fffffedd 
+[FAILED]: 206 matched, 2264 mismatch
+
+0 PASSED, 1 FAILED

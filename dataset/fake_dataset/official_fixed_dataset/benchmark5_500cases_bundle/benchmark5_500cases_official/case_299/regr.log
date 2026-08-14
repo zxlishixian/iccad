@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[1486] : pc[80001dca] mulhsu	x11,x29,x15: a1:ffffffff 
+spike[1486] : pc[80001dda] auipc   t1, 0xed31a: t1:6d31bdda 
+Mismatch[543]:
+[2153] ibex : pc[800033ea] sub	x22,x16,x17: s6:000001bb 
+[FAILED]: 965 matched, 543 mismatch
+
+0 PASSED, 1 FAILED

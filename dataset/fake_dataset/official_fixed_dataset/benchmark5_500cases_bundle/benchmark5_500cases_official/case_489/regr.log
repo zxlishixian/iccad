@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[221] : pc[800004bc] sltu	x17,x0,x12: a7:00000000 
+spike[221] : pc[800004bc] snez    a7, a2: a7:00000001 
+Mismatch[6153]:
+[9084] ibex : pc[80007974] divu	x25,x10,x13: s9:00000000 
+[FAILED]: 2026 matched, 6153 mismatch
+
+0 PASSED, 1 FAILED

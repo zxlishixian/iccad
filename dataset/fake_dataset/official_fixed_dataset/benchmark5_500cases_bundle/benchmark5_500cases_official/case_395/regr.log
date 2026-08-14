@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[282] : pc[800013d2] and	x24,x24,x1: s8:ffffffda 
+spike[282] : pc[800013d2] and     s8, s8, ra: s8:e0669382 
+Mismatch[9880]:
+[11698] ibex : pc[800008e2] srl	x5,x6,x15: t0:397c85a4 
+[FAILED]: 592 matched, 9880 mismatch
+
+0 PASSED, 1 FAILED

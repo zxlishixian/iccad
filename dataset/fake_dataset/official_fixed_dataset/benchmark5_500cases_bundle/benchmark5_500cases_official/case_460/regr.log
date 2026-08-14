@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[209] : pc[8000037a] sltu	x16,x2,x16: a6:00000001 
+spike[209] : pc[80000382] xori    s4, s9, 649: s4:80015cf5 
+Mismatch[7695]:
+[9454] ibex : pc[8000833e] c.sub	x14,x12: a4:7c00001c 
+[FAILED]: 202 matched, 7695 mismatch
+
+0 PASSED, 1 FAILED

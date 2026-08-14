@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[85] : pc[800001ba] c.or	x9,x11: s1:da7c53fe 
+spike[85] : pc[800001ba] c.or    s1, a1: s1:da7c73ff 
+[FAILED]: 299 matched, 4143 mismatch
+
+0 PASSED, 1 FAILED

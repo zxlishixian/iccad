@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[257] : pc[80000780] mul	x27,x12,x17: s11:00000000 
+spike[257] : pc[80000780] mul     s11, a2, a7: s11:000001b5 
+Mismatch[3814]:
+[5201] ibex : pc[8000664e] sll	x17,x5,x9: a7:da6a32ea 
+[FAILED]: 624 matched, 3814 mismatch
+
+0 PASSED, 1 FAILED

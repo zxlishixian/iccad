@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[90] : pc[80000254] c.or	x9,x15: s1:00000000 
+spike[90] : pc[80000256] srli    s11, s7, 15: s11:00000000 
+Mismatch[2093]:
+[2608] ibex : pc[80006da0] remu	x10,x9,x30: a0:00000000 
+[FAILED]: 92 matched, 2093 mismatch
+
+0 PASSED, 1 FAILED

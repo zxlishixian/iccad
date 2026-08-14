@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[132] : pc[80000360] mulhsu	x26,x13,x18: s10:fbdd4528 
+spike[132] : pc[80000360] mulhsu  s10, a3, s2: s10:0422d6e0 
+[FAILED]: 284 matched, 4087 mismatch
+
+0 PASSED, 1 FAILED

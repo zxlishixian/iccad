@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[108] : pc[8000021a] sltu	x30,x6,x21: t5:00000000 
+spike[108] : pc[8000021a] sltu    t5, t1, s5: t5:00000001 
+Mismatch[7558]:
+[9431] ibex : pc[8000835a] c.sub	x12,x11: a2:7ffea1b3 
+[FAILED]: 438 matched, 7558 mismatch
+
+0 PASSED, 1 FAILED

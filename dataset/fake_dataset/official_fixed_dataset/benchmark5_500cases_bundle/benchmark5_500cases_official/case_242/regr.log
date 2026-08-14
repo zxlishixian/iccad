@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[928] : pc[800011f2] mul	x13,x19,x7: a3:00000007 
+spike[928] : pc[800011f2] mul     a3, s3, t2: a3:00167d64 
+Mismatch[2889]:
+[7197] ibex : pc[80002b54] ori	x22,x25,139: s6:0000008b 
+[FAILED]: 2318 matched, 2889 mismatch
+
+0 PASSED, 1 FAILED

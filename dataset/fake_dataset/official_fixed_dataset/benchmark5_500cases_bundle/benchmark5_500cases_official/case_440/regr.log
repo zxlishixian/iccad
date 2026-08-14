@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[56] : pc[8000014e] lbu	x24,27(x22): s8:000000d6 
+spike[56] : pc[8000014a] or      t4, s4, s10: t4:80000000 
+[FAILED]: 51 matched, 268 mismatch
+
+0 PASSED, 1 FAILED

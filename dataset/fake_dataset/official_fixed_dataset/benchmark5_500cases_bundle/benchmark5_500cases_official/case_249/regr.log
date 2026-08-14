@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[118] : pc[8000027c] mul	x27,x5,x27: s11:ffffff05 
+spike[118] : pc[8000027c] mul     s11, t0, s11: s11:000001f2 
+[FAILED]: 181 matched, 1336 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[61] : pc[8000016a] mulhsu	x6,x25,x28: t1:068f11e5 
+spike[61] : pc[8000016a] mulhsu  t1, s9, t3: t1:868f11e5 
+[FAILED]: 738 matched, 1955 mismatch
+
+0 PASSED, 1 FAILED

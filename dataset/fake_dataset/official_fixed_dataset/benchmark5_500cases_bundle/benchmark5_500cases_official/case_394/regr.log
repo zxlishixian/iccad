@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[80] : pc[800001ca] and	x20,x16,x27: s4:80023e1c 
+spike[80] : pc[800001ce] lbu     t6, 56(a1): t6:00000043 
+Mismatch[10139]:
+[11098] ibex : pc[8000a67a] mulhsu	x6,x16,x16: t1:dc5003fa 
+[FAILED]: 76 matched, 10139 mismatch
+
+0 PASSED, 1 FAILED

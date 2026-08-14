@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[97] : pc[800001f0] or	x2,x18,x19: sp:7ffe0000 
+spike[97] : pc[800001f0] or      sp, s2, s3: sp:fffe0000 
+[FAILED]: 1341 matched, 6655 mismatch
+
+0 PASSED, 1 FAILED

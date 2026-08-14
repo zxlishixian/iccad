@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[116] : pc[8000032e] and	x31,x14,x16: t6:bf2bee7f 
+spike[116] : pc[8000032e] and     t6, a4, a6: t6:80008c08 
+Mismatch[2013]:
+[2517] ibex : pc[80001906] sub	x14,x11,x3: a4:9f13a8ed 
+[FAILED]: 172 matched, 2013 mismatch
+
+0 PASSED, 1 FAILED

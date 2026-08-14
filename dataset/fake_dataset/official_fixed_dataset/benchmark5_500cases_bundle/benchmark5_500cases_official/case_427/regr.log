@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[67] : pc[8000017a] c.or	x14,x12: a4:cfc74058 
+spike[67] : pc[8000017a] c.or    a4, a2: a4:cfc7c0df 
+Mismatch[3767]:
+[4541] ibex : pc[80003dee] c.srli	x9,0xf: s1:00010003 
+[FAILED]: 82 matched, 3767 mismatch
+
+0 PASSED, 1 FAILED

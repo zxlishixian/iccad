@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[694] : pc[80005ca4] mulhsu	x10,x19,x12: a0:00000068 
+spike[694] : pc[80005ca4] mulhsu  a0, s3, a2: a0:afee1c47 
+Mismatch[1783]:
+[2973] ibex : pc[800034aa] csrrsi	x29,mscratch,28: t4:000002d4 
+[FAILED]: 687 matched, 1783 mismatch
+
+0 PASSED, 1 FAILED

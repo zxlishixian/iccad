@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[133] : pc[80000364] or	x31,x10,x17: t6:fffffffd 
+spike[133] : pc[80000364] or      t6, a0, a7: t6:ffffffff 
+[FAILED]: 122 matched, 4240 mismatch
+
+0 PASSED, 1 FAILED

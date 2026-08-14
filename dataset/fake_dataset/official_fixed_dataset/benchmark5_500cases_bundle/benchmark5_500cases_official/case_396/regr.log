@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[343] : pc[8000ba16] and	x14,x18,x27: a4:ffff8099 
+spike[343] : pc[8000ba16] and     a4, s2, s11: a4:00000080 
+Mismatch[13310]:
+[15011] ibex : pc[8000b1e4] mulhu	x16,x15,x19: a6:00000000 
+[FAILED]: 366 matched, 13310 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[836] : pc[80001180] mul	x21,x4,x9: s5:00000054 
+spike[836] : pc[80001180] mul     s5, tp, s1: s5:fffff20e 
+Mismatch[6659]:
+[9136] ibex : pc[80007c56] mulhsu	x4,x22,x18: tp:00000000 
+[FAILED]: 1520 matched, 6659 mismatch
+
+0 PASSED, 1 FAILED

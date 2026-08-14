@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[73] : pc[8000019c] c.or	x8,x12: s0:0617e3a9 
+spike[73] : pc[8000019e] add     t3, s6, s0: t3:00000001 
+[FAILED]: 68 matched, 2021 mismatch
+
+0 PASSED, 1 FAILED

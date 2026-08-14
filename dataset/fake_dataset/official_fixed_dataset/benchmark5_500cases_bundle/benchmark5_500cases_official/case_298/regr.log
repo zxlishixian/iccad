@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[534] : pc[800009d4] mulhsu	x20,x31,x5: s4:ffffffcc 
+spike[534] : pc[800009d4] mulhsu  s4, t6, t0: s4:00000034 
+Mismatch[2733]:
+[7372] ibex : pc[8000887a] or	x22,x30,x29: s6:d40b6000 
+[FAILED]: 2533 matched, 2733 mismatch
+
+0 PASSED, 1 FAILED

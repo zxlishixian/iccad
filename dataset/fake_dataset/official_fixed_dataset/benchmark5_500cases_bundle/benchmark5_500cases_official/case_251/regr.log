@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[477] : pc[8000071c] mulhsu	x6,x23,x17: t1:ffffffff 
+spike[477] : pc[8000071c] mulhsu  t1, s7, a7: t1:00000000 
+[FAILED]: 608 matched, 7509 mismatch
+
+0 PASSED, 1 FAILED

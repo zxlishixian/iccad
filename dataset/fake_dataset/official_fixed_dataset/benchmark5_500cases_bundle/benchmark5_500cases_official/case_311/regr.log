@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[154] : pc[800002ba] csrrwi	x21,mscratch,3: s5:00000017 
+spike[154] : pc[800002b6] xor     t1, t1, a0: t1:91bcce1b 
+[FAILED]: 275 matched, 7749 mismatch
+
+0 PASSED, 1 FAILED

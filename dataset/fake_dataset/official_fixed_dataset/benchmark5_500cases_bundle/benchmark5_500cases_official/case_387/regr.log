@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[61] : pc[80000164] and	x27,x6,x7: s11:fa06af9e 
+spike[61] : pc[80000164] and     s11, t1, t2: s11:80000000 
+Mismatch[3860]:
+[4567] ibex : pc[800012c0] c.andi	x9,24: s1:00000000 
+[FAILED]: 90 matched, 3860 mismatch
+
+0 PASSED, 1 FAILED

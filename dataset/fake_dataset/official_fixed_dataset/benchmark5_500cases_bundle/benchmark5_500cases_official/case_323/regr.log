@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[117] : pc[8000032e] c.xor	x15,x12: a5:eff2198f 
+spike[117] : pc[8000032e] c.xor   a5, a2: a5:eff2198e 
+Mismatch[2096]:
+[2674] ibex : pc[80004210] mulh	x11,x29,x10: a1:00000000 
+[FAILED]: 219 matched, 2096 mismatch
+
+0 PASSED, 1 FAILED

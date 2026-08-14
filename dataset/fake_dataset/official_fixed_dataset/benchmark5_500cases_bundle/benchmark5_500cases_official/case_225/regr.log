@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[147] : pc[80000476] mul	x14,x25,x26: a4:766c457e 
+spike[147] : pc[80000476] mul     a4, s9, s10: a4:d32d8ef3 
+Mismatch[4700]:
+[5732] ibex : pc[80005d64] c.srli	x15,0x6: a5:00000000 
+[FAILED]: 354 matched, 4700 mismatch
+
+0 PASSED, 1 FAILED

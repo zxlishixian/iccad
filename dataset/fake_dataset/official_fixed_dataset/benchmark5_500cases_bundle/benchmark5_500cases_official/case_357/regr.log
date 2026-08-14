@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[100] : pc[800001dc] c.and	x11,x12: a1:80015e7c 
+spike[100] : pc[800001e0] ori     t1, a3, -596: t1:fffffdad 
+Mismatch[7828]:
+[9236] ibex : pc[800080f8] c.srli	x8,0x19: s0:00000046 
+[FAILED]: 105 matched, 7828 mismatch
+
+0 PASSED, 1 FAILED

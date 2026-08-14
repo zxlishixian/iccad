@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[364] : pc[80000598] xor	x31,x25,x21: t6:bc4d7efd 
+spike[364] : pc[80000598] xor     t6, s9, s5: t6:bc4c36b5 
+[FAILED]: 347 matched, 7846 mismatch
+
+0 PASSED, 1 FAILED

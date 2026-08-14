@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[161] : pc[800002b8] or	x11,x2,x28: a1:29b1c357 
+spike[161] : pc[800002b8] or      a1, sp, t3: a1:29b1c3ff 
+Mismatch[7781]:
+[9440] ibex : pc[800083e0] csrrsi	x1,mscratch,9: ra:80011e04 
+[FAILED]: 258 matched, 7781 mismatch
+
+0 PASSED, 1 FAILED

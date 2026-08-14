@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[123] : pc[800002a0] c.and	x12,x9: a2:fffbfeea 
+spike[123] : pc[800002a0] c.and   a2, s1: a2:e50898a0 
+Mismatch[4989]:
+[5868] ibex : pc[80003042] lui	x18,0xe1cce: s2:e1cce000 
+[FAILED]: 123 matched, 4989 mismatch
+
+0 PASSED, 1 FAILED

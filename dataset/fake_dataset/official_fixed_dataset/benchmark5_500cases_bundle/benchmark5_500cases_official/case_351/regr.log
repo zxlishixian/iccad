@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[73] : pc[8000018a] c.and	x9,x10: s1:80000002 
+spike[73] : pc[8000018a] c.and   s1, a0: s1:00000000 
+Mismatch[7924]:
+[9251] ibex : pc[80008036] c.srli	x14,0x5: a4:0000001f 
+[FAILED]: 191 matched, 7924 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[87] : pc[800001b2] sltu	x4,x20,x2: tp:00000001 
+spike[87] : pc[800001b2] sltu    tp, s4, sp: tp:00000000 
+Mismatch[7714]:
+[9454] ibex : pc[8000840e] c.xor	x9,x13: s1:fffffc4d 
+[FAILED]: 219 matched, 7714 mismatch
+
+0 PASSED, 1 FAILED

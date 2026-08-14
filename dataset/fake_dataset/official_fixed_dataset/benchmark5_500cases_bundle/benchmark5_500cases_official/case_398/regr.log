@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[223] : pc[800004be] and	x12,x7,x26: a2:8001d11f 
+spike[223] : pc[800004ca] lui     s1, 0x5c520: s1:5c520000 
+[FAILED]: 167 matched, 32830 mismatch
+
+0 PASSED, 1 FAILED

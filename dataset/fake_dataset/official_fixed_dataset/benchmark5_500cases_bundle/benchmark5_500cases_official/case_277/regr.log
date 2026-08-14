@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[688] : pc[8000127e] mulhsu	x3,x28,x6: gp:fffffff9 
+spike[688] : pc[8000127e] mulhsu  gp, t3, t1: gp:00000017 
+Mismatch[3258]:
+[4578] ibex : pc[80003ed2] srai	x16,x10,0x6: a6:00000000 
+[FAILED]: 591 matched, 3258 mismatch
+
+0 PASSED, 1 FAILED

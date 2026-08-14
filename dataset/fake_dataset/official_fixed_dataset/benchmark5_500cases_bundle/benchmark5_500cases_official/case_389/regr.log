@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[75] : pc[800001ba] and	x6,x19,x3: t1:800000bd 
+spike[75] : pc[800001ba] and     t1, s3, gp: t1:00000000 
+Mismatch[8006]:
+[8998] ibex : pc[80007482] ori	x2,x8,407: sp:00000197 
+[FAILED]: 173 matched, 8006 mismatch
+
+0 PASSED, 1 FAILED

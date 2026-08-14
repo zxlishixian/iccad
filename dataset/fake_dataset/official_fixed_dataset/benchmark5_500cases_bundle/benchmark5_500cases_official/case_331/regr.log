@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[67] : pc[80000182] xor	x22,x31,x15: s6:8001ee7c 
+spike[67] : pc[80000182] xor     s6, t6, a5: s6:00004060 
+Mismatch[1662]:
+[2131] ibex : pc[80005eee] csrrs	x14,mscratch,x23: a4:fffffffd 
+[FAILED]: 223 matched, 1662 mismatch
+
+0 PASSED, 1 FAILED

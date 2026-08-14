@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[363] : pc[8000071a] mulhsu	x17,x18,x4: a7:3ffdd204 
+spike[363] : pc[8000071a] mulhsu  a7, s2, tp: a7:bfffaf88 
+[FAILED]: 777 matched, 3153 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[683] : pc[80000cb0] auipc	x12,0xe722: a2:8e722cb0 
+spike[683] : pc[80000ca8] xor     s0, s0, tp: s0:d78b4ff6 
+[FAILED]: 483 matched, 4783 mismatch
+
+0 PASSED, 1 FAILED

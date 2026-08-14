@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[137] : pc[80000262] sub	x22,x1,x19: s6:7ffee164 
+spike[137] : pc[80000260] c.xor   a4, a4: a4:00000000 
+[FAILED]: 390 matched, 7613 mismatch
+
+0 PASSED, 1 FAILED

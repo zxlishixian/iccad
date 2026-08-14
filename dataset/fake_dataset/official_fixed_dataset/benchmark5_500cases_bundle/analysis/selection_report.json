@@ -1,0 +1,90 @@
+{
+  "num_candidates": 654,
+  "num_selected": 500,
+  "num_bugs": 10,
+  "cases_per_bug": 50,
+  "bug_counts": {
+    "bug_037": 50,
+    "bug_038": 50,
+    "bug_056": 50,
+    "bug_057": 50,
+    "bug_073": 50,
+    "bug_074": 50,
+    "bug_078": 50,
+    "bug_079": 50,
+    "bug_080": 50,
+    "bug_081": 50
+  },
+  "bug_test_counts": {
+    "bug_037": {
+      "riscv_debug_csr_entry_test": 17,
+      "riscv_debug_ebreak_test": 16,
+      "riscv_debug_ebreakmu_test": 17
+    },
+    "bug_038": {
+      "riscv_multiple_interrupt_test": 25,
+      "riscv_single_interrupt_test": 25
+    },
+    "bug_056": {
+      "riscv_debug_branch_jump_test": 20,
+      "riscv_debug_ebreakmu_test": 30
+    },
+    "bug_057": {
+      "riscv_multiple_interrupt_test": 5,
+      "riscv_single_interrupt_test": 45
+    },
+    "bug_073": {
+      "riscv_arithmetic_basic_test": 13,
+      "riscv_machine_mode_rand_test": 13,
+      "riscv_rand_instr_test": 12,
+      "riscv_rv32im_instr_test": 12
+    },
+    "bug_074": {
+      "riscv_arithmetic_basic_test": 13,
+      "riscv_machine_mode_rand_test": 13,
+      "riscv_rand_instr_test": 12,
+      "riscv_rv32im_instr_test": 12
+    },
+    "bug_078": {
+      "riscv_arithmetic_basic_test": 13,
+      "riscv_machine_mode_rand_test": 13,
+      "riscv_rand_instr_test": 12,
+      "riscv_rv32im_instr_test": 12
+    },
+    "bug_079": {
+      "riscv_arithmetic_basic_test": 13,
+      "riscv_machine_mode_rand_test": 13,
+      "riscv_rand_instr_test": 12,
+      "riscv_rv32im_instr_test": 12
+    },
+    "bug_080": {
+      "riscv_arithmetic_basic_test": 13,
+      "riscv_machine_mode_rand_test": 13,
+      "riscv_rand_instr_test": 12,
+      "riscv_rv32im_instr_test": 12
+    },
+    "bug_081": {
+      "riscv_arithmetic_basic_test": 13,
+      "riscv_machine_mode_rand_test": 13,
+      "riscv_rand_instr_test": 12,
+      "riscv_rv32im_instr_test": 12
+    }
+  },
+  "primary_type_counts": {
+    "REGR_MISMATCH": 300,
+    "UVM_ERROR": 17,
+    "UVM_FATAL": 183
+  },
+  "dual_compare_count": 300,
+  "dual_compare_rate": 0.6,
+  "op_pair_count": 300,
+  "op_pair_rate": 0.6,
+  "late_compare_count": 300,
+  "late_compare_rate": 1.0,
+  "first_ibex_index_bands": {
+    "256_plus": 49,
+    "32_to_255": 251
+  },
+  "max_first_ibex_index": 1486,
+  "pass": true
+}

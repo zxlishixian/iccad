@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[76] : pc[80000198] c.and	x10,x15: a0:00000001 
+spike[76] : pc[8000019e] csrrs   s6, mscratch, s1: s6:0000000a 
+Mismatch[8022]:
+[9241] ibex : pc[8000810c] xori	x2,x2,193: sp:000000c1 
+[FAILED]: 76 matched, 8022 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[153] : pc[800002ba] c.xor	x12,x10: a2:2150c3e3 
+spike[153] : pc[800002b6] sltu    s3, a1, zero: s3:00000000 
+[FAILED]: 139 matched, 7762 mismatch
+
+0 PASSED, 1 FAILED

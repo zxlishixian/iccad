@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[1041] : pc[80002ef4] xor	x24,x15,x11: s8:bffff5f9 
+spike[1041] : pc[80002ef4] xor     s8, a5, a1: s8:865f75f9 
+Mismatch[3975]:
+[7187] ibex : pc[80002cce] ori	x3,x16,-138: gp:ffffffff 
+[FAILED]: 1232 matched, 3975 mismatch
+
+0 PASSED, 1 FAILED

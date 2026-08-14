@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[113] : pc[8000028a] c.or	x10,x15: a0:00000098 
+spike[113] : pc[80000296] csrrc   a0, mscratch, zero: a0:d78112df 
+[FAILED]: 230 matched, 4040 mismatch
+
+0 PASSED, 1 FAILED

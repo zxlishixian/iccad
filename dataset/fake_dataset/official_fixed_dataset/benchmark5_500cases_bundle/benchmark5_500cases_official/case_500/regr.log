@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[85] : pc[8000fcc8] auipc	x20,0x8: s4:80017cc8 
+spike[85] : pc[8000fcc4] slt     s11, t1, s5: s11:00000001 
+[FAILED]: 86 matched, 2254 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[135] : pc[800002fa] addi	x14,x21,997: a4:000003e5 
+spike[135] : pc[800002f2] or      s5, s2, s2: s5:fffffef0 
+[FAILED]: 133 matched, 5259 mismatch
+
+0 PASSED, 1 FAILED

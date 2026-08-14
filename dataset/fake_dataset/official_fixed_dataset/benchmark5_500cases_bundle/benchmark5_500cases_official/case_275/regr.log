@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[103] : pc[80000306] mulhsu	x18,x26,x5: s2:09b5482a 
+spike[103] : pc[80000306] mulhsu  s2, s10, t0: s2:89b5482a 
+[FAILED]: 946 matched, 4111 mismatch
+
+0 PASSED, 1 FAILED

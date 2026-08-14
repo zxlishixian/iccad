@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[217] : pc[800004de] mul	x28,x23,x22: t3:00000000 
+spike[217] : pc[800004de] mul     t3, s7, s6: t3:00000019 
+[FAILED]: 533 matched, 3749 mismatch
+
+0 PASSED, 1 FAILED

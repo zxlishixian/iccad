@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[255] : pc[80000406] mul	x3,x9,x20: gp:00000004 
+spike[255] : pc[80000406] mul     gp, s1, s4: gp:c6951fe0 
+[FAILED]: 1156 matched, 7039 mismatch
+
+0 PASSED, 1 FAILED

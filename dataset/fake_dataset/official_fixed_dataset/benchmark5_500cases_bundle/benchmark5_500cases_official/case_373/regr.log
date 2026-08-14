@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[58] : pc[80000166] and	x11,x17,x16: a1:bfb17b77 
+spike[58] : pc[80000166] and     a1, a7, a6: a1:36900166 
+Mismatch[2233]:
+[2623] ibex : pc[80003e94] auipc	x8,0xfed80: s0:7ed83e94 
+[FAILED]: 82 matched, 2233 mismatch
+
+0 PASSED, 1 FAILED

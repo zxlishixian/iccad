@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[163] : pc[800003a4] or	x5,x3,x12: t0:0003fff0 
+spike[163] : pc[800003a4] or      t0, gp, a2: t0:ffffffff 
+[FAILED]: 284 matched, 10451 mismatch
+
+0 PASSED, 1 FAILED

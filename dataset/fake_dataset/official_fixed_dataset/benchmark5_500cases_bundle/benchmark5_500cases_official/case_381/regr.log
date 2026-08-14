@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[55] : pc[80000154] c.sub	x8,x14: s0:8b860246 
+spike[55] : pc[8000014e] c.and   a0, a5: a0:80000000 
+Mismatch[333]:
+[439] ibex : pc[80001410] and	x15,x4,x7: a5:00000184 
+[FAILED]: 42 matched, 333 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[167] : pc[800003ac] and	x12,x22,x3: a2:0000001c 
+spike[167] : pc[800003b0] lb      gp, 39(sp): gp:00000000 
+Mismatch[1360]:
+[2112] ibex : pc[80003226] or	x26,x20,x12: s10:fffffffb 
+[FAILED]: 148 matched, 1360 mismatch
+
+0 PASSED, 1 FAILED

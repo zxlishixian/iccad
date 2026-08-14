@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[77] : pc[800001b4] and	x30,x1,x11: t5:8001ee7c 
+spike[77] : pc[800001b4] and     t5, ra, a1: t5:00000000 
+Mismatch[2497]:
+[3107] ibex : pc[80001384] and	x15,x13,x13: a5:0000029f 
+[FAILED]: 196 matched, 2497 mismatch
+
+0 PASSED, 1 FAILED

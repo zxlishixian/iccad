@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[119] : pc[80000334] or	x16,x26,x3: a6:0000000a 
+spike[119] : pc[80000334] or      a6, s10, gp: a6:0000000f 
+Mismatch[2151]:
+[2661] ibex : pc[8000423e] xor	x21,x25,x1: s5:000172f2 
+[FAILED]: 164 matched, 2151 mismatch
+
+0 PASSED, 1 FAILED

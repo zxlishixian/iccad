@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[61] : pc[80000162] or	x22,x12,x11: s6:47f1c731 
+spike[61] : pc[80000162] or      s6, a2, a1: s6:c7f1c731 
+Mismatch[9519]:
+[11848] ibex : pc[80000b52] sltiu	x18,x2,-901: s2:00000001 
+[FAILED]: 953 matched, 9519 mismatch
+
+0 PASSED, 1 FAILED

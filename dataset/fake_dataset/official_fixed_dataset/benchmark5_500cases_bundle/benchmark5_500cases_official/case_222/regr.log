@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[436] : pc[80000b12] mul	x7,x30,x6: t2:00000000 
+spike[436] : pc[80000b12] mul     t2, t5, t1: t2:ffffbcf6 
+Mismatch[1690]:
+[2466] ibex : pc[80001b8a] slti	x21,x18,474: s5:00000001 
+[FAILED]: 394 matched, 1690 mismatch
+
+0 PASSED, 1 FAILED

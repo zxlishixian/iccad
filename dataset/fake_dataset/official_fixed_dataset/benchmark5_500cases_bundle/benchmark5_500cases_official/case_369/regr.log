@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[121] : pc[8000036c] sltu	x26,x10,x23: s10:00000000 
+spike[121] : pc[80000366] c.and   a1, s0: a1:00000000 
+[FAILED]: 147 matched, 1949 mismatch
+
+0 PASSED, 1 FAILED

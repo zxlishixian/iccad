@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[88] : pc[800001f2] mulhsu	x16,x27,x13: a6:ffffffff 
+spike[88] : pc[800001f6] csrrci  t0, mscratch, 6: t0:00000000 
+Mismatch[10361]:
+[11896] ibex : pc[80000c60] c.li	x3,1: gp:00000001 
+[FAILED]: 111 matched, 10361 mismatch
+
+0 PASSED, 1 FAILED

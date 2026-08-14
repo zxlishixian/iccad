@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[153] : pc[80001cbc] sltu	x2,x18,x28: sp:00000001 
+spike[153] : pc[80001cbc] sltu    sp, s2, t3: sp:00000000 
+Mismatch[3771]:
+[4765] ibex : pc[80001972] c.xor	x10,x11: a0:cede07e8 
+[FAILED]: 179 matched, 3771 mismatch
+
+0 PASSED, 1 FAILED

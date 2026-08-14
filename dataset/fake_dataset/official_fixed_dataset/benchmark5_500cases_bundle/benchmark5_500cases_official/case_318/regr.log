@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[207] : pc[80000604] xor	x8,x9,x2: s0:ffffffff 
+spike[207] : pc[80000604] xor     s0, s1, sp: s0:c000f64d 
+Mismatch[1969]:
+[3154] ibex : pc[800012ec] remu	x3,x25,x16: gp:00000000 
+[FAILED]: 724 matched, 1969 mismatch
+
+0 PASSED, 1 FAILED

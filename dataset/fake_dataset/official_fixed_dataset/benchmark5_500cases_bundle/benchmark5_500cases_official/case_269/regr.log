@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[998] : pc[80006566] mulhsu	x8,x6,x15: s0:00000000 
+spike[998] : pc[80006566] mulhsu  s0, t1, a5: s0:ffffffff 
+Mismatch[1757]:
+[3093] ibex : pc[8000064e] c.lui	x21,0x12: s5:00012000 
+[FAILED]: 882 matched, 1757 mismatch
+
+0 PASSED, 1 FAILED

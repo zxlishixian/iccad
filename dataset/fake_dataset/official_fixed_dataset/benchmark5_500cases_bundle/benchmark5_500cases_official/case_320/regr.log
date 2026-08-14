@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[104] : pc[80007d6e] xor	x4,x31,x11: tp:6fd7d3ff 
+spike[104] : pc[80007d6e] xor     tp, t6, a1: tp:4316d1bf 
+[FAILED]: 807 matched, 1832 mismatch
+
+0 PASSED, 1 FAILED

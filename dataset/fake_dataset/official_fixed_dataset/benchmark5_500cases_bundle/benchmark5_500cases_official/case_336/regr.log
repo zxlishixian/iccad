@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[89] : pc[800001c4] jalr	x18,-238(x14): s2:800001c8 
+spike[89] : pc[800001c2] c.xor   a0, s0: a0:e5a35496 
+[FAILED]: 272 matched, 1896 mismatch
+
+0 PASSED, 1 FAILED

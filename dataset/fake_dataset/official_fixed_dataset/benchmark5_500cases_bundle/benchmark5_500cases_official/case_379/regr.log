@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[63] : pc[8000016c] c.and	x12,x10: a2:8001ae1c 
+spike[63] : pc[8000016e] auipc   a1, 0x81d: a1:8081d16e 
+Mismatch[4118]:
+[4741] ibex : pc[800048a8] c.srai	x13,0x14: a3:ffffffee 
+[FAILED]: 57 matched, 4118 mismatch
+
+0 PASSED, 1 FAILED

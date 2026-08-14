@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[80] : pc[8000027c] c.or	x9,x11: s1:043c76ac 
+spike[80] : pc[8000027e] mulh    t2, gp, s8: t2:00000000 
+Mismatch[99]:
+[192] ibex : pc[800005c6] c.li	x3,1: gp:00000001 
+[FAILED]: 67 matched, 99 mismatch
+
+0 PASSED, 1 FAILED

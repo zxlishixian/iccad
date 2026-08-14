@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[519] : pc[80000a1e] slti	x2,x21,1001: sp:00000001 
+spike[519] : pc[80000a18] and     a6, a6, gp: a6:00000000 
+Mismatch[4800]:
+[7088] ibex : pc[800029c2] xori	x24,x25,50: s8:ffffff9d 
+[FAILED]: 407 matched, 4800 mismatch
+
+0 PASSED, 1 FAILED

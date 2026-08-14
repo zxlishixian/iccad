@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[64] : pc[8000016c] and	x20,x14,x18: s4:0000004f 
+spike[64] : pc[8000016c] and     s4, a4, s2: s4:00000001 
+Mismatch[7718]:
+[9181] ibex : pc[80008168] c.mv	x11,x23: a1:89271034 
+[FAILED]: 180 matched, 7718 mismatch
+
+0 PASSED, 1 FAILED

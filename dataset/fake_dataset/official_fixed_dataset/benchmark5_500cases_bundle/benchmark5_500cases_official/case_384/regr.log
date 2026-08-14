@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[63] : pc[8000016a] and	x26,x4,x28: s10:f8602299 
+spike[63] : pc[8000016a] and     s10, tp, t3: s10:00000000 
+Mismatch[2391]:
+[2879] ibex : pc[800032f4] c.lui	x16,0x1c: a6:0001c000 
+[FAILED]: 79 matched, 2391 mismatch
+
+0 PASSED, 1 FAILED

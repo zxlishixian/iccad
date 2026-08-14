@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[55] : pc[80000148] mulhsu	x1,x14,x18: ra:fbdaec2c 
+spike[55] : pc[80000146] c.xor   s0, a1: s0:00000000 
+Mismatch[4381]:
+[5093] ibex : pc[800017f4] csrrc	x3,mscratch,x0: gp:00000000 
+[FAILED]: 55 matched, 4381 mismatch
+
+0 PASSED, 1 FAILED

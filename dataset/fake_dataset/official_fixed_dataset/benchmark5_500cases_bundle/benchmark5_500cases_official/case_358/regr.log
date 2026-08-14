@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[116] : pc[80000238] and	x16,x25,x6: a6:8dd9325f 
+spike[116] : pc[8000023c] csrrs   s9, mscratch, a3: s9:00000009 
+Mismatch[7875]:
+[9278] ibex : pc[8000814c] xor	x30,x22,x20: t5:80011e03 
+[FAILED]: 121 matched, 7875 mismatch
+
+0 PASSED, 1 FAILED

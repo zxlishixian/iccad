@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[103] : pc[8000023e] sltu	x30,x1,x2: t5:00000000 
+spike[103] : pc[8000023e] sltu    t5, ra, sp: t5:00000001 
+Mismatch[9484]:
+[11156] ibex : pc[8000a59e] or	x14,x5,x11: a4:00000000 
+[FAILED]: 731 matched, 9484 mismatch
+
+0 PASSED, 1 FAILED

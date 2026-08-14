@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[61] : pc[8000016e] c.slli	x27,0x18: s11:00000000 
+spike[61] : pc[8000016c] c.and   a3, s1: a3:00000000 
+Mismatch[2017]:
+[2394] ibex : pc[80001aba] xori	x29,x12,643: t4:fffffe0b 
+[FAILED]: 67 matched, 2017 mismatch
+
+0 PASSED, 1 FAILED

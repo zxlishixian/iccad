@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[328] : pc[80010284] mulhsu	x30,x22,x5: t5:ffffffff 
+spike[328] : pc[80010284] mulhsu  t5, s6, t0: t5:00000017 
+Mismatch[1929]:
+[2542] ibex : pc[80002dc0] and	x25,x5,x8: s9:00000000 
+[FAILED]: 410 matched, 1929 mismatch
+
+0 PASSED, 1 FAILED

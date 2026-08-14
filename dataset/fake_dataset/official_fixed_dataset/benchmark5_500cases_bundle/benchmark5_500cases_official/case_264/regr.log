@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[191] : pc[8000046e] mulhsu	x26,x27,x7: s10:fffffe35 
+spike[191] : pc[8000046e] mulhsu  s10, s11, t2: s10:72825285 
+Mismatch[4160]:
+[5974] ibex : pc[800033c2] csrrw	x3,mscratch,x13: gp:5bb9a018 
+[FAILED]: 952 matched, 4160 mismatch
+
+0 PASSED, 1 FAILED

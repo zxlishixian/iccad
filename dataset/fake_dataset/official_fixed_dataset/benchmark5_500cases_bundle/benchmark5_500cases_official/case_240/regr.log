@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[154] : pc[8000035c] mul	x23,x23,x14: s7:00000000 
+spike[154] : pc[80000360] csrrw   s9, mscratch, s7: s9:000000e9 
+[FAILED]: 2553 matched, 8925 mismatch
+
+0 PASSED, 1 FAILED

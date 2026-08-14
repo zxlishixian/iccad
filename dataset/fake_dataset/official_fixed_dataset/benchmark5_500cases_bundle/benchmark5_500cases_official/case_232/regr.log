@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[76] : pc[80000210] mul	x19,x7,x21: s3:00000006 
+spike[76] : pc[80000210] mul     s3, t2, s5: s3:de4770f9 
+[FAILED]: 287 matched, 970 mismatch
+
+0 PASSED, 1 FAILED

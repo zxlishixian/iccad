@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[243] : pc[800004f6] and	x4,x31,x24: tp:8001d5d8 
+spike[243] : pc[800004f6] and     tp, t6, s8: tp:80000048 
+Mismatch[7535]:
+[12652] ibex : pc[8000c8ac] csrrc	x25,mscratch,x20: s9:00000007 
+[FAILED]: 3924 matched, 7535 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[275] : pc[8000045a] mulhsu	x25,x4,x5: s9:00000000 
+spike[275] : pc[8000045a] mulhsu  s9, tp, t0: s9:ffffffff 
+[FAILED]: 756 matched, 7240 mismatch
+
+0 PASSED, 1 FAILED

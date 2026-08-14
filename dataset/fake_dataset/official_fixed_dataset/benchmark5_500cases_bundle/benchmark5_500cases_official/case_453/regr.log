@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[80] : pc[800001a6] remu	x10,x23,x16: a0:000417f0 
+spike[80] : pc[8000019a] slt     a2, s3, t1: a2:00000001 
+Mismatch[7593]:
+[9441] ibex : pc[80008322] csrrsi	x1,mscratch,21: ra:00000008 
+[FAILED]: 597 matched, 7593 mismatch
+
+0 PASSED, 1 FAILED

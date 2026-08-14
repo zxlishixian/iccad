@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[68] : pc[8000018e] lbu	x15,2(x2): a5:00000000 
+spike[68] : pc[8000018a] sltu    s3, a3, sp: s3:00000001 
+Mismatch[3860]:
+[5455] ibex : pc[80003408] lhu	x24,-55(x10): s8:00000000 
+[FAILED]: 70 matched, 3860 mismatch
+
+0 PASSED, 1 FAILED

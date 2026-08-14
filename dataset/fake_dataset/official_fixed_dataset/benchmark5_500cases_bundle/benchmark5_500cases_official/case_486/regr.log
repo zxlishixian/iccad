@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[136] : pc[80006c8a] slt	x14,x11,x21: a4:00000001 
+spike[136] : pc[80006c8a] slt     a4, a1, s5: a4:00000000 
+Mismatch[1859]:
+[2552] ibex : pc[80000998] xor	x17,x25,x11: a7:8c01e000 
+[FAILED]: 303 matched, 1859 mismatch
+
+0 PASSED, 1 FAILED

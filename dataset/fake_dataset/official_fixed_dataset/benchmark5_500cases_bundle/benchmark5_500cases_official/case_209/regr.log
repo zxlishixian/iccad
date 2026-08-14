@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[141] : pc[8000026c] mul	x9,x18,x18: s1:ffd135bb 
+spike[141] : pc[8000026c] mul     s1, s2, s2: s1:86257a90 
+[FAILED]: 331 matched, 7672 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[138] : pc[8000027e] mulhsu	x27,x23,x2: s11:fa91821b 
+spike[138] : pc[8000027e] mulhsu  s11, s7, sp: s11:5a197417 
+[FAILED]: 258 matched, 7641 mismatch
+
+0 PASSED, 1 FAILED

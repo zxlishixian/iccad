@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[63] : pc[800001a4] srl	x13,x28,x26: a3:00002000 
+spike[63] : pc[800001a0] sltu    a1, s7, a7: a1:00000000 
+Mismatch[4169]:
+[5104] ibex : pc[80002030] c.li	x3,1: gp:00000001 
+[FAILED]: 193 matched, 4169 mismatch
+
+0 PASSED, 1 FAILED

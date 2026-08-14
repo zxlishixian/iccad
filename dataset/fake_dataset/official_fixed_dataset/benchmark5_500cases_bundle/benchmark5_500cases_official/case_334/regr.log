@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[94] : pc[8000025a] xor	x17,x31,x18: a7:af55fe9c 
+spike[94] : pc[8000025a] xor     a7, t6, s2: a7:af557888 
+Mismatch[2238]:
+[2945] ibex : pc[80003468] c.or	x12,x14: a2:00000001 
+[FAILED]: 232 matched, 2238 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[888] : pc[8000105e] or	x30,x18,x6: t5:7ffff145 
+spike[888] : pc[8000105e] or      t5, s2, t1: t5:ffffff7f 
+Mismatch[3336]:
+[5292] ibex : pc[80002674] mulh	x11,x30,x18: a1:00000000 
+[FAILED]: 594 matched, 3336 mismatch
+
+0 PASSED, 1 FAILED

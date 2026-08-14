@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[105] : pc[80000258] c.xor	x14,x12: a4:efe9fca0 
+spike[105] : pc[80000258] c.xor   a4, a2: a4:efe8fca0 
+[FAILED]: 145 matched, 4971 mismatch
+
+0 PASSED, 1 FAILED

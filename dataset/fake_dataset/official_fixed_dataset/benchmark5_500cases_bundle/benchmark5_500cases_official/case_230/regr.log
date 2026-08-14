@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[106] : pc[80000206] mul	x10,x8,x15: a0:000000f7 
+spike[106] : pc[8000020a] c.addi  a6, -1: a6:ffffffff 
+Mismatch[4291]:
+[5123] ibex : pc[8000174e] c.or	x13,x12: a3:394f1005 
+[FAILED]: 145 matched, 4291 mismatch
+
+0 PASSED, 1 FAILED

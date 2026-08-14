@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[130] : pc[80000246] mulhsu	x20,x13,x4: s4:3fff50c0 
+spike[130] : pc[80000246] mulhsu  s4, a3, tp: s4:c000af3c 
+[FAILED]: 203 matched, 7798 mismatch
+
+0 PASSED, 1 FAILED

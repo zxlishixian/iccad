@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[77] : pc[80010722] mul	x29,x25,x24: t4:00000003 
+spike[77] : pc[80010722] mul     t4, s9, s8: t4:f0d62877 
+Mismatch[2008]:
+[2547] ibex : pc[80002988] divu	x29,x0,x3: t4:ffffffff 
+[FAILED]: 331 matched, 2008 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[94] : pc[80000218] and	x5,x29,x23: t0:a75a4bff 
+spike[94] : pc[80000218] and     t0, t4, s7: t0:00000020 
+Mismatch[10426]:
+[12048] ibex : pc[80001654] c.add	x31,x8: t6:ea81e7af 
+[FAILED]: 285 matched, 10426 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[60] : pc[800001a8] and	x18,x2,x6: s2:f95d39cf 
+spike[60] : pc[800001a8] and     s2, sp, t1: s2:00000007 
+Mismatch[2565]:
+[3024] ibex : pc[80000590] c.xor	x12,x13: a2:00000004 
+[FAILED]: 74 matched, 2565 mismatch
+
+0 PASSED, 1 FAILED

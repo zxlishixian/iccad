@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[83] : pc[800001ca] c.or	x10,x14: a0:7ffffffe 
+spike[83] : pc[800001ca] c.or    a0, a4: a0:fffffffe 
+Mismatch[7709]:
+[9408] ibex : pc[8000839e] add	x5,x25,x19: t0:000c0f31 
+[FAILED]: 241 matched, 7709 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[77] : pc[800001a0] mul	x31,x1,x17: t6:00000005 
+spike[77] : pc[800001a0] mul     t6, ra, a7: t6:8492f098 
+[FAILED]: 1427 matched, 6569 mismatch
+
+0 PASSED, 1 FAILED

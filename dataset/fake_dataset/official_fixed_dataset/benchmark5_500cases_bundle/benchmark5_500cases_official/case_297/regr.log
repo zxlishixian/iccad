@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[417] : pc[800008ee] mulhsu	x18,x12,x1: s2:3ffff754 
+spike[417] : pc[800008ee] mulhsu  s2, a2, ra: s2:bffffff2 
+Mismatch[26200]:
+[36175] ibex : pc[80000f36] add	x29,x7,x31: t4:80027e5d 
+[FAILED]: 1620 matched, 26200 mismatch
+
+0 PASSED, 1 FAILED

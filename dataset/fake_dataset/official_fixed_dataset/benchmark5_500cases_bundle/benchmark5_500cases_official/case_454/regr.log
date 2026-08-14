@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[87] : pc[800001c4] slt	x30,x30,x6: t5:00000001 
+spike[87] : pc[800001c8] csrrw   sp, mscratch, s8: sp:f72dc2f6 
+Mismatch[7950]:
+[9415] ibex : pc[80008444] sub	x1,x15,x21: ra:0000000c 
+[FAILED]: 160 matched, 7950 mismatch
+
+0 PASSED, 1 FAILED

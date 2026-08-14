@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[106] : pc[800002dc] c.and	x12,x15: a2:381a4000 
+spike[106] : pc[800002de] c.lui   t2, 0x14: t2:00014000 
+Mismatch[1162]:
+[1436] ibex : pc[800027d8] sltu	x22,x13,x23: s6:00000000 
+[FAILED]: 94 matched, 1162 mismatch
+
+0 PASSED, 1 FAILED

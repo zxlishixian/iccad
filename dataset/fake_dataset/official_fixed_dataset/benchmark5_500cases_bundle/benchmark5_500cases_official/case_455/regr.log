@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[172] : pc[800002f4] slt	x17,x28,x26: a7:00000001 
+spike[172] : pc[800002f8] c.addi4spn s1, sp, 80: s1:0000016a 
+[FAILED]: 839 matched, 7047 mismatch
+
+0 PASSED, 1 FAILED

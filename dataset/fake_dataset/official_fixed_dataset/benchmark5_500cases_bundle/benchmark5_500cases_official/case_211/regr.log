@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[157] : pc[800002c2] mul	x17,x2,x23: a7:0000000d 
+spike[157] : pc[800002c2] mul     a7, sp, s7: a7:fc96c000 
+[FAILED]: 204 matched, 7830 mismatch
+
+0 PASSED, 1 FAILED

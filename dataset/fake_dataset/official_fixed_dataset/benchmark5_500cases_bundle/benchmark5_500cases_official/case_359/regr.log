@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[144] : pc[80000296] c.and	x10,x14: a0:0001100b 
+spike[144] : pc[80000296] c.and   a0, a4: a0:00000000 
+Mismatch[7738]:
+[9255] ibex : pc[80008068] sltiu	x12,x3,938: a2:00000001 
+[FAILED]: 159 matched, 7738 mismatch
+
+0 PASSED, 1 FAILED

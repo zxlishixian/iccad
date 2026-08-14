@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[69] : pc[80000180] or	x25,x13,x9: s9:6d4d9c3d 
+spike[69] : pc[80000180] or      s9, a3, s1: s9:ed4d9e3d 
+Mismatch[7925]:
+[9424] ibex : pc[8000836c] remu	x24,x19,x31: s8:00000001 
+[FAILED]: 182 matched, 7925 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[478] : pc[8000bcae] sltu	x23,x6,x31: s7:00000000 
+spike[478] : pc[8000bcae] sltu    s7, t1, t6: s7:00000001 
+Mismatch[12997]:
+[15230] ibex : pc[8000b438] and	x17,x28,x28: a7:00000400 
+[FAILED]: 679 matched, 12997 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[185] : pc[80000322] c.xor	x8,x10: s0:55d612f4 
+spike[185] : pc[80000322] c.xor   s0, a0: s0:55d61294 
+[FAILED]: 1802 matched, 6084 mismatch
+
+0 PASSED, 1 FAILED

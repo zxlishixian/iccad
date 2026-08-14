@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[162] : pc[8000b650] xor	x14,x29,x14: a4:68797bbe 
+spike[162] : pc[8000b650] xor     a4, t4, a4: a4:687979be 
+Mismatch[12200]:
+[15139] ibex : pc[8000b0fe] auipc	x2,0xec383: sp:6c38e0fe 
+[FAILED]: 1476 matched, 12200 mismatch
+
+0 PASSED, 1 FAILED

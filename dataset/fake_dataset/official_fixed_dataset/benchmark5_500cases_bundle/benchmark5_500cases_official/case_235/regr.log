@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[130] : pc[80000332] mul	x12,x16,x19: a2:5088c617 
+spike[130] : pc[80000332] mul     a2, a6, s3: a2:b42d53e1 
+[FAILED]: 1544 matched, 9190 mismatch
+
+0 PASSED, 1 FAILED

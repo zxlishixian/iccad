@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[90] : pc[800001d2] or	x1,x31,x21: ra:897d3c9f 
+spike[90] : pc[800001d2] or      ra, t6, s5: ra:8dff7d9f 
+Mismatch[7252]:
+[9461] ibex : pc[80008376] c.slli	x21,0x13: s5:00080000 
+[FAILED]: 765 matched, 7252 mismatch
+
+0 PASSED, 1 FAILED

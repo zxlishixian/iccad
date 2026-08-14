@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[79] : pc[800001b4] sub	x28,x30,x14: t3:08d22102 
+spike[79] : pc[800001b2] c.xor   a4, a3: a4:772c8082 
+Mismatch[7956]:
+[9445] ibex : pc[800084aa] auipc	x15,0xbe6f7: a5:3e6ff4aa 
+[FAILED]: 154 matched, 7956 mismatch
+
+0 PASSED, 1 FAILED

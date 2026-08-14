@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[110] : pc[800002d0] csrrsi	x6,mscratch,2: t1:2f54d694 
+spike[110] : pc[800002cc] mul     s8, s4, s3: s8:0000000d 
+[FAILED]: 100 matched, 2374 mismatch
+
+0 PASSED, 1 FAILED

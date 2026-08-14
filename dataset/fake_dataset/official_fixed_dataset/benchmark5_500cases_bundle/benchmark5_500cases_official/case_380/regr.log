@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[74] : pc[80000198] csrrw	x1,mscratch,x10: ra:00000200 
+spike[74] : pc[80000196] c.and   a2, a5: a2:00000000 
+Mismatch[4330]:
+[4976] ibex : pc[800017b0] c.addi	x10,-1: a0:ffffffff 
+[FAILED]: 106 matched, 4330 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[123] : pc[8000023a] slt	x28,x13,x31: t3:00000001 
+spike[123] : pc[8000023a] slt     t3, a3, t6: t3:00000000 
+Mismatch[7792]:
+[9401] ibex : pc[800083ae] lui	x20,0xffd65: s4:ffd65000 
+[FAILED]: 263 matched, 7792 mismatch
+
+0 PASSED, 1 FAILED

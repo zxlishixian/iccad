@@ -1,0 +1,438 @@
+{
+  "dataset_root": "/home/yian/iccad/dataset/benchmark7_500cases_official",
+  "sample_size": 10,
+  "rows": [
+    {
+      "case": 25,
+      "bug_id": "bug_037",
+      "group": "debug_exception",
+      "family": "debug_entry_priority_wrong",
+      "test": "riscv_debug_ebreak_test",
+      "seed": "9110",
+      "logs_exist": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "nonempty": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "line_counts": {
+        "regr": 3,
+        "sim": 104,
+        "trace": 191
+      },
+      "failure_type": "UVM_FATAL",
+      "failure_marker": true,
+      "sim_evidence": "UVM_FATAL /workspace/ibex/dv/uvm/tests/core_ibex_base_test.sv(194) @ 3693000: uvm_test_top [uvm_test_top] Did not receive core_status IN_DEBUG_MODE within 1000 cycle timeout period",
+      "dual_compare": false,
+      "pair_count_in_report": 0,
+      "first_pair": null,
+      "matched": null,
+      "mismatch": null,
+      "trace_header_ok": true,
+      "replacement_char": false,
+      "label_or_path_leak": false,
+      "hashes": {
+        "regr": "63a10f6f8be452b57032cff33586f88ec8acb433aa49b7061ca4b9e1699e3894",
+        "sim": "982415bb62c8e73964c748be5d0a919e437ea9a52110977f0c7ad6db1c51ad6e",
+        "trace": "fdfaf846624dc50b9d4dd678aeb20690126e841499b9fa719424c13590990486"
+      }
+    },
+    {
+      "case": 75,
+      "bug_id": "bug_038",
+      "group": "csr_exception",
+      "family": "mstatus_mie_restore_wrong",
+      "test": "riscv_multiple_interrupt_test",
+      "seed": "9130",
+      "logs_exist": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "nonempty": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "line_counts": {
+        "regr": 3,
+        "sim": 105,
+        "trace": 155
+      },
+      "failure_type": "UVM_FATAL",
+      "failure_marker": true,
+      "sim_evidence": "UVM_FATAL /workspace/ibex/dv/uvm/tests/core_ibex_base_test.sv(194) @ 3245000: uvm_test_top [uvm_test_top] Did not receive core_status HANDLING_IRQ within 750 cycle timeout period",
+      "dual_compare": false,
+      "pair_count_in_report": 0,
+      "first_pair": null,
+      "matched": null,
+      "mismatch": null,
+      "trace_header_ok": true,
+      "replacement_char": false,
+      "label_or_path_leak": false,
+      "hashes": {
+        "regr": "840eb262ef704e041b29bf58360523cfe93b541cf4a75c76ecba408099d99f33",
+        "sim": "b8e8b0627b7e5b293fb12cd53905bcf8922792355e26c5438d757f1d6079e716",
+        "trace": "b3780ed5013f5857d4509cdc70e082ad79ae610b2b4bfcd9629cf6bd0de83d90"
+      }
+    },
+    {
+      "case": 125,
+      "bug_id": "bug_056",
+      "group": "debug_exception",
+      "family": "debug_ebreak_csr_output_stuck_low",
+      "test": "riscv_debug_ebreakmu_test",
+      "seed": "9107",
+      "logs_exist": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "nonempty": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "line_counts": {
+        "regr": 3,
+        "sim": 104,
+        "trace": 378
+      },
+      "failure_type": "UVM_FATAL",
+      "failure_marker": true,
+      "sim_evidence": "UVM_FATAL /workspace/ibex/dv/uvm/tests/core_ibex_base_test.sv(190) @ 8319000: uvm_test_top [uvm_test_top] Check failed signature_data == core_status (8 [0x8] vs 1 [0x1]) Core did not enter debug mode after execution of ebreak",
+      "dual_compare": false,
+      "pair_count_in_report": 0,
+      "first_pair": null,
+      "matched": null,
+      "mismatch": null,
+      "trace_header_ok": true,
+      "replacement_char": false,
+      "label_or_path_leak": false,
+      "hashes": {
+        "regr": "6fb5046888187318f78177698d53050644b11ccfea64600f0c55c0d1975a32f4",
+        "sim": "a06b6bb93c9f29ecc83956d0003f2b90695683ad8df67bccb8b901d403773a3a",
+        "trace": "5ba1470252473f1616540171ecd8344cf01aef7392d2218300c55c4818aebe43"
+      }
+    },
+    {
+      "case": 175,
+      "bug_id": "bug_057",
+      "group": "interrupt",
+      "family": "external_irq_cause_reported_as_timer",
+      "test": "riscv_single_interrupt_test",
+      "seed": "9121",
+      "logs_exist": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "nonempty": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "line_counts": {
+        "regr": 3,
+        "sim": 179,
+        "trace": 1666
+      },
+      "failure_type": "UVM_FATAL",
+      "failure_marker": true,
+      "sim_evidence": "UVM_FATAL /workspace/ibex/dv/uvm/tests/core_ibex_test_lib.sv(293) @ 37139000: uvm_test_top [uvm_test_top] Check failed mcause[ibex_mem_intf_agent_pkg::DATA_WIDTH-2:0] == cause (7 [0x7] vs 11 [0xb]) mcause.exception_code is encoding the wrong exception type",
+      "dual_compare": false,
+      "pair_count_in_report": 0,
+      "first_pair": null,
+      "matched": null,
+      "mismatch": null,
+      "trace_header_ok": true,
+      "replacement_char": false,
+      "label_or_path_leak": false,
+      "hashes": {
+        "regr": "460fa940a93a9cb228bc8d7e34af86700b5595df6150a0ce2267c2fbaf58f947",
+        "sim": "a7a91b08ff735eedb284d4885cfac20f49e052f1377e2d735ff6f30cc89edfad",
+        "trace": "f17ef8371b16c36422d62f975ffb4881eddf5d1d9846260e81961753182ec395"
+      }
+    },
+    {
+      "case": 225,
+      "bug_id": "bug_073",
+      "group": "multdiv",
+      "family": "mul_low_decoded_as_mul_high",
+      "test": "riscv_machine_mode_rand_test",
+      "seed": "20130",
+      "logs_exist": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "nonempty": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "line_counts": {
+        "regr": 8,
+        "sim": 103,
+        "trace": 7446
+      },
+      "failure_type": "REGR_MISMATCH",
+      "failure_marker": true,
+      "sim_evidence": "RISC-V UVM TEST PASSED",
+      "dual_compare": true,
+      "pair_count_in_report": 1,
+      "first_pair": {
+        "ibex_index": 147,
+        "ibex": "pc[80000476] mul\tx14,x25,x26: a4:766c457e",
+        "spike_index": 147,
+        "spike": "pc[80000476] mul     a4, s9, s10: a4:d32d8ef3"
+      },
+      "matched": 354,
+      "mismatch": 4700,
+      "trace_header_ok": true,
+      "replacement_char": false,
+      "label_or_path_leak": false,
+      "hashes": {
+        "regr": "d653d5a2ca3882519b1a2765a2686d5eb20aececcec406db8a4c567a60ec2d9b",
+        "sim": "d7267d6d28ac3268e2a827c68042e90d2b9385875ee4e19eb4d7bd961f27837d",
+        "trace": "01416292de5e7e18f05deba2da6b3af3ca2f1b272dc60c5a4d51dac96c79cf43"
+      }
+    },
+    {
+      "case": 275,
+      "bug_id": "bug_074",
+      "group": "multdiv",
+      "family": "mulhsu_signedness_wrong",
+      "test": "riscv_machine_mode_rand_test",
+      "seed": "20130",
+      "logs_exist": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "nonempty": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "line_counts": {
+        "regr": 6,
+        "sim": 103,
+        "trace": 7412
+      },
+      "failure_type": "REGR_MISMATCH",
+      "failure_marker": true,
+      "sim_evidence": "RISC-V UVM TEST PASSED",
+      "dual_compare": true,
+      "pair_count_in_report": 1,
+      "first_pair": {
+        "ibex_index": 103,
+        "ibex": "pc[80000306] mulhsu\tx18,x26,x5: s2:09b5482a",
+        "spike_index": 103,
+        "spike": "pc[80000306] mulhsu  s2, s10, t0: s2:89b5482a"
+      },
+      "matched": 946,
+      "mismatch": 4111,
+      "trace_header_ok": true,
+      "replacement_char": false,
+      "label_or_path_leak": false,
+      "hashes": {
+        "regr": "5c76b963e989e98efd619cdd233fbe7909d7ee52c163d32b2596744399a0f125",
+        "sim": "7abd0d9085354d1a12c9d038fea3c8352c7c465075f07bb321a5657ced7a6a92",
+        "trace": "89ca05ca95fc16427c2518d5cbcbc085821952d0da02e01edc6c9dda08899612"
+      }
+    },
+    {
+      "case": 325,
+      "bug_id": "bug_078",
+      "group": "decoder_alu",
+      "family": "xor_decoded_as_or",
+      "test": "riscv_machine_mode_rand_test",
+      "seed": "20130",
+      "logs_exist": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "nonempty": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "line_counts": {
+        "regr": 6,
+        "sim": 103,
+        "trace": 7399
+      },
+      "failure_type": "REGR_MISMATCH",
+      "failure_marker": true,
+      "sim_evidence": "RISC-V UVM TEST PASSED",
+      "dual_compare": true,
+      "pair_count_in_report": 1,
+      "first_pair": {
+        "ibex_index": 152,
+        "ibex": "pc[8000049a] c.xor\tx11,x9: a1:8001eefc",
+        "spike_index": 152,
+        "spike": "pc[8000049a] c.xor   a1, s1: a1:8001eee4"
+      },
+      "matched": 217,
+      "mismatch": 4841,
+      "trace_header_ok": true,
+      "replacement_char": false,
+      "label_or_path_leak": false,
+      "hashes": {
+        "regr": "7c24c05a0e1e086e171cd35dc3cccbebe230d7dfee4c1fe4a1ac45ec282cfd8f",
+        "sim": "604e4a6c0d9914969e46818c5eaa9a2f761b2b83c990a266c20237bb4e610d85",
+        "trace": "cfd42e84e15452893f3dc6fe3ac57d5bcb2d3673c2262da2e1a3401e0b66fdf3"
+      }
+    },
+    {
+      "case": 375,
+      "bug_id": "bug_079",
+      "group": "decoder_alu",
+      "family": "and_decoded_as_or",
+      "test": "riscv_machine_mode_rand_test",
+      "seed": "20130",
+      "logs_exist": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "nonempty": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "line_counts": {
+        "regr": 8,
+        "sim": 103,
+        "trace": 7330
+      },
+      "failure_type": "REGR_MISMATCH",
+      "failure_marker": true,
+      "sim_evidence": "RISC-V UVM TEST PASSED",
+      "dual_compare": true,
+      "pair_count_in_report": 1,
+      "first_pair": {
+        "ibex_index": 88,
+        "ibex": "pc[8000027e] c.and\tx14,x11: a4:0000019f",
+        "spike_index": 88,
+        "spike": "pc[8000027e] c.and   a4, a1: a4:00000010"
+      },
+      "matched": 211,
+      "mismatch": 4843,
+      "trace_header_ok": true,
+      "replacement_char": false,
+      "label_or_path_leak": false,
+      "hashes": {
+        "regr": "74c23967385f243452e76df21697c6317b3d75f29c2610db35be0d24b86d5027",
+        "sim": "b73689a110b85a6b6557e145263ba07e74df598275f6cab7097ff2d3e2956e1c",
+        "trace": "550b62cc53ba24f3ee20646d5e8f9eed25f5984986cb1e2dc59100a8a767fbc2"
+      }
+    },
+    {
+      "case": 425,
+      "bug_id": "bug_080",
+      "group": "decoder_alu",
+      "family": "or_decoded_as_xor",
+      "test": "riscv_machine_mode_rand_test",
+      "seed": "20130",
+      "logs_exist": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "nonempty": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "line_counts": {
+        "regr": 8,
+        "sim": 103,
+        "trace": 7418
+      },
+      "failure_type": "REGR_MISMATCH",
+      "failure_marker": true,
+      "sim_evidence": "RISC-V UVM TEST PASSED",
+      "dual_compare": true,
+      "pair_count_in_report": 1,
+      "first_pair": {
+        "ibex_index": 64,
+        "ibex": "pc[80000170] c.or\tx8,x15: s0:b0238527",
+        "spike_index": 64,
+        "spike": "pc[80000170] c.or    s0, a5: s0:f837f77f"
+      },
+      "matched": 500,
+      "mismatch": 4554,
+      "trace_header_ok": true,
+      "replacement_char": false,
+      "label_or_path_leak": false,
+      "hashes": {
+        "regr": "09a1d99278a13a23c26f6dc7c88929ce82ea342efc9db92a0a8a73a29c45cbfe",
+        "sim": "27b159c49e22ff1b095e84027670f4501831d2f620045669b8635e89f2625324",
+        "trace": "8bc000e306a2ecf1c32aa64c3bf848fbe20dd9ee685d26cf25a634195f4a00cb"
+      }
+    },
+    {
+      "case": 475,
+      "bug_id": "bug_081",
+      "group": "decoder_alu",
+      "family": "slt_signedness_swapped",
+      "test": "riscv_machine_mode_rand_test",
+      "seed": "20130",
+      "logs_exist": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "nonempty": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "line_counts": {
+        "regr": 6,
+        "sim": 103,
+        "trace": 7355
+      },
+      "failure_type": "REGR_MISMATCH",
+      "failure_marker": true,
+      "sim_evidence": "RISC-V UVM TEST PASSED",
+      "dual_compare": true,
+      "pair_count_in_report": 1,
+      "first_pair": {
+        "ibex_index": 146,
+        "ibex": "pc[80000472] slt\tx29,x22,x5: t4:00000000",
+        "spike_index": 146,
+        "spike": "pc[80000472] slt     t4, s6, t0: t4:00000001"
+      },
+      "matched": 321,
+      "mismatch": 4737,
+      "trace_header_ok": true,
+      "replacement_char": false,
+      "label_or_path_leak": false,
+      "hashes": {
+        "regr": "9f621cce6adc8c813347ec6a21bbf2ae409e3274b59127f5314b7fda2f371375",
+        "sim": "2db1b140bd2d0ad04cd737efbdb57179cf49a6e6953a1cd4eb970bd7314d766f",
+        "trace": "9ccadd2f9467b30373e8a6a9dbc2c6cd42c52f458581eb9609d1a960534e0140"
+      }
+    }
+  ],
+  "summary": {
+    "all_logs_complete": true,
+    "all_have_failure_marker": true,
+    "dual_compare": 6,
+    "replacement_char_cases": 0,
+    "leak_cases": 0,
+    "trace_header_failures": 0,
+    "max_lines": 7446,
+    "unique_regr": 10,
+    "unique_sim": 10,
+    "unique_trace": 10
+  }
+}
