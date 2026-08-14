@@ -1,9 +1,0 @@
-{
-  "case_id": "case_000158",
-  "bug_id": "bug_014",
-  "group": "decode",
-  "family": "opimm_operand_b_mux_wrong",
-  "test": "riscv_machine_mode_rand_test",
-  "seed": 828,
-  "source_run_dir": "/home/meow/iccad/dataset/raw_runs_first_batch/bug_014/riscv_machine_mode_rand_test/seed_000828"
-}

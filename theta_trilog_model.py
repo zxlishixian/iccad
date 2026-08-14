@@ -7,64 +7,96 @@ import copy
 from typing import Any
 
 import numpy as np
+import torch
+from torch import nn
 
 
-def _build_network(input_dim: int, base_dim: int, dropout: float):
+def supcon_loss(features, targets, temperature: float = 0.1):
+    """Supervised contrastive loss on batch representations.
+
+    Pulls same-label rows together and pushes different-label rows apart. Targets
+    are binary same/different labels; every same-label pair is a positive.
+    """
     import torch
-    from torch import nn
+    from torch.nn import functional as F
 
+    normalized = F.normalize(features, dim=1)
+    similarity = torch.matmul(normalized, normalized.T) / max(float(temperature), 1e-6)
+    exp_sim = torch.exp(similarity - similarity.max(dim=1, keepdim=True).values.detach())
+    eye = torch.eye(similarity.shape[0], device=similarity.device, dtype=torch.bool)
+    same = targets[:, None] == targets[None, :]
+    positive = same & ~eye
+    denominator = exp_sim.sum(dim=1) - exp_sim.diagonal()
+    numerator = (exp_sim * positive.float()).sum(dim=1)
+    log_prob = torch.log(numerator / torch.clamp(denominator, min=1e-9))
+    mask = positive.any(dim=1)
+    if not bool(mask.any()):
+        return features.new_zeros(())
+    return -log_prob[mask].mean()
+
+
+class _ResidualBlock(nn.Module):
+    def __init__(self, dim: int, dropout: float) -> None:
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(dim, dim), nn.LayerNorm(dim), nn.GELU(), nn.Dropout(dropout),
+            nn.Linear(dim, dim), nn.LayerNorm(dim),
+        )
+        self.activation = nn.GELU()
+
+    def forward(self, value):
+        return self.activation(value + self.net(value))
+
+
+class _Tower(nn.Module):
+    def __init__(self, source_dim: int, hidden: int, dropout: float) -> None:
+        super().__init__()
+        self.net = nn.Sequential(
+            nn.Linear(source_dim, hidden), nn.LayerNorm(hidden), nn.GELU(),
+            nn.Dropout(dropout), _ResidualBlock(hidden, dropout),
+        )
+
+    def forward(self, value):
+        return self.net(value)
+
+
+class TriLogPairNet(nn.Module):
+    def __init__(self, base_dim: int, trace_dim: int, dropout: float, fusion: str) -> None:
+        super().__init__()
+        self.base_dim = int(base_dim)
+        self.trace_dim = int(trace_dim)
+        self.fusion = str(fusion)
+        self.base_tower = _Tower(self.base_dim, 256, dropout) if self.base_dim else None
+        self.trace_tower = _Tower(self.trace_dim, 256, dropout) if self.trace_dim else None
+        both = self.base_tower is not None and self.trace_tower is not None
+        fused_dim = 256 * 4 if both and self.fusion == "concat" else 256
+        self.head = nn.Sequential(
+            nn.Linear(fused_dim, 512), nn.LayerNorm(512), nn.GELU(),
+            nn.Dropout(dropout), _ResidualBlock(512, dropout),
+            nn.Linear(512, 256), nn.LayerNorm(256), nn.GELU(),
+            nn.Dropout(dropout), _ResidualBlock(256, dropout), nn.Linear(256, 1),
+        )
+
+    def forward_features(self, value):
+        base = self.base_tower(value[:, : self.base_dim]) if self.base_tower is not None else None
+        trace = self.trace_tower(value[:, self.base_dim :]) if self.trace_tower is not None else None
+        if base is not None and trace is not None:
+            if self.fusion == "sum":
+                return base + trace
+            return torch.cat([base, trace, torch.abs(base - trace), base * trace], dim=1)
+        return base if base is not None else trace
+
+    def forward(self, value):
+        return self.head(self.forward_features(value)).squeeze(-1)
+
+
+def _build_network(input_dim: int, base_dim: int, dropout: float, fusion: str = "concat"):
     trace_dim = int(input_dim) - int(base_dim)
     if base_dim < 0 or trace_dim < 0 or input_dim <= 0:
         raise ValueError(f"invalid TriLog dimensions input={input_dim} base={base_dim}")
-
-    class ResidualBlock(nn.Module):
-        def __init__(self, dim: int) -> None:
-            super().__init__()
-            self.net = nn.Sequential(
-                nn.Linear(dim, dim), nn.LayerNorm(dim), nn.GELU(), nn.Dropout(dropout),
-                nn.Linear(dim, dim), nn.LayerNorm(dim),
-            )
-            self.activation = nn.GELU()
-
-        def forward(self, value):
-            return self.activation(value + self.net(value))
-
-    class Tower(nn.Module):
-        def __init__(self, source_dim: int, hidden: int = 256) -> None:
-            super().__init__()
-            self.net = nn.Sequential(
-                nn.Linear(source_dim, hidden), nn.LayerNorm(hidden), nn.GELU(),
-                nn.Dropout(dropout), ResidualBlock(hidden),
-            )
-
-        def forward(self, value):
-            return self.net(value)
-
-    class TriLogPairNet(nn.Module):
-        def __init__(self) -> None:
-            super().__init__()
-            self.base_dim = int(base_dim)
-            self.trace_dim = int(trace_dim)
-            self.base_tower = Tower(self.base_dim) if self.base_dim else None
-            self.trace_tower = Tower(self.trace_dim) if self.trace_dim else None
-            branches = 4 if self.base_tower is not None and self.trace_tower is not None else 1
-            self.head = nn.Sequential(
-                nn.Linear(256 * branches, 512), nn.LayerNorm(512), nn.GELU(),
-                nn.Dropout(dropout), ResidualBlock(512),
-                nn.Linear(512, 256), nn.LayerNorm(256), nn.GELU(),
-                nn.Dropout(dropout), ResidualBlock(256), nn.Linear(256, 1),
-            )
-
-        def forward(self, value):
-            base = self.base_tower(value[:, : self.base_dim]) if self.base_tower is not None else None
-            trace = self.trace_tower(value[:, self.base_dim :]) if self.trace_tower is not None else None
-            if base is not None and trace is not None:
-                fused = torch.cat([base, trace, torch.abs(base - trace), base * trace], dim=1)
-            else:
-                fused = base if base is not None else trace
-            return self.head(fused).squeeze(-1)
-
-    return TriLogPairNet()
+    if fusion not in ("concat", "sum"):
+        raise ValueError(f"unknown fusion mode: {fusion}")
+    return TriLogPairNet(int(base_dim), int(trace_dim), float(dropout), str(fusion))
 
 
 def train_trilog_pair_model(
@@ -87,6 +119,8 @@ def train_trilog_pair_model(
     labels = np.asarray(labels, dtype=np.float32)
     sample_weight = np.asarray(sample_weight, dtype=np.float32)
     seed = int(args.random_state)
+    supcon_weight = float(getattr(args, "supcon_weight", 0.0))
+    supcon_temperature = float(getattr(args, "supcon_temperature", 0.1))
     torch.manual_seed(seed)
     np.random.seed(seed)
     indices = np.arange(len(labels))
@@ -103,7 +137,8 @@ def train_trilog_pair_model(
     train_matrix = scaler.fit_transform(matrix[train_indices]).astype(np.float32)
     validation_matrix = scaler.transform(matrix[validation_indices]).astype(np.float32)
     device = resolve_torch_device(str(args.device))
-    model = _build_network(matrix.shape[1], base_dim, float(args.dropout)).to(device)
+    fusion = str(getattr(args, "fusion", "concat"))
+    model = _build_network(matrix.shape[1], base_dim, float(args.dropout), fusion=fusion).to(device)
     generator = torch.Generator().manual_seed(seed)
     loader = DataLoader(
         TensorDataset(
@@ -143,7 +178,11 @@ def train_trilog_pair_model(
             batch_y = batch_y.to(device)
             batch_w = batch_w.to(device)
             optimizer.zero_grad(set_to_none=True)
-            loss = focal_loss(model(batch_x), batch_y, batch_w)
+            features = model.forward_features(batch_x)
+            logits = model.head(features).squeeze(-1)
+            loss = focal_loss(logits, batch_y, batch_w)
+            if supcon_weight > 0.0:
+                loss = loss + supcon_weight * supcon_loss(features, batch_y, supcon_temperature)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=5.0)
             optimizer.step()
@@ -176,6 +215,8 @@ def train_trilog_pair_model(
         "base_dim": int(base_dim),
         "trace_dim": int(matrix.shape[1] - base_dim),
         "dropout": float(args.dropout),
+        "fusion": fusion,
+        "supcon_weight": supcon_weight,
         "best_epoch": best_epoch,
         "best_validation_loss": best_loss,
         "history": history,

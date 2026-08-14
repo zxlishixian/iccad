@@ -615,6 +615,178 @@ def quality_selected_clustering(
     )
 
 
+def _correlation_pivot(s: np.ndarray) -> np.ndarray:
+    n = int(s.shape[0])
+    labels = np.full(n, -1, dtype=np.int64)
+    remaining = set(range(n))
+    cluster = 0
+    while remaining:
+        pivot = min(remaining)
+        members = [pivot] + [j for j in sorted(remaining) if j != pivot and s[pivot, j] >= 0.0]
+        for m in members:
+            labels[m] = cluster
+            remaining.discard(m)
+        cluster += 1
+    return labels
+
+
+def _correlation_local_search(s: np.ndarray, labels: np.ndarray, max_iter: int) -> tuple[np.ndarray, int]:
+    labels = labels.astype(np.int64).copy()
+    n = int(s.shape[0])
+    moves = 0
+
+    def members_map() -> dict[int, list[int]]:
+        out: dict[int, list[int]] = {}
+        for idx, lab in enumerate(labels.tolist()):
+            out.setdefault(int(lab), []).append(idx)
+        return out
+
+    for _ in range(int(max_iter)):
+        members = members_map()
+        existing = sorted(members)
+        best: tuple[float, int, int] | None = None
+        for node in range(n):
+            old = int(labels[node])
+            old_peers = [x for x in members[old] if x != node]
+            old_sum = float(np.sum(s[node, old_peers])) if old_peers else 0.0
+            for target in existing:
+                if target == old:
+                    continue
+                target_sum = float(np.sum(s[node, members[target]]))
+                gain = target_sum - old_sum
+                if best is None or gain > best[0]:
+                    best = (float(gain), int(node), int(target))
+        if best is None or best[0] <= 1e-6:
+            break
+        _, node, target = best
+        labels[node] = target
+        remap = {lab: idx for idx, lab in enumerate(sorted(set(labels.tolist())))}
+        labels = np.asarray([remap[int(lab)] for lab in labels.tolist()], dtype=np.int64)
+        moves += 1
+    return labels, moves
+
+
+def _correlation_enforce_cannot_link(s: np.ndarray, labels: np.ndarray, threshold: float) -> tuple[np.ndarray, int]:
+    labels = labels.astype(np.int64).copy()
+    splits = 0
+    changed = True
+    while changed:
+        changed = False
+        members: dict[int, list[int]] = {}
+        for idx, lab in enumerate(labels.tolist()):
+            members.setdefault(int(lab), []).append(idx)
+        for members_list in members.values():
+            if len(members_list) < 2:
+                continue
+            violated = None
+            for a_i in range(len(members_list)):
+                i = members_list[a_i]
+                for b_i in range(a_i + 1, len(members_list)):
+                    j = members_list[b_i]
+                    if s[i, j] <= -threshold:
+                        violated = (i, j)
+                        break
+                if violated:
+                    break
+            if violated:
+                i, j = violated
+                labels[j] = int(labels.max()) + 1
+                splits += 1
+                changed = True
+                break
+    remap = {lab: idx for idx, lab in enumerate(sorted(set(labels.tolist())))}
+    return np.asarray([remap[int(lab)] for lab in labels.tolist()], dtype=np.int64), splits
+
+
+def correlation_cluster(
+    prob: np.ndarray,
+    k: int | None = None,
+    conflict_matrix: np.ndarray | None = None,
+    cannot_link_weight: float = 100.0,
+    max_iter: int = 20,
+    random_state: int = 0,
+) -> GraphClusterResult:
+    n = int(prob.shape[0])
+    if n <= 1:
+        return GraphClusterResult(list(range(n)), "correlation_cluster", n, diagnostics={"degenerate": False})
+    p = np.clip(
+        (np.asarray(prob, dtype=np.float32) + np.asarray(prob, dtype=np.float32).T) * 0.5, 0.0, 1.0
+    )
+    np.fill_diagonal(p, 1.0)
+    s = (2.0 * p - 1.0).astype(np.float32)
+    np.fill_diagonal(s, 0.0)
+    if conflict_matrix is not None:
+        conflict = np.asarray(conflict_matrix, dtype=np.float32)
+        upper = np.triu_indices(n, 1)
+        cannot = conflict[upper] > 0.5
+        left, right = upper[0][cannot], upper[1][cannot]
+        s[left, right] = -float(cannot_link_weight)
+        s[right, left] = -float(cannot_link_weight)
+
+    labels = _correlation_pivot(s)
+    trajectory = [{"action": "pivot_init", "clusters": len(set(labels.tolist()))}]
+    labels, moves = _correlation_local_search(s, labels, max_iter)
+    if moves:
+        trajectory.append({"action": "local_search", "moves": moves, "clusters": len(set(labels.tolist()))})
+    if conflict_matrix is not None:
+        labels, splits = _correlation_enforce_cannot_link(s, labels, float(cannot_link_weight) * 0.5)
+        if splits:
+            trajectory.append({"action": "enforce_cannot_link", "splits": splits})
+
+    num_clusters = len(set(labels.tolist()))
+    degenerate = num_clusters == 1 or num_clusters == n
+    return GraphClusterResult(
+        labels=list(map(int, labels)),
+        method="correlation_cluster",
+        num_clusters=num_clusters,
+        diagnostics={"degenerate": degenerate, "requested_k": int(k) if k is not None else None},
+        trajectory=trajectory,
+    )
+
+
+def _enforce_requested_k(prob: np.ndarray, result: GraphClusterResult, k: int) -> GraphClusterResult:
+    """Softly steer a clusterer's output toward ``k`` clusters.
+
+    ``correlation_cluster`` treats ``k`` as a hint only: its pivot + local
+    search optimizes pair agreement and produces a *free* cluster count, which
+    can land well above or below the requested ``k``.  We correct the count only
+    when it is **grossly** off (more than 2x over, or less than half under).
+    Forcing exact ``k`` on near-k partitions can harm BA — a greedy merge/split
+    may pick a wrong pair when the model's probabilities are imperfect (observed
+    on benchmark_set_2: free 5 clusters scored higher than forced 4).  So near-k
+    results are left untouched.
+    """
+    n = int(prob.shape[0])
+    requested_k = max(1, min(int(k), n))
+    clusters = clusters_from_labels(result.labels)
+    free = len(clusters)
+    if free == requested_k:
+        return result
+    if not (free > 2 * requested_k or free * 2 < requested_k):
+        return result
+    merges = splits = 0
+    if free > requested_k:
+        clusters, merges, extra = _merge_clusters_to_k(prob, clusters, requested_k)
+        result.trajectory.extend(extra)
+    else:
+        clusters, splits, extra = _split_clusters_to_k(prob, clusters, requested_k)
+        result.trajectory.extend(extra)
+    result.labels = dense_labels_from_clusters(clusters, n)
+    result.num_clusters = len(clusters)
+    result.num_merges = merges
+    result.num_splits = splits
+    return result
+
+
+def cluster_with_fallback(prob: np.ndarray, k: int, conflict_matrix: np.ndarray | None = None, **kwargs) -> GraphClusterResult:
+    result = correlation_cluster(prob, k, conflict_matrix=conflict_matrix, **kwargs)
+    if result.diagnostics.get("degenerate"):
+        fallback = agglomerative_avg(prob, k)
+        fallback.trajectory.append({"action": "fallback_from_correlation", "reason": "degenerate"})
+        return fallback
+    return _enforce_requested_k(prob, result, k)
+
+
 def cluster_probability_graph(
     prob: np.ndarray,
     k: int,
@@ -680,6 +852,14 @@ def cluster_probability_graph(
             "selector_conflict_weight",
         }
         return quality_selected_clustering(
+            prob,
+            k,
+            conflict_matrix=conflict_matrix,
+            **{key: value for key, value in kwargs.items() if key in allowed},
+        )
+    if method == "correlation_cluster":
+        allowed = {"cannot_link_weight", "max_iter", "random_state"}
+        return correlation_cluster(
             prob,
             k,
             conflict_matrix=conflict_matrix,
