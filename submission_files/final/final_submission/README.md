@@ -15,12 +15,21 @@ O(N) siamese per-case encoder (5-seed embedding average) → k-means clustering.
 
 Per-case features:
 - LLM embedding (nomic-embed-text-v1.5, 768 → SVD 64)
-- failure signature (functional-unit family + divergence type)
+- failure signature (functional-unit family + divergence type) — exact first-mismatch
+  opcode was tried and reverted (it re-introduces "diff-bugs-same-syndrome" confusion
+  on official dev sets; see handoff.md pitfall #23)
 - failing-test-name semantic category flags (csr/interrupt/debug/mmu/...)
 - hierarchical trace residual (96-dim)
 
 The encoder is a NumPy reimplementation of the PyTorch model (max error ~8e-5);
 no PyTorch is bundled.
+
+Training data: the 5-seed ensemble is trained on the official-format fake sets
+(official_vcs / directed_cross_v4 / stable / benchmark6_final / benchmark5_final /
+benchmark5_500cases_official) plus the two public official dev sets
+(benchmark_set_1 / benchmark_set_2).  The last set (benchmark5_500cases_official,
+500 cases / 10 bugs) covers the interrupt / CSR / debug failure domain and is the
+highest-quality fake set (late first-mismatch, discriminable opcodes, no leakage).
 
 ## LLM configuration
 

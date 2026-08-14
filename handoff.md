@@ -220,6 +220,25 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 
 **域对抗适配（DANN）是错配**：DANN 假设「域是 nuisance（干扰），要移除」，但我们的 fake vs official 域是 **informative 的**（official 的 bug 分布和 fake 不同，域信号本身携带 bug 信息）。强行学域无关特征反而丢掉有用信号。所以 DANN 对本任务不适用。
 
+### 2026-08-15：新数据集 + opcode 特征消融（结论：加新集、弃 opcode、不加权）
+
+队友按官方格式修复 bug 后造了新集 `benchmark5_500cases_official`（500 例 / 10 bug，late first-mismatch、opcode 可分、无泄漏，质量审计通过，见 §3）。做了「只训 fake → 测官方」的干净消融（官方集 7+25 例，**噪声大，set1 尤其**）：
+
+| 变体 | set1(7例) | set2(25例) | 官方均值 |
+|---|---:|---:|---:|
+| A 旧fake(5) | 0.43 | 0.71 | 0.57 |
+| B +新集 | 0.71 | 0.65 | 0.68 |
+| D +新集+opcode | 0.71 | 0.52 | 0.61 |
+| C +新集×3+opcode(5seed) | 0.79±.19 | 0.65±.05 | 0.72 |
+| E +新集×3无opcode(3seed) | 0.71±.23 | 0.62±.03 | 0.67 |
+
+**三个结论**：
+1. **新集帮 interrupt/CSR/debug 域**（set1 0.43→0.71+，因为新集 bug_038/057/037/056 正是这域），但**略伤 mismatch 域**（set2 0.71→0.65）。净 +0.11，方向相反。
+2. **精确 opcode 特征是负面的**：D 把 set2 从 0.65 砸到 0.52——opcode 重新引入「同症状不同 bug」混淆，**坑 #13 判断依然成立，已回退**（`git checkout` 两个文件，回到 family+type）。
+3. **加权（新集×3）无明确收益**（B≈E），不值得引入过拟合风险。
+
+**决定**：最终训练 = 全部 6 fake + 2 official（**不加权、不用 opcode、family+type 特征不变**）。6 fake = official_vcs / directed_cross_v4 / stable / benchmark6_final / benchmark5_final / benchmark5_500cases_official(新)。新集主要价值是给 fake 侧补上 interrupt/CSR/debug 域信号，让 hidden 集那类 bug 更稳。
+
 ## 4.5 alpha 基线 + 对标（2026-08-14）
 
 用户要求：新模型要在**本地数据集上干净地跑过 alpha**。alpha 的 0.72 是**官方隐藏测试集**的泛化分（不是本地分）。
@@ -276,6 +295,13 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 - **重打包 + GLIBC 2.28 修复已重做**（重打包后必须重换 libstdc++/libgcc，见 §8）。
 - **仍未做的**：AlmaLinux 8 容器真机测试（服务器无 sudo，只能队友在本机跑；容器命令见 §8）。
 
+**2026-08-15 决定（已定，待执行重训）：**
+
+- **新集加入最终训练**：`benchmark5_500cases_official`（500 例/10 bug）加进最终训练集（6 fake + 2 official，含 benchmark5_final），覆盖 interrupt/CSR/debug 域。消融见 §4「2026-08-15」。
+- **opcode 特征已回退**：精确 first-mismatch opcode 实测负面（伤 set2），保持 family+type 特征。
+- **不加权**：新集×3 加权无收益。
+- **待执行链**：5-seed 重训 → 转 npz（`encoder_seed*.npz` + `preprocess.pkl`）→ PyInstaller 重打包 → GLIBC 2.28 复验 → 双模式冒烟 → 真机（队友 AlmaLinux 8）→ 重推 git。命令见 §8。
+
 **遗留（可选，不再主动投入）：** 干净 official 迁移 0.53（fake→official 分布跨越）；benchmark6 64-bug 不可分（fake 数据未消歧）。
 
 ## 7. 采过的坑（不要再踩）
@@ -302,6 +328,7 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 20. **打包产物曾不进 git，后改为入库（2026-08-14）**：最初 `.gitignore` 排除二进制+`_internal/`，导致队友 clone 拿不到二进制、无法 clone→上传。**已改为入库**（队友流程是「clone 仓库 → 上传 `submission_files/final/final_submission/` 内容到 Google Drive」）。教训：提交物必须跟着仓库走，别依赖 scp/U 盘传。注意 `final_submission_pair_old/`（废弃 746MB）仍被 .gitignore 排除（模式无前导斜杠，按目录名任意层级匹配）。官方测评跑的是**可执行文件**（§1.7），源码只是「无法启动」时的后备。
 21. **`.gitignore` 的 `models/` 会吞掉提交包里的编码器权重（关键，2026-08-14）**：`models/`（无前导斜杠）按目录名任意层级匹配，把 `submission_files/final/final_submission/_internal/models/`（打包好的 5 个 `encoder_seed*.npz` + `preprocess.pkl`，~3.6MB）也忽略了，导致队友 clone 出的二进制启动正常但 `[siamese] failed ... preprocess.pkl not found` → 静默回退基线（set1 BA 0.52 而非 1.0）。同样 `*.tar.gz` 吞掉了 dateutil 的 `dateutil-zoneinfo.tar.gz`。**已修**：加否定规则 `!submission_files/final/final_submission/_internal/models/**` 和 `!.../dateutil/zoneinfo/dateutil-zoneinfo.tar.gz`。**教训：打包产物入库后，一定要 `git ls-files | grep _internal/models` 确认权重真的在 git 里；队友冒烟报 `[siamese] failed` 先查模型文件在不在。**
 22. **真机 glibc 2.28 已确认（2026-08-14，队友实测）**：队友在 AlmaLinux 8 容器（`--platform linux/amd64`）里直接跑 `regr_fail_bucketing` 二进制，`ldd (GNU libc) 2.28` + 正常产出 `Case,bucket` CSV → **二进制在 glibc 2.28 上能启动运行**。但那次跑的是缺模型权重的旧包，模型回退基线的现象正是坑 #21。
+23. **精确 opcode 特征会重新引入「同症状不同 bug」混淆（2026-08-15）**：曾经想把 first-mismatch 的精确 opcode 当特征（因为新集里 mul/mulhsu/xor/and/or/slt 的 opcode 都不同、理论上可分）。实测只训 fake→测官方，加 opcode 后 **set2 从 0.65 崩到 0.52**——官方 set2 的 bug 有重叠 opcode，opcode one-hot 让模型把不同 bug 聚到一起（正是官方「消歧」要避免的）。**坑 #13「opcode 被污染/不可靠」的判断在官方数据上依然成立，精确 opcode 不要当特征**；用「家族 + 分歧类型」就够。
 
 ## 8. 关键命令速查
 
@@ -309,12 +336,15 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 cd /home/lishixian/iccad
 PY=/home/lishixian/miniforge3/envs/collab-overcooked/bin/python
 
-# siamese 训练（B 版：4 fake + 2 official 一起训，train-on-dev）
+# siamese 训练（最终版：6 fake + 2 official 一起训，train-on-dev）
+# 新集 benchmark5_500cases_official 已加入（覆盖 interrupt/CSR/debug 域，见 §4 2026-08-15）
 $PY run_siamese_train.py --train-datasets \
   dataset/fake_dataset/official_format_fake_dataset/official_vcs_stage1_dataset_v1 \
   dataset/fake_dataset/official_format_fake_dataset/directed_cross_v4 \
   dataset/fake_dataset/official_format_fake_dataset/stable_official_like_multitest_v1 \
   dataset/fake_dataset/official_format_fake_dataset/benchmark6_final \
+  dataset/fake_dataset/official_format_fake_dataset/benchmark5_final \
+  dataset/fake_dataset/official_fixed_dataset/benchmark5_500cases_bundle/benchmark5_500cases_official \
   dataset/real_dataset/benchmark_set_1 dataset/real_dataset/benchmark_set_2 \
   --eval-datasets dataset/real_dataset/benchmark_set_1 dataset/real_dataset/benchmark_set_2 \
   --output-dir /tmp/siamese_seed0 --seed 0 --device cpu --epochs 40 --use-trace
