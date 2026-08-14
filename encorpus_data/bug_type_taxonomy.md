@@ -94,6 +94,26 @@
 
 ---
 
+## 关于「12 类能否覆盖 k=64」的说明
+
+本文的 12 类是**功能域（粗粒度）**，不是 12 个 bug。每个功能域可注入**多个不同 bug**（指令级/信号级/CSR 级粒度）：
+
+- A1 ALU：加法/减法/移位/比较/符号扩展/位宽截断… 6+ 个 distinct bug
+- A2 MDU：RV32M 的 8 条指令（mul/mulh/mulhsu/mulhu/div/divu/rem/remu）各可出 bug
+- B1 CSR：Ibex ~20 个 CSR（mstatus/mepc/mcause/mtvec/mtval/mie/mip…）各可出读写/权限 bug
+- B2 中断：~20 个中断源的优先级/使能/handler 各可出 bug
+
+RV32IMC 共 ~80 条指令，每条指令的实现都可能出错，加上 CSR/中断/调试，**distinct bug 空间远超 64**。所以 12 个功能域足够覆盖 k=64（平均每域 ~5 个 bug）。
+
+## 可能遗漏的边缘功能域（补充）
+
+| 模块 | 可能 bug | 症状 |
+|---|---|---|
+| PMP（物理内存保护）| 权限检查错、地址匹配错 | test_fail |
+| WFI/睡眠 | WFI 唤醒逻辑错 | test_fail（中断唤醒）|
+| 总线接口（AHB-Lite）| 握手/突发传输错 | mismatch / 时序错 |
+| 复位/初始化 | 复位值错、初始化状态错 | 早期 mismatch |
+
 ## 给队友的覆盖建议
 
 1. **两类症状都要覆盖**：mismatch 类（A1~A8）和 test_fail 类（B1~B4），比例可参考官方（public 里两类都有）
