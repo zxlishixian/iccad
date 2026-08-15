@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[127] : pc[800002e6] sll	x11,x21,x15: a1:00000007 
+spike[127] : pc[800002e2] csrrci  a6, mscratch, 11: a6:084c5552 
+Mismatch[6564]:
+[7720] ibex : pc[800031f2] c.addi	x17,-1: a7:00000000 
+[FAILED]: 141 matched, 6564 mismatch
+
+0 PASSED, 1 FAILED

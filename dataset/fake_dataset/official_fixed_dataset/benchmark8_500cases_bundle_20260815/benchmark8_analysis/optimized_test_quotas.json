@@ -1,0 +1,83 @@
+{
+  "seed": 20260815,
+  "iterations_requested": 3000000,
+  "target_gap": 0.25,
+  "num_cases": 500,
+  "num_bugs": 10,
+  "cases_per_bug": 50,
+  "positive_pairs": 12250,
+  "negative_pairs": 112500,
+  "initial_gap": 0.26952689342403624,
+  "optimized_gap": 0.2641063038548753,
+  "positive_same_test_rate": 0.3382040816326531,
+  "negative_same_test_rate": 0.07409777777777778,
+  "test_totals": {
+    "riscv_arithmetic_basic_test": 76,
+    "riscv_interrupt_csr_test": 31,
+    "riscv_jump_stress_test": 30,
+    "riscv_machine_mode_rand_test": 82,
+    "riscv_mmu_stress_test": 39,
+    "riscv_multiple_interrupt_test": 34,
+    "riscv_rand_instr_test": 56,
+    "riscv_rand_jump_test": 43,
+    "riscv_rv32im_instr_test": 21,
+    "riscv_single_interrupt_test": 35,
+    "riscv_unaligned_load_store_test": 40,
+    "riscv_user_mode_rand_test": 13
+  },
+  "bug_test_quotas": {
+    "bug_041": {
+      "riscv_arithmetic_basic_test": 13,
+      "riscv_machine_mode_rand_test": 13,
+      "riscv_rand_instr_test": 11,
+      "riscv_rv32im_instr_test": 7,
+      "riscv_user_mode_rand_test": 6
+    },
+    "bug_048": {
+      "riscv_arithmetic_basic_test": 14,
+      "riscv_machine_mode_rand_test": 11,
+      "riscv_rand_instr_test": 11,
+      "riscv_rv32im_instr_test": 14
+    },
+    "bug_051": {
+      "riscv_mmu_stress_test": 25,
+      "riscv_unaligned_load_store_test": 25
+    },
+    "bug_053": {
+      "riscv_arithmetic_basic_test": 24,
+      "riscv_machine_mode_rand_test": 12,
+      "riscv_rand_instr_test": 14
+    },
+    "bug_066": {
+      "riscv_jump_stress_test": 11,
+      "riscv_machine_mode_rand_test": 14,
+      "riscv_rand_instr_test": 13,
+      "riscv_rand_jump_test": 12
+    },
+    "bug_083": {
+      "riscv_jump_stress_test": 19,
+      "riscv_rand_jump_test": 31
+    },
+    "bug_085": {
+      "riscv_arithmetic_basic_test": 25,
+      "riscv_machine_mode_rand_test": 25
+    },
+    "bug_096": {
+      "riscv_interrupt_csr_test": 15,
+      "riscv_multiple_interrupt_test": 17,
+      "riscv_single_interrupt_test": 18
+    },
+    "bug_100": {
+      "riscv_interrupt_csr_test": 16,
+      "riscv_multiple_interrupt_test": 17,
+      "riscv_single_interrupt_test": 17
+    },
+    "bug_102": {
+      "riscv_machine_mode_rand_test": 7,
+      "riscv_mmu_stress_test": 14,
+      "riscv_rand_instr_test": 7,
+      "riscv_unaligned_load_store_test": 15,
+      "riscv_user_mode_rand_test": 7
+    }
+  }
+}

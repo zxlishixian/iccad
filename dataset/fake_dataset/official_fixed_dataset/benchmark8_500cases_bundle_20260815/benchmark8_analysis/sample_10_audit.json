@@ -1,0 +1,433 @@
+{
+  "dataset_root": "/home/yian/iccad/dataset/benchmark8_500cases_official",
+  "sample_size": 10,
+  "rows": [
+    {
+      "case": 1,
+      "bug_id": "bug_041",
+      "group": "decoder_alu",
+      "family": "sra_uses_logical_shift",
+      "test": "riscv_arithmetic_basic_test",
+      "seed": "33002",
+      "logs_exist": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "nonempty": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "line_counts": {
+        "regr": 6,
+        "sim": 103,
+        "trace": 10272
+      },
+      "failure_type": "REGR_MISMATCH",
+      "failure_marker": true,
+      "sim_evidence": "RISC-V UVM TEST PASSED",
+      "dual_compare": true,
+      "pair_count_in_report": 1,
+      "first_pair": {
+        "ibex_index": 77,
+        "ibex": "pc[8000019a] sra\tx17,x24,x6: a7:01982609",
+        "spike_index": 77,
+        "spike": "pc[8000019a] sra     a7, s8, t1: a7:ff982609"
+      },
+      "matched": 439,
+      "mismatch": 7402,
+      "trace_header_ok": true,
+      "replacement_char": false,
+      "label_or_path_leak": false,
+      "hashes": {
+        "regr": "d82c2d5830f1870d1833a4f89f636b8e5457f0baf17249049b8c95eb745e3e6f",
+        "sim": "be34255a70a59b976e59505a661740aae347b16e8f1a21f8d5e9a3c71f43a37c",
+        "trace": "7d08341f1072702a65d2384dfa76de6d3cbb3d789a5912ab4ea35bc77c24d603"
+      }
+    },
+    {
+      "case": 51,
+      "bug_id": "bug_048",
+      "group": "decoder_alu",
+      "family": "add_sub_operand_low_byte_bitflip",
+      "test": "riscv_arithmetic_basic_test",
+      "seed": "33102",
+      "logs_exist": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "nonempty": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "line_counts": {
+        "regr": 8,
+        "sim": 103,
+        "trace": 10279
+      },
+      "failure_type": "REGR_MISMATCH",
+      "failure_marker": true,
+      "sim_evidence": "RISC-V UVM TEST PASSED",
+      "dual_compare": true,
+      "pair_count_in_report": 1,
+      "first_pair": {
+        "ibex_index": 58,
+        "ibex": "pc[8000015a] auipc\tx13,0x12: a3:8001215b",
+        "spike_index": 58,
+        "spike": "pc[8000015a] auipc   a3, 0x12: a3:8001215a"
+      },
+      "matched": 582,
+      "mismatch": 7571,
+      "trace_header_ok": true,
+      "replacement_char": false,
+      "label_or_path_leak": false,
+      "hashes": {
+        "regr": "fc6d6689deb80a99fc92cfa3b1533a1514ee038cc03c42c24d22e2800a821b7e",
+        "sim": "eca0255fed5423c35f760b1192a81f9684fc43f124003b7128cc4a5844100579",
+        "trace": "72c8918ace833d0dd84406ce8b8a71a9bc6d8f4ffb413d636162718c807906e8"
+      }
+    },
+    {
+      "case": 101,
+      "bug_id": "bug_051",
+      "group": "load_store",
+      "family": "lb_offset2_sign_extension_after_32_loads",
+      "test": "riscv_mmu_stress_test",
+      "seed": "33731",
+      "logs_exist": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "nonempty": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "line_counts": {
+        "regr": 6,
+        "sim": 103,
+        "trace": 52179
+      },
+      "failure_type": "REGR_MISMATCH",
+      "failure_marker": true,
+      "sim_evidence": "RISC-V UVM TEST PASSED",
+      "dual_compare": true,
+      "pair_count_in_report": 1,
+      "first_pair": {
+        "ibex_index": 119,
+        "ibex": "pc[8001276a] lb\tx24,414(x4): s8:000000a5",
+        "spike_index": 119,
+        "spike": "pc[8001276a] lb      s8, 414(tp): s8:ffffffa5"
+      },
+      "matched": 3204,
+      "mismatch": 32209,
+      "trace_header_ok": true,
+      "replacement_char": false,
+      "label_or_path_leak": false,
+      "hashes": {
+        "regr": "52ebd5ca3b82b0b96a67dbd6d206cee11f98321094eec749898b281d948b0e59",
+        "sim": "e17245a8787168ca89adaf7ba7224c3c47ad2bb18711ca868f5ab5f9c4d47dc4",
+        "trace": "049ae5029977fd9a35646ccf31bda4cef6d22e1c944398aa0d1c2473b3dc101d"
+      }
+    },
+    {
+      "case": 151,
+      "bug_id": "bug_053",
+      "group": "pipeline_alu",
+      "family": "opimm_operand_bitflip_after_128_instructions",
+      "test": "riscv_arithmetic_basic_test",
+      "seed": "33802",
+      "logs_exist": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "nonempty": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "line_counts": {
+        "regr": 8,
+        "sim": 103,
+        "trace": 10270
+      },
+      "failure_type": "REGR_MISMATCH",
+      "failure_marker": true,
+      "sim_evidence": "RISC-V UVM TEST PASSED",
+      "dual_compare": true,
+      "pair_count_in_report": 1,
+      "first_pair": {
+        "ibex_index": 120,
+        "ibex": "pc[80000230] c.addi\tx4,-1: tp:0000000d",
+        "spike_index": 120,
+        "spike": "pc[80000230] c.addi  tp, -1: tp:0000000e"
+      },
+      "matched": 223,
+      "mismatch": 8013,
+      "trace_header_ok": true,
+      "replacement_char": false,
+      "label_or_path_leak": false,
+      "hashes": {
+        "regr": "a091cd0762d5ce3afd6d1b628955af64d9407a7e005cb1a2676be7236b146654",
+        "sim": "fb23b005dfbbe2eecb56c95b04a425b2ac7a71ab6128bec66fbbd2e2853d243a",
+        "trace": "f513d617bda86dd13d0d285601915f4ce31838e170109a53432e4aacfa7c26c5"
+      }
+    },
+    {
+      "case": 201,
+      "bug_id": "bug_066",
+      "group": "branch",
+      "family": "bgeu_uses_signed_compare",
+      "test": "riscv_jump_stress_test",
+      "seed": "34017",
+      "logs_exist": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "nonempty": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "line_counts": {
+        "regr": 8,
+        "sim": 103,
+        "trace": 8136
+      },
+      "failure_type": "REGR_MISMATCH",
+      "failure_marker": true,
+      "sim_evidence": "RISC-V UVM TEST PASSED",
+      "dual_compare": true,
+      "pair_count_in_report": 1,
+      "first_pair": {
+        "ibex_index": 963,
+        "ibex": "pc[800015d6] xori\tx3,x2,407: gp:00000037",
+        "spike_index": 963,
+        "spike": "pc[800015b4] c.addi16sp sp, -16: sp:00000190"
+      },
+      "matched": 954,
+      "mismatch": 4255,
+      "trace_header_ok": true,
+      "replacement_char": false,
+      "label_or_path_leak": false,
+      "hashes": {
+        "regr": "cbc50466d7029721757805739b5778395b7dcf90473ad53d817abcdfe5979720",
+        "sim": "20c24e12b35cebfa523aa0047bed595c389b8fbb2051e5892de9ddcaa4a84a9a",
+        "trace": "95256502fb69955f41c934e3d3dce82e190f24d8c8ddc6cc5d15566f5bfd89bf"
+      }
+    },
+    {
+      "case": 251,
+      "bug_id": "bug_083",
+      "group": "branch",
+      "family": "branch_immediate_uses_jump_encoding",
+      "test": "riscv_jump_stress_test",
+      "seed": "33301",
+      "logs_exist": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "nonempty": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "line_counts": {
+        "regr": 1,
+        "sim": 60274,
+        "trace": 432332
+      },
+      "failure_type": "UVM_ERROR",
+      "failure_marker": true,
+      "sim_evidence": "UVM_ERROR /workspace/ibex/dv/uvm/common/mem_model/mem_model.sv(28) @ 1555000: reporter [mem] read to uninitialzed addr 0x8007520b",
+      "dual_compare": false,
+      "pair_count_in_report": 0,
+      "first_pair": null,
+      "matched": null,
+      "mismatch": null,
+      "trace_header_ok": true,
+      "replacement_char": false,
+      "label_or_path_leak": false,
+      "hashes": {
+        "regr": "39ce74004e7953e428f2a308e8b997e6e6e5088553efac5219269e8c91ed58f8",
+        "sim": "bfd9eb2f8c64ffb49a1874cac1d85d080743dfef8de9c7f2d7ebbf1858c7fb3e",
+        "trace": "519844670b9540c9eb263f2cfc9e38679f746ea97c253c8cd6871eafeeab23fc"
+      }
+    },
+    {
+      "case": 301,
+      "bug_id": "bug_085",
+      "group": "decoder_alu",
+      "family": "auipc_ignores_current_pc",
+      "test": "riscv_arithmetic_basic_test",
+      "seed": "33201",
+      "logs_exist": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "nonempty": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "line_counts": {
+        "regr": 1,
+        "sim": 599806,
+        "trace": 271701
+      },
+      "failure_type": "UVM_ERROR",
+      "failure_marker": true,
+      "sim_evidence": "UVM_ERROR /workspace/ibex/dv/uvm/common/mem_model/mem_model.sv(28) @ 1237000: reporter [mem] read to uninitialzed addr 0x13",
+      "dual_compare": false,
+      "pair_count_in_report": 0,
+      "first_pair": null,
+      "matched": null,
+      "mismatch": null,
+      "trace_header_ok": true,
+      "replacement_char": false,
+      "label_or_path_leak": false,
+      "hashes": {
+        "regr": "39ce74004e7953e428f2a308e8b997e6e6e5088553efac5219269e8c91ed58f8",
+        "sim": "7b3098e12f8a1f821909b18a021c9035460ed1286827e53a7ad4ec2df56f295b",
+        "trace": "6c7b2664dfa63f229df91b5368f752870b4a525eeb7179d7e4509d61f7ee819f"
+      }
+    },
+    {
+      "case": 351,
+      "bug_id": "bug_096",
+      "group": "interrupt",
+      "family": "irq_vector_offset_misaligned",
+      "test": "riscv_interrupt_csr_test",
+      "seed": "33401",
+      "logs_exist": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "nonempty": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "line_counts": {
+        "regr": 3,
+        "sim": 106,
+        "trace": 130
+      },
+      "failure_type": "UVM_FATAL",
+      "failure_marker": true,
+      "sim_evidence": "UVM_FATAL /workspace/ibex/dv/uvm/tests/core_ibex_base_test.sv(190) @ 2739000: uvm_test_top [uvm_test_top] Check failed signature_data == core_status (8 [0x8] vs 6 [0x6]) Core did not jump to vectored interrupt handler",
+      "dual_compare": false,
+      "pair_count_in_report": 0,
+      "first_pair": null,
+      "matched": null,
+      "mismatch": null,
+      "trace_header_ok": true,
+      "replacement_char": false,
+      "label_or_path_leak": false,
+      "hashes": {
+        "regr": "54ddd811bf53f64af8ce91405071b484e0500e3d6c66990a82641c3e5c3706c3",
+        "sim": "9d242c0f8d7bb246847f363a3bd56fcd1a5c71362989e692b017a89e7556271e",
+        "trace": "bca29859de4a6ead8e65d567913998dacacf955e0abd973a39f74c675e228494"
+      }
+    },
+    {
+      "case": 401,
+      "bug_id": "bug_100",
+      "group": "csr_interrupt",
+      "family": "exception_entry_leaves_mie_enabled",
+      "test": "riscv_interrupt_csr_test",
+      "seed": "33501",
+      "logs_exist": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "nonempty": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "line_counts": {
+        "regr": 3,
+        "sim": 105,
+        "trace": 95
+      },
+      "failure_type": "UVM_FATAL",
+      "failure_marker": true,
+      "sim_evidence": "UVM_FATAL /workspace/ibex/dv/uvm/tests/core_ibex_base_test.sv(194) @ 3367000: uvm_test_top [uvm_test_top] Did not receive core_status HANDLING_IRQ within 750 cycle timeout period",
+      "dual_compare": false,
+      "pair_count_in_report": 0,
+      "first_pair": null,
+      "matched": null,
+      "mismatch": null,
+      "trace_header_ok": true,
+      "replacement_char": false,
+      "label_or_path_leak": false,
+      "hashes": {
+        "regr": "54ddd811bf53f64af8ce91405071b484e0500e3d6c66990a82641c3e5c3706c3",
+        "sim": "82095cb6262d7a1ba8d223dcb6241fe46c08db13a3f4a92255922e2030bce943",
+        "trace": "0a5281b8864f94fff05357d19f3b4aadea6ccea0c3b911906ede10193577bf09"
+      }
+    },
+    {
+      "case": 451,
+      "bug_id": "bug_102",
+      "group": "load_store",
+      "family": "store_uses_i_immediate",
+      "test": "riscv_machine_mode_rand_test",
+      "seed": "33601",
+      "logs_exist": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "nonempty": {
+        "regr": true,
+        "sim": true,
+        "trace": true
+      },
+      "line_counts": {
+        "regr": 1,
+        "sim": 347081,
+        "trace": 287996
+      },
+      "failure_type": "UVM_ERROR",
+      "failure_marker": true,
+      "sim_evidence": "UVM_ERROR /workspace/ibex/dv/uvm/common/mem_model/mem_model.sv(28) @ 2449000: reporter [mem] read to uninitialzed addr 0x3",
+      "dual_compare": false,
+      "pair_count_in_report": 0,
+      "first_pair": null,
+      "matched": null,
+      "mismatch": null,
+      "trace_header_ok": true,
+      "replacement_char": false,
+      "label_or_path_leak": false,
+      "hashes": {
+        "regr": "39ce74004e7953e428f2a308e8b997e6e6e5088553efac5219269e8c91ed58f8",
+        "sim": "6adb4ec10efbf4daca0de578523ef9a4c3861c98229e3c0aa0f733e0e35b8919",
+        "trace": "0a25107786e05e0db6804c966047840c6e25b11b966d63ce765ca5fc090926f8"
+      }
+    }
+  ],
+  "summary": {
+    "all_logs_complete": true,
+    "all_have_failure_marker": true,
+    "dual_compare": 5,
+    "replacement_char_cases": 0,
+    "leak_cases": 0,
+    "trace_header_failures": 0,
+    "max_lines": 599806,
+    "unique_regr": 7,
+    "unique_sim": 10,
+    "unique_trace": 10
+  }
+}

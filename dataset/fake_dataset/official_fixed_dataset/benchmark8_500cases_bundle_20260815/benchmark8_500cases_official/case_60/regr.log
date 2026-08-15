@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[4855] : pc[80004424] c.add	x8,x17: s0:9a1e2ee3 
+spike[4855] : pc[80004424] c.add   s0, a7: s0:9a1e2ee2 
+[FAILED]: 8070 matched, 4 mismatch
+
+0 PASSED, 1 FAILED

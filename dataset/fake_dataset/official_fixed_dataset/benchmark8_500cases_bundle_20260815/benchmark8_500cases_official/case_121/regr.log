@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[481] : pc[800031ce] lb	x31,55(x2): t6:00000091 
+spike[481] : pc[800031ce] lb      t6, 55(sp): t6:ffffff91 
+[FAILED]: 1284 matched, 16208 mismatch
+
+0 PASSED, 1 FAILED

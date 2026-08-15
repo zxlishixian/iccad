@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[77] : pc[8000019a] sra	x17,x24,x6: a7:01982609 
+spike[77] : pc[8000019a] sra     a7, s8, t1: a7:ff982609 
+[FAILED]: 439 matched, 7402 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[120] : pc[80000232] andi	x7,x14,-302: t2:00000013 
+spike[120] : pc[80000232] andi    t2, a4, -302: t2:00000012 
+[FAILED]: 197 matched, 7813 mismatch
+
+0 PASSED, 1 FAILED

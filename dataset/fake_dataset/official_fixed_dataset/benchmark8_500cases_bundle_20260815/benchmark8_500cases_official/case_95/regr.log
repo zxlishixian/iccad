@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[60] : pc[8000015a] auipc	x2,0x18: sp:8001815b 
+spike[60] : pc[8000015a] auipc   sp, 0x18: sp:8001815a 
+Mismatch[18499]:
+[23878] ibex : pc[80000a8c] sra	x14,x4,x17: a4:1d1fc519 
+[FAILED]: 3328 matched, 18499 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[304] : pc[8000065a] auipc	x17,0x81cd1: a7:01cd165b 
+spike[304] : pc[8000065a] auipc   a7, 0x81cd1: a7:01cd165a 
+[FAILED]: 3054 matched, 1420 mismatch
+
+0 PASSED, 1 FAILED

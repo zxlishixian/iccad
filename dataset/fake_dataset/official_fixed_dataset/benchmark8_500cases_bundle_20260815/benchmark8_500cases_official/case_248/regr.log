@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[84] : pc[8000a352] andi	x3,x0,-345: gp:00000000 
+spike[84] : pc[8000a356] jalr    ra, s8, -229: ra:8000a35a 
+Mismatch[3964]:
+[4570] ibex : pc[8000a5fc] sltiu	x28,x7,-190: t3:00000000 
+[FAILED]: 90 matched, 3964 mismatch
+
+0 PASSED, 1 FAILED

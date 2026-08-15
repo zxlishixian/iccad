@@ -1,0 +1,43 @@
+{
+  "num_cases": 6,
+  "num_bugs": 1,
+  "bug_counts": {
+    "bug_041": 6
+  },
+  "test_counts": {
+    "riscv_user_mode_rand_test": 6
+  },
+  "primary_type_counts": {
+    "REGR_MISMATCH": 6
+  },
+  "mismatch_type_counts": {
+    "pc_same": 5,
+    "pc_diff": 1
+  },
+  "op_pair_counts": {
+    "srai|srai": 3,
+    "c.srai|c.srai": 2,
+    "c.srai|mul": 1
+  },
+  "dual_compare_count": 6,
+  "simplified_ibex_count": 0,
+  "op_pair_nonempty_count": 6,
+  "pc_region_count": 1,
+  "pc_regions": [
+    "8000"
+  ],
+  "regr_template_unique_count": 6,
+  "sim_template_unique_count": 6,
+  "trace_unique_count": 6,
+  "max_sim_lines": 103,
+  "min_sim_lines": 103,
+  "avg_sim_lines": 103.0,
+  "by_bug": {
+    "bug_041": {
+      "cases": 6,
+      "primary:REGR_MISMATCH": 6,
+      "dual_compare": 6,
+      "op_pair_nonempty": 6
+    }
+  }
+}

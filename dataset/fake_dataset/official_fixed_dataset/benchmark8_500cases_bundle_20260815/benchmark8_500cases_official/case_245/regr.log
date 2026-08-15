@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[135] : pc[80000234] jalr	x6,451(x9): t1:80000238 
+spike[135] : pc[80000224] csrrci  s11, mscratch, 18: s11:00000007 
+[FAILED]: 132 matched, 4274 mismatch
+
+0 PASSED, 1 FAILED

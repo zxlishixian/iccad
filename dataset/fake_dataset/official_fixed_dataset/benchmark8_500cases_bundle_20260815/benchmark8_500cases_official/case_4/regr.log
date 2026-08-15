@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[217] : pc[80000378] srai	x25,x1,0x19: s9:00000040 
+spike[217] : pc[80000378] srai    s9, ra, 25: s9:ffffffc0 
+Mismatch[7366]:
+[9411] ibex : pc[8000831e] c.srai	x10,0x2: a0:00002cbf 
+[FAILED]: 542 matched, 7366 mismatch
+
+0 PASSED, 1 FAILED

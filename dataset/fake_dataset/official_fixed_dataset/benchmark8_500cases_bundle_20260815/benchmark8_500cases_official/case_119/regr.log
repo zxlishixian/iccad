@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[380] : pc[8000085c] lb	x3,9(x16): gp:000000c1 
+spike[380] : pc[8000085c] lb      gp, 9(a6): gp:ffffffc1 
+[FAILED]: 2684 matched, 29673 mismatch
+
+0 PASSED, 1 FAILED

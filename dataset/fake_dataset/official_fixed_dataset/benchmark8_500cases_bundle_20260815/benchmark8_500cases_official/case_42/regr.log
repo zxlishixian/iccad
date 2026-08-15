@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[110] : pc[8000026e] srai	x23,x23,0x2: s7:3fffffff 
+spike[110] : pc[8000027a] lb      s1, 2(s0): s1:00000000 
+[FAILED]: 320 matched, 447 mismatch
+
+0 PASSED, 1 FAILED

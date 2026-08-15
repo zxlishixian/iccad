@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[129] : pc[8000024c] srli	x20,x2,0x13: s4:00003fff 
+spike[129] : pc[8000024c] srli    s4, sp, 19: s4:00001fff 
+Mismatch[7786]:
+[9342] ibex : pc[80008314] addi	x1,x10,675: ra:000002a2 
+[FAILED]: 171 matched, 7786 mismatch
+
+0 PASSED, 1 FAILED

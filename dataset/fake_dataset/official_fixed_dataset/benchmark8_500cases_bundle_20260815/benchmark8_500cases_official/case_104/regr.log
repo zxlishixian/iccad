@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2168] : pc[80002cf0] lb	x23,-34(x2): s7:000000f9 
+spike[2168] : pc[80002cf0] lb      s7, -34(sp): s7:fffffff9 
+[FAILED]: 8310 matched, 12143 mismatch
+
+0 PASSED, 1 FAILED

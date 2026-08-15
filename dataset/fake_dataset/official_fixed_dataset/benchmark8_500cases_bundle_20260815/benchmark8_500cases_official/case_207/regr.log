@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[730] : pc[8000474a] c.li	x12,-1: a2:ffffffff 
+spike[730] : pc[80004728] xori    a7, a6, -646: a7:00000284 
+[FAILED]: 676 matched, 570 mismatch
+
+0 PASSED, 1 FAILED

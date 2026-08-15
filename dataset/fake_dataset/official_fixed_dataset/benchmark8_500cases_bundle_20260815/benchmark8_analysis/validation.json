@@ -1,0 +1,9 @@
+{
+  "dataset_root": "/home/yian/iccad/dataset/benchmark8_500cases_official",
+  "layout": "official",
+  "num_cases": 500,
+  "num_errors": 0,
+  "num_warnings": 0,
+  "errors": [],
+  "warnings": []
+}

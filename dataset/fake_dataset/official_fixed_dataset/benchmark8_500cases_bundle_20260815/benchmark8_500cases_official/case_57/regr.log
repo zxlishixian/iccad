@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[57] : pc[8000015a] auipc	x12,0x12: a2:8001215b 
+spike[57] : pc[8000015a] auipc   a2, 0x12: a2:8001215a 
+Mismatch[7024]:
+[9437] ibex : pc[800083c6] srl	x31,x28,x28: t6:00010000 
+[FAILED]: 1078 matched, 7024 mismatch
+
+0 PASSED, 1 FAILED

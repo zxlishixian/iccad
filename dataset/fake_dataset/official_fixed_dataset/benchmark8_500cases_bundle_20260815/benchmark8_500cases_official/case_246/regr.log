@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[757] : pc[80000eb2] auipc	x27,0xbd6d9: s11:3d6d9eb2 
+spike[757] : pc[80000e9a] remu    s6, a5, gp: s6:00000000 
+[FAILED]: 700 matched, 3117 mismatch
+
+0 PASSED, 1 FAILED

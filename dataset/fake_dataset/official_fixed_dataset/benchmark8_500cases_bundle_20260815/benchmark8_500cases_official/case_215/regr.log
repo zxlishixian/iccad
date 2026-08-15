@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[465] : pc[80002fa2] addi	x2,x4,170: sp:fff203d1 
+spike[465] : pc[80002f74] slti    s4, tp, -285: s4:00000001 
+Mismatch[2887]:
+[3894] ibex : pc[80000d48] c.andi	x11,22: a1:00000014 
+[FAILED]: 409 matched, 2887 mismatch
+
+0 PASSED, 1 FAILED

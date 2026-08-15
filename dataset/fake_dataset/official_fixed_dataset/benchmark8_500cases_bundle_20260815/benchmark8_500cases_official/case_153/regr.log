@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[121] : pc[80000238] addi	x14,x27,138: a4:00000090 
+spike[121] : pc[80000238] addi    a4, s11, 138: a4:0000008f 
+Mismatch[7924]:
+[9371] ibex : pc[80008318] c.addi4spn	x13,x2,400: a3:ffffe191 
+[FAILED]: 211 matched, 7924 mismatch
+
+0 PASSED, 1 FAILED

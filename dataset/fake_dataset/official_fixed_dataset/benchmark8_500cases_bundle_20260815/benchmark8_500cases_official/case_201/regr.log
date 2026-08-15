@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[963] : pc[800015d6] xori	x3,x2,407: gp:00000037 
+spike[963] : pc[800015b4] c.addi16sp sp, -16: sp:00000190 
+Mismatch[4255]:
+[5808] ibex : pc[80000578] mul	x10,x30,x1: a0:6f460000 
+[FAILED]: 954 matched, 4255 mismatch
+
+0 PASSED, 1 FAILED

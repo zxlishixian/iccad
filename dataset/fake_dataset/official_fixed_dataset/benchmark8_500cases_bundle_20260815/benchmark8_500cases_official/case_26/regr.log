@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[248] : pc[8000071c] srai	x2,x3,0x12: sp:00003fff 
+spike[248] : pc[8000071c] srai    sp, gp, 18: sp:ffffffff 
+[FAILED]: 751 matched, 692 mismatch
+
+0 PASSED, 1 FAILED

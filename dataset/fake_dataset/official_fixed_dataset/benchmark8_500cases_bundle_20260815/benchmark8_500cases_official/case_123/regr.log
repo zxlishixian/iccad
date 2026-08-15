@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[132] : pc[8000c022] lb	x6,-218(x10): t1:0000008f 
+spike[132] : pc[8000c022] lb      t1, -218(a0): t1:ffffff8f 
+[FAILED]: 1690 matched, 32091 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[120] : pc[8000022c] xori	x12,x15,395: a2:00000061 
+spike[120] : pc[8000022c] xori    a2, a5, 395: a2:00000060 
+Mismatch[7996]:
+[9442] ibex : pc[800083d0] or	x10,x8,x17: a0:2eb4c75b 
+[FAILED]: 121 matched, 7996 mismatch
+
+0 PASSED, 1 FAILED

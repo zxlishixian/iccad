@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[138] : pc[800003f4] c.lui	x3,0x1c: gp:0001c000 
+spike[138] : pc[800003f0] xor     s1, a6, t4: s1:ffffffff 
+[FAILED]: 143 matched, 4349 mismatch
+
+0 PASSED, 1 FAILED

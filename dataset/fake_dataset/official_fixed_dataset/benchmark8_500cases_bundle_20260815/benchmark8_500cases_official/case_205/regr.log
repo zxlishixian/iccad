@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[950] : pc[8000104c] c.addi	x30,-1: t5:800008c7 
+spike[950] : pc[8000100e] slli    t4, t0, 5: t4:00000000 
+[FAILED]: 936 matched, 3362 mismatch
+
+0 PASSED, 1 FAILED

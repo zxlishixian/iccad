@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[391] : pc[8000075a] auipc	x3,0x16: gp:8001675b 
+spike[391] : pc[8000075a] auipc   gp, 0x16: gp:8001675a 
+[FAILED]: 4238 matched, 13885 mismatch
+
+0 PASSED, 1 FAILED

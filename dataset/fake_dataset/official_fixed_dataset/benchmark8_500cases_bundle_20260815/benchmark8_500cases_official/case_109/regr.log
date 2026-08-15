@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[133] : pc[800002cc] lb	x28,10(x18): t3:000000f5 
+spike[133] : pc[800002cc] lb      t3, 10(s2): t3:fffffff5 
+[FAILED]: 1079 matched, 39565 mismatch
+
+0 PASSED, 1 FAILED

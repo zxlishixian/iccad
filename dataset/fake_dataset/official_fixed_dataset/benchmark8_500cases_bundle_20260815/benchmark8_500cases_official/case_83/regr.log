@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[1844] : pc[80006e98] c.sub	x14,x11: a4:00000001 
+spike[1844] : pc[80006e98] c.sub   a4, a1: a4:00000000 
+Mismatch[2775]:
+[5128] ibex : pc[800009da] c.srai	x8,0x1c: s0:00000000 
+[FAILED]: 1549 matched, 2775 mismatch
+
+0 PASSED, 1 FAILED

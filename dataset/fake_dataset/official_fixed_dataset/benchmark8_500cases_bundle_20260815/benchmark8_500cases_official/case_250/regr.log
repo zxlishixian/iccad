@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[1431] : pc[80009eaa] c.sub	x14,x12: a4:00ffea0b 
+spike[1431] : pc[80009e7e] auipc   s8, 0x10e02: s8:90e0be7e 
+Mismatch[7802]:
+[11559] ibex : pc[8000ed8c] c.srli	x15,0x1e: a5:00000000 
+[FAILED]: 897 matched, 7802 mismatch
+
+0 PASSED, 1 FAILED

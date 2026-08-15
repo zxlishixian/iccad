@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[79] : pc[80004a8a] c.or	x10,x13: a0:669da5ed 
+spike[79] : pc[8001c080] addi    s5, s5, -124: s5:8002cd94 
+Mismatch[18]:
+[97] ibex : pc[80004acc] csrrwi	x1,mscratch,22: ra:669da5e0 
+[FAILED]: 74 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

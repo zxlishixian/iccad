@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[345] : pc[80009368] lb	x6,-52(x8): t1:000000d9 
+spike[345] : pc[80009368] lb      t1, -52(s0): t1:ffffffd9 
+[FAILED]: 3015 matched, 47538 mismatch
+
+0 PASSED, 1 FAILED

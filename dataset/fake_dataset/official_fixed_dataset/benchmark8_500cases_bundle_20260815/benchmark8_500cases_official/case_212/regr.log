@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[95] : pc[800016c4] andi	x27,x13,127: s11:0000006c 
+spike[95] : pc[80001682] sltu    t3, s1, t2: t3:00000000 
+[FAILED]: 96 matched, 1743 mismatch
+
+0 PASSED, 1 FAILED

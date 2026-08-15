@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[476] : pc[8000629a] c.addi16sp	x2,352: sp:241729bb 
+spike[476] : pc[8000629a] c.addi16sp sp, 352: sp:241729ba 
+Mismatch[3896]:
+[4978] ibex : pc[80004e12] csrrc	x8,mscratch,x4: s0:f94872dc 
+[FAILED]: 436 matched, 3896 mismatch
+
+0 PASSED, 1 FAILED

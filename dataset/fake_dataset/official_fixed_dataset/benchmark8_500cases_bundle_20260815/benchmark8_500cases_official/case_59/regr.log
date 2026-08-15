@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2234] : pc[80001f5a] auipc	x14,0xd09d8: a4:509d9f5b 
+spike[2234] : pc[80001f5a] auipc   a4, 0xd09d8: a4:509d9f5a 
+[FAILED]: 8035 matched, 2 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[118] : pc[80000232] srli	x17,x8,0x1: a7:800002c0 
+spike[118] : pc[80000232] srli    a7, s0, 1: a7:40000160 
+Mismatch[7751]:
+[9473] ibex : pc[8000836e] csrrc	x22,mscratch,x30: s6:00000010 
+[FAILED]: 362 matched, 7751 mismatch
+
+0 PASSED, 1 FAILED

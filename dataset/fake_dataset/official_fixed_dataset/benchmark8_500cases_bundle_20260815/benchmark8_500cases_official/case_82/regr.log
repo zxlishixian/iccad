@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1047] : pc[80001a3c] c.add	x31,x23: t6:80003a3c 
+spike[1047] : pc[80001a3c] c.add   t6, s7: t6:80003a3d 
+[FAILED]: 1050 matched, 9 mismatch
+
+0 PASSED, 1 FAILED

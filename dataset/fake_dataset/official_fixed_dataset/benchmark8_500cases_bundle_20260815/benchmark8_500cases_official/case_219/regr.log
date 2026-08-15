@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[202] : pc[80000580] lui	x3,0xe1268: gp:e1268000 
+spike[202] : pc[80000598] srli    t4, ra, 16: t4:00008000 
+[FAILED]: 191 matched, 3805 mismatch
+
+0 PASSED, 1 FAILED

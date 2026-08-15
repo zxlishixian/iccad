@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[307] : pc[80001f7a] c.li	x28,-1: t3:ffffffff 
+spike[307] : pc[80001fa0] div     ra, s6, s4: ra:ffffffff 
+[FAILED]: 267 matched, 4838 mismatch
+
+0 PASSED, 1 FAILED

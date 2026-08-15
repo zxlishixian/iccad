@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[77] : pc[800001bc] srl	x14,x12,x23: a4:e0006b87 
+spike[77] : pc[800001da] c.add   a5, s10: a5:80009000 
+Mismatch[1608]:
+[1989] ibex : pc[80001408] and	x27,x21,x26: s11:00000000 
+[FAILED]: 76 matched, 1608 mismatch
+
+0 PASSED, 1 FAILED

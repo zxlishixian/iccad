@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[2097] : pc[8000b4be] sltiu	x31,x17,518: t6:00000001 
+spike[2097] : pc[8000b4f2] c.and   s1, s0: s1:00000000 
+Mismatch[3095]:
+[5634] ibex : pc[800052c6] c.mv	x10,x20: a0:4cdac2ac 
+[FAILED]: 1977 matched, 3095 mismatch
+
+0 PASSED, 1 FAILED

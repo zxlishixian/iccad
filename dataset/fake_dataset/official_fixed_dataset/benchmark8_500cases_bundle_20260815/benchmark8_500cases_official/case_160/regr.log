@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[114] : pc[80000236] srai	x10,x26,0x6: a0:ff000000 
+spike[114] : pc[80000236] srai    a0, s10, 6: a0:fe000000 
+Mismatch[7873]:
+[9332] ibex : pc[800082c6] add	x23,x17,x26: s7:0002bce9 
+[FAILED]: 168 matched, 7873 mismatch
+
+0 PASSED, 1 FAILED

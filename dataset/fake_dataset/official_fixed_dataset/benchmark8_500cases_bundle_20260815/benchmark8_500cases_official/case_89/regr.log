@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[539] : pc[80000f5a] jal	x4,80000f76: tp:80000f5f 
+spike[539] : pc[80000f5a] jal     tp, 0x1c: tp:80000f5e 
+[FAILED]: 15458 matched, 16 mismatch
+
+0 PASSED, 1 FAILED

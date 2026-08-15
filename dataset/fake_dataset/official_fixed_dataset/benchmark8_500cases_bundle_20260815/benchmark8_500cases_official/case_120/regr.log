@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[389] : pc[8000078c] lb	x1,102(x7): ra:000000fd 
+spike[389] : pc[8000078c] lb      ra, 102(t2): ra:fffffffd 
+[FAILED]: 2348 matched, 15252 mismatch
+
+0 PASSED, 1 FAILED

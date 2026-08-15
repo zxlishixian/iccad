@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[270] : pc[800011ac] xor	x2,x23,x22: sp:03e16000 
+spike[270] : pc[800011e0] xori    t3, zero, -180: t3:ffffff4c 
+Mismatch[8618]:
+[10505] ibex : pc[8000040a] slti	x16,x21,297: a6:00000001 
+[FAILED]: 262 matched, 8618 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[943] : pc[800011bc] add	x3,x26,x6: gp:fffffc3d 
+spike[943] : pc[800011b6] c.srli  a5, 5: a5:07fffffe 
+Mismatch[1173]:
+[2336] ibex : pc[80002a06] divu	x24,x12,x0: s8:ffffffff 
+[FAILED]: 911 matched, 1173 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[119] : pc[80000230] c.addi4spn	x8,x2,416: s0:800002e4 
+spike[119] : pc[80000230] c.addi4spn s0, sp, 416: s0:800002e3 
+Mismatch[7904]:
+[9412] ibex : pc[80008366] slt	x15,x12,x14: a5:00000001 
+[FAILED]: 132 matched, 7904 mismatch
+
+0 PASSED, 1 FAILED

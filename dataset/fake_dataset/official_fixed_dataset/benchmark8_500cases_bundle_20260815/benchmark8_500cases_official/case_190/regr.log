@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[107] : pc[8000030a] ori	x2,x29,70: sp:58b592c7 
+spike[107] : pc[8000030a] ori     sp, t4, 70: sp:58b592c6 
+Mismatch[2402]:
+[3056] ibex : pc[80002162] c.addi4spn	x12,x2,272: a2:00000347 
+[FAILED]: 179 matched, 2402 mismatch
+
+0 PASSED, 1 FAILED

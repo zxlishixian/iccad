@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[167] : pc[80001576] mulh	x25,x17,x23: s9:ffffc7f0 
+spike[167] : pc[8000155e] c.addi  s4, -1: s4:000071b1 
+Mismatch[7662]:
+[9262] ibex : pc[80007cda] srl	x12,x9,x4: a2:00000000 
+[FAILED]: 166 matched, 7662 mismatch
+
+0 PASSED, 1 FAILED

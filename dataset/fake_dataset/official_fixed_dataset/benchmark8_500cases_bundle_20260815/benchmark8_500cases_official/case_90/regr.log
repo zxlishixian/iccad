@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[687] : pc[80000d5a] jal	x1,80000d56: ra:80000d5f 
+spike[687] : pc[80000d5a] jal     -0x4: ra:80000d5e 
+[FAILED]: 9567 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

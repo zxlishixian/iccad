@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1636] : pc[8000375a] auipc	x12,0x40c18: a2:c0c1b75b 
+spike[1636] : pc[8000375a] auipc   a2, 0x40c18: a2:c0c1b75a 
+[FAILED]: 7344 matched, 20 mismatch
+
+0 PASSED, 1 FAILED

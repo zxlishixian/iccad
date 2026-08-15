@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[819] : pc[8000e948] sub	x31,x17,x25: t6:0000015b 
+spike[819] : pc[8000e948] sub     t6, a7, s9: t6:0000015a 
+[FAILED]: 10748 matched, 34 mismatch
+
+0 PASSED, 1 FAILED

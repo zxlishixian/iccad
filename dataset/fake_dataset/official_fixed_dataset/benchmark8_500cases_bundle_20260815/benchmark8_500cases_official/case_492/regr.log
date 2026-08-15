@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[56] : pc[80000150] lb	x15,1468(x30): a5:00000000 
+spike[56] : pc[8001b080] addi    a2, a2, -124: a2:8002bda0 
+Mismatch[18]:
+[85] ibex : pc[800001de] lui	x21,0x34e45: s5:34e45000 
+[FAILED]: 50 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[90] : pc[800050c6] sub	x3,x22,x3: gp:7fffad47 
+spike[90] : pc[800050ec] c.or    s0, a5: s0:00007c3f 
+Mismatch[3829]:
+[4779] ibex : pc[80005026] lw	x6,4(x13): t1:80000346 
+[FAILED]: 107 matched, 3829 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[860] : pc[80000c80] c.sub	x15,x13: a5:0000005b 
+spike[860] : pc[80000c80] c.sub   a5, a3: a5:0000005a 
+[FAILED]: 8012 matched, 12 mismatch
+
+0 PASSED, 1 FAILED

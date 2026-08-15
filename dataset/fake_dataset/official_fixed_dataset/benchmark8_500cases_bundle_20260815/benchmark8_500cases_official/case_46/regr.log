@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[103] : pc[800002b8] srai	x24,x23,0x1e: s8:00000003 
+spike[103] : pc[800002b8] srai    s8, s7, 30: s8:ffffffff 
+Mismatch[7784]:
+[9445] ibex : pc[800082c4] c.mv	x24,x1: s8:00000002 
+[FAILED]: 160 matched, 7784 mismatch
+
+0 PASSED, 1 FAILED

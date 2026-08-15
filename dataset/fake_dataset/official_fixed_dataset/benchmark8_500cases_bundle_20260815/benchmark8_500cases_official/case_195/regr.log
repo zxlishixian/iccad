@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[110] : pc[800002a2] slli	x7,x4,0x1e: t2:80000000 
+spike[110] : pc[800002a2] slli    t2, tp, 30: t2:40000000 
+[FAILED]: 136 matched, 89 mismatch
+
+0 PASSED, 1 FAILED

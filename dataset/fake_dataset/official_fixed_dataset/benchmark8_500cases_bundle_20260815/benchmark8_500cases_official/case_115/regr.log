@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[183] : pc[80001950] lb	x18,-9(x14): s2:000000aa 
+spike[183] : pc[80001950] lb      s2, -9(a4): s2:ffffffaa 
+Mismatch[27218]:
+[29059] ibex : pc[8000c960] srli	x4,x17,0xb: tp:0010008d 
+[FAILED]: 176 matched, 27218 mismatch
+
+0 PASSED, 1 FAILED

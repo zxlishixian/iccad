@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[58] : pc[8000015a] auipc	x13,0x12: a3:8001215b 
+spike[58] : pc[8000015a] auipc   a3, 0x12: a3:8001215a 
+Mismatch[7571]:
+[9413] ibex : pc[80008302] c.addi4spn	x9,x2,336: s1:ffd786d8 
+[FAILED]: 582 matched, 7571 mismatch
+
+0 PASSED, 1 FAILED

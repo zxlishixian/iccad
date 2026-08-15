@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[59] : pc[8000015a] c.slli	x23,0x17: s7:16000000 
+spike[59] : pc[80000150] c.addi4spn s1, sp, 640: s1:00000280 
+[FAILED]: 58 matched, 5784 mismatch
+
+0 PASSED, 1 FAILED

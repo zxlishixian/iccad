@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[57] : pc[8000015a] auipc	x13,0x1b: a3:8001b15b 
+spike[57] : pc[8000015a] auipc   a3, 0x1b: a3:8001b15a 
+Mismatch[2284]:
+[3301] ibex : pc[800004a6] c.srai	x15,0x1d: a5:00000000 
+[FAILED]: 499 matched, 2284 mismatch
+
+0 PASSED, 1 FAILED

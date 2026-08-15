@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[75] : pc[8000a8ea] addi	x17,x17,-52: a7:80023de8 
+spike[75] : pc[8000a8dc] addi    t2, t2, 246: t2:000000f6 
+Mismatch[3272]:
+[4414] ibex : pc[80002230] sltiu	x15,x19,-273: a5:00000001 
+[FAILED]: 80 matched, 3272 mismatch
+
+0 PASSED, 1 FAILED

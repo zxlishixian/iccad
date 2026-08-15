@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[224] : pc[8000045a] jal	x11,800004aa: a1:8000045f 
+spike[224] : pc[8000045a] jal     a1, 0x50: a1:8000045e 
+Mismatch[10728]:
+[14338] ibex : pc[8000a00a] divu	x2,x25,x0: sp:ffffffff 
+[FAILED]: 2428 matched, 10728 mismatch
+
+0 PASSED, 1 FAILED

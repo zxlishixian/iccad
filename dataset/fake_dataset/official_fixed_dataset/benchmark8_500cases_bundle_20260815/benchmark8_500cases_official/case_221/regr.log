@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[73] : pc[800001cc] sltiu	x21,x28,-78: s5:00000001 
+spike[73] : pc[800001a2] div     a0, s10, s9: a0:ffffffff 
+[FAILED]: 105 matched, 13195 mismatch
+
+0 PASSED, 1 FAILED

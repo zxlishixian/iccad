@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[756] : pc[8000195a] jal	x12,8000197e: a2:8000195f 
+spike[756] : pc[8000195a] jal     a2, 0x24: a2:8000195e 
+Mismatch[39572]:
+[51350] ibex : pc[8000138e] sltiu	x17,x17,307: a7:00000000 
+[FAILED]: 6292 matched, 39572 mismatch
+
+0 PASSED, 1 FAILED

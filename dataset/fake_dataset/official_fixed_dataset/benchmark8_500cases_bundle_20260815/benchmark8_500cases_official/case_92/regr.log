@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[168] : pc[8001115a] jal	x6,8001113e: t1:8001115f 
+spike[168] : pc[8001115a] jal     t1, -0x1c: t1:8001115e 
+[FAILED]: 5768 matched, 3 mismatch
+
+0 PASSED, 1 FAILED

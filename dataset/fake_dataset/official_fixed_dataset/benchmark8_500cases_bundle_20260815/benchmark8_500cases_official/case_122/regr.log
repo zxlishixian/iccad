@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[498] : pc[8002ee62] lb	x5,1879(x17): t0:00000097 
+spike[498] : pc[8002ee62] lb      t0, 1879(a7): t0:ffffff97 
+[FAILED]: 4463 matched, 32566 mismatch
+
+0 PASSED, 1 FAILED

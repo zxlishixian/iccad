@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[110] : pc[80000240] srai	x10,x1,0xe: a0:000204ff 
+spike[110] : pc[80000240] srai    a0, ra, 14: a0:fffe04ff 
+Mismatch[5010]:
+[7504] ibex : pc[80003cf4] csrrc	x8,mscratch,x14: s0:00000005 
+[FAILED]: 99 matched, 5010 mismatch
+
+0 PASSED, 1 FAILED

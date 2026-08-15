@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[117] : pc[8000022a] addi	x26,x9,-266: s10:f6fccc15 
+spike[117] : pc[8000022a] addi    s10, s1, -266: s10:f6fccc14 
+Mismatch[7855]:
+[9355] ibex : pc[8000826a] c.xor	x11,x8: a1:b2ffff96 
+[FAILED]: 177 matched, 7855 mismatch
+
+0 PASSED, 1 FAILED

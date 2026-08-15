@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[225] : pc[80007eb4] add	x2,x27,x8: sp:13ded000 
+spike[225] : pc[80007e9e] srli    t3, t4, 24: t3:000000ff 
+Mismatch[7582]:
+[9153] ibex : pc[800009e4] c.sub	x9,x10: s1:fffffff0 
+[FAILED]: 225 matched, 7582 mismatch
+
+0 PASSED, 1 FAILED

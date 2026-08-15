@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[63] : pc[80000190] jalr	x1,307(x25): ra:80000194 
+spike[63] : pc[80000178] sltiu   a6, a0, 867: a6:00000001 
+Mismatch[9426]:
+[11151] ibex : pc[8000a05a] addi	x4,x16,68: tp:00000044 
+[FAILED]: 87 matched, 9426 mismatch
+
+0 PASSED, 1 FAILED

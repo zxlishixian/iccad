@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[152] : pc[800003d4] c.addi16sp	x2,-16: sp:3fff28cb 
+spike[152] : pc[800003d0] c.srai  a5, 26: a5:00000000 
+[FAILED]: 139 matched, 1159 mismatch
+
+0 PASSED, 1 FAILED

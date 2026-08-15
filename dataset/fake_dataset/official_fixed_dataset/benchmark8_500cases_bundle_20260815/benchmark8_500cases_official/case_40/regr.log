@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[86] : pc[80001b90] srai	x3,x31,0xd: gp:000784e8 
+spike[86] : pc[80001b90] srai    gp, t6, 13: gp:ffff84e8 
+[FAILED]: 1854 matched, 6330 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[121] : pc[80000234] srai	x13,x29,0x2: a3:ff8e6163 
+spike[121] : pc[80000234] srai    a3, t4, 2: a3:ff1cc2c6 
+Mismatch[7823]:
+[9479] ibex : pc[80008372] xor	x26,x7,x25: s10:0000000e 
+[FAILED]: 185 matched, 7823 mismatch
+
+0 PASSED, 1 FAILED

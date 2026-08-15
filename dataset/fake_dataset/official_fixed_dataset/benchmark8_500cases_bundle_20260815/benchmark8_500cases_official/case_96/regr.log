@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[577] : pc[80000b5a] auipc	x8,0xf1be: s0:8f1beb5b 
+spike[577] : pc[80000b5a] auipc   s0, 0xf1be: s0:8f1beb5a 
+Mismatch[276]:
+[1081] ibex : pc[80001eb8] sub	x29,x23,x3: t4:f3053edb 
+[FAILED]: 517 matched, 276 mismatch
+
+0 PASSED, 1 FAILED

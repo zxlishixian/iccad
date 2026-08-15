@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[150] : pc[80000dd4] c.addi	x13,-1: a3:ffffffff 
+spike[150] : pc[80000dae] remu    t6, t1, t1: t6:00000000 
+[FAILED]: 199 matched, 4321 mismatch
+
+0 PASSED, 1 FAILED

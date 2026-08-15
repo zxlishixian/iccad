@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[57] : pc[8000015a] auipc	x8,0x24: s0:8002415b 
+spike[57] : pc[8000015a] auipc   s0, 0x24: s0:8002415a 
+Mismatch[8325]:
+[10832] ibex : pc[80003ad8] addi	x25,x30,-798: s9:fffffce2 
+[FAILED]: 1529 matched, 8325 mismatch
+
+0 PASSED, 1 FAILED

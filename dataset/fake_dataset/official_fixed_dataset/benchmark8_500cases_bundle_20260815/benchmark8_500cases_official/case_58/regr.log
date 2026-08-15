@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[3279] : pc[80002dec] sub	x16,x2,x16: a6:0000005b 
+spike[3279] : pc[80002dec] sub     a6, sp, a6: a6:0000005a 
+[FAILED]: 8073 matched, 30 mismatch
+
+0 PASSED, 1 FAILED

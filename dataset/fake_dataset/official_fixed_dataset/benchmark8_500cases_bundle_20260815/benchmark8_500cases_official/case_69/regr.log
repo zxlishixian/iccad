@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[3411] : pc[80005d4e] c.sub	x10,x14: a0:fffc026b 
+spike[3411] : pc[80005d4e] c.sub   a0, a4: a0:fffc026a 
+[FAILED]: 8287 matched, 2 mismatch
+
+0 PASSED, 1 FAILED

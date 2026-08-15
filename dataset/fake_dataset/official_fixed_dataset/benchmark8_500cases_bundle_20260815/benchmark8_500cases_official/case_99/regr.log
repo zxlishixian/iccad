@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[335] : pc[8000065a] auipc	x8,0x1c: s0:8001c65b 
+spike[335] : pc[8000065a] auipc   s0, 0x1c: s0:8001c65a 
+Mismatch[3530]:
+[16207] ibex : pc[80006194] lui	x3,0xfaabb: gp:faabb000 
+[FAILED]: 8046 matched, 3530 mismatch
+
+0 PASSED, 1 FAILED

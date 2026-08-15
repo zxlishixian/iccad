@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[141] : pc[80000282] sra	x6,x26,x30: t1:010002bc 
+spike[141] : pc[80000282] sra     t1, s10, t5: t1:ff0002bc 
+Mismatch[7430]:
+[9457] ibex : pc[800083ec] remu	x14,x26,x21: a4:80015e7c 
+[FAILED]: 593 matched, 7430 mismatch
+
+0 PASSED, 1 FAILED

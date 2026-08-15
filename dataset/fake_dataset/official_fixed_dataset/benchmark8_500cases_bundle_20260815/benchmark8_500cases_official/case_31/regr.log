@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[86] : pc[8000024e] c.srai	x14,0x6: a4:02ad8d2c 
+spike[86] : pc[8000024e] c.srai  a4, 6: a4:fead8d2c 
+Mismatch[1322]:
+[1735] ibex : pc[80007278] rem	x23,x1,x10: s7:fffffff5 
+[FAILED]: 144 matched, 1322 mismatch
+
+0 PASSED, 1 FAILED

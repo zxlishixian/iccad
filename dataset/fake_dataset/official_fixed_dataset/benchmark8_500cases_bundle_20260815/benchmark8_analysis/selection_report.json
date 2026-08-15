@@ -1,0 +1,90 @@
+{
+  "num_candidates": 561,
+  "num_selected": 500,
+  "num_bugs": 10,
+  "cases_per_bug": 50,
+  "bug_counts": {
+    "bug_041": 50,
+    "bug_048": 50,
+    "bug_051": 50,
+    "bug_053": 50,
+    "bug_066": 50,
+    "bug_083": 50,
+    "bug_085": 50,
+    "bug_096": 50,
+    "bug_100": 50,
+    "bug_102": 50
+  },
+  "bug_test_counts": {
+    "bug_041": {
+      "riscv_arithmetic_basic_test": 13,
+      "riscv_machine_mode_rand_test": 13,
+      "riscv_rand_instr_test": 11,
+      "riscv_rv32im_instr_test": 7,
+      "riscv_user_mode_rand_test": 6
+    },
+    "bug_048": {
+      "riscv_arithmetic_basic_test": 14,
+      "riscv_machine_mode_rand_test": 11,
+      "riscv_rand_instr_test": 11,
+      "riscv_rv32im_instr_test": 14
+    },
+    "bug_051": {
+      "riscv_mmu_stress_test": 25,
+      "riscv_unaligned_load_store_test": 25
+    },
+    "bug_053": {
+      "riscv_arithmetic_basic_test": 24,
+      "riscv_machine_mode_rand_test": 12,
+      "riscv_rand_instr_test": 14
+    },
+    "bug_066": {
+      "riscv_jump_stress_test": 11,
+      "riscv_machine_mode_rand_test": 14,
+      "riscv_rand_instr_test": 13,
+      "riscv_rand_jump_test": 12
+    },
+    "bug_083": {
+      "riscv_jump_stress_test": 19,
+      "riscv_rand_jump_test": 31
+    },
+    "bug_085": {
+      "riscv_arithmetic_basic_test": 25,
+      "riscv_machine_mode_rand_test": 25
+    },
+    "bug_096": {
+      "riscv_interrupt_csr_test": 15,
+      "riscv_multiple_interrupt_test": 17,
+      "riscv_single_interrupt_test": 18
+    },
+    "bug_100": {
+      "riscv_interrupt_csr_test": 16,
+      "riscv_multiple_interrupt_test": 17,
+      "riscv_single_interrupt_test": 17
+    },
+    "bug_102": {
+      "riscv_machine_mode_rand_test": 7,
+      "riscv_mmu_stress_test": 14,
+      "riscv_rand_instr_test": 7,
+      "riscv_unaligned_load_store_test": 15,
+      "riscv_user_mode_rand_test": 7
+    }
+  },
+  "primary_type_counts": {
+    "REGR_MISMATCH": 236,
+    "UVM_ERROR": 166,
+    "UVM_FATAL": 98
+  },
+  "dual_compare_count": 236,
+  "dual_compare_rate": 0.472,
+  "op_pair_count": 236,
+  "op_pair_rate": 0.472,
+  "late_compare_count": 236,
+  "late_compare_rate": 1.0,
+  "first_ibex_index_bands": {
+    "256_plus": 70,
+    "32_to_255": 166
+  },
+  "max_first_ibex_index": 9054,
+  "pass": true
+}

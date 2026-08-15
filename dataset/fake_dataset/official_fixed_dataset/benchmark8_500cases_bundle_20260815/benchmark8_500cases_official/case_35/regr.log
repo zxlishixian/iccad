@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[114] : pc[800002bc] c.srai	x13,0x3: a3:1fbedaf6 
+spike[114] : pc[800002bc] c.srai  a3, 3: a3:ffbedaf6 
+Mismatch[212]:
+[559] ibex : pc[80006712] add	x14,x30,x10: a4:c383ee7c 
+[FAILED]: 254 matched, 212 mismatch
+
+0 PASSED, 1 FAILED

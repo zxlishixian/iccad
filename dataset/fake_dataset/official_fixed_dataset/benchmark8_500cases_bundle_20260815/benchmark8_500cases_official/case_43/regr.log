@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[66] : pc[80000180] sra	x14,x9,x9: a4:000000f3 
+spike[66] : pc[80000180] sra     a4, s1, s1: a4:fffffff3 
+Mismatch[9551]:
+[11080] ibex : pc[80007cc6] andi	x29,x5,858: t4:00000000 
+[FAILED]: 440 matched, 9551 mismatch
+
+0 PASSED, 1 FAILED

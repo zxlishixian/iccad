@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[160] : pc[800040f8] srai	x1,x26,0x16: ra:00000000 
+spike[160] : pc[800040e0] srl     s10, a4, ra: s10:00004000 
+[FAILED]: 137 matched, 2885 mismatch
+
+0 PASSED, 1 FAILED

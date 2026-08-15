@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[94] : pc[8000920c] rem	x27,x15,x27: s11:fffffff5 
+spike[94] : pc[80009204] slti    s2, s9, -209: s2:00000000 
+Mismatch[31956]:
+[41941] ibex : pc[80009042] auipc	x17,0xab444: a7:2b44d042 
+[FAILED]: 1210 matched, 31956 mismatch
+
+0 PASSED, 1 FAILED

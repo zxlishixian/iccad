@@ -1,0 +1,63 @@
+{
+  "dataset_root": "/home/yian/iccad/dataset/benchmark8_500cases_official",
+  "num_cases": 500,
+  "num_buckets": 10,
+  "bucket_counts": {
+    "bug_041": 50,
+    "bug_048": 50,
+    "bug_051": 50,
+    "bug_053": 50,
+    "bug_066": 50,
+    "bug_083": 50,
+    "bug_085": 50,
+    "bug_096": 50,
+    "bug_100": 50,
+    "bug_102": 50
+  },
+  "num_tests": 12,
+  "test_counts": {
+    "riscv_arithmetic_basic_test": 76,
+    "riscv_interrupt_csr_test": 31,
+    "riscv_jump_stress_test": 30,
+    "riscv_machine_mode_rand_test": 82,
+    "riscv_mmu_stress_test": 39,
+    "riscv_multiple_interrupt_test": 34,
+    "riscv_rand_instr_test": 56,
+    "riscv_rand_jump_test": 43,
+    "riscv_rv32im_instr_test": 21,
+    "riscv_single_interrupt_test": 35,
+    "riscv_unaligned_load_store_test": 40,
+    "riscv_user_mode_rand_test": 13
+  },
+  "failure_count": 500,
+  "failure_type_counts": {
+    "REGR_MISMATCH": 236,
+    "UVM_ERROR": 164,
+    "UVM_FATAL": 100
+  },
+  "dual_compare_count": 236,
+  "dual_compare_rate": 0.472,
+  "late_compare_count": 236,
+  "late_compare_rate": 1.0,
+  "first_ibex_index_bands": {
+    "256_plus": 70,
+    "32_to_255": 166
+  },
+  "max_first_ibex_index": 9054,
+  "matched_count_range": {
+    "min": 44,
+    "max": 16581
+  },
+  "bugs_with_two_or_more_tests": 10,
+  "max_log_lines": {
+    "lines": 3382657,
+    "case": "327",
+    "log": "sim"
+  },
+  "sim_unique_count": 500,
+  "regr_unique_count": 230,
+  "replacement_chars": 0,
+  "leak_count": 0,
+  "errors": [],
+  "pass": true
+}

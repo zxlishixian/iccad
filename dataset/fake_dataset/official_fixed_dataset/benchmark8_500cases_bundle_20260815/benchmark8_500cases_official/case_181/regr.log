@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[118] : pc[8000031c] c.addi4spn	x9,x2,640: s1:00000297 
+spike[118] : pc[8000031c] c.addi4spn s1, sp, 640: s1:00000296 
+Mismatch[203]:
+[463] ibex : pc[80000e88] csrrw	x2,mscratch,x1: sp:00000000 
+[FAILED]: 201 matched, 203 mismatch
+
+0 PASSED, 1 FAILED

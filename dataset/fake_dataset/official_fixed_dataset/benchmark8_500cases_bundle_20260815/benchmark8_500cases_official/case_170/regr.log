@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[132] : pc[8000025a] c.addi	x16,-1: a6:fcd58896 
+spike[132] : pc[8000025a] c.addi  a6, -1: a6:fcd58897 
+Mismatch[7688]:
+[9461] ibex : pc[80008304] and	x3,x17,x25: gp:00000012 
+[FAILED]: 316 matched, 7688 mismatch
+
+0 PASSED, 1 FAILED

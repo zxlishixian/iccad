@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[110] : pc[80000352] c.addi	x23,-1: s7:f6a6aef4 
+spike[110] : pc[8000031c] c.xor   s1, a1: s1:00005f5f 
+Mismatch[4435]:
+[5201] ibex : pc[80003336] c.slli	x26,0x1: s10:a940e00c 
+[FAILED]: 111 matched, 4435 mismatch
+
+0 PASSED, 1 FAILED

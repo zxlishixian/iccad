@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[232] : pc[800005e4] or	x28,x30,x0: t3:00000004 
+spike[232] : pc[800005ae] csrrsi  gp, mscratch, 21: gp:80118aa8 
+Mismatch[103]:
+[348] ibex : pc[8000090a] c.li	x3,1: gp:00000001 
+[FAILED]: 206 matched, 103 mismatch
+
+0 PASSED, 1 FAILED

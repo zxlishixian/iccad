@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[57] : pc[8000015a] auipc	x8,0x12: s0:8001215b 
+spike[57] : pc[8000015a] auipc   s0, 0x12: s0:8001215a 
+Mismatch[7266]:
+[9494] ibex : pc[800083a0] mulh	x30,x18,x16: t5:00000000 
+[FAILED]: 717 matched, 7266 mismatch
+
+0 PASSED, 1 FAILED

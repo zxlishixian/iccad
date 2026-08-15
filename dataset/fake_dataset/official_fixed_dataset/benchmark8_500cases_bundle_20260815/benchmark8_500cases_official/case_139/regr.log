@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[59] : pc[80000166] c.slli	x15,0xa: a5:00001c00 
+spike[59] : pc[8001c080] addi    tp, tp, -124: tp:8002cda0 
+Mismatch[18]:
+[79] ibex : pc[800001bc] xor	x18,x0,x15: s2:000056bc 
+[FAILED]: 52 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

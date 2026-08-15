@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[79] : pc[800001aa] srai	x19,x4,0x12: s3:00003cfc 
+spike[79] : pc[800001aa] srai    s3, tp, 18: s3:fffffcfc 
+[FAILED]: 292 matched, 7760 mismatch
+
+0 PASSED, 1 FAILED

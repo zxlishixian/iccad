@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[3288] : pc[800019ac] add	x7,x16,x15: t2:ffffff5b 
+spike[3288] : pc[800019ac] add     t2, a6, a5: t2:ffffff5a 
+[FAILED]: 3359 matched, 1991 mismatch
+
+0 PASSED, 1 FAILED

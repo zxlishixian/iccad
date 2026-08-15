@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[1479] : pc[80001dc6] lb	x26,-52(x31): s10:000000ee 
+spike[1479] : pc[80001dc6] lb      s10, -52(t6): s10:ffffffee 
+Mismatch[12469]:
+[22431] ibex : pc[800065f0] srai	x20,x8,0x1d: s4:00000000 
+[FAILED]: 1521 matched, 12469 mismatch
+
+0 PASSED, 1 FAILED

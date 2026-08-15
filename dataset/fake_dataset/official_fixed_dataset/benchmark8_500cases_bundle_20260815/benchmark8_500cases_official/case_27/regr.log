@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[60] : pc[8000015e] srai	x31,x2,0x7: t6:0100035c 
+spike[60] : pc[8000015e] srai    t6, sp, 7: t6:ff00035c 
+Mismatch[4295]:
+[5683] ibex : pc[80005668] mulh	x12,x2,x0: a2:00000000 
+[FAILED]: 519 matched, 4295 mismatch
+
+0 PASSED, 1 FAILED

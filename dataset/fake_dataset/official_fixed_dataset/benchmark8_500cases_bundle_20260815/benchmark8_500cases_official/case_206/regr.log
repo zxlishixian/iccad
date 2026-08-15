@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[563] : pc[800010de] slti	x5,x27,723: t0:00000001 
+spike[563] : pc[800010ae] srl     a2, ra, t4: a2:4000074c 
+Mismatch[2435]:
+[3322] ibex : pc[80001588] srli	x18,x29,0x1b: s2:00000000 
+[FAILED]: 558 matched, 2435 mismatch
+
+0 PASSED, 1 FAILED

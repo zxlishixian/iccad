@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[67] : pc[800119e6] srai	x31,x21,0x1b: t6:0000001f 
+spike[67] : pc[800119e6] srai    t6, s5, 27: t6:ffffffff 
+Mismatch[146123]:
+[161893] ibex : pc[8000f426] sltiu	x26,x16,-37: s10:00000001 
+[FAILED]: 2358 matched, 146123 mismatch
+
+0 PASSED, 1 FAILED

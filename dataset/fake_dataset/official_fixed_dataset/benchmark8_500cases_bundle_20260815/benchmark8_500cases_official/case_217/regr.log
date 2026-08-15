@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[85] : pc[8000021a] csrrc	x22,mscratch,x2: s6:a372edac 
+spike[85] : pc[800001dc] rem     t1, s4, a0: t1:fffffffc 
+Mismatch[5558]:
+[7330] ibex : pc[80006adc] csrrs	x12,mscratch,x20: a2:fe51e645 
+[FAILED]: 812 matched, 5558 mismatch
+
+0 PASSED, 1 FAILED

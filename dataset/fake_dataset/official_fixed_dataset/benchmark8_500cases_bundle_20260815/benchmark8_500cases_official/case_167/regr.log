@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[122] : pc[8000022c] c.addi16sp	x2,-16: sp:02a18e89 
+spike[122] : pc[8000022c] c.addi16sp sp, -16: sp:02a18e88 
+Mismatch[7890]:
+[9417] ibex : pc[800083be] sll	x7,x7,x16: t2:00000000 
+[FAILED]: 165 matched, 7890 mismatch
+
+0 PASSED, 1 FAILED

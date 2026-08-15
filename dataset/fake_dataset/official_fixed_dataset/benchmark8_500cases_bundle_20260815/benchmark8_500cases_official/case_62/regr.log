@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[5616] : pc[80004ed4] c.addi4spn	x10,x2,224: a0:00001d3b 
+spike[5616] : pc[80004ed4] c.addi4spn a0, sp, 224: a0:00001d3a 
+[FAILED]: 8140 matched, 6 mismatch
+
+0 PASSED, 1 FAILED

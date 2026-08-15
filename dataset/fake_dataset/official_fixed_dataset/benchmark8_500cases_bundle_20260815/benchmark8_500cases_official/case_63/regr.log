@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2806] : pc[80002786] c.sub	x14,x15: a4:7ffe9fdf 
+spike[2806] : pc[80002786] c.sub   a4, a5: a4:7ffe9fde 
+[FAILED]: 7846 matched, 4 mismatch
+
+0 PASSED, 1 FAILED

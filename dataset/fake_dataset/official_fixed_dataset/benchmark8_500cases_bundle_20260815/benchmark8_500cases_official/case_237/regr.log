@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[117] : pc[800084bc] c.srai	x15,0x15: a5:00000000 
+spike[117] : pc[800084b8] srl     tp, a5, a4: tp:00000096 
+Mismatch[748]:
+[986] ibex : pc[8000042c] mulhu	x11,x19,x6: a1:00000009 
+[FAILED]: 101 matched, 748 mismatch
+
+0 PASSED, 1 FAILED

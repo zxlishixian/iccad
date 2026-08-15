@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[105] : pc[8000029c] c.addi16sp	x2,-16: sp:830bd28e 
+spike[105] : pc[8000029c] c.addi16sp sp, -16: sp:830bd28d 
+Mismatch[216]:
+[490] ibex : pc[80000e84] c.srli	x13,0x1b: a3:0000003e 
+[FAILED]: 201 matched, 216 mismatch
+
+0 PASSED, 1 FAILED

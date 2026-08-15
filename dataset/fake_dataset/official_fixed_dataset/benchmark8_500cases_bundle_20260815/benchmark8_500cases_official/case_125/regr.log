@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[491] : pc[80001538] lb	x20,1918(x25): s4:000000ff 
+spike[491] : pc[80001538] lb      s4, 1918(s9): s4:ffffffff 
+[FAILED]: 5176 matched, 36340 mismatch
+
+0 PASSED, 1 FAILED

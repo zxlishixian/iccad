@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[704] : pc[8000168c] c.srai	x13,0xd: a3:fffc000f 
+spike[704] : pc[80001662] div     s1, t6, a0: s1:00000001 
+Mismatch[3606]:
+[4978] ibex : pc[80007028] csrrs	x22,mscratch,x2: s6:00000001 
+[FAILED]: 582 matched, 3606 mismatch
+
+0 PASSED, 1 FAILED

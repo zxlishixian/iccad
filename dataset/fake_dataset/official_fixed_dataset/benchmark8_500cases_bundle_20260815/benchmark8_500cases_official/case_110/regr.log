@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[205] : pc[80000480] lb	x13,443(x12): a3:000000c9 
+spike[205] : pc[80000480] lb      a3, 443(a2): a3:ffffffc9 
+[FAILED]: 3478 matched, 34950 mismatch
+
+0 PASSED, 1 FAILED

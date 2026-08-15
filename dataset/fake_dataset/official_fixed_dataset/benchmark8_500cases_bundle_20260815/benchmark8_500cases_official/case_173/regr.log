@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[119] : pc[80000230] slli	x28,x26,0x8: t3:029cf800 
+spike[119] : pc[80000230] slli    t3, s10, 8: t3:014e7c00 
+Mismatch[7535]:
+[9367] ibex : pc[8000843e] or	x15,x22,x9: a5:00000001 
+[FAILED]: 294 matched, 7535 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[481] : pc[80000890] mul	x7,x9,x15: t2:0000e700 
+spike[481] : pc[800008ac] add     s10, s9, t6: s10:7ffff933 
+[FAILED]: 466 matched, 640 mismatch
+
+0 PASSED, 1 FAILED

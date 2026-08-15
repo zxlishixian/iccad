@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[56] : pc[8000015a] auipc	x12,0x1b: a2:8001b15b 
+spike[56] : pc[8000015a] auipc   a2, 0x1b: a2:8001b15a 
+[FAILED]: 98 matched, 5 mismatch
+
+0 PASSED, 1 FAILED

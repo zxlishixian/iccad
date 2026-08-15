@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[3071] : pc[80002b5e] addi	x3,x7,-487: gp:00000072 
+spike[3071] : pc[80002b5e] addi    gp, t2, -487: gp:00000073 
+[FAILED]: 7881 matched, 10 mismatch
+
+0 PASSED, 1 FAILED

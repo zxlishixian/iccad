@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[152] : pc[800081b8] c.addi	x13,15: a3:0000000f 
+spike[152] : pc[800081e2] c.slli  s2, 14: s2:008a4000 
+[FAILED]: 180 matched, 4344 mismatch
+
+0 PASSED, 1 FAILED

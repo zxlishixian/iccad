@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[108] : pc[800002ee] c.li	x6,-1: t1:fffffffe 
+spike[108] : pc[800002ee] c.li    t1, -1: t1:ffffffff 
+Mismatch[3774]:
+[4763] ibex : pc[800017f6] xori	x12,x25,60: a2:8000007d 
+[FAILED]: 169 matched, 3774 mismatch
+
+0 PASSED, 1 FAILED

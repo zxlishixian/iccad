@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2340] : pc[8000210a] addi	x7,x1,23: t2:80011c70 
+spike[2340] : pc[8000210a] addi    t2, ra, 23: t2:80011c71 
+[FAILED]: 7979 matched, 2 mismatch
+
+0 PASSED, 1 FAILED

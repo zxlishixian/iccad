@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[127] : pc[80000244] ori	x6,x16,-184: t1:ffffffed 
+spike[127] : pc[80000244] ori     t1, a6, -184: t1:ffffffec 
+Mismatch[7945]:
+[9401] ibex : pc[80008308] sltiu	x27,x29,355: s11:00000001 
+[FAILED]: 138 matched, 7945 mismatch
+
+0 PASSED, 1 FAILED

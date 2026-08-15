@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[143] : pc[80002076] lb	x31,142(x2): t6:000000ff 
+spike[143] : pc[80002076] lb      t6, 142(sp): t6:ffffffff 
+[FAILED]: 1371 matched, 15578 mismatch
+
+0 PASSED, 1 FAILED

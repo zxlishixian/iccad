@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[160] : pc[80000450] srai	x11,x8,0x2: a1:20007b7c 
+spike[160] : pc[80000450] srai    a1, s0, 2: a1:e0007b7c 
+[FAILED]: 298 matched, 5718 mismatch
+
+0 PASSED, 1 FAILED

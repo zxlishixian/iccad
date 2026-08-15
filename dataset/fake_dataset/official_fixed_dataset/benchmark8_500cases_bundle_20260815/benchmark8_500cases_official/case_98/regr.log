@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[345] : pc[8000075a] jal	x2,80000786: sp:8000075f 
+spike[345] : pc[8000075a] jal     sp, 0x2c: sp:8000075e 
+[FAILED]: 1042 matched, 2399 mismatch
+
+0 PASSED, 1 FAILED

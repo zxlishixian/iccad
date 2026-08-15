@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[945] : pc[800014a4] srli	x28,x21,0x18: t3:00000000 
+spike[945] : pc[80001496] xor     t6, a1, s6: t6:fffffffe 
+[FAILED]: 615 matched, 27714 mismatch
+
+0 PASSED, 1 FAILED

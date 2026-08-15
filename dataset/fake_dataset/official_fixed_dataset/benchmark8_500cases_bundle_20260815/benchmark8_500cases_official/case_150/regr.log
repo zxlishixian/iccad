@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[75] : pc[8000a248] lhu	x18,1496(x2): s2:0000c838 
+spike[75] : pc[8001b080] addi    a5, a5, -124: a5:8002bd6c 
+Mismatch[18]:
+[93] ibex : pc[8000a2a2] xor	x19,x22,x31: s3:00000000 
+[FAILED]: 67 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

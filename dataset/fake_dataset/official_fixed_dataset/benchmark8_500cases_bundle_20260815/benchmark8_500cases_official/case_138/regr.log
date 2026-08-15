@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[62] : pc[80000170] c.slli	x9,0x1e: s1:00000000 
+spike[62] : pc[8001b080] addi    s4, s4, -124: s4:8002bda0 
+Mismatch[18]:
+[80] ibex : pc[800001ba] addi	x16,x16,8: a6:8001e1be 
+[FAILED]: 52 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

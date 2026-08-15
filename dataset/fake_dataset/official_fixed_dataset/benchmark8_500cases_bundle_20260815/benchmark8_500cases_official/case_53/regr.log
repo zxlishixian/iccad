@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[9054] : pc[80007e5a] auipc	x30,0xf8598: t5:7859fe5b 
+spike[9054] : pc[80007e5a] auipc   t5, 0xf8598: t5:7859fe5a 
+[FAILED]: 8161 matched, 2 mismatch
+
+0 PASSED, 1 FAILED

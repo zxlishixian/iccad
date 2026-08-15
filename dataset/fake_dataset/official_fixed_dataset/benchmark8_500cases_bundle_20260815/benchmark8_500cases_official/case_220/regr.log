@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[116] : pc[800004ce] xori	x28,x0,-49: t3:ffffffcf 
+spike[116] : pc[800004e6] srli    t1, t2, 2: t1:20000000 
+[FAILED]: 133 matched, 6589 mismatch
+
+0 PASSED, 1 FAILED

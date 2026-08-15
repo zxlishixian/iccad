@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[447] : pc[800093ca] sltiu	x13,x29,-959: a3:00000001 
+spike[447] : pc[80009404] xori    a7, s3, -421: a7:fffffe5b 
+[FAILED]: 340 matched, 19473 mismatch
+
+0 PASSED, 1 FAILED

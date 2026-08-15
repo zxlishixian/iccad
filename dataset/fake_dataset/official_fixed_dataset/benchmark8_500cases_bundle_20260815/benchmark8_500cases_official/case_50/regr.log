@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[346] : pc[80000a06] c.srai	x9,0xe: s1:0003ffff 
+spike[346] : pc[80000a08] mul     a0, s1, s2: a0:ffffffff 
+Mismatch[703]:
+[1238] ibex : pc[800024d2] c.mv	x29,x25: t4:8001ee7c 
+[FAILED]: 275 matched, 703 mismatch
+
+0 PASSED, 1 FAILED

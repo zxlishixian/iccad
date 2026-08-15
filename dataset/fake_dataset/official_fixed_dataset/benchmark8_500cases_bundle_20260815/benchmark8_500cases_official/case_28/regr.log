@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[76] : pc[80000212] c.srai	x13,0x14: a3:00000fff 
+spike[76] : pc[80000218] lui     s6, 0x57d5: s6:057d5000 
+Mismatch[3756]:
+[4570] ibex : pc[80005b54] or	x22,x0,x27: s6:00000004 
+[FAILED]: 79 matched, 3756 mismatch
+
+0 PASSED, 1 FAILED

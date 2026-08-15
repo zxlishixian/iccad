@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[73] : pc[8000266e] srai	x28,x4,0x11: t3:00004000 
+spike[73] : pc[8000266e] srai    t3, tp, 17: t3:ffffc000 
+Mismatch[2758]:
+[3470] ibex : pc[800001a8] mulh	x6,x21,x21: t1:12a330ea 
+[FAILED]: 100 matched, 2758 mismatch
+
+0 PASSED, 1 FAILED

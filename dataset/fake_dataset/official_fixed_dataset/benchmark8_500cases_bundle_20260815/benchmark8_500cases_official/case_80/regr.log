@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2184] : pc[8000165a] auipc	x22,0xd8aa: s6:8d8ab65b 
+spike[2184] : pc[8000165a] auipc   s6, 0xd8aa: s6:8d8ab65a 
+[FAILED]: 4456 matched, 2 mismatch
+
+0 PASSED, 1 FAILED

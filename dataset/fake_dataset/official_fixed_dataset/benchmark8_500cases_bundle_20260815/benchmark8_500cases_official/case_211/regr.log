@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[136] : pc[8000599c] c.or	x9,x13: s1:80005930 
+spike[136] : pc[800059c6] c.mv    s10, t1: s10:8000592a 
+Mismatch[2644]:
+[3013] ibex : pc[800017a6] c.jal	800017d4: ra:800017a8 
+[FAILED]: 147 matched, 2644 mismatch
+
+0 PASSED, 1 FAILED

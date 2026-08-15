@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[806] : pc[80005a60] addi	x18,x18,-40: s2:8001add0 
+spike[806] : pc[80005a5e] c.addi  t4, -1: t4:5ec7ffff 
+Mismatch[4863]:
+[6675] ibex : pc[8000177a] mulhsu	x26,x13,x26: s10:8cabd000 
+[FAILED]: 700 matched, 4863 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2709] : pc[8000265a] auipc	x15,0x71a4f: a5:f1a5165b 
+spike[2709] : pc[8000265a] auipc   a5, 0x71a4f: a5:f1a5165a 
+[FAILED]: 8067 matched, 1 mismatch
+
+0 PASSED, 1 FAILED

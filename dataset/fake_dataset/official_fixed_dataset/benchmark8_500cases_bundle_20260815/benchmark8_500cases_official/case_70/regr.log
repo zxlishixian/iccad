@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1868] : pc[800080d0] c.add	x28,x13: t3:80304cf3 
+spike[1868] : pc[800080d0] c.add   t3, a3: t3:80304cf2 
+[FAILED]: 10326 matched, 8 mismatch
+
+0 PASSED, 1 FAILED

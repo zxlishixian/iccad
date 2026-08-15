@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[910] : pc[80007b5a] auipc	x1,0xf: ra:80016b5b 
+spike[910] : pc[80007b5a] auipc   ra, 0xf: ra:80016b5a 
+[FAILED]: 16581 matched, 133 mismatch
+
+0 PASSED, 1 FAILED

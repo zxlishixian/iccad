@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[120] : pc[80000230] c.addi	x4,-1: tp:0000000d 
+spike[120] : pc[80000230] c.addi  tp, -1: tp:0000000e 
+Mismatch[8013]:
+[9404] ibex : pc[8000837e] rem	x14,x4,x25: a4:ffffffff 
+[FAILED]: 223 matched, 8013 mismatch
+
+0 PASSED, 1 FAILED
