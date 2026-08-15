@@ -54,14 +54,17 @@ store 地址、分支比较器与立即数编码、AUIPC、CSR 的 MIE、中断�
 唯一、稳定的症状签名**：
 
 - mismatch 类：首个 mismatch 的 **opcode 家族 + 操作数模式 + PC 区域**。
-- test_fail 类：**UVM 断言的文本 + file:line + 检查的具体值**。
+- test_fail 类：**标准 testbench 断言 + file:line + 测试名（功能域）**。
 
 **两条硬规则：**
 1. 每个 bug 造完后，和已有所有 bug 的签名比对；若有 bug 签名完全重叠 → 删掉其中一个（消歧）。
-2. **test_fail 类别再用通用断言**。benchmark8 的 bug_083/085/102 三个 bug 全报同一个
-   `read to uninitialized addr`（mem_model.sv:28），只差地址——这是软性同症状。改用**具体断言**
-   （例如 `Check failed mcause[...] == X`、`Check failed xN == expected`），让不同 bug 的 fatal
-   消息本身就可区分。
+2. **不要写自定义断言**。官方流程是「注入 RTL bug → 标准 testbench 跑 → 标准断言自然触发」
+   （testbench 是 oracle，A7），官方不写自定义断言。`read to uninitialized addr`
+   （mem_model.sv:28）是**标准的 mem_model 断言**，官方 bug_2014（`mem_error` 测试）也会触发它
+   ——这是合法的官方式症状，**不是数据质量问题**。所谓"消歧"发生在**选 bug 层面**：选那些触发
+   **不同标准症状**（不同断言 / 不同 opcode / 不同 trace 分歧模式）的 bug。若两个 bug 连标准
+   症状都完全一样（官方 Q5 说的"几乎一样、只差时间戳"），才二选一剔除；地址不同（0x13 vs 0x3）
+   配合 trace 已经算可区分，官方同样靠这些细节区分，**不需要人为造更具体的断言**。
 
 ## 4. P3：首个 mismatch 位置要多样化（不要全 late）
 
