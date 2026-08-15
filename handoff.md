@@ -304,6 +304,14 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 
 **遗留（可选，不再主动投入）：** 干净 official 迁移 0.53（fake→official 分布跨越）；benchmark6 64-bug 不可分（fake 数据未消歧）。
 
+**2026-08-16：v3 模型（最终提交，打包到 `submission_files/final/final_submission_v3/`）**
+
+- **训练配置**：7 fake + 2 official，两个高质量新集（benchmark5_500cases + benchmark8_500cases）各 ×2 加权，旧 lui 级联数据（official_vcs/directed/stable/benchmark5_final/benchmark6）当预训练 ×1，无 opcode，--use-trace，5 seed。
+- **benchmark8** 是队友第二批高质量数据（500 例/10 个新 bug，late mismatch、无泄漏、无逐字节歧义），补上了 LSU/branch/CSR 域的 bug 广度——这正是 v3 相比 v2 的关键差异。
+- **提交同款分数（train-on-dev 上界）**：set1=1.0、set2=0.9587（官方均值 0.979）、benchmark5_500=0.936、benchmark8_500=0.998、benchmark6=0.58。**全面优于旧模型（官方均值 0.955）和 v2（0.875）**，尤其 set2 从 v2 的 0.75 回升到 0.9587。
+- **已打包验证**：GLIBC 2.28 达标、双模式冒烟通过（有 LLM set1=1.0，无 "[siamese] failed"）。
+- **注意**：v3 是新推荐的提交；旧 `final_submission/`（旧模型）保留不动。队友上传时用 v3 文件夹内容。
+
 ## 7. 采过的坑（不要再踩）
 
 1. **LLM 混合宽度崩溃**：`np.vstack` 把 768 维（成功抓到）和 0 维（LLM 超时兜底产生的零向量）拼一起直接 ValueError（index 0 size 768, index 1979 size 0）。**修复**：`pairwise_llm_features.py` 里所有 reducer/apply 函数改用 `_stack_llm_vectors`（按公共最大宽度补零）替代 `np.vstack`；兜底零向量必须用 `llm_expected_dim`（768）造满维，不能造 0 维。**不要再用裸 `np.vstack` 拼 LLM 向量。**
