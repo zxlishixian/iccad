@@ -21,13 +21,18 @@
 官方 10 个 benchmark（B_20260601 §3.2）：N=2~3000、k=2~64，其中 k 序列为 **2/4/8/16/32/64**，
 且最大两个 benchmark（N=3000）是 **k=64**。QA A11 明确 buckets 数 = bug 数，QA A12 明确 --k 按表原值传入。
 
-我们当前**干净**的 fake 数据覆盖：k=3（official_vcs）、k=4（stable）、k=10（directed_cross_v4 +
-benchmark5_500 + benchmark8_500，共 20 个 distinct bug）。旧 benchmark6_final（64 bug）和
-benchmark5_final（32 bug）是 lui 级联的**歧义数据**，不能当高-k 预演。
+我们当前**干净**的 fake 数据覆盖：k=3（official_vcs）、k=4（stable）、k=10（directed_cross_v4 /
+benchmark5_500 / benchmark8_500）、k=12（k32_new12），共 **32 个 distinct 干净 bug**（bug_037~127，
+分散在 3 个新集里）。旧 benchmark6_final（64 bug）和 benchmark5_final（32 bug）是 lui 级联的
+**歧义数据**，不能当高-k 预演。
 
 **结论：我们缺一个「干净的高-k 数据集」来预演 hidden 集的 k=32/64 场景。**
 
-## 1. P0（最高优先级）：造一个干净的 k=32 或 k=64 数据集
+## 1. P0（最高优先级）：把 bug 池补到 ~64，合并成单个干净的高-k 数据集
+
+**进度**：目前已积累 **32 个 distinct 干净 bug**（benchmark5=10 + benchmark8=10 + k32_new12=12），
+分散在 3 个数据集里。下一步不是继续造 k=10 的小集，而是：① 把 bug 池补到 ~64（覆盖 §2 剩余功能
+单元）；② 把这 64 个 bug 合并成**单个干净的高-k 集**（k=32 或 k=64），预演 hidden 集的 k=32/64。
 
 - 目标规格：k=32（benchmark5 规格）起步，最好 k=64（benchmark6 规格），N 按 1000~3000。
 - 硬要求（和 benchmark5/8 一样）：
@@ -44,18 +49,17 @@ benchmark5_final（32 bug）是 lui 级联的**歧义数据**，不能当高-k �
 「无预定义故障分类法、bug 是任意 RTL 修改」，所以我们应把 Ibex 各功能单元都覆盖到，而不是只盯
 几个已知官方 bug 号。
 
-已覆盖（benchmark5+8 共 20 bug）：ALU 算数/逻辑/移位、MDU 的 mul/mulhsu、LSU 符号扩展与
-store 地址、分支比较器与立即数编码、AUIPC、CSR 的 MIE、中断向量与原因、debug ebreak/入口。
+已覆盖（三批共 32 bug）：ALU 算数/逻辑/移位、MDU 的 mul/mulhsu/**div/rem**、LSU 符号扩展与
+store 地址、分支比较器与立即数编码、AUIPC、CSR 的 MIE/mstatus、中断向量与原因、debug ebreak/入口、
+**RV32C 压缩指令译码（c.addi/c.li/c.sub/c.slli/c.mv/c.lwsp）**。
 
-**下一批优先补这些（官方有对应证据的标了官方 bug 号）：**
+**下一批优先补这些（官方有对应证据的标了官方 bug 号；MDU 除余、RV32C 已在 k32_new12 补上）：**
 
 | 缺口 | 具体 bug 建议 | 症状 |
 |---|---|---|
-| **MDU 除/余** | div/divu/rem/remu 错误、除零处理 | mismatch（对应指令）——官方 bug_107 = remu/mulhsu/rem |
-| **RV32C 译码** | 压缩指令扩展成 32 位错误、c.* 立即数/寄存器字段错 | mismatch——官方 bug_304 = c.addi |
-| **分支 beq/bne/blt** | 等号/不等号条件错、无符号比较错 | mismatch（PC 分歧）|
+| **分支 beq/bne/blt** | 等号/不等号/小于条件错（目前只有 bgeu + 立即数编码，beq/bne/blt 这核心三兄弟还没覆盖）| mismatch（PC 分歧）|
+| **CSR 全空间** | mepc/mtvec/mtval/mcause/mie/mip 读写错、用户态访问特权 CSR 越权（目前只碰了 MIE/mstatus）| test_fail |
 | **LSU byte enable/对齐** | 部分写使能错、非对齐访存、符号/零扩展选择 | mismatch 或 mem_error |
-| **CSR 读/写/权限** | 具体 CSR（mepc/mtvec/mtval/mie/mip…）读写错、用户态访问特权 CSR 越权 | test_fail |
 | **PMP（物理内存保护）** | 权限检查错、地址匹配错 | test_fail |
 | **WFI/睡眠** | WFI 唤醒逻辑错（中断未唤醒/错误唤醒）| test_fail |
 | **总线接口（AHB-Lite）** | 握手/突发传输错 | mismatch / 时序错 |
