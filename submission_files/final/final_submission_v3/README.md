@@ -11,7 +11,12 @@ PyTorch / pip / GPU).  Output is exactly `Case,bucket` with one row per case.
 
 ## Model
 
-O(N) siamese per-case encoder (5-seed embedding average) → k-means clustering.
+O(N) siamese per-case encoder (5-seed ensemble) → consensus clustering.
+
+The 5 seeds are ensembled by **co-association voting**: each seed clusters the
+encoded cases independently, then the pairwise cluster agreement is voted across
+seeds and a final agglomerative consensus clustering produces the buckets.  This
+is more robust than averaging the (not mutually aligned) per-seed embeddings.
 
 Per-case features:
 - LLM embedding (nomic-embed-text-v1.5, 768 → SVD 64)
@@ -56,12 +61,12 @@ were replaced with the conda `libgcc-15.2.0` (GLIBC_2.14) and `libstdcxx-15.2.0`
 | Dataset | k | BA |
 |---|---|---:|
 | benchmark_set_1 | 2 | 1.00 |
-| benchmark_set_2 | 4 | 0.96 |
-| benchmark5_500cases_official | 10 | 0.94 |
+| benchmark_set_2 | 4 | 0.97 |
+| benchmark5_500cases_official | 10 | 0.95 |
 | benchmark8_500cases_official | 10 | 1.00 |
-| official_vcs | 3 | 0.80 |
-| stable | 4 | 0.79 |
-| benchmark6_final | 64 | 0.58 |
+| official_vcs | 3 | 0.88 |
+| stable | 4 | 0.83 |
+| benchmark6_final | 64 | 0.62 |
 
 Note: these are train-on-dev scores (the official dev sets were in the training
 data) and are an upper bound; the hidden-set generalization is expected to be
