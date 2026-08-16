@@ -312,6 +312,13 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 - **已打包验证**：GLIBC 2.28 达标、双模式冒烟通过（有 LLM set1=1.0，无 "[siamese] failed"）。
 - **注意**：v3 是新推荐的提交；旧 `final_submission/`（旧模型）保留不动。队友上传时用 v3 文件夹内容。
 
+**2026-08-16 晚：集成改为 co-association（坑 #15 的正式修复）**
+
+- 把 `siamese_predict.py` 的「平均 5 个 npz embedding → k-means」改成「**5 个 npz 各自 k-means → 逐对 co-association 投票 → 层次共识聚类（average linkage）**」。
+- 验证（v3 全 9 集）：co-association **严格不输**，7/9 集提升，最大 +0.10（directed）、+0.076（official_vcs）、+0.040（benchmark6）；官方集 set1 保持 1.0、set2 微涨。
+- 干净迁移（8 fake→官方）：set1 从 0.51→0.72、官方均值 0.61→0.71（平均 embedding 的未对齐问题被修掉）。
+- 已重打包、GLIBC 2.28 复验、双模式冒烟通过（set1=1.0/set2=0.965）。**注意**：层次聚类的 `AgglomerativeClustering(metric="precomputed")` 是 O(n²) 内存 + 较高时间复杂度，N=3000 时应实测运行时（本次 benchmark6 2944 例可跑完）。
+
 ## 7. 采过的坑（不要再踩）
 
 1. **LLM 混合宽度崩溃**：`np.vstack` 把 768 维（成功抓到）和 0 维（LLM 超时兜底产生的零向量）拼一起直接 ValueError（index 0 size 768, index 1979 size 0）。**修复**：`pairwise_llm_features.py` 里所有 reducer/apply 函数改用 `_stack_llm_vectors`（按公共最大宽度补零）替代 `np.vstack`；兜底零向量必须用 `llm_expected_dim`（768）造满维，不能造 0 维。**不要再用裸 `np.vstack` 拼 LLM 向量。**
