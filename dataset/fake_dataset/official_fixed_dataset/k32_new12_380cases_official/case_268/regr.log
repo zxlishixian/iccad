@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[142] : pc[800002f0] lhu	x22,1167(x2): s6:ffffaf30 
+spike[142] : pc[800002f0] lhu     s6, 1167(sp): s6:0000af30 
+Mismatch[29504]:
+[34792] ibex : pc[800024cc] slli	x1,x14,0xe: ra:00000000 
+[FAILED]: 3343 matched, 29504 mismatch
+
+0 PASSED, 1 FAILED

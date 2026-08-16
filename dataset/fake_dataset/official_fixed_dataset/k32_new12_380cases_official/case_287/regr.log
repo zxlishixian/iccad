@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[88] : pc[800001c2] sub	x14,x8,x4: a4:f70e936f 
+spike[88] : pc[800001c2] sub     a4, s0, tp: a4:08f16c91 
+Mismatch[8089]:
+[9444] ibex : pc[8000844a] csrrsi	x9,mscratch,30: s1:f7ffffe0 
+[FAILED]: 157 matched, 8089 mismatch
+
+0 PASSED, 1 FAILED

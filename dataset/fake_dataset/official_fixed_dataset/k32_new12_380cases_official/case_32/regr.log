@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[371] : pc[8000079c] div	x7,x9,x15: t2:fffffffe 
+spike[371] : pc[8000079c] div     t2, s1, a5: t2:1ffffec3 
+Mismatch[3441]:
+[4443] ibex : pc[80001eb4] mulh	x28,x19,x0: t3:00000000 
+[FAILED]: 730 matched, 3441 mismatch
+
+0 PASSED, 1 FAILED

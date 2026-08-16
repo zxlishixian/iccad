@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[130] : pc[8000032c] c.addi	x8,-1: s0:fffffda7 
+spike[130] : pc[8000032c] c.addi  s0, -1: s0:fffffda8 
+Mismatch[104]:
+[807] ibex : pc[800013a2] c.addi4spn	x12,x2,1008: a2:8001b2ec 
+[FAILED]: 592 matched, 104 mismatch
+
+0 PASSED, 1 FAILED

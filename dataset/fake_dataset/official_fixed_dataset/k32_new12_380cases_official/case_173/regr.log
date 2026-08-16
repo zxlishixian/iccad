@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[123] : pc[80002792] c.li	x11,26: a1:0000001e 
+spike[123] : pc[80002792] c.li    a1, 26: a1:0000001a 
+[FAILED]: 412 matched, 2727 mismatch
+
+0 PASSED, 1 FAILED

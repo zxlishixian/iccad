@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[174] : pc[8000036c] c.addi	x21,7: s5:b1950016 
+spike[174] : pc[8000036c] c.addi  s5, 7: s5:b1950017 
+Mismatch[2469]:
+[3949] ibex : pc[80000c2c] srl	x3,x12,x3: gp:000002be 
+[FAILED]: 893 matched, 2469 mismatch
+
+0 PASSED, 1 FAILED

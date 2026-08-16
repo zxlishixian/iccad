@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[125] : pc[800002fa] c.slli	x14,0x1b: a4:70000000 
+spike[125] : pc[800002fa] c.slli  a4, 27: a4:e0000000 
+Mismatch[1466]:
+[2113] ibex : pc[8000386e] andi	x22,x30,-941: s6:fff00000 
+[FAILED]: 405 matched, 1466 mismatch
+
+0 PASSED, 1 FAILED

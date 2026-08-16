@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[210] : pc[8000037a] divu	x24,x27,x1: s8:f3334fd0 
+spike[210] : pc[8000037a] divu    s8, s11, ra: s8:0ccce969 
+Mismatch[7809]:
+[9427] ibex : pc[800083b6] c.addi	x14,-1: a4:00000026 
+[FAILED]: 188 matched, 7809 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[81] : pc[80003bb0] lui	x27,0xae876: s11:ae876000 
+spike[81] : pc[8001c080] addi    a3, a3, -124: a3:8002cd98 
+Mismatch[18]:
+[100] ibex : pc[80003bfc] xor	x29,x17,x5: t4:a8beb02d 
+[FAILED]: 72 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

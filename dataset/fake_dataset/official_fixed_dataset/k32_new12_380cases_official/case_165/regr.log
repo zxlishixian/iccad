@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[135] : pc[800086e2] c.li	x1,-1: ra:fffffffb 
+spike[135] : pc[800086e2] c.li    ra, -1: ra:ffffffff 
+Mismatch[4195]:
+[5223] ibex : pc[800001d2] c.addi	x23,9: s7:eca9ee28 
+[FAILED]: 222 matched, 4195 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[148] : pc[800022c2] c.and	x9,x13: s1:00000000 
+spike[148] : pc[80002294] xor     ra, t4, t4: ra:00000000 
+[FAILED]: 134 matched, 2328 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[203] : pc[8000036e] mulhu	x16,x19,x31: a6:c33a9658 
+spike[203] : pc[8000036e] mulhu   a6, s3, t6: a6:3cc6b678 
+[FAILED]: 1110 matched, 7048 mismatch
+
+0 PASSED, 1 FAILED

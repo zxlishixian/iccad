@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[131] : pc[800002cc] div	x13,x7,x27: a3:0000009e 
+spike[131] : pc[800002d0] lbu     t3, -1990(sp): t3:00000057 
+[FAILED]: 152 matched, 9553 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[240] : pc[800003d4] div	x3,x19,x14: gp:80015e7c 
+spike[240] : pc[800003d4] div     gp, s3, a4: gp:ffffffff 
+[FAILED]: 1223 matched, 6907 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[158] : pc[8000036a] sub	x30,x21,x9: t5:00006a75 
+spike[158] : pc[80000362] lbu     s11, 1914(a0): s11:00000050 
+[FAILED]: 248 matched, 42248 mismatch
+
+0 PASSED, 1 FAILED

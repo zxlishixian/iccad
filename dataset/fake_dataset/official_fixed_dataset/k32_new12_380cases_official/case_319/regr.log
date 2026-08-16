@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[463] : pc[80000c08] or	x23,x27,x16: s7:ffffb845 
+spike[463] : pc[80000be2] srai    s10, a7, 6: s10:000006c3 
+[FAILED]: 439 matched, 953 mismatch
+
+0 PASSED, 1 FAILED

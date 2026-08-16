@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[327] : pc[800004e6] remu	x1,x29,x2: ra:fffffffc 
+spike[327] : pc[800004e6] remu    ra, t4, sp: ra:80011e1c 
+Mismatch[4106]:
+[9458] ibex : pc[800083a2] c.addi4spn	x8,x2,704: s0:000002bf 
+[FAILED]: 4012 matched, 4106 mismatch
+
+0 PASSED, 1 FAILED

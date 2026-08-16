@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[350] : pc[80000766] lhu	x25,54(x8): s9:fffff000 
+spike[350] : pc[80000766] lhu     s9, 54(s0): s9:0000f000 
+Mismatch[15493]:
+[28107] ibex : pc[80026482] or	x16,x13,x24: a6:80e5e4d4 
+[FAILED]: 3203 matched, 15493 mismatch
+
+0 PASSED, 1 FAILED

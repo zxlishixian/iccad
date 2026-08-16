@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[199] : pc[800042f2] c.slli	x14,0x1a: a4:08000000 
+spike[199] : pc[800042f2] c.slli  a4, 26: a4:04000000 
+Mismatch[1909]:
+[3056] ibex : pc[80000c18] csrrw	x25,mscratch,x6: s9:00000015 
+[FAILED]: 784 matched, 1909 mismatch
+
+0 PASSED, 1 FAILED

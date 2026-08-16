@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[96] : pc[80005430] c.li	x15,-1: a5:fffffffb 
+spike[96] : pc[80005430] c.li    a5, -1: a5:ffffffff 
+Mismatch[11184]:
+[13673] ibex : pc[80004d2e] auipc	x21,0x101ce: s5:901d2d2e 
+[FAILED]: 603 matched, 11184 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[106] : pc[8000029e] xor	x10,x30,x24: a0:fffffffa 
+spike[106] : pc[8000029c] c.slli  a7, 1: a7:00020000 
+[FAILED]: 94 matched, 1220 mismatch
+
+0 PASSED, 1 FAILED

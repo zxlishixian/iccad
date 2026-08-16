@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[124] : pc[800002b0] lhu	x14,-14(x9): a4:ffff8485 
+spike[124] : pc[800002b0] lhu     a4, -14(s1): a4:00008485 
+Mismatch[22013]:
+[25708] ibex : pc[80002c90] c.sub	x15,x12: a5:83a97e32 
+[FAILED]: 2265 matched, 22013 mismatch
+
+0 PASSED, 1 FAILED

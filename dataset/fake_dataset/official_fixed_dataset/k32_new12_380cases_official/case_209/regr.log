@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[280] : pc[800004b2] mulhu	x19,x19,x17: s3:01b5f004 
+spike[280] : pc[800004b2] mulhu   s3, s3, a7: s3:cb3554ae 
+[FAILED]: 644 matched, 24934 mismatch
+
+0 PASSED, 1 FAILED

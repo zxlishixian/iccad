@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[575] : pc[80000b8a] remu	x12,x10,x15: a2:ee2fed39 
+spike[575] : pc[80000b8a] remu    a2, a0, a5: a2:80018853 
+Mismatch[524]:
+[2390] ibex : pc[8000409e] csrrw	x16,mscratch,x26: a6:00000000 
+[FAILED]: 1213 matched, 524 mismatch
+
+0 PASSED, 1 FAILED

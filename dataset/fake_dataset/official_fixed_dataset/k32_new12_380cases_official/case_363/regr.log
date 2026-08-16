@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[173] : pc[80012c08] lw	x30,-220(x11): t5:00000001 
+spike[173] : pc[80012c18] lh      s2, -164(a1): s2:00000000 
+Mismatch[28374]:
+[41937] ibex : pc[80029652] sub	x21,x5,x31: s5:ffffffff 
+[FAILED]: 224 matched, 28374 mismatch
+
+0 PASSED, 1 FAILED

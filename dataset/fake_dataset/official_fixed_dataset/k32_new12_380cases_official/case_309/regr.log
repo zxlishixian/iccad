@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[245] : pc[8000053a] sub	x17,x16,x4: a7:fffffe76 
+spike[245] : pc[8000053a] sub     a7, a6, tp: a7:0000018c 
+[FAILED]: 252 matched, 3198 mismatch
+
+0 PASSED, 1 FAILED

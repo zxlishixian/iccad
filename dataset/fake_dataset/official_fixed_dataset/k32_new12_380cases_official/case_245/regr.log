@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[172] : pc[80000508] c.slli	x12,0x19: a2:4c000000 
+spike[172] : pc[80000508] c.slli  a2, 25: a2:98000000 
+Mismatch[847]:
+[1672] ibex : pc[80002b2c] c.li	x3,1: gp:00000001 
+[FAILED]: 580 matched, 847 mismatch
+
+0 PASSED, 1 FAILED

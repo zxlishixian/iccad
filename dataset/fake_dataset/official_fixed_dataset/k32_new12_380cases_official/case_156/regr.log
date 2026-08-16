@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[100] : pc[800005aa] divu	x2,x24,x18: sp:ffbc4e45 
+spike[100] : pc[800005aa] divu    sp, s8, s2: sp:01de7066 
+[FAILED]: 690 matched, 1719 mismatch
+
+0 PASSED, 1 FAILED

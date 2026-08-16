@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[279] : pc[80000472] divu	x23,x23,x31: s7:00000000 
+spike[279] : pc[80000472] divu    s7, s7, t6: s7:00d20d20 
+Mismatch[5806]:
+[9354] ibex : pc[800083f6] xor	x2,x23,x0: sp:6aa5c000 
+[FAILED]: 2331 matched, 5806 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[69] : pc[80000184] sub	x19,x3,x2: s3:f8f89ee6 
+spike[69] : pc[80000184] sub     s3, gp, sp: s3:0707611a 
+Mismatch[7711]:
+[9412] ibex : pc[800085cc] sra	x23,x0,x21: s7:00000000 
+[FAILED]: 239 matched, 7711 mismatch
+
+0 PASSED, 1 FAILED

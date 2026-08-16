@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[537] : pc[80000812] mulhu	x20,x2,x30: s4:ffffffff 
+spike[537] : pc[80000812] mulhu   s4, sp, t5: s4:0000008f 
+Mismatch[7653]:
+[9433] ibex : pc[8000843c] c.lui	x12,0x18: a2:00018000 
+[FAILED]: 466 matched, 7653 mismatch
+
+0 PASSED, 1 FAILED

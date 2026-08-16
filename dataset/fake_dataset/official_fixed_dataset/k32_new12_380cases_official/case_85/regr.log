@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[188] : pc[800004e4] c.addi	x5,28: t0:7ffe4ee2 
+spike[188] : pc[800004e4] c.addi  t0, 28: t0:7ffe4ee1 
+[FAILED]: 259 matched, 22 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[816] : pc[80000bcc] divu	x2,x3,x31: sp:00000002 
+spike[816] : pc[80000bcc] divu    sp, gp, t6: sp:00000000 
+Mismatch[7092]:
+[9431] ibex : pc[80008332] xori	x2,x15,-985: sp:ec47c662 
+[FAILED]: 968 matched, 7092 mismatch
+
+0 PASSED, 1 FAILED

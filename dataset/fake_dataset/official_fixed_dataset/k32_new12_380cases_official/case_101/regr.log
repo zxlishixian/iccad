@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[85] : pc[800001c6] lb	x20,-108(x2): s4:00000000 
+spike[85] : pc[800001c6] lb      s4, -108(sp): s4:ffffffa7 
+[FAILED]: 99 matched, 19385 mismatch
+
+0 PASSED, 1 FAILED

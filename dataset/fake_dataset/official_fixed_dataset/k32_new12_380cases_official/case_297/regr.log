@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[120] : pc[80000232] c.sub	x11,x9: a1:80016068 
+spike[120] : pc[80000232] c.sub   a1, s1: a1:80015c90 
+Mismatch[7682]:
+[9420] ibex : pc[800083fc] or	x3,x11,x13: gp:fffffe77 
+[FAILED]: 347 matched, 7682 mismatch
+
+0 PASSED, 1 FAILED

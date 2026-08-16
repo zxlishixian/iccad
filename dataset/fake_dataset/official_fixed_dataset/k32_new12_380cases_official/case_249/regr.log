@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[69] : pc[8000665e] c.slli	x22,0x12: s6:e0b00000 
+spike[69] : pc[8000665e] c.slli  s6, 18: s6:70580000 
+[FAILED]: 579 matched, 3404 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[87] : pc[800001d8] c.li	x30,-1: t5:fffffffb 
+spike[87] : pc[800001d8] c.li    t5, -1: t5:ffffffff 
+Mismatch[2837]:
+[4396] ibex : pc[80000264] c.add	x19,x24: s3:cefeac30 
+[FAILED]: 853 matched, 2837 mismatch
+
+0 PASSED, 1 FAILED

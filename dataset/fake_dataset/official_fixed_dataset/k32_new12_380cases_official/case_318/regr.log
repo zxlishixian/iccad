@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[678] : pc[80002812] sub	x8,x1,x8: s0:80027ffd 
+spike[678] : pc[80002812] sub     s0, ra, s0: s0:7ffd8005 
+Mismatch[27876]:
+[45983] ibex : pc[80000710] sltu	x23,x22,x11: s7:00000000 
+[FAILED]: 4606 matched, 27876 mismatch
+
+0 PASSED, 1 FAILED

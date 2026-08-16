@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[381] : pc[8000087c] mulhu	x5,x16,x22: t0:3ffdf2fe 
+spike[381] : pc[8000087c] mulhu   t0, a6, s6: t0:40020d0a 
+Mismatch[199]:
+[684] ibex : pc[8000104e] addi	x30,x29,279: t5:00000118 
+[FAILED]: 430 matched, 199 mismatch
+
+0 PASSED, 1 FAILED

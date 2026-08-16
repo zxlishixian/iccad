@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[177] : pc[800005e6] c.addi	x3,-1: gp:fffffffe 
+spike[177] : pc[800005e6] c.addi  gp, -1: gp:ffffffff 
+Mismatch[240]:
+[960] ibex : pc[80001b32] slli	x1,x15,0x9: ra:0025a000 
+[FAILED]: 556 matched, 240 mismatch
+
+0 PASSED, 1 FAILED

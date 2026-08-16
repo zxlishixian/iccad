@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[87] : pc[800001b6] div	x15,x10,x17: a5:80015e7c 
+spike[87] : pc[800001ba] c.and   s1, a5: s1:00000000 
+[FAILED]: 198 matched, 7683 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[93] : pc[80001726] c.addi	x1,-1: ra:fdfbfdf5 
+spike[93] : pc[80001726] c.addi  ra, -1: ra:fdfbfdf6 
+[FAILED]: 509 matched, 41 mismatch
+
+0 PASSED, 1 FAILED

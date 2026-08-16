@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[81] : pc[8000024e] c.li	x15,-1: a5:fffffffb 
+spike[81] : pc[8000024e] c.li    a5, -1: a5:ffffffff 
+Mismatch[2541]:
+[3205] ibex : pc[8000399a] c.lui	x18,0x19: s2:00019000 
+[FAILED]: 82 matched, 2541 mismatch
+
+0 PASSED, 1 FAILED

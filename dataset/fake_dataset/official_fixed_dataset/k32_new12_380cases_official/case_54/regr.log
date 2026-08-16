@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[336] : pc[800006be] remu	x15,x13,x2: a5:ebb65606 
+spike[336] : pc[800006be] remu    a5, a3, sp: a5:144d5606 
+Mismatch[1291]:
+[3753] ibex : pc[8001188a] ori	x10,x11,-364: a0:fffffe9e 
+[FAILED]: 2180 matched, 1291 mismatch
+
+0 PASSED, 1 FAILED

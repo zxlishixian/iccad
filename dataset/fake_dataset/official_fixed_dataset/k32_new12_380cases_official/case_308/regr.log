@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[171] : pc[80000326] sub	x2,x14,x24: sp:0000008c 
+spike[171] : pc[80000326] sub     sp, a4, s8: sp:00000072 
+Mismatch[192]:
+[1378] ibex : pc[8000090e] c.li	x3,1: gp:00000001 
+[FAILED]: 1085 matched, 192 mismatch
+
+0 PASSED, 1 FAILED

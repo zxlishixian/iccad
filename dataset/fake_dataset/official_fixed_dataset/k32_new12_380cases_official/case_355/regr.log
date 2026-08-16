@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[117] : pc[80000272] lw	x8,-160(x30): s0:216691a4 
+spike[117] : pc[80000272] lw      s0, -160(t5): s0:216691a5 
+[FAILED]: 4851 matched, 413910 mismatch
+
+0 PASSED, 1 FAILED

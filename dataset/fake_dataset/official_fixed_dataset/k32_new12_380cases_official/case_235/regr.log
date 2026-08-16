@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[324] : pc[80001b36] c.slli	x11,0x13: a1:006c0000 
+spike[324] : pc[80001b36] c.slli  a1, 19: a1:00d80000 
+Mismatch[16710]:
+[20539] ibex : pc[80000532] div	x13,x5,x16: a3:00000005 
+[FAILED]: 1130 matched, 16710 mismatch
+
+0 PASSED, 1 FAILED

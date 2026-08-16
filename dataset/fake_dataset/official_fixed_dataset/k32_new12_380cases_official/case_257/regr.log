@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[116] : pc[80000274] lhu	x14,6(x9): a4:ffffb4b5 
+spike[116] : pc[80000274] lhu     a4, 6(s1): a4:0000b4b5 
+[FAILED]: 6921 matched, 34415 mismatch
+
+0 PASSED, 1 FAILED

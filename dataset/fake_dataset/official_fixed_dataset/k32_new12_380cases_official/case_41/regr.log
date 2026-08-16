@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[854] : pc[80000c46] remu	x16,x5,x8: a6:ffffffda 
+spike[854] : pc[80000c46] remu    a6, t0, s0: a6:00000014 
+Mismatch[6237]:
+[9403] ibex : pc[800084da] div	x1,x3,x9: ra:ffffffff 
+[FAILED]: 1623 matched, 6237 mismatch
+
+0 PASSED, 1 FAILED

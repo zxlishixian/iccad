@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[69] : pc[8000018c] c.slli	x18,0x16: s2:00400000 
+spike[69] : pc[80000192] xori    a5, s10, -636: a5:fffffd87 
+[FAILED]: 73 matched, 432 mismatch
+
+0 PASSED, 1 FAILED

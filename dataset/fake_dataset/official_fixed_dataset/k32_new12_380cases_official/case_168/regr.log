@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[328] : pc[800044b4] c.li	x5,9: t0:0000000d 
+spike[328] : pc[800044b4] c.li    t0, 9: t0:00000009 
+Mismatch[3243]:
+[4715] ibex : pc[80003b3e] csrrsi	x31,mscratch,28: t6:00000000 
+[FAILED]: 851 matched, 3243 mismatch
+
+0 PASSED, 1 FAILED

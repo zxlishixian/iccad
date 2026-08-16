@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[132] : pc[80000e2a] c.li	x12,-1: a2:fffffffb 
+spike[132] : pc[80000e2a] c.li    a2, -1: a2:ffffffff 
+Mismatch[11847]:
+[16006] ibex : pc[8000875c] csrrw	x19,mscratch,x10: s3:00000014 
+[FAILED]: 2051 matched, 11847 mismatch
+
+0 PASSED, 1 FAILED

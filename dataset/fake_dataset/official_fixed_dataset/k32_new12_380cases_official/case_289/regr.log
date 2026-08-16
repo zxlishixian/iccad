@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[108] : pc[8000020c] sub	x12,x16,x8: a2:e0000001 
+spike[108] : pc[8000020c] sub     a2, a6, s0: a2:20000001 
+Mismatch[7526]:
+[9384] ibex : pc[800082cc] c.li	x8,-1: s0:ffffffff 
+[FAILED]: 400 matched, 7526 mismatch
+
+0 PASSED, 1 FAILED

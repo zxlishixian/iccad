@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[117] : pc[800003c0] c.addi	x30,-1: t5:f46f8b70 
+spike[117] : pc[800003c0] c.addi  t5, -1: t5:f46f8b71 
+Mismatch[177]:
+[785] ibex : pc[80000868] csrrw	x2,mscratch,x10: sp:00000000 
+[FAILED]: 528 matched, 177 mismatch
+
+0 PASSED, 1 FAILED

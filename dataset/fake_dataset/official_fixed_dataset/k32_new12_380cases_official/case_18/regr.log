@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[212] : pc[8000876a] div	x25,x2,x0: s9:800086da 
+spike[212] : pc[8000876a] div     s9, sp, zero: s9:ffffffff 
+[FAILED]: 597 matched, 9375 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[322] : pc[80000516] c.addi4spn	x15,x2,128: a5:00000070 
+spike[322] : pc[80000512] mulhu   s6, tp, t3: s6:80015e7b 
+[FAILED]: 258 matched, 7778 mismatch
+
+0 PASSED, 1 FAILED

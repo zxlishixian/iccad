@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[470] : pc[80000700] sll	x8,x27,x0: s0:00040000 
+spike[470] : pc[800006fa] remu    s0, s0, s2: s0:6f609e7f 
+Mismatch[4759]:
+[9439] ibex : pc[80008314] addi	x5,x27,-714: t0:fffffdb5 
+[FAILED]: 3245 matched, 4759 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[121] : pc[800004e4] lhu	x14,-237(x11): a4:ffff9c7d 
+spike[121] : pc[800004e4] lhu     a4, -237(a1): a4:00009c7d 
+Mismatch[19431]:
+[26121] ibex : pc[8000038a] c.li	x3,11: gp:0000000b 
+[FAILED]: 5427 matched, 19431 mismatch
+
+0 PASSED, 1 FAILED

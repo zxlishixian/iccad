@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[105] : pc[800001ee] div	x19,x26,x20: s3:feb98000 
+spike[105] : pc[800001ee] div     s3, s10, s4: s3:0000001c 
+Mismatch[7691]:
+[9420] ibex : pc[80008320] mulhu	x29,x12,x20: t4:00000000 
+[FAILED]: 191 matched, 7691 mismatch
+
+0 PASSED, 1 FAILED

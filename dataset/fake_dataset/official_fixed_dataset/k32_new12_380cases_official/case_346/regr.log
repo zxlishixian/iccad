@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[85] : pc[800002ea] mulh	x30,x15,x18: t5:40000000 
+spike[85] : pc[800002be] mulh    sp, a7, s8: sp:fffffffd 
+[FAILED]: 102 matched, 673 mismatch
+
+0 PASSED, 1 FAILED

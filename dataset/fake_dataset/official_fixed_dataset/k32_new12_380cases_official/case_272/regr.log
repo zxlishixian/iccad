@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[87] : pc[800160ca] lh	x10,186(x27): a0:ffffebe4 
+spike[87] : pc[8001c080] addi    a4, a4, -124: a4:8002cd60 
+Mismatch[18]:
+[106] ibex : pc[80016116] auipc	x1,0x10: ra:80026116 
+[FAILED]: 82 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

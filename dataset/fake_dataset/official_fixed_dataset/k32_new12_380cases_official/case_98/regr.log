@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[98] : pc[8002fc40] lbu	x15,150(x5): a5:00000000 
+spike[98] : pc[8002fc40] lbu     a5, 150(t0): a5:00000035 
+[FAILED]: 216 matched, 29807 mismatch
+
+0 PASSED, 1 FAILED

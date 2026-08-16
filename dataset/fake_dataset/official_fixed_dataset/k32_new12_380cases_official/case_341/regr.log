@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[432] : pc[80000c88] ori	x1,x26,801: ra:a8a40321 
+spike[432] : pc[80000c84] add     t6, s9, s8: t6:3265d01a 
+[FAILED]: 347 matched, 4058 mismatch
+
+0 PASSED, 1 FAILED

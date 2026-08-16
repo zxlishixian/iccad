@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[109] : pc[80000272] lhu	x11,32(x7): a1:ffffb01c 
+spike[109] : pc[80000272] lhu     a1, 32(t2): a1:0000b01c 
+[FAILED]: 971 matched, 2308 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[307] : pc[800004c6] mulhu	x4,x8,x7: tp:ffffffff 
+spike[307] : pc[800004c6] mulhu   tp, s0, t2: tp:00000008 
+[FAILED]: 855 matched, 7199 mismatch
+
+0 PASSED, 1 FAILED

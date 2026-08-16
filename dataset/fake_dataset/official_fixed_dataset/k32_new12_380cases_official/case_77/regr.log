@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[150] : pc[80003cb6] c.addi	x17,5: a7:00000005 
+spike[150] : pc[80003cb6] c.addi  a7, 5: a7:00000006 
+Mismatch[2487]:
+[3534] ibex : pc[80001a50] c.and	x12,x11: a2:00000000 
+[FAILED]: 533 matched, 2487 mismatch
+
+0 PASSED, 1 FAILED

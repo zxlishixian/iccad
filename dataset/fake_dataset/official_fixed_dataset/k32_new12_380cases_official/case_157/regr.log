@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[179] : pc[8000038c] divu	x18,x11,x30: s2:fce0d761 
+spike[179] : pc[8000038c] divu    s2, a1, t5: s2:031f47c4 
+Mismatch[6849]:
+[9605] ibex : pc[80005760] andi	x8,x7,537: s0:00000000 
+[FAILED]: 1765 matched, 6849 mismatch
+
+0 PASSED, 1 FAILED

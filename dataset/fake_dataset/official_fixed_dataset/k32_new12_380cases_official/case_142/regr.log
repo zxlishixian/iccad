@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[123] : pc[8000024c] divu	x2,x24,x20: sp:80000000 
+spike[123] : pc[8000024c] divu    sp, s8, s4: sp:00000000 
+Mismatch[7940]:
+[9436] ibex : pc[80008374] c.add	x7,x10: t2:00001002 
+[FAILED]: 211 matched, 7940 mismatch
+
+0 PASSED, 1 FAILED

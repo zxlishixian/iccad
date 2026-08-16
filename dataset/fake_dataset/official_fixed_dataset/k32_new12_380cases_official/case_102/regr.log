@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[425] : pc[800008c8] xor	x6,x0,x24: t1:00000000 
+spike[425] : pc[800008c4] lb      s7, 946(t4): s7:0000004c 
+[FAILED]: 384 matched, 20887 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[166] : pc[8000025c] sub	x13,x23,x13: a3:0000016b 
+spike[166] : pc[8000025c] sub     a3, s7, a3: a3:00000001 
+[FAILED]: 305 matched, 2 mismatch
+
+0 PASSED, 1 FAILED

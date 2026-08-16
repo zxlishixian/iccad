@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[199] : pc[800024a0] c.addi	x16,20: a6:fffffd71 
+spike[199] : pc[800024a0] c.addi  a6, 20: a6:fffffd70 
+[FAILED]: 332 matched, 8083 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[199] : pc[80000336] remu	x8,x10,x3: s0:00000000 
+spike[199] : pc[80000336] remu    s0, a0, gp: s0:ffc0bd66 
+[FAILED]: 388 matched, 7750 mismatch
+
+0 PASSED, 1 FAILED

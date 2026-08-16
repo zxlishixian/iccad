@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[754] : pc[80000b06] divu	x20,x11,x22: s4:fffffff1 
+spike[754] : pc[80000b06] divu    s4, a1, s6: s4:00000000 
+Mismatch[5608]:
+[9427] ibex : pc[80008388] csrrwi	x4,mscratch,12: tp:00000010 
+[FAILED]: 2542 matched, 5608 mismatch
+
+0 PASSED, 1 FAILED

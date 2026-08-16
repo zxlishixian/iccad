@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[124] : pc[80001510] c.slli	x28,0xd: t3:ffff2000 
+spike[124] : pc[80001510] c.slli  t3, 13: t3:fffe4000 
+[FAILED]: 5323 matched, 308 mismatch
+
+0 PASSED, 1 FAILED

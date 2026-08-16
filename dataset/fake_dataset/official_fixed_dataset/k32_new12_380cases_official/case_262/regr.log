@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[146] : pc[800002ee] lhu	x19,4(x18): s3:ffffa8d4 
+spike[146] : pc[800002ee] lhu     s3, 4(s2): s3:0000a8d4 
+Mismatch[11328]:
+[12694] ibex : pc[8000491a] div	x7,x21,x8: t2:000fff70 
+[FAILED]: 804 matched, 11328 mismatch
+
+0 PASSED, 1 FAILED

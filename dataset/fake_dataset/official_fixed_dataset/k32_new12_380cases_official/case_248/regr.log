@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[156] : pc[800040e2] c.slli	x29,0x12: t4:80000000 
+spike[156] : pc[800040e2] c.slli  t4, 18: t4:40000000 
+Mismatch[5753]:
+[6948] ibex : pc[80003d2e] mul	x10,x26,x29: a0:00000000 
+[FAILED]: 165 matched, 5753 mismatch
+
+0 PASSED, 1 FAILED

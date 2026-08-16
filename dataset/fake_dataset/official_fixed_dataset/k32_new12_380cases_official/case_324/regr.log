@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[85] : pc[80000256] csrrsi	x6,mscratch,22: t1:00000014 
+spike[85] : pc[80000292] divu    t1, a4, a6: t1:00000000 
+Mismatch[694]:
+[887] ibex : pc[80001674] ori	x2,x17,356: sp:fff66d66 
+[FAILED]: 80 matched, 694 mismatch
+
+0 PASSED, 1 FAILED

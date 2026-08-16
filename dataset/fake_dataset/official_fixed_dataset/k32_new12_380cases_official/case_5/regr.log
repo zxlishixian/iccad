@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[85] : pc[800001b6] div	x16,x21,x25: a6:fe90692e 
+spike[85] : pc[800001b6] div     a6, s5, s9: a6:ffffffff 
+Mismatch[7453]:
+[9411] ibex : pc[80008368] csrrci	x21,mscratch,15: s5:3cb67576 
+[FAILED]: 484 matched, 7453 mismatch
+
+0 PASSED, 1 FAILED

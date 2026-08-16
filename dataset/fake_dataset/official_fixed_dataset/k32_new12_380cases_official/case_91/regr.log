@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[89] : pc[8000022c] c.addi	x12,18: a2:00000381 
+spike[89] : pc[8000022c] c.addi  a2, 18: a2:00000380 
+[FAILED]: 139 matched, 9 mismatch
+
+0 PASSED, 1 FAILED

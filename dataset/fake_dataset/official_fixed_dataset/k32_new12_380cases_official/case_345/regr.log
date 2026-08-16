@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[126] : pc[800002a4] c.lui	x24,0x1f: s8:0001f000 
+spike[126] : pc[800002aa] xor     sp, s0, a5: sp:00000208 
+[FAILED]: 113 matched, 6814 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[73] : pc[8000ef58] lh	x27,17(x9): s11:ffffcfd6 
+spike[73] : pc[8001c080] addi    t4, t4, -124: t4:8002cd64 
+Mismatch[18]:
+[92] ibex : pc[8000efa6] c.li	x10,28: a0:0000001c 
+[FAILED]: 61 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[178] : pc[80000a84] sub	x25,x11,x11: s9:ffffffdc 
+spike[178] : pc[80000a84] sub     s9, a1, a1: s9:00000000 
+Mismatch[17050]:
+[20207] ibex : pc[80008492] sll	x8,x20,x12: s0:000004c0 
+[FAILED]: 858 matched, 17050 mismatch
+
+0 PASSED, 1 FAILED

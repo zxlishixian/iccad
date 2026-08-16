@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[66] : pc[8000018e] xori	x13,x16,-324: a3:00000143 
+spike[66] : pc[80000188] c.slli  ra, 27: ra:00000000 
+[FAILED]: 147 matched, 6167 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[84] : pc[800001aa] div	x28,x10,x18: t3:43c5da59 
+spike[84] : pc[800001aa] div     t3, a0, s2: t3:00000000 
+Mismatch[7878]:
+[9414] ibex : pc[800083d6] slti	x30,x7,785: t5:00000001 
+[FAILED]: 227 matched, 7878 mismatch
+
+0 PASSED, 1 FAILED

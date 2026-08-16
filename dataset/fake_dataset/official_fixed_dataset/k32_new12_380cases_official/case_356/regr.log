@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[141] : pc[800002fc] lw	x7,13(x14): t2:7c7d7e7e 
+spike[141] : pc[800002fc] lw      t2, 13(a4): t2:7c7d7e7f 
+Mismatch[13597]:
+[17996] ibex : pc[800181a4] c.lui	x14,0x1: a4:00001000 
+[FAILED]: 3536 matched, 13597 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[235] : pc[800003cc] remu	x13,x31,x4: a3:026ab80f 
+spike[235] : pc[800003cc] remu    a3, t6, tp: a3:446bbd80 
+[FAILED]: 1709 matched, 6473 mismatch
+
+0 PASSED, 1 FAILED

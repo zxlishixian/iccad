@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[143] : pc[80000344] mul	x12,x8,x11: a2:570e0000 
+spike[143] : pc[80000384] c.addi  s0, 3: s0:68f20003 
+Mismatch[2607]:
+[3241] ibex : pc[8000709e] c.slli	x27,0xd: s11:00000000 
+[FAILED]: 137 matched, 2607 mismatch
+
+0 PASSED, 1 FAILED

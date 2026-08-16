@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[60] : pc[8000016a] lh	x14,13(x27): a4:00003262 
+spike[60] : pc[8001c080] addi    a5, a5, -124: a5:8002cda0 
+Mismatch[18]:
+[78] ibex : pc[800001f2] lh	x5,-14(x11): t0:00004dd1 
+[FAILED]: 53 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[221] : pc[800005b0] c.addi	x16,16: a6:fffffde8 
+spike[221] : pc[800005c4] srli    t0, s6, 6: t0:00000000 
+Mismatch[5087]:
+[6162] ibex : pc[80008598] c.srli	x9,0x1: s1:729a3cb5 
+[FAILED]: 223 matched, 5087 mismatch
+
+0 PASSED, 1 FAILED

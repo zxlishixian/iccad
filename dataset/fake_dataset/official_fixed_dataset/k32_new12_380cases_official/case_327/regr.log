@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[344] : pc[800030fa] auipc	x13,0xb3e75: a3:33e780fa 
+spike[344] : pc[80003116] csrrsi  t1, mscratch, 15: t1:00000001 
+[FAILED]: 399 matched, 3968 mismatch
+
+0 PASSED, 1 FAILED

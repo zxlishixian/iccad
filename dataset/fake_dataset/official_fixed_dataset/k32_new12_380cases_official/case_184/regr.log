@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[106] : pc[800030f4] c.li	x14,13: a4:00000009 
+spike[106] : pc[800030f4] c.li    a4, 13: a4:0000000d 
+Mismatch[3284]:
+[4809] ibex : pc[800009dc] slli	x31,x23,0x5: t6:00000000 
+[FAILED]: 652 matched, 3284 mismatch
+
+0 PASSED, 1 FAILED

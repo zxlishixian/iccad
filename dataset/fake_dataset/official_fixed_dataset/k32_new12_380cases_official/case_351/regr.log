@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[143] : pc[800002fa] lw	x13,186(x4): a3:ba8bd332 
+spike[143] : pc[800002fa] lw      a3, 186(tp): a3:ba8bd333 
+Mismatch[64607]:
+[73841] ibex : pc[80007cb8] c.addi16sp	x2,-16: sp:46b70fd4 
+[FAILED]: 3679 matched, 64607 mismatch
+
+0 PASSED, 1 FAILED

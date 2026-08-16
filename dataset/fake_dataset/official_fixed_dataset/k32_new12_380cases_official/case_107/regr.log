@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[95] : pc[8000a36e] lb	x2,157(x1): sp:00000000 
+spike[95] : pc[8000a36e] lb      sp, 157(ra): sp:0000004d 
+[FAILED]: 142 matched, 50466 mismatch
+
+0 PASSED, 1 FAILED

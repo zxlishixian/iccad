@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[669] : pc[80002076] srli	x28,x21,0x13: t3:00000000 
+spike[669] : pc[8000209c] srli    a3, s11, 9: a3:007fffff 
+[FAILED]: 546 matched, 2853 mismatch
+
+0 PASSED, 1 FAILED

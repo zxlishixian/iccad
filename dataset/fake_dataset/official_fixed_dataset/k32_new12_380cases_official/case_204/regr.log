@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[378] : pc[800005ce] mulhu	x29,x29,x31: t4:ffffffff 
+spike[378] : pc[800005ce] mulhu   t4, t4, t6: t4:0000001c 
+[FAILED]: 961 matched, 7177 mismatch
+
+0 PASSED, 1 FAILED

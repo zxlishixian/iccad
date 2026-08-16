@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[73] : pc[8000369a] c.li	x14,-1: a4:fffffffb 
+spike[73] : pc[8000369a] c.li    a4, -1: a4:ffffffff 
+Mismatch[2817]:
+[4393] ibex : pc[800004ba] c.xor	x12,x8: a2:8001aa1c 
+[FAILED]: 853 matched, 2817 mismatch
+
+0 PASSED, 1 FAILED

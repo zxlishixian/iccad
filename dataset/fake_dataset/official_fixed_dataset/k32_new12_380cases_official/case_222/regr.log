@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[213] : pc[80000440] mulhu	x3,x19,x2: gp:3ffdbfd5 
+spike[213] : pc[80000440] mulhu   gp, s3, sp: gp:40024034 
+[FAILED]: 2437 matched, 2089 mismatch
+
+0 PASSED, 1 FAILED

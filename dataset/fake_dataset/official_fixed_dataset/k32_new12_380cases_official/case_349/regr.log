@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[86] : pc[800001f6] lw	x7,282(x12): t2:0ac23118 
+spike[86] : pc[800001f6] lw      t2, 282(a2): t2:0ac23119 
+[FAILED]: 7196 matched, 30609 mismatch
+
+0 PASSED, 1 FAILED

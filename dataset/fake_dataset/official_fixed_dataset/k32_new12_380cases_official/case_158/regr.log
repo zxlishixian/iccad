@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[388] : pc[80001dc8] divu	x24,x15,x18: s8:0026c758 
+spike[388] : pc[80001dc8] divu    s8, a5, s2: s8:00000000 
+Mismatch[14430]:
+[20931] ibex : pc[80002158] slt	x4,x26,x19: tp:00000001 
+[FAILED]: 4634 matched, 14430 mismatch
+
+0 PASSED, 1 FAILED

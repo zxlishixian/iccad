@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[410] : pc[80000ae8] addi	x28,x29,728: t3:0fe5a2d8 
+spike[410] : pc[80000ae4] remu    a3, a7, s8: a3:80026e7c 
+[FAILED]: 290 matched, 112 mismatch
+
+0 PASSED, 1 FAILED

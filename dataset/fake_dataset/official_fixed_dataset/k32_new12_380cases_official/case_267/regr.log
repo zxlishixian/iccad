@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[118] : pc[80000288] lhu	x12,-248(x2): a2:ffff9e9f 
+spike[118] : pc[80000288] lhu     a2, -248(sp): a2:00009e9f 
+Mismatch[12865]:
+[16148] ibex : pc[80015948] auipc	x25,0xa7885: s9:2789a948 
+[FAILED]: 2442 matched, 12865 mismatch
+
+0 PASSED, 1 FAILED

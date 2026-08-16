@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[88] : pc[800001e4] c.li	x25,-1: s9:fffffffb 
+spike[88] : pc[800001e4] c.li    s9, -1: s9:ffffffff 
+Mismatch[5420]:
+[6654] ibex : pc[80000bb0] ori	x2,x7,260: sp:00000104 
+[FAILED]: 252 matched, 5420 mismatch
+
+0 PASSED, 1 FAILED

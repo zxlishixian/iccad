@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[185] : pc[80000300] div	x29,x27,x31: t4:fffffffc 
+spike[185] : pc[80000300] div     t4, s11, t6: t4:00000000 
+Mismatch[6368]:
+[9469] ibex : pc[800083b2] csrrw	x20,mscratch,x1: s4:00000000 
+[FAILED]: 1821 matched, 6368 mismatch
+
+0 PASSED, 1 FAILED

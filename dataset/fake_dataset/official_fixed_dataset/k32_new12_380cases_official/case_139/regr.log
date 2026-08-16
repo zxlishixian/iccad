@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1033] : pc[80000f10] divu	x4,x22,x12: tp:fffffffd 
+spike[1033] : pc[80000f14] sub     a7, s2, t6: a7:00000464 
+[FAILED]: 3402 matched, 4522 mismatch
+
+0 PASSED, 1 FAILED

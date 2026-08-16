@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[106] : pc[80000252] c.addi	x28,3: t3:00000022 
+spike[106] : pc[80000252] c.addi  t3, 3: t3:00000023 
+[FAILED]: 666 matched, 3680 mismatch
+
+0 PASSED, 1 FAILED

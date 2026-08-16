@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[74] : pc[800001ba] lb	x24,-966(x1): s8:00000000 
+spike[74] : pc[800001ba] lb      s8, -966(ra): s8:00000015 
+[FAILED]: 245 matched, 64630 mismatch
+
+0 PASSED, 1 FAILED

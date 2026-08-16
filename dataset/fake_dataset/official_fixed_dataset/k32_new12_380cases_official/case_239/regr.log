@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[75] : pc[8000018e] c.slli	x9,0x6: s1:586a1780 
+spike[75] : pc[8000018e] c.slli  s1, 6: s1:ac350bc0 
+[FAILED]: 1328 matched, 6980 mismatch
+
+0 PASSED, 1 FAILED

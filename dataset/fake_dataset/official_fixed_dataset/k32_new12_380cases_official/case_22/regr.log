@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[121] : pc[8000027e] lw	x20,3(x29): s4:8700e40a 
+spike[121] : pc[8000027a] div     gp, s6, sp: gp:ffffffff 
+[FAILED]: 145 matched, 8685 mismatch
+
+0 PASSED, 1 FAILED

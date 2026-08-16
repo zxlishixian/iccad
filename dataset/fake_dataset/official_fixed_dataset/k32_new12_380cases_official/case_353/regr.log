@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[150] : pc[80031fde] lw	x6,46(x15): t1:007c8686 
+spike[150] : pc[80031fde] lw      t1, 46(a5): t1:007c8687 
+Mismatch[14189]:
+[16849] ibex : pc[80000370] csrrci	x27,mscratch,27: s11:00000006 
+[FAILED]: 1856 matched, 14189 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[180] : pc[8000032a] c.li	x6,29: t1:00000019 
+spike[180] : pc[8000032a] c.li    t1, 29: t1:0000001d 
+Mismatch[2150]:
+[3122] ibex : pc[8000411a] c.addi4spn	x10,x2,320: a0:00000140 
+[FAILED]: 503 matched, 2150 mismatch
+
+0 PASSED, 1 FAILED

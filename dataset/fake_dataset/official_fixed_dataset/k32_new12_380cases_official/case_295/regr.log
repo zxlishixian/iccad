@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[75] : pc[8000018e] c.sub	x9,x11: s1:f241bcad 
+spike[75] : pc[8000018e] c.sub   s1, a1: s1:f3ac6e8f 
+Mismatch[7169]:
+[9403] ibex : pc[80008318] slt	x30,x28,x8: t5:00000001 
+[FAILED]: 866 matched, 7169 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[182] : pc[80001194] c.slli	x8,0x10: s0:62d00000 
+spike[182] : pc[80001194] c.slli  s0, 16: s0:31680000 
+Mismatch[3777]:
+[5141] ibex : pc[80000b6c] ori	x30,x15,-121: t5:ffffff87 
+[FAILED]: 263 matched, 3777 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[160] : pc[800002b4] mulhu	x13,x20,x7: a3:ffffffff 
+spike[160] : pc[800002b4] mulhu   a3, s4, t2: a3:00000ffe 
+[FAILED]: 299 matched, 7800 mismatch
+
+0 PASSED, 1 FAILED

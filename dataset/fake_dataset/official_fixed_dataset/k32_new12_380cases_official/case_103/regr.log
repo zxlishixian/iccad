@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[199] : pc[8000040c] lh	x2,-1260(x8): sp:ffff94e2 
+spike[199] : pc[80000408] lb      ra, -1018(s0): ra:0000005c 
+[FAILED]: 205 matched, 26118 mismatch
+
+0 PASSED, 1 FAILED

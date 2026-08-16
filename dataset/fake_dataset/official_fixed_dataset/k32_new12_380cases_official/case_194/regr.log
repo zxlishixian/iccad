@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[228] : pc[800003d2] mulhu	x5,x20,x27: t0:ffffe88d 
+spike[228] : pc[800003d2] mulhu   t0, s4, s11: t0:0000488d 
+Mismatch[7493]:
+[9419] ibex : pc[80008448] c.xor	x8,x8: s0:00000000 
+[FAILED]: 560 matched, 7493 mismatch
+
+0 PASSED, 1 FAILED

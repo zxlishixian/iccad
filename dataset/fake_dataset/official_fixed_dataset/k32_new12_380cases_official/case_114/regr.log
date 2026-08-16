@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[105] : pc[800001be] lh	x17,5(x5): a7:00000000 
+spike[105] : pc[8001c080] addi    a0, a0, -124: a0:8002dda0 
+Mismatch[18]:
+[140] ibex : pc[8000028e] addi	x3,x3,1739: gp:80027955 
+[FAILED]: 96 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

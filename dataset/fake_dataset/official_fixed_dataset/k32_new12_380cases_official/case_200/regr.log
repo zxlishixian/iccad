@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[294] : pc[80000492] mulhu	x23,x29,x24: s7:ffffffff 
+spike[294] : pc[80000492] mulhu   s7, t4, s8: s7:71454edb 
+Mismatch[7549]:
+[9438] ibex : pc[800085ea] c.srai	x10,0x18: a0:00000000 
+[FAILED]: 279 matched, 7549 mismatch
+
+0 PASSED, 1 FAILED

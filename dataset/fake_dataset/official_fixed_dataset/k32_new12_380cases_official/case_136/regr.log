@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1361] : pc[8000138e] divu	x20,x1,x27: s4:00000000 
+spike[1361] : pc[8000138e] divu    s4, ra, s11: s4:0000012f 
+[FAILED]: 2552 matched, 5451 mismatch
+
+0 PASSED, 1 FAILED

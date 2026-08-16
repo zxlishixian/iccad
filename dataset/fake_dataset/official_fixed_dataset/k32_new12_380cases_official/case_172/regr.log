@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[119] : pc[800002ec] c.li	x29,12: t4:00000008 
+spike[119] : pc[800002ec] c.li    t4, 12: t4:0000000c 
+Mismatch[3602]:
+[5150] ibex : pc[80000fd0] mul	x18,x28,x21: s2:00000000 
+[FAILED]: 731 matched, 3602 mismatch
+
+0 PASSED, 1 FAILED

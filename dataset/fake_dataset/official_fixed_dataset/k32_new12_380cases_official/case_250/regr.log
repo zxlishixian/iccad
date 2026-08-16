@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[202] : pc[80001044] c.slli	x25,0x8: s9:00028800 
+spike[202] : pc[80001044] c.slli  s9, 8: s9:00014400 
+[FAILED]: 643 matched, 2636 mismatch
+
+0 PASSED, 1 FAILED

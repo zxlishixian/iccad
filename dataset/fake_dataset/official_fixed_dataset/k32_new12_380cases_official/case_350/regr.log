@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[96] : pc[8000023c] lw	x10,1415(x5): a0:40414242 
+spike[96] : pc[8000023c] lw      a0, 1415(t0): a0:40414243 
+Mismatch[71086]:
+[77559] ibex : pc[80031d92] csrrsi	x20,mscratch,16: s4:8003fe49 
+[FAILED]: 2052 matched, 71086 mismatch
+
+0 PASSED, 1 FAILED

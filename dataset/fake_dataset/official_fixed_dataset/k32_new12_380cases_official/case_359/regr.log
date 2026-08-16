@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[110] : pc[80000282] lw	x26,13(x8): s10:89ca6ee1 
+spike[110] : pc[80000282] lw      s10, 13(s0): s10:89ca6ee0 
+Mismatch[16041]:
+[18388] ibex : pc[8001849e] csrrci	x1,mscratch,14: ra:0000001f 
+[FAILED]: 1442 matched, 16041 mismatch
+
+0 PASSED, 1 FAILED

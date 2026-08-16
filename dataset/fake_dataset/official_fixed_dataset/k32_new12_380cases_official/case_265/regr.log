@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[1598] : pc[8002a5f8] lhu	x24,-1048(x5): s8:ffffa000 
+spike[1598] : pc[8002a5f8] lhu     s8, -1048(t0): s8:0000a000 
+Mismatch[126206]:
+[184765] ibex : pc[8003478a] remu	x12,x0,x25: a2:00000000 
+[FAILED]: 2893 matched, 126206 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[348] : pc[800006c8] rem	x25,x12,x8: s9:0000004f 
+spike[348] : pc[800006c4] mulhu   a0, s5, tp: a0:80027e7b 
+Mismatch[5904]:
+[6888] ibex : pc[80002e4e] xori	x12,x0,-360: a2:fffffe98 
+[FAILED]: 345 matched, 5904 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[105] : pc[800002ca] c.li	x7,17: t2:00000015 
+spike[105] : pc[800002ca] c.li    t2, 17: t2:00000011 
+Mismatch[266]:
+[660] ibex : pc[8000113e] sra	x6,x15,x20: t1:00000000 
+[FAILED]: 292 matched, 266 mismatch
+
+0 PASSED, 1 FAILED

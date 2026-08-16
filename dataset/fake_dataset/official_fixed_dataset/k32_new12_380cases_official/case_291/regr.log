@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[127] : pc[80000250] sub	x23,x11,x9: s7:95d8f708 
+spike[127] : pc[80000250] sub     s7, a1, s1: s7:9627c6d6 
+Mismatch[7848]:
+[9401] ibex : pc[800083ec] c.addi4spn	x15,x2,848: a5:000103f0 
+[FAILED]: 189 matched, 7848 mismatch
+
+0 PASSED, 1 FAILED

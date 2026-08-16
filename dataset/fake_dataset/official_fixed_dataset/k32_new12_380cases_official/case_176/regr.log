@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[184] : pc[8000052c] c.li	x24,-1: s8:fffffffb 
+spike[184] : pc[8000052c] c.li    s8, -1: s8:ffffffff 
+Mismatch[3295]:
+[4676] ibex : pc[80000be8] div	x13,x18,x4: a3:ffffffff 
+[FAILED]: 579 matched, 3295 mismatch
+
+0 PASSED, 1 FAILED

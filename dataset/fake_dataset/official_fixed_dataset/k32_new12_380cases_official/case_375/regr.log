@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[84] : pc[800001d8] auipc	x6,0x26: t1:800261d8 
+spike[84] : pc[8001b080] addi    s1, s1, -124: s1:8002bda0 
+Mismatch[18]:
+[102] ibex : pc[80000258] mulhsu	x28,x21,x23: t3:00000000 
+[FAILED]: 73 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

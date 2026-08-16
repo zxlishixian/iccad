@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[186] : pc[800003f0] lhu	x4,-33(x20): tp:ffff8a8b 
+spike[186] : pc[800003f0] lhu     tp, -33(s4): tp:00008a8b 
+Mismatch[42296]:
+[48765] ibex : pc[8000ba5c] c.or	x15,x11: a5:00002001 
+[FAILED]: 3696 matched, 42296 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[669] : pc[8000a908] sub	x4,x19,x11: tp:ffffffed 
+spike[669] : pc[8000a908] sub     tp, s3, a1: tp:000000c3 
+[FAILED]: 2809 matched, 7994 mismatch
+
+0 PASSED, 1 FAILED

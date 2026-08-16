@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[152] : pc[800003da] c.sub	x10,x9: a0:00000021 
+spike[152] : pc[800003be] div     s8, s1, a6: s8:00000000 
+Mismatch[6950]:
+[8576] ibex : pc[800014b0] srli	x26,x27,0x15: s10:00000000 
+[FAILED]: 145 matched, 6950 mismatch
+
+0 PASSED, 1 FAILED

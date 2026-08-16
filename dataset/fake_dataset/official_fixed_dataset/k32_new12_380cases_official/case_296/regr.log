@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[57] : pc[8000014e] sub	x3,x16,x11: gp:80015e7d 
+spike[57] : pc[8000014e] sub     gp, a6, a1: gp:7ffea185 
+Mismatch[7990]:
+[9442] ibex : pc[8000838c] c.li	x3,1: gp:00000001 
+[FAILED]: 223 matched, 7990 mismatch
+
+0 PASSED, 1 FAILED

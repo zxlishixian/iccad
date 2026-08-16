@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[72] : pc[8000018a] c.sub	x8,x9: s0:0000000f 
+spike[72] : pc[8000018a] c.sub   s0, s1: s0:fffffff3 
+Mismatch[7221]:
+[9411] ibex : pc[800085f2] mulhu	x29,x30,x2: t4:00000000 
+[FAILED]: 785 matched, 7221 mismatch
+
+0 PASSED, 1 FAILED

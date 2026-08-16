@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[70] : pc[80003280] srli	x24,x20,0x6: s8:02000000 
+spike[70] : pc[80003278] c.addi  s5, -1: s5:ffffffff 
+Mismatch[3668]:
+[4621] ibex : pc[80006188] srli	x20,x27,0x15: s4:00000000 
+[FAILED]: 89 matched, 3668 mismatch
+
+0 PASSED, 1 FAILED

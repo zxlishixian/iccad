@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[90] : pc[8001f366] xori	x12,x19,234: a2:fd604bbd 
+spike[90] : pc[8001f35e] lb      t2, -2022(ra): t2:00000011 
+[FAILED]: 237 matched, 41380 mismatch
+
+0 PASSED, 1 FAILED

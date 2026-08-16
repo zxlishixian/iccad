@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[280] : pc[8000044e] divu	x18,x30,x15: s2:fffffff0 
+spike[280] : pc[80000452] csrrci  a5, mscratch, 19: a5:00000015 
+Mismatch[7546]:
+[9364] ibex : pc[800083b0] csrrsi	x2,mscratch,14: sp:0000001d 
+[FAILED]: 483 matched, 7546 mismatch
+
+0 PASSED, 1 FAILED

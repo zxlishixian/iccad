@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[218] : pc[80003684] c.addi	x22,8: s6:d0cf0020 
+spike[218] : pc[80003684] c.addi  s6, 8: s6:d0cf001f 
+Mismatch[1339]:
+[2239] ibex : pc[800008fe] csrrw	x30,mscratch,x2: t5:0000001a 
+[FAILED]: 579 matched, 1339 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[245] : pc[800005fe] lui	x10,0x59e2f: a0:59e2f000 
+spike[245] : pc[8000060c] mul     t3, s7, a7: t3:00000000 
+Mismatch[410]:
+[769] ibex : pc[800013f0] addi	x28,x7,-466: t3:fffffe42 
+[FAILED]: 220 matched, 410 mismatch
+
+0 PASSED, 1 FAILED

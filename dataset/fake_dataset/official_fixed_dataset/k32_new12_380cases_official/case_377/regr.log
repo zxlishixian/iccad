@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[79] : pc[8000b4e0] lb	x14,21(x1): a4:00000000 
+spike[79] : pc[8001b080] addi    a0, a0, -124: a0:8002bd98 
+Mismatch[18]:
+[101] ibex : pc[8000b54c] auipc	x27,0x1a: s11:8002554c 
+[FAILED]: 67 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

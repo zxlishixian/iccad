@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[361] : pc[800006ba] remu	x25,x9,x13: s9:ffffd838 
+spike[361] : pc[800006ba] remu    s9, s1, a3: s9:0000003e 
+Mismatch[2663]:
+[3464] ibex : pc[80003e1c] sltiu	x15,x3,248: a5:00000001 
+[FAILED]: 439 matched, 2663 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[127] : pc[800004d6] lhu	x23,-2(x2): s7:ffffb000 
+spike[127] : pc[800004d6] lhu     s7, -2(sp): s7:0000b000 
+[FAILED]: 760 matched, 3921 mismatch
+
+0 PASSED, 1 FAILED

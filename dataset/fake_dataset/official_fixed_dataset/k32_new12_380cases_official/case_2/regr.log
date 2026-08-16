@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[58] : pc[8000015a] div	x7,x30,x27: t2:80000000 
+spike[58] : pc[8000015a] div     t2, t5, s11: t2:ffffffff 
+Mismatch[7733]:
+[9399] ibex : pc[800085be] auipc	x12,0xe76cc: a2:676d45be 
+[FAILED]: 310 matched, 7733 mismatch
+
+0 PASSED, 1 FAILED

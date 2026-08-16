@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[579] : pc[80000c0c] lhu	x27,-490(x8): s11:ffffd000 
+spike[579] : pc[80000c0c] lhu     s11, -490(s0): s11:0000d000 
+Mismatch[15081]:
+[33530] ibex : pc[8000c962] c.xor	x13,x9: a3:80fb81ef 
+[FAILED]: 7456 matched, 15081 mismatch
+
+0 PASSED, 1 FAILED

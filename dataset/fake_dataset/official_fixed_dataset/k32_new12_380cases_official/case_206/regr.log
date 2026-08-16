@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[474] : pc[8000074e] mulhu	x27,x2,x27: s11:fffffffc 
+spike[474] : pc[8000074e] mulhu   s11, sp, s11: s11:657456aa 
+[FAILED]: 628 matched, 7467 mismatch
+
+0 PASSED, 1 FAILED

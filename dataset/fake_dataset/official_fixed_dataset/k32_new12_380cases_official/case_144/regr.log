@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[472] : pc[8000089e] divu	x19,x19,x4: s3:fffffff5 
+spike[472] : pc[8000089e] divu    s3, s3, tp: s3:08421078 
+[FAILED]: 3705 matched, 1564 mismatch
+
+0 PASSED, 1 FAILED

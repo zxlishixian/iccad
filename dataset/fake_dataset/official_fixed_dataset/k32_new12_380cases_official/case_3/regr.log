@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[112] : pc[80000222] div	x16,x28,x28: a6:00000000 
+spike[112] : pc[80000222] div     a6, t3, t3: a6:00000001 
+Mismatch[7857]:
+[9427] ibex : pc[80008572] c.addi	x30,-1: t5:d73d3dfe 
+[FAILED]: 162 matched, 7857 mismatch
+
+0 PASSED, 1 FAILED

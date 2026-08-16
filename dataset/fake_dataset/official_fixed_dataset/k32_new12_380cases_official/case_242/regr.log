@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[91] : pc[80005820] c.slli	x3,0x12: gp:2ee80000 
+spike[91] : pc[80005820] c.slli  gp, 18: gp:17740000 
+Mismatch[1239]:
+[1844] ibex : pc[800003a2] c.li	x9,7: s1:00000007 
+[FAILED]: 343 matched, 1239 mismatch
+
+0 PASSED, 1 FAILED

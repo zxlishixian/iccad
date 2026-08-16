@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[66] : pc[800001d4] ori	x12,x30,291: a2:00000123 
+spike[66] : pc[8000017c] divu    t2, t6, s7: t2:00000000 
+Mismatch[296]:
+[402] ibex : pc[80000d02] xor	x6,x27,x13: t1:00006000 
+[FAILED]: 56 matched, 296 mismatch
+
+0 PASSED, 1 FAILED

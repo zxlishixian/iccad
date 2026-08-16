@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[73] : pc[80005ce8] xori	x14,x5,-519: a4:fffffdf9 
+spike[73] : pc[8001c080] addi    a7, a7, -124: a7:8002cd78 
+Mismatch[18]:
+[91] ibex : pc[80005d48] lhu	x1,-212(x2): ra:00000c6d 
+[FAILED]: 64 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[68] : pc[80000186] slti	x18,x2,-152: s2:00000001 
+spike[68] : pc[8000018e] jalr    ra, gp, -381: ra:80000192 
+[FAILED]: 58 matched, 2827 mismatch
+
+0 PASSED, 1 FAILED

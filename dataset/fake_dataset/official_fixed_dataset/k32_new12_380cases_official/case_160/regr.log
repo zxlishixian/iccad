@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[78] : pc[800001e4] c.li	x9,-1: s1:fffffffb 
+spike[78] : pc[800001e4] c.li    s1, -1: s1:ffffffff 
+Mismatch[885]:
+[1501] ibex : pc[80002d22] c.li	x3,1: gp:00000005 
+[FAILED]: 392 matched, 885 mismatch
+
+0 PASSED, 1 FAILED

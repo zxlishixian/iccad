@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[156] : pc[80000344] c.lwsp	x20,0(x2): s4:00000001 
+spike[156] : pc[80000344] c.lwsp  s4, 0(sp): s4:00000000 
+Mismatch[493]:
+[892] ibex : pc[80001352] divu	x16,x23,x9: a6:00000000 
+[FAILED]: 140 matched, 493 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[73] : pc[80000188] sub	x20,x29,x13: s4:7a90661a 
+spike[73] : pc[80000188] sub     s4, t4, a3: s4:812e7b4e 
+Mismatch[7608]:
+[9391] ibex : pc[80008352] sll	x15,x21,x6: a5:69a1d000 
+[FAILED]: 403 matched, 7608 mismatch
+
+0 PASSED, 1 FAILED

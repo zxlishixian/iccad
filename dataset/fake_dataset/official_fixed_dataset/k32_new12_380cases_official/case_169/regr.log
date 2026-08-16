@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[113] : pc[800004d6] c.li	x2,-1: sp:fffffffb 
+spike[113] : pc[800004d6] c.li    sp, -1: sp:ffffffff 
+Mismatch[3849]:
+[5053] ibex : pc[800002ba] srl	x19,x16,x9: s3:e001ec6d 
+[FAILED]: 489 matched, 3849 mismatch
+
+0 PASSED, 1 FAILED

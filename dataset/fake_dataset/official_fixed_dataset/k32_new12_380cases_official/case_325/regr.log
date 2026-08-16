@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[103] : pc[80000290] csrrsi	x9,mscratch,31: s1:00000000 
+spike[103] : pc[800002ac] csrrw   t2, mscratch, tp: t2:00000000 
+[FAILED]: 109 matched, 5707 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[121] : pc[8000023a] sub	x20,x27,x7: s4:3a941000 
+spike[121] : pc[8000023a] sub     s4, s11, t2: s4:c56bf000 
+Mismatch[7001]:
+[9426] ibex : pc[80008380] c.addi16sp	x2,448: sp:000001e0 
+[FAILED]: 1203 matched, 7001 mismatch
+
+0 PASSED, 1 FAILED

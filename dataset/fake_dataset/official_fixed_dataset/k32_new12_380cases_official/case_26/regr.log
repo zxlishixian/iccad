@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[536] : pc[80000216] div	x24,x23,x11: s8:17d38661 
+spike[536] : pc[8000021a] srai    s1, s6, 18: s1:00000000 
+[FAILED]: 770 matched, 5198 mismatch
+
+0 PASSED, 1 FAILED

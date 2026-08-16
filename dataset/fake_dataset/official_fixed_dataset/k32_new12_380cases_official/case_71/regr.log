@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[211] : pc[800015b2] c.addi	x4,-1: tp:fffffffe 
+spike[211] : pc[800015b2] c.addi  tp, -1: tp:ffffffff 
+Mismatch[3372]:
+[5306] ibex : pc[80000d76] srli	x2,x31,0xc: sp:000fffff 
+[FAILED]: 1269 matched, 3372 mismatch
+
+0 PASSED, 1 FAILED

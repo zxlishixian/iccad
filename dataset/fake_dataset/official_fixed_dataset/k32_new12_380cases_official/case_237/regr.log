@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[158] : pc[80002cce] c.slli	x16,0x4: a6:7e7e0000 
+spike[158] : pc[80002cce] c.slli  a6, 4: a6:bf3f0000 
+Mismatch[1945]:
+[3293] ibex : pc[80000bfa] sltiu	x4,x3,-31: tp:00000001 
+[FAILED]: 851 matched, 1945 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[72] : pc[8000018c] c.li	x5,25: t0:0000001d 
+spike[72] : pc[8000018c] c.li    t0, 25: t0:00000019 
+Mismatch[3372]:
+[3986] ibex : pc[80006830] addi	x25,x9,-673: s9:fffffd75 
+[FAILED]: 102 matched, 3372 mismatch
+
+0 PASSED, 1 FAILED

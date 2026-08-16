@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[175] : pc[800003be] lhu	x19,-55(x14): s3:ffffd880 
+spike[175] : pc[800003be] lhu     s3, -55(a4): s3:0000d880 
+Mismatch[14150]:
+[17227] ibex : pc[80017008] c.mv	x15,x25: a5:05fce6e0 
+[FAILED]: 2196 matched, 14150 mismatch
+
+0 PASSED, 1 FAILED

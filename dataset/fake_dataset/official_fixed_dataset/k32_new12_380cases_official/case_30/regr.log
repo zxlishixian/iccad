@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[290] : pc[8000284e] div	x6,x21,x0: t1:8000281c 
+spike[290] : pc[8000284e] div     t1, s5, zero: t1:ffffffff 
+Mismatch[4166]:
+[6725] ibex : pc[8000dcd8] slti	x4,x0,-578: tp:00000000 
+[FAILED]: 219 matched, 4166 mismatch
+
+0 PASSED, 1 FAILED

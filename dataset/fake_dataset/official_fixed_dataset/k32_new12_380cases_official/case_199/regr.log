@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[119] : pc[80000248] mulhu	x6,x27,x25: t1:f7859dd8 
+spike[119] : pc[80000248] mulhu   t1, s11, s9: t1:087a6227 
+[FAILED]: 3004 matched, 5084 mismatch
+
+0 PASSED, 1 FAILED

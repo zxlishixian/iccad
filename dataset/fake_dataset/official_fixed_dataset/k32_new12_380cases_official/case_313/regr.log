@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[81] : pc[80001a68] sub	x30,x4,x10: t5:f763db5f 
+spike[81] : pc[80001a68] sub     t5, tp, a0: t5:f763db5d 
+[FAILED]: 1654 matched, 3058 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[409] : pc[80002188] remu	x26,x2,x5: s10:e86b54ee 
+spike[409] : pc[80002188] remu    s10, sp, t0: s10:17988018 
+[FAILED]: 3586 matched, 16092 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[88] : pc[80007d3c] c.slli	x19,0xe: s3:983a0000 
+spike[88] : pc[80007d3c] c.slli  s3, 14: s3:cc1d0000 
+Mismatch[4218]:
+[5080] ibex : pc[80008278] mulhu	x4,x1,x19: tp:00000000 
+[FAILED]: 121 matched, 4218 mismatch
+
+0 PASSED, 1 FAILED

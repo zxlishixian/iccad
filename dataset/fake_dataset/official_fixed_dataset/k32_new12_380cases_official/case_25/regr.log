@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[340] : pc[800006dc] lb	x2,14(x1): sp:00000000 
+spike[340] : pc[800006d8] div     a4, sp, a0: a4:ffffffff 
+Mismatch[7599]:
+[8745] ibex : pc[8000462c] sll	x11,x11,x27: a1:b0f9f8b2 
+[FAILED]: 340 matched, 7599 mismatch
+
+0 PASSED, 1 FAILED

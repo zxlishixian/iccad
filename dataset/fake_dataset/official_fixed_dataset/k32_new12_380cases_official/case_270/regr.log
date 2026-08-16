@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[136] : pc[80000308] lhu	x9,967(x2): s1:ffffbcbd 
+spike[136] : pc[80000308] lhu     s1, 967(sp): s1:0000bcbd 
+Mismatch[37992]:
+[40416] ibex : pc[8000a594] csrrci	x2,mscratch,5: sp:ffffffe4 
+[FAILED]: 146 matched, 37992 mismatch
+
+0 PASSED, 1 FAILED

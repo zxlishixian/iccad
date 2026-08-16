@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[204] : pc[80000356] mulhu	x25,x27,x30: s9:ffb58e90 
+spike[204] : pc[80000356] mulhu   s9, s11, t5: s9:00b58e90 
+Mismatch[7178]:
+[9430] ibex : pc[800083c0] or	x7,x29,x10: t2:b55b5e5f 
+[FAILED]: 924 matched, 7178 mismatch
+
+0 PASSED, 1 FAILED

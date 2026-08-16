@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[58] : pc[80000156] c.srli	x12,0x16: a2:000003c0 
+spike[58] : pc[8001b080] addi    t5, t5, -124: t5:8002bda0 
+Mismatch[18]:
+[78] ibex : pc[800001c4] ori	x6,x21,781: t1:d887479f 
+[FAILED]: 51 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

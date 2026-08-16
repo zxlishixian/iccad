@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[93] : pc[80001df8] sub	x24,x11,x24: s8:bfbfd05a 
+spike[93] : pc[80001df8] sub     s8, a1, s8: s8:4040305a 
+[FAILED]: 1199 matched, 12146 mismatch
+
+0 PASSED, 1 FAILED

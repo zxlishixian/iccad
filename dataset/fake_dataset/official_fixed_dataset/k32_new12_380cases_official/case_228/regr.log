@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[123] : pc[800002aa] c.slli	x21,0x12: s5:00700000 
+spike[123] : pc[800002aa] c.slli  s5, 18: s5:00380000 
+[FAILED]: 1125 matched, 120 mismatch
+
+0 PASSED, 1 FAILED

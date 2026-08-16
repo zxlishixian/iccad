@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[734] : pc[8001c952] lhu	x14,-15(x30): a4:ffffed05 
+spike[734] : pc[8001c952] lhu     a4, -15(t5): a4:0000ed05 
+Mismatch[22595]:
+[38782] ibex : pc[800003ea] c.slli	x4,0x13: tp:02b80000 
+[FAILED]: 2462 matched, 22595 mismatch
+
+0 PASSED, 1 FAILED

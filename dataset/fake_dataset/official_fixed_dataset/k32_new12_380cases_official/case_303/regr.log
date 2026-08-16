@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[162] : pc[80000380] sub	x18,x15,x29: s2:8000024e 
+spike[162] : pc[80000380] sub     s2, a5, t4: s2:7ffffdb2 
+Mismatch[5045]:
+[6670] ibex : pc[800051dc] or	x15,x28,x27: a5:b133fe7c 
+[FAILED]: 979 matched, 5045 mismatch
+
+0 PASSED, 1 FAILED

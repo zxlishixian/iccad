@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[79] : pc[800001ac] mulhsu	x20,x7,x4: s4:00000002 
+spike[79] : pc[800001b2] mulhsu  t1, s3, s0: t1:0000000a 
+Mismatch[472]:
+[683] ibex : pc[80000ec0] c.sub	x10,x12: a0:000642d3 
+[FAILED]: 114 matched, 472 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[64] : pc[8000016a] div	x7,x6,x1: t2:ffffff57 
+spike[64] : pc[8000016a] div     t2, t1, ra: t2:00000000 
+Mismatch[17028]:
+[19181] ibex : pc[80004cfc] csrrsi	x6,mscratch,8: t1:0000001e 
+[FAILED]: 483 matched, 17028 mismatch
+
+0 PASSED, 1 FAILED

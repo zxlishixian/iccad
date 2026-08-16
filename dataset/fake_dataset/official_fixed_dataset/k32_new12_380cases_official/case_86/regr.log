@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[203] : pc[8000060a] c.addi	x21,13: s5:0000010c 
+spike[203] : pc[8000060a] c.addi  s5, 13: s5:0000010d 
+[FAILED]: 1262 matched, 3315 mismatch
+
+0 PASSED, 1 FAILED

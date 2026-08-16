@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[444] : pc[80000930] auipc	x2,0x39: sp:80039930 
+spike[444] : pc[8000092c] lb      s10, -20(t5): s10:0000007c 
+[FAILED]: 249 matched, 3933 mismatch
+
+0 PASSED, 1 FAILED

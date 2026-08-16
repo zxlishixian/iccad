@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[254] : pc[8000068e] c.slli	x26,0xc: s10:ff952000 
+spike[254] : pc[8000068e] c.slli  s10, 12: s10:ffca9000 
+Mismatch[2650]:
+[3548] ibex : pc[80003cf6] c.slli	x13,0x9: a3:00032000 
+[FAILED]: 390 matched, 2650 mismatch
+
+0 PASSED, 1 FAILED

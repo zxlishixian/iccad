@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[119] : pc[800011aa] c.lui	x20,0x15: s4:00015000 
+spike[119] : pc[800011de] csrrsi  s1, mscratch, 19: s1:8000ce78 
+Mismatch[5350]:
+[6484] ibex : pc[80007fca] remu	x23,x18,x20: s7:0000001d 
+[FAILED]: 123 matched, 5350 mismatch
+
+0 PASSED, 1 FAILED

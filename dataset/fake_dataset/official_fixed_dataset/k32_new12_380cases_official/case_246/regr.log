@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[160] : pc[800003d2] c.slli	x10,0x14: a0:39800000 
+spike[160] : pc[800003d2] c.slli  a0, 20: a0:1cc00000 
+[FAILED]: 488 matched, 978 mismatch
+
+0 PASSED, 1 FAILED

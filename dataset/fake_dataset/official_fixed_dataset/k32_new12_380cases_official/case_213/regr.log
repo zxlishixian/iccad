@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[107] : pc[80000276] andi	x3,x31,749: gp:000002e1 
+spike[107] : pc[80000272] mulhu   s5, gp, t6: s5:fffffdc6 
+Mismatch[8199]:
+[11778] ibex : pc[800011f4] div	x31,x14,x3: t6:ff60f1b4 
+[FAILED]: 131 matched, 8199 mismatch
+
+0 PASSED, 1 FAILED

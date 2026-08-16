@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[128] : pc[8000026c] sub	x31,x21,x6: t6:f0875d1e 
+spike[128] : pc[8000026c] sub     t6, s5, t1: t6:0f81e6ea 
+Mismatch[7171]:
+[8872] ibex : pc[80002676] sll	x9,x0,x9: s1:00000000 
+[FAILED]: 864 matched, 7171 mismatch
+
+0 PASSED, 1 FAILED

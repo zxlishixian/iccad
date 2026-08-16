@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[107] : pc[80000280] lb	x11,1123(x28): a1:00000050 
+spike[107] : pc[8000027c] lbu     ra, 874(t3): ra:0000000a 
+[FAILED]: 121 matched, 23974 mismatch
+
+0 PASSED, 1 FAILED

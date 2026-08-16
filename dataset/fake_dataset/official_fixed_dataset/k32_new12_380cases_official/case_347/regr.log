@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[84] : pc[800001ea] srli	x8,x11,0x4: s0:0f37d2cb 
+spike[84] : pc[8000022a] sra     a4, t1, a0: a4:0ab91f5f 
+[FAILED]: 75 matched, 2296 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[269] : pc[80000546] mulhu	x22,x1,x29: s6:00000001 
+spike[269] : pc[80000546] mulhu   s6, ra, t4: s6:8000041c 
+Mismatch[12556]:
+[19629] ibex : pc[80005660] divu	x17,x1,x30: a7:ffffffff 
+[FAILED]: 1754 matched, 12556 mismatch
+
+0 PASSED, 1 FAILED

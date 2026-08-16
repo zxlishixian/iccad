@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[145] : pc[80000534] c.li	x21,-1: s5:fffffffb 
+spike[145] : pc[80000534] c.li    s5, -1: s5:ffffffff 
+Mismatch[753]:
+[1517] ibex : pc[800015a8] slt	x13,x12,x11: a3:00000000 
+[FAILED]: 534 matched, 753 mismatch
+
+0 PASSED, 1 FAILED

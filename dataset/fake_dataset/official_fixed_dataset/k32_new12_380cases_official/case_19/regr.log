@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[361] : pc[800006cc] csrrw	x13,mscratch,x26: a3:0000000d 
+spike[361] : pc[800006c8] div     a6, a6, a3: a6:00000000 
+[FAILED]: 1539 matched, 8763 mismatch
+
+0 PASSED, 1 FAILED

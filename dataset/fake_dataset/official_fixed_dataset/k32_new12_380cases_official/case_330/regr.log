@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[502] : pc[80004e1a] sra	x2,x22,x26: sp:00000000 
+spike[502] : pc[80004e14] c.xor   a1, s0: a1:e1d300b8 
+[FAILED]: 441 matched, 5770 mismatch
+
+0 PASSED, 1 FAILED

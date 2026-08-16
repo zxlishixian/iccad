@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[92] : pc[800002e4] remu	x24,x19,x30: s8:000118a0 
+spike[92] : pc[8000031e] or      s10, tp, a2: s10:8001ae1c 
+Mismatch[402]:
+[580] ibex : pc[8000124a] div	x24,x27,x31: s8:00000000 
+[FAILED]: 86 matched, 402 mismatch
+
+0 PASSED, 1 FAILED

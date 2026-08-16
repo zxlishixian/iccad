@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[126] : pc[8000024e] sub	x17,x25,x29: a7:0000f81f 
+spike[126] : pc[8000024e] sub     a7, s9, t4: a7:0000f7e1 
+Mismatch[7579]:
+[9489] ibex : pc[80008496] rem	x31,x15,x7: t6:00000016 
+[FAILED]: 487 matched, 7579 mismatch
+
+0 PASSED, 1 FAILED

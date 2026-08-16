@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[151] : pc[8000030e] sub	x1,x17,x29: ra:fffee625 
+spike[151] : pc[8000030e] sub     ra, a7, t4: ra:fffee5b9 
+[FAILED]: 2573 matched, 3533 mismatch
+
+0 PASSED, 1 FAILED

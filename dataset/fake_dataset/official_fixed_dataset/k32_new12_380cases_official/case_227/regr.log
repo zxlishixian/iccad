@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[93] : pc[800008b8] c.slli	x27,0x7: s11:ba544980 
+spike[93] : pc[800008b8] c.slli  s11, 7: s11:74a89300 
+[FAILED]: 170 matched, 288 mismatch
+
+0 PASSED, 1 FAILED

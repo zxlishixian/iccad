@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[176] : pc[800002f4] divu	x18,x2,x7: s2:fda1b4af 
+spike[176] : pc[800002f4] divu    s2, sp, t2: s2:06c646f7 
+Mismatch[7497]:
+[9439] ibex : pc[800083b4] slt	x2,x21,x2: sp:00000001 
+[FAILED]: 616 matched, 7497 mismatch
+
+0 PASSED, 1 FAILED

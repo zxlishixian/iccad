@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[181] : pc[800006b0] c.lui	x15,0x3: a5:00003000 
+spike[181] : pc[800006c8] auipc   s11, 0xb6d3c: s11:36d3c6c8 
+Mismatch[1687]:
+[2279] ibex : pc[80004046] ori	x24,x10,649: s8:8001aabb 
+[FAILED]: 154 matched, 1687 mismatch
+
+0 PASSED, 1 FAILED

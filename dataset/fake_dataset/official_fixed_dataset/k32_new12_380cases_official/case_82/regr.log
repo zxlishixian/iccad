@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[225] : pc[800006dc] c.addi	x15,21: a5:00000014 
+spike[225] : pc[800006dc] c.addi  a5, 21: a5:00000015 
+[FAILED]: 851 matched, 350 mismatch
+
+0 PASSED, 1 FAILED

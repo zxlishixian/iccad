@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[157] : pc[80000346] ori	x17,x1,813: a7:0000032d 
+spike[157] : pc[8000033e] div     ra, a3, ra: ra:ffffffff 
+[FAILED]: 130 matched, 3684 mismatch
+
+0 PASSED, 1 FAILED

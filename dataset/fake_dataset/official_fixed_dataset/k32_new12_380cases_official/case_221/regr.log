@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[850] : pc[80001068] mulhu	x31,x31,x2: t6:3ffdb134 
+spike[850] : pc[80001068] mulhu   t6, t6, sp: t6:40024ed6 
+Mismatch[2543]:
+[5061] ibex : pc[80007c22] csrrw	x13,mscratch,x6: a3:80022e1e 
+[FAILED]: 1247 matched, 2543 mismatch
+
+0 PASSED, 1 FAILED
