@@ -26,22 +26,25 @@ benchmark5_500 / benchmark8_500）、k=12（k32_new12），共 **32 个 distinct
 分散在 3 个新集里）。旧 benchmark6_final（64 bug）和 benchmark5_final（32 bug）是 lui 级联的
 **歧义数据**，不能当高-k 预演。
 
-**结论：我们缺一个「干净的高-k 数据集」来预演 hidden 集的 k=32/64 场景。**
+**结论：我们缺的不是某个固定 k，而是「更广的 bug 类型覆盖」——官方 hidden 集 bug 类型空间远超 64，我们 32 个还远远不够。**
 
-## 1. P0（最高优先级）：把 bug 池补到 ~64，合并成单个干净的高-k 数据集
+## 1. P0（最高优先级）：持续造新数据集，bug 类型/数量/表现越广越好
 
-**进度**：目前已积累 **32 个 distinct 干净 bug**（benchmark5=10 + benchmark8=10 + k32_new12=12），
-分散在 3 个数据集里。下一步不是继续造 k=10 的小集，而是：① 把 bug 池补到 ~64（覆盖 §2 剩余功能
-单元）；② 把这 64 个 bug 合并成**单个干净的高-k 集**（k=32 或 k=64），预演 hidden 集的 k=32/64。
+**核心原则：不合并现有数据集、也不卡某个 k 值。** 官方 A2 说 bug 是「任意 RTL 修改」、无固定
+故障分类法；而 Ibex 的 RV32IMC ~80 条指令 + ~20 个 CSR + ~20 个中断源 + debug/PMP/总线等，
+**每条指令/每个寄存器的实现都可能出错，distinct bug 类型可达上百种**。所以目标就是让 fake 数据的
+bug 类型、case 数量、日志表现**越广越好**，尽可能覆盖 hidden 集的分布。
 
-- 目标规格：k=32（benchmark5 规格）起步，最好 k=64（benchmark6 规格），N 按 1000~3000。
-- 硬要求（和 benchmark5/8 一样）：
+**进度**：已积累 **32 个 distinct 干净 bug**（benchmark5=10 + benchmark8=10 + k32_new12=12）。
+接下来继续造**全新的独立数据集**（每批 ~10~12 个新 bug，别重复已造类型），按 §2 缺口清单逐个补
+功能单元，直到把上百种类型尽量铺开。
+
+- 硬要求（每批都要满足，和 benchmark5/8 一样）：
   1. **late first-mismatch**（首个 mismatch index > 32，杜绝 cycle-0 lui 级联）
   2. **每 bug 症状可区分**（见 §3 消歧）
   3. `mismatch_print_limit=1`，regr.log 只有单个 `Mismatch[1]`
   4. 无 bug label / 真实绝对路径泄漏
-- 为什么重要：64-bug 分簇（TPR）是我们模型当前唯一没验证过的规模，也是 hidden 集里最难的
-  benchmark。没有干净高-k 数据，就无法知道模型在 64 类上会不会崩。
+- 为什么：bug 类型越广，模型见过的症状空间越接近 hidden 集，泛化越稳。
 
 ## 2. P1：bug 类型覆盖越广越好（目标覆盖 hidden 分布）
 
