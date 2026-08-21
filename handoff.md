@@ -106,10 +106,15 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 | stable_official_like_multitest_v1 | 24 | official 格式 fake | ✅ 保留（独立）|
 | benchmark5_final | **96** | official 格式 fake | ✅ 保留但**剪枝到 96 独有例**（原 933，删 837 与 benchmark6 重复的）|
 | benchmark6_final | 2944 | official 格式 fake | ✅ 保留 |
+| benchmark5_500cases_official | 500 | 新 fake（批1，官方格式）| ✅ 高质量（10 bug，debug/interrupt/MDU/ALU-decoder）|
+| benchmark8_500cases_official | 500 | 新 fake（批2，官方格式）| ✅ 高质量（10 bug，ALU-shift/LSU/branch/AUIPC/CSR）|
+| k32_new12_380cases_official | 380 | 新 fake（批3，官方格式）| ✅ 高质量（12 bug，**RV32C + MDU div/rem**）|
+| batch4_11bugs_20260821/dataset | 364 | 新 fake（批4，官方格式）| ✅ 高质量（11 **控制流 bug**，流程最规范：patch+manifest+机器审计）|
 | benchmark_set_1 | 7 | **官方 dev**（有 golden.csv）| ✅ 保留，微调目标之一 |
 | benchmark_set_2 | 25 | **官方 dev**（有 golden.csv）| ✅ 保留，微调目标之一 |
 
-> **当前训练集 = 6 个 fake + 2 个 official，共 3809 个唯一 case（内容级零重叠，已实测）。**
+> **当前 v4 训练集 = 9 个 fake（无官方，干净迁移）；v3 训练集 = 7 fake + 2 official（train-on-dev）。**
+> 4 个高质量新集（benchmark5/benchmark8/k32_new12/batch4）在 v4 里 ×2 加权；旧 lui 级联数据 ×1 当预训练。
 
 **数据泄漏现状（2026-08-13 已实锤，content hash = `regr.log` + 解压后的 `sim.log.gz`）：**
 
@@ -319,6 +324,15 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 - 干净迁移（8 fake→官方）：set1 从 0.51→0.72、官方均值 0.61→0.71（平均 embedding 的未对齐问题被修掉）。
 - 已重打包、GLIBC 2.28 复验、双模式冒烟通过（set1=1.0/set2=0.965）。**注意**：层次聚类的 `AgglomerativeClustering(metric="precomputed")` 是 O(n²) 内存 + 较高时间复杂度，N=3000 时应实测运行时（本次 benchmark6 2944 例可跑完）。
 
+**2026-08-22 本轮工作总结（数据 ×2 批 + v4 模型 + 数据策略文档）：**
+
+- **新数据批 3 `k32_new12_380cases_official`**（12 bug，RV32C + MDU div/rem）：质量检查通过、与前批零重合、三日志歧义 0。补上了 RV32C 译码和 MDU 除余两个缺口。
+- **新数据批 4 `batch4_11bugs_20260821`**（11 控制流 bug，364 例）：流程最规范（11 个 RTL patch + 3 波 manifest + 10 份机器生成审计 + selection-level 消歧剔 145 例）。标准检查全过（零重合/零泄漏/三日志歧义 0/late mismatch）。**但控制流 bug 天生难分**（坑 #25）：分支 bug 的首 mismatch 是"随机后续指令的 PC 分歧"、JAL/JALR bug 全报同一个 `read to uninitialized addr`——v3 零样本 BA 仅 0.574，每个 bug 被拆 4~7 簇。这是数据内在难度，非造数错误；官方 hidden 若含分支 bug 同样难。
+- **数据策略文档更新**：`DATA_GENERATION_ROADMAP.md` 重构（**不合并、不卡 k、类型越广越好** + 粗/细粒度维度）；新增 `BUG_INJECTION_CATALOG.md`（~100 种 bug 类型 × 12 功能单元 × 12 种注入模式，给队友逐批照造）。
+- **v4 模型（干净迁移版）**：只用 9 个 fake（**无官方**）、4 个新集 ×2 加权、5 seed。提交同款（co-association）官方分：**set1=1.0、set2=0.70，官方均值 0.85**（旧基线 0.53 → 8fake 0.71 → 9fake 0.85）。打包到 `submission_files/final/final_submission_v4/`（GLIBC 2.28 达标、冒烟通过），已推送。
+- **v3 vs v4 定位**：v3 = train-on-dev（7 fake + 2 official，官方均值 0.98，过拟合上界）；v4 = 干净迁移（9 fake 无 official，官方均值 0.85，诚实泛化下界）。**最终提交用哪个待用户定**（hidden 分布接近 dev 集选 v3；更广的 hidden 选 v4）。
+- **v4 的 LLM 依赖（坑 #24）**：v4 的 set1 高度依赖 LLM（有 LLM 1.0 / 无 LLM 0.56），set2 不依赖（无 LLM 反而 0.74）。官方必设 LLM 端点所以预期 0.85；若端点故障会跌到 0.65。
+
 ## 7. 采过的坑（不要再踩）
 
 1. **LLM 混合宽度崩溃**：`np.vstack` 把 768 维（成功抓到）和 0 维（LLM 超时兜底产生的零向量）拼一起直接 ValueError（index 0 size 768, index 1979 size 0）。**修复**：`pairwise_llm_features.py` 里所有 reducer/apply 函数改用 `_stack_llm_vectors`（按公共最大宽度补零）替代 `np.vstack`；兜底零向量必须用 `llm_expected_dim`（768）造满维，不能造 0 维。**不要再用裸 `np.vstack` 拼 LLM 向量。**
@@ -344,6 +358,8 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 21. **`.gitignore` 的 `models/` 会吞掉提交包里的编码器权重（关键，2026-08-14）**：`models/`（无前导斜杠）按目录名任意层级匹配，把 `submission_files/final/final_submission/_internal/models/`（打包好的 5 个 `encoder_seed*.npz` + `preprocess.pkl`，~3.6MB）也忽略了，导致队友 clone 出的二进制启动正常但 `[siamese] failed ... preprocess.pkl not found` → 静默回退基线（set1 BA 0.52 而非 1.0）。同样 `*.tar.gz` 吞掉了 dateutil 的 `dateutil-zoneinfo.tar.gz`。**已修**：加否定规则 `!submission_files/final/final_submission/_internal/models/**` 和 `!.../dateutil/zoneinfo/dateutil-zoneinfo.tar.gz`。**教训：打包产物入库后，一定要 `git ls-files | grep _internal/models` 确认权重真的在 git 里；队友冒烟报 `[siamese] failed` 先查模型文件在不在。**
 22. **真机 glibc 2.28 已确认（2026-08-14，队友实测）**：队友在 AlmaLinux 8 容器（`--platform linux/amd64`）里直接跑 `regr_fail_bucketing` 二进制，`ldd (GNU libc) 2.28` + 正常产出 `Case,bucket` CSV → **二进制在 glibc 2.28 上能启动运行**。但那次跑的是缺模型权重的旧包，模型回退基线的现象正是坑 #21。
 23. **精确 opcode 特征会重新引入「同症状不同 bug」混淆（2026-08-15）**：曾经想把 first-mismatch 的精确 opcode 当特征（因为新集里 mul/mulhsu/xor/and/or/slt 的 opcode 都不同、理论上可分）。实测只训 fake→测官方，加 opcode 后 **set2 从 0.65 崩到 0.52**——官方 set2 的 bug 有重叠 opcode，opcode one-hot 让模型把不同 bug 聚到一起（正是官方「消歧」要避免的）。**坑 #13「opcode 被污染/不可靠」的判断在官方数据上依然成立，精确 opcode 不要当特征**；用「家族 + 分歧类型」就够。
+24. **干净迁移模型的 set1 可能高度依赖 LLM（2026-08-22）**：v4（9 fake 无官方）有 LLM 时 set1=1.0，无 LLM（零 LLM 块）时 **set1=0.56**（TNR 仅 0.33）——set1 那 2 个 bug 的判别信号落在了 LLM 语义块上；set2 相反（无 LLM 0.74 vs 有 LLM 0.70，靠 EDA 特征就够）。官方测评必设 LLM 端点（nomic），所以预期分数走"有 LLM"路径；但**若端点故障/超时（fetch 失败=零 LLM 块=无 LLM 路径），set1 会大跌**。评估提交风险时要把这个依赖算进去。
+25. **控制流 bug（分支/跳转）天生难分，不是造数错误（2026-08-22）**：batch4 的 11 个控制流 bug 里，5 个分支 bug 的首个 mismatch 是「ibex 在 PC-A 执行 X、spike 在 PC-B 执行 Y」——分歧在**随机后续指令**显形，opcode 五花八门且互相重叠；6 个 JAL/JALR bug 全报同一个标准断言 `read to uninitialized addr`（只差地址值）。v3 零样本 BA 仅 0.574（每 bug 拆 4~7 簇）。这是**数据内在难度**（官方 hidden 含分支 bug 时同样难），队友的 selection-level 消歧已经做到位。**对模型的启示**：要分控制流 bug，方向是「PC 分歧模式」类特征（PC region、分歧深度、分支方向、地址差值），不是 opcode。
 
 ## 8. 关键命令速查
 
@@ -351,8 +367,7 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 cd /home/lishixian/iccad
 PY=/home/lishixian/miniforge3/envs/collab-overcooked/bin/python
 
-# siamese 训练（最终版：6 fake + 2 official 一起训，train-on-dev）
-# 新集 benchmark5_500cases_official 已加入（覆盖 interrupt/CSR/debug 域，见 §4 2026-08-15）
+# siamese 训练（v4 = 干净迁移：9 fake 无官方，4 个新集 ×2 加权；v3 = 7 fake + 2 official）
 $PY run_siamese_train.py --train-datasets \
   dataset/fake_dataset/official_format_fake_dataset/official_vcs_stage1_dataset_v1 \
   dataset/fake_dataset/official_format_fake_dataset/directed_cross_v4 \
@@ -360,9 +375,15 @@ $PY run_siamese_train.py --train-datasets \
   dataset/fake_dataset/official_format_fake_dataset/benchmark6_final \
   dataset/fake_dataset/official_format_fake_dataset/benchmark5_final \
   dataset/fake_dataset/official_fixed_dataset/benchmark5_500cases_bundle/benchmark5_500cases_official \
-  dataset/real_dataset/benchmark_set_1 dataset/real_dataset/benchmark_set_2 \
+  dataset/fake_dataset/official_fixed_dataset/benchmark8_500cases_bundle_20260815/benchmark8_500cases_official \
+  dataset/fake_dataset/official_fixed_dataset/k32_new12_380cases_official \
+  dataset/fake_dataset/official_fixed_dataset/batch4_11bugs_20260821/dataset \
+  dataset/fake_dataset/official_fixed_dataset/benchmark5_500cases_bundle/benchmark5_500cases_official \
+  dataset/fake_dataset/official_fixed_dataset/benchmark8_500cases_bundle_20260815/benchmark8_500cases_official \
+  dataset/fake_dataset/official_fixed_dataset/k32_new12_380cases_official \
+  dataset/fake_dataset/official_fixed_dataset/batch4_11bugs_20260821/dataset \
   --eval-datasets dataset/real_dataset/benchmark_set_1 dataset/real_dataset/benchmark_set_2 \
-  --output-dir /tmp/siamese_seed0 --seed 0 --device cpu --epochs 40 --use-trace
+  --output-dir /tmp/siamese_seed0 --seed 0 --device cpu --epochs 60 --use-trace
 
 # 5-seed 集成评估（平均 embedding 再聚类）
 $PY run_siamese_ensemble_eval.py --seed-dirs /tmp/siamese_seed0 ... /tmp/siamese_seed4 \
