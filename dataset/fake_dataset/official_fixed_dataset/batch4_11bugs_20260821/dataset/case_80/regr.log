@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[184] : pc[80007eee] lui	x1,0x9e995: ra:9e995000 
+spike[184] : pc[80007f2a] sll     s7, tp, s1: s7:00000000 
+[FAILED]: 154 matched, 811 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[109] : pc[80003c98] srl	x6,x29,x15: t1:01fb7e94 
+spike[109] : pc[80003c9e] addi    a3, a3, -52: a3:80018dc4 
+[FAILED]: 99 matched, 3551 mismatch
+
+0 PASSED, 1 FAILED

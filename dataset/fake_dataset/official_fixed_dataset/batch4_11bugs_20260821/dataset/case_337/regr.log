@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[103] : pc[8000027c] slti	x1,x23,-457: ra:00000001 
+spike[103] : pc[8000028c] mulh    a6, a3, s0: a6:00000000 
+[FAILED]: 138 matched, 4105 mismatch
+
+0 PASSED, 1 FAILED

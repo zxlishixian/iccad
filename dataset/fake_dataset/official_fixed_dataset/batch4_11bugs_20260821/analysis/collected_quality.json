@@ -1,0 +1,117 @@
+{
+  "dataset_root": "/home/yian/iccad/dataset/benchmark_batch4_11bugs_official_20260821",
+  "num_cases": 364,
+  "num_buckets": 11,
+  "bug_counts": {
+    "bug_128": 47,
+    "bug_129": 46,
+    "bug_130": 41,
+    "bug_132": 46,
+    "bug_133": 41,
+    "bug_134": 14,
+    "bug_136": 25,
+    "bug_140": 25,
+    "bug_141": 20,
+    "bug_142": 18,
+    "bug_143": 41
+  },
+  "tests_by_bug": {
+    "bug_128": [
+      "riscv_machine_mode_rand_test",
+      "riscv_rand_jump_test"
+    ],
+    "bug_129": [
+      "riscv_jump_stress_test",
+      "riscv_machine_mode_rand_test"
+    ],
+    "bug_130": [
+      "riscv_jump_stress_test",
+      "riscv_machine_mode_rand_test",
+      "riscv_rand_jump_test"
+    ],
+    "bug_132": [
+      "riscv_jump_stress_test",
+      "riscv_rand_instr_test",
+      "riscv_rand_jump_test"
+    ],
+    "bug_133": [
+      "riscv_debug_branch_jump_test",
+      "riscv_jump_stress_test",
+      "riscv_rand_jump_test"
+    ],
+    "bug_134": [
+      "riscv_debug_branch_jump_test",
+      "riscv_rand_jump_test"
+    ],
+    "bug_136": [
+      "riscv_debug_branch_jump_test",
+      "riscv_rand_jump_test"
+    ],
+    "bug_140": [
+      "riscv_debug_branch_jump_test",
+      "riscv_rand_jump_test"
+    ],
+    "bug_141": [
+      "riscv_debug_branch_jump_test",
+      "riscv_jump_stress_test",
+      "riscv_rand_jump_test"
+    ],
+    "bug_142": [
+      "riscv_debug_branch_jump_test",
+      "riscv_rand_jump_test"
+    ],
+    "bug_143": [
+      "riscv_rand_instr_test",
+      "riscv_rand_jump_test"
+    ]
+  },
+  "bugs_by_test": {
+    "riscv_debug_branch_jump_test": [
+      "bug_133",
+      "bug_134",
+      "bug_136",
+      "bug_140",
+      "bug_141",
+      "bug_142"
+    ],
+    "riscv_jump_stress_test": [
+      "bug_129",
+      "bug_130",
+      "bug_132",
+      "bug_133",
+      "bug_141"
+    ],
+    "riscv_machine_mode_rand_test": [
+      "bug_128",
+      "bug_129",
+      "bug_130"
+    ],
+    "riscv_rand_instr_test": [
+      "bug_132",
+      "bug_143"
+    ],
+    "riscv_rand_jump_test": [
+      "bug_128",
+      "bug_130",
+      "bug_132",
+      "bug_133",
+      "bug_134",
+      "bug_136",
+      "bug_140",
+      "bug_141",
+      "bug_142",
+      "bug_143"
+    ]
+  },
+  "primary_counts": {
+    "REGR_MISMATCH": 255,
+    "UVM_FATAL": 100,
+    "UVM_ERROR": 9
+  },
+  "first_mismatch_min": 56,
+  "first_mismatch_max": 9700,
+  "max_log_lines": 1610988,
+  "cross_bug_exact_three_log_collisions": [],
+  "errors": [],
+  "warnings": []
+}

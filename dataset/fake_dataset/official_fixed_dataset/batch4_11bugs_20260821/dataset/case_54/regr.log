@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1538] : pc[80002b8c] csrrci	x29,mscratch,15: t4:00000000 
+spike[1538] : pc[80002b9a] c.addi16sp sp, -16: sp:880027d3 
+[FAILED]: 1496 matched, 2461 mismatch
+
+0 PASSED, 1 FAILED

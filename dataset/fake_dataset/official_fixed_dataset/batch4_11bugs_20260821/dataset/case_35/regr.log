@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[211] : pc[8000040c] lui	x6,0xa0135: t1:a0135000 
+spike[211] : pc[80000418] csrrwi  s10, mscratch, 29: s10:0000001e 
+[FAILED]: 149 matched, 371 mismatch
+
+0 PASSED, 1 FAILED

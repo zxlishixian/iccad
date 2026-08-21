@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[64] : pc[800001a8] c.addi16sp	x2,32: sp:00000020 
+spike[64] : pc[80000196] xor     gp, t3, zero: gp:80000000 
+[FAILED]: 57 matched, 2090 mismatch
+
+0 PASSED, 1 FAILED

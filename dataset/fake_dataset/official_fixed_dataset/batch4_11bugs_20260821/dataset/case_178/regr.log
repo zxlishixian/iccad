@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[762] : pc[80000e90] sll	x27,x22,x0: s11:5c536000 
+spike[762] : pc[80000e8c] slt     tp, a0, s1: tp:00000001 
+[FAILED]: 528 matched, 1935 mismatch
+
+0 PASSED, 1 FAILED

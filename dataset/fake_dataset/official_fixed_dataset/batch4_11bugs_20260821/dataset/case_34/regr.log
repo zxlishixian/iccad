@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1048] : pc[800013ac] mul	x1,x25,x13: ra:00001626 
+spike[1048] : pc[800013d4] divu    s7, a7, s7: s7:01e07f1d 
+[FAILED]: 1013 matched, 7096 mismatch
+
+0 PASSED, 1 FAILED

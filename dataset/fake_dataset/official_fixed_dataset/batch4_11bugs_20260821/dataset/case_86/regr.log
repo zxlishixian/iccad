@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[228] : pc[800006b2] mul	x13,x5,x1: a3:d1d29668 
+spike[228] : pc[80000684] c.sub   a2, a3: a2:9f68c380 
+[FAILED]: 200 matched, 4769 mismatch
+
+0 PASSED, 1 FAILED

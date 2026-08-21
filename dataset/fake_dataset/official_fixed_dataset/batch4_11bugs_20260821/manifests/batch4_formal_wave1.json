@@ -1,0 +1,472 @@
+[
+  {
+    "bug_id": "bug_128",
+    "group": "branch",
+    "family": "bne_decoded_as_beq",
+    "patch_path": "/home/yian/iccad/bug_patches/bug_128.patch",
+    "tests": [
+      "riscv_machine_mode_rand_test"
+    ],
+    "seeds": [
+      23001,
+      23004,
+      23007,
+      23010,
+      23013,
+      23016,
+      23019,
+      23022,
+      23025
+    ]
+  },
+  {
+    "bug_id": "bug_128",
+    "group": "branch",
+    "family": "bne_decoded_as_beq",
+    "patch_path": "/home/yian/iccad/bug_patches/bug_128.patch",
+    "tests": [
+      "riscv_rand_jump_test"
+    ],
+    "seeds": [
+      23028,
+      23031,
+      23034,
+      23037,
+      23040,
+      23043,
+      23046,
+      23049
+    ]
+  },
+  {
+    "bug_id": "bug_129",
+    "group": "branch",
+    "family": "blt_uses_unsigned_compare",
+    "patch_path": "/home/yian/iccad/bug_patches/bug_129.patch",
+    "tests": [
+      "riscv_jump_stress_test"
+    ],
+    "seeds": [
+      23052,
+      23055,
+      23058,
+      23061,
+      23064,
+      23067,
+      23070,
+      23073
+    ]
+  },
+  {
+    "bug_id": "bug_129",
+    "group": "branch",
+    "family": "blt_uses_unsigned_compare",
+    "patch_path": "/home/yian/iccad/bug_patches/bug_129.patch",
+    "tests": [
+      "riscv_machine_mode_rand_test"
+    ],
+    "seeds": [
+      23076,
+      23079,
+      23082,
+      23085,
+      23088,
+      23091,
+      23094,
+      23097,
+      23100
+    ]
+  },
+  {
+    "bug_id": "bug_130",
+    "group": "branch",
+    "family": "bge_uses_unsigned_compare",
+    "patch_path": "/home/yian/iccad/bug_patches/bug_130.patch",
+    "tests": [
+      "riscv_jump_stress_test"
+    ],
+    "seeds": [
+      23103,
+      23106,
+      23109,
+      23112,
+      23115
+    ]
+  },
+  {
+    "bug_id": "bug_130",
+    "group": "branch",
+    "family": "bge_uses_unsigned_compare",
+    "patch_path": "/home/yian/iccad/bug_patches/bug_130.patch",
+    "tests": [
+      "riscv_machine_mode_rand_test"
+    ],
+    "seeds": [
+      23118,
+      23121,
+      23124,
+      23127,
+      23130,
+      23133
+    ]
+  },
+  {
+    "bug_id": "bug_130",
+    "group": "branch",
+    "family": "bge_uses_unsigned_compare",
+    "patch_path": "/home/yian/iccad/bug_patches/bug_130.patch",
+    "tests": [
+      "riscv_rand_jump_test"
+    ],
+    "seeds": [
+      23136,
+      23139,
+      23142,
+      23145,
+      23148
+    ]
+  },
+  {
+    "bug_id": "bug_132",
+    "group": "compressed_branch",
+    "family": "compressed_branch_condition_inverted",
+    "patch_path": "/home/yian/iccad/bug_patches/bug_132.patch",
+    "tests": [
+      "riscv_jump_stress_test"
+    ],
+    "seeds": [
+      23151,
+      23154,
+      23157,
+      23160,
+      23163,
+      23166
+    ]
+  },
+  {
+    "bug_id": "bug_132",
+    "group": "compressed_branch",
+    "family": "compressed_branch_condition_inverted",
+    "patch_path": "/home/yian/iccad/bug_patches/bug_132.patch",
+    "tests": [
+      "riscv_rand_instr_test"
+    ],
+    "seeds": [
+      23169,
+      23172,
+      23175,
+      23178,
+      23181,
+      23184
+    ]
+  },
+  {
+    "bug_id": "bug_132",
+    "group": "compressed_branch",
+    "family": "compressed_branch_condition_inverted",
+    "patch_path": "/home/yian/iccad/bug_patches/bug_132.patch",
+    "tests": [
+      "riscv_rand_jump_test"
+    ],
+    "seeds": [
+      23187,
+      23190,
+      23193,
+      23196,
+      23199
+    ]
+  },
+  {
+    "bug_id": "bug_133",
+    "group": "jump",
+    "family": "negative_jal_immediate_zero_extended",
+    "patch_path": "/home/yian/iccad/bug_patches/bug_133.patch",
+    "tests": [
+      "riscv_debug_branch_jump_test"
+    ],
+    "seeds": [
+      23202,
+      23205,
+      23208,
+      23211,
+      23214,
+      23217
+    ]
+  },
+  {
+    "bug_id": "bug_133",
+    "group": "jump",
+    "family": "negative_jal_immediate_zero_extended",
+    "patch_path": "/home/yian/iccad/bug_patches/bug_133.patch",
+    "tests": [
+      "riscv_jump_stress_test"
+    ],
+    "seeds": [
+      23220,
+      23223,
+      23226,
+      23229,
+      23232
+    ]
+  },
+  {
+    "bug_id": "bug_133",
+    "group": "jump",
+    "family": "negative_jal_immediate_zero_extended",
+    "patch_path": "/home/yian/iccad/bug_patches/bug_133.patch",
+    "tests": [
+      "riscv_rand_jump_test"
+    ],
+    "seeds": [
+      23235,
+      23238,
+      23241,
+      23244,
+      23247,
+      23250
+    ]
+  },
+  {
+    "bug_id": "bug_134",
+    "group": "jump",
+    "family": "negative_jalr_immediate_zero_extended",
+    "patch_path": "/home/yian/iccad/bug_patches/bug_134.patch",
+    "tests": [
+      "riscv_debug_branch_jump_test"
+    ],
+    "seeds": [
+      23253,
+      23256,
+      23259,
+      23262,
+      23265,
+      23268,
+      23271,
+      23274
+    ]
+  },
+  {
+    "bug_id": "bug_134",
+    "group": "jump",
+    "family": "negative_jalr_immediate_zero_extended",
+    "patch_path": "/home/yian/iccad/bug_patches/bug_134.patch",
+    "tests": [
+      "riscv_rand_jump_test"
+    ],
+    "seeds": [
+      23277,
+      23280,
+      23283,
+      23286,
+      23289,
+      23292,
+      23295,
+      23298
+    ]
+  },
+  {
+    "bug_id": "bug_136",
+    "group": "compressed_jump",
+    "family": "compressed_jalr_link_increments_by_4",
+    "patch_path": "/home/yian/iccad/bug_patches/bug_136.patch",
+    "tests": [
+      "riscv_debug_branch_jump_test"
+    ],
+    "seeds": [
+      23301,
+      23304,
+      23307,
+      23310,
+      23313,
+      23316,
+      23319,
+      23322,
+      23325
+    ]
+  },
+  {
+    "bug_id": "bug_136",
+    "group": "compressed_jump",
+    "family": "compressed_jalr_link_increments_by_4",
+    "patch_path": "/home/yian/iccad/bug_patches/bug_136.patch",
+    "tests": [
+      "riscv_rand_jump_test"
+    ],
+    "seeds": [
+      23328,
+      23331,
+      23334,
+      23337,
+      23340,
+      23343,
+      23346,
+      23349
+    ]
+  },
+  {
+    "bug_id": "bug_140",
+    "group": "jump",
+    "family": "jalr_target_uses_s_immediate",
+    "patch_path": "/home/yian/iccad/bug_patches/bug_140.patch",
+    "tests": [
+      "riscv_debug_branch_jump_test"
+    ],
+    "seeds": [
+      23352,
+      23355,
+      23358,
+      23361,
+      23364,
+      23367,
+      23370,
+      23373
+    ]
+  },
+  {
+    "bug_id": "bug_140",
+    "group": "jump",
+    "family": "jalr_target_uses_s_immediate",
+    "patch_path": "/home/yian/iccad/bug_patches/bug_140.patch",
+    "tests": [
+      "riscv_rand_jump_test"
+    ],
+    "seeds": [
+      23376,
+      23379,
+      23382,
+      23385,
+      23388,
+      23391,
+      23394,
+      23397,
+      23400
+    ]
+  },
+  {
+    "bug_id": "bug_141",
+    "group": "jump",
+    "family": "jal_link_uses_register_base",
+    "patch_path": "/home/yian/iccad/bug_patches/bug_141.patch",
+    "tests": [
+      "riscv_debug_branch_jump_test"
+    ],
+    "seeds": [
+      23403,
+      23406,
+      23409,
+      23412,
+      23415
+    ]
+  },
+  {
+    "bug_id": "bug_141",
+    "group": "jump",
+    "family": "jal_link_uses_register_base",
+    "patch_path": "/home/yian/iccad/bug_patches/bug_141.patch",
+    "tests": [
+      "riscv_jump_stress_test"
+    ],
+    "seeds": [
+      23418,
+      23421,
+      23424,
+      23427,
+      23430,
+      23433
+    ]
+  },
+  {
+    "bug_id": "bug_141",
+    "group": "jump",
+    "family": "jal_link_uses_register_base",
+    "patch_path": "/home/yian/iccad/bug_patches/bug_141.patch",
+    "tests": [
+      "riscv_rand_jump_test"
+    ],
+    "seeds": [
+      23436,
+      23439,
+      23442,
+      23445,
+      23448
+    ]
+  },
+  {
+    "bug_id": "bug_142",
+    "group": "jump",
+    "family": "jalr_link_uses_register_base",
+    "patch_path": "/home/yian/iccad/bug_patches/bug_142.patch",
+    "tests": [
+      "riscv_debug_branch_jump_test"
+    ],
+    "seeds": [
+      23451,
+      23454,
+      23457,
+      23460,
+      23463,
+      23466,
+      23469,
+      23472,
+      23475
+    ]
+  },
+  {
+    "bug_id": "bug_142",
+    "group": "jump",
+    "family": "jalr_link_uses_register_base",
+    "patch_path": "/home/yian/iccad/bug_patches/bug_142.patch",
+    "tests": [
+      "riscv_rand_jump_test"
+    ],
+    "seeds": [
+      23478,
+      23481,
+      23484,
+      23487,
+      23490,
+      23493,
+      23496,
+      23499
+    ]
+  },
+  {
+    "bug_id": "bug_143",
+    "group": "compressed_branch",
+    "family": "compressed_branch_rs1_bit_wrong",
+    "patch_path": "/home/yian/iccad/bug_patches/bug_143.patch",
+    "tests": [
+      "riscv_rand_instr_test"
+    ],
+    "seeds": [
+      23502,
+      23505,
+      23508,
+      23511,
+      23514,
+      23517,
+      23520,
+      23523
+    ]
+  },
+  {
+    "bug_id": "bug_143",
+    "group": "compressed_branch",
+    "family": "compressed_branch_rs1_bit_wrong",
+    "patch_path": "/home/yian/iccad/bug_patches/bug_143.patch",
+    "tests": [
+      "riscv_rand_jump_test"
+    ],
+    "seeds": [
+      23526,
+      23529,
+      23532,
+      23535,
+      23538,
+      23541,
+      23544,
+      23547,
+      23550
+    ]
+  }
+]

@@ -1,0 +1,11 @@
+{
+  "raw_roots": [
+    "/home/yian/iccad/exports/batch4_11bugs_20260821/selected_raw_meta"
+  ],
+  "num_runs": 364,
+  "bad_meta": [],
+  "missing_logs": [],
+  "startup_or_shallow_mismatches": [],
+  "cross_bug_signature_collisions_with_pc_region": [],
+  "cross_bug_exact_three_log_collisions": []
+}

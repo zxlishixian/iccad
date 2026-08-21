@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[194] : pc[800026a8] add	x29,x17,x24: t4:0000001f 
+spike[194] : pc[800026d2] sltu    t3, s0, s9: t3:00000000 
+[FAILED]: 197 matched, 2201 mismatch
+
+0 PASSED, 1 FAILED

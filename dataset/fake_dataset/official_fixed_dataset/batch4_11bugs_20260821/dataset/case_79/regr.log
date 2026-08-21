@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[152] : pc[80000442] c.addi4spn	x12,x2,736: a2:140f54a5 
+spike[152] : pc[8000042a] or      s9, a0, s2: s9:ffffff78 
+[FAILED]: 252 matched, 7213 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[61] : pc[80000198] c.lui	x26,0x1a: s10:0001a000 
+spike[61] : pc[80000170] c.sub   s1, s0: s1:0d21fd93 
+[FAILED]: 55 matched, 3952 mismatch
+
+0 PASSED, 1 FAILED

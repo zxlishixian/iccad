@@ -1,0 +1,13 @@
+diff --git a/rtl/ibex_decoder.sv b/rtl/ibex_decoder.sv
+index f28017c..789f4e3 100644
+--- a/rtl/ibex_decoder.sv
++++ b/rtl/ibex_decoder.sv
+@@ -109,7 +109,7 @@ module ibex_decoder #(
+   assign imm_s_type_o = { {20{instr[31]}}, instr[31:25], instr[11:7] };
+   assign imm_b_type_o = { {19{instr[31]}}, instr[31], instr[7], instr[30:25], instr[11:8], 1'b0 };
+   assign imm_u_type_o = { instr[31:12], 12'b0 };
+-  assign imm_j_type_o = { {12{instr[31]}}, instr[19:12], instr[20], instr[30:21], 1'b0 };
++  assign imm_j_type_o = { 12'b0, instr[19:12], instr[20], instr[30:21], 1'b0 };
+ 
+   // immediate for CSR manipulation (zero extended)
+   assign zimm_rs1_type_o = { 27'b0, instr[`REG_S1] }; // rs1

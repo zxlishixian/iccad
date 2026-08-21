@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[132] : pc[8000196e] c.addi	x16,-12: a6:8001ae10 
+spike[132] : pc[8000196a] addi    s2, s8, -34: s2:ffffffdf 
+[FAILED]: 156 matched, 3569 mismatch
+
+0 PASSED, 1 FAILED

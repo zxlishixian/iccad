@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[125] : pc[8000511a] mulh	x19,x6,x10: s3:fffffff1 
+spike[125] : pc[80005150] c.add   t2, gp: t2:27deac65 
+[FAILED]: 110 matched, 4269 mismatch
+
+0 PASSED, 1 FAILED

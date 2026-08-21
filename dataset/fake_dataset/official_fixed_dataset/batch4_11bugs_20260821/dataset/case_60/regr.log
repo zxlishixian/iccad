@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[482] : pc[80000b38] div	x7,x27,x8: t2:00000000 
+spike[482] : pc[80000b30] xor     s11, gp, s2: s11:6ffe49fa 
+[FAILED]: 459 matched, 2897 mismatch
+
+0 PASSED, 1 FAILED

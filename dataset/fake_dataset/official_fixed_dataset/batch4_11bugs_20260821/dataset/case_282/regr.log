@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[136] : pc[80003270] csrrc	x2,mscratch,x14: sp:ffffffe9 
+spike[136] : pc[8000327e] add     t0, s1, a4: t0:800a3f35 
+[FAILED]: 129 matched, 56280 mismatch
+
+0 PASSED, 1 FAILED

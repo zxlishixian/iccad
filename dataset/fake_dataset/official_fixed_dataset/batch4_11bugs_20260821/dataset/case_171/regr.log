@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[76] : pc[80010f60] lui	x9,0xad8d8: s1:ad8d8000 
+spike[76] : pc[80010f5a] c.or    a4, s0: a4:80033dff 
+[FAILED]: 102 matched, 16790 mismatch
+
+0 PASSED, 1 FAILED

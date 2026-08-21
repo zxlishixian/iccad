@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[66] : pc[8000017e] mul	x17,x20,x1: a7:27671d6c 
+spike[66] : pc[80000182] jalr    ra, ra, 704: ra:80000186 
+[FAILED]: 89 matched, 15771 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[63] : pc[8000017a] addi	x20,x13,-949: s4:6df9b33f 
+spike[63] : pc[800001a8] c.srli  a0, 2: a0:20000000 
+[FAILED]: 63 matched, 4290 mismatch
+
+0 PASSED, 1 FAILED

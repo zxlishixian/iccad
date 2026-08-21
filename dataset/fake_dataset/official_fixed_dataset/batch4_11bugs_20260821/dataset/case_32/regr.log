@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[831] : pc[8000b488] c.addi4spn	x15,x2,464: a5:000081b4 
+spike[831] : pc[8000b49e] sll     a0, s3, a1: a0:000001f7 
+[FAILED]: 829 matched, 22969 mismatch
+
+0 PASSED, 1 FAILED

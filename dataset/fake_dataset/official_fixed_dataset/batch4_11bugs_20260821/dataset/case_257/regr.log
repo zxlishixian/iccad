@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[520] : pc[800084dc] c.jalr	x24: ra:800084e0 
+spike[520] : pc[800084dc] c.jalr  s8: ra:800084de 
+[FAILED]: 1667 matched, 2 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[267] : pc[8000e9e8] and	x24,x25,x30: s8:00000000 
+spike[267] : pc[8000e9f6] srai    t5, a7, 21: t5:fffffc00 
+[FAILED]: 217 matched, 2872 mismatch
+
+0 PASSED, 1 FAILED

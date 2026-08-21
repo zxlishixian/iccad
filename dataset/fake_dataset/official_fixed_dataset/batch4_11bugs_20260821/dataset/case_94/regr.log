@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[839] : pc[80003a2c] c.addi	x21,10: s5:6b8c000a 
+spike[839] : pc[80003a3a] and     a3, t3, a2: a3:00000000 
+[FAILED]: 817 matched, 9567 mismatch
+
+0 PASSED, 1 FAILED

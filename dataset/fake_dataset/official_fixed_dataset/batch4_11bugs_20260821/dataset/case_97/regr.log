@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[161] : pc[80005b56] c.li	x26,7: s10:00000007 
+spike[161] : pc[80005b4a] c.lui   s6, 0x14: s6:00014000 
+[FAILED]: 159 matched, 4845 mismatch
+
+0 PASSED, 1 FAILED

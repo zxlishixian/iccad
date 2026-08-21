@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[354] : pc[8000247e] csrrc	x8,mscratch,x6: s0:800021cf 
+spike[354] : pc[800024ba] mul     s7, t2, a2: s7:d522c426 
+[FAILED]: 346 matched, 3112 mismatch
+
+0 PASSED, 1 FAILED

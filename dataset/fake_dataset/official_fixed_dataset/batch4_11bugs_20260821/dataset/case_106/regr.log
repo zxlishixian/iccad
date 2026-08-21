@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[341] : pc[80000870] c.addi16sp	x2,448: sp:000069a0 
+spike[341] : pc[80000868] and     gp, t3, t0: gp:a8000000 
+[FAILED]: 305 matched, 111 mismatch
+
+0 PASSED, 1 FAILED

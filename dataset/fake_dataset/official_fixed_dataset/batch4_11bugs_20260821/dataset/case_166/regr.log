@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[195] : pc[8000a8ac] sltiu	x15,x17,-960: a5:00000001 
+spike[195] : pc[8000a8b6] xori    a0, tp, -569: a0:ffffe5de 
+[FAILED]: 207 matched, 10859 mismatch
+
+0 PASSED, 1 FAILED

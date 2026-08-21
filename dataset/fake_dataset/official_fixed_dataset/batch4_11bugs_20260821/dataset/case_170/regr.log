@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[553] : pc[80000a96] c.slli	x17,0x15: a7:56a00000 
+spike[553] : pc[80000ad2] c.or    a1, a3: a1:00000230 
+[FAILED]: 354 matched, 31071 mismatch
+
+0 PASSED, 1 FAILED
