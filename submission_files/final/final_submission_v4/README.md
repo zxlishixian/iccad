@@ -1,4 +1,4 @@
-# Regression Failure Bucketing — final submission v4 (siamese, clean migration)
+# Regression Failure Bucketing — final submission v4 (siamese)
 
 ## Required interface
 
@@ -29,16 +29,12 @@ Per-case features:
 The encoder is a NumPy reimplementation of the PyTorch model (max error ~8e-5);
 no PyTorch is bundled.
 
-Training data: the 5-seed ensemble is trained on **all 9 fake sets, no official
-dev sets** (clean migration — the official sets are held out entirely).  The four
-high-quality sets (benchmark5_500cases_official / benchmark8_500cases_official /
-k32_new12_380cases_official / batch4_11bugs) are each up-weighted ×2; the older
-lui-cascade sets (official_vcs / directed_cross_v4 / stable / benchmark5_final /
-benchmark6_final) are kept at ×1 as pretraining diversity.
-
-Clean-migration validation (trained on fake only, official held out):
-benchmark_set_1 BA 1.00, benchmark_set_2 BA 0.70 (official mean 0.85, up from
-the 0.53 baseline of the old lui-cascade fake data).
+Training data: the 5-seed ensemble is trained on **all 11 datasets — 9 fake +
+2 official dev sets**.  The four high-quality fake sets (benchmark5_500cases_official /
+benchmark8_500cases_official / k32_new12_380cases_official / batch4_11bugs) are each
+up-weighted ×2; the older lui-cascade sets (official_vcs / directed_cross_v4 / stable /
+benchmark5_final / benchmark6_final) are kept at ×1 as pretraining diversity; the two
+official dev sets are at ×1.
 
 ## LLM configuration
 
@@ -64,14 +60,18 @@ were replaced with the conda `libgcc-15.2.0` (GLIBC_2.14) and `libstdcxx-15.2.0`
 
 | Dataset | k | BA |
 |---|---|---:|
-| benchmark_set_1 | 2 | 1.00 |
-| benchmark_set_2 | 4 | 0.97 |
-| benchmark5_500cases_official | 10 | 0.95 |
+| benchmark_set_1 | 2 | 0.71 |
+| benchmark_set_2 | 4 | 0.73 |
+| benchmark5_500cases_official | 10 | 0.89 |
 | benchmark8_500cases_official | 10 | 1.00 |
-| official_vcs | 3 | 0.88 |
+| k32_new12_380cases_official | 12 | 0.94 |
+| batch4_11bugs | 11 | 0.94 |
+| official_vcs | 3 | 0.74 |
 | stable | 4 | 0.83 |
-| benchmark6_final | 64 | 0.62 |
+| benchmark6_final | 64 | 0.61 |
 
 Note: these are train-on-dev scores (the official dev sets were in the training
 data) and are an upper bound; the hidden-set generalization is expected to be
-around the alpha submission's ~0.72 level or better.
+around the alpha submission's ~0.72 level or better.  The official dev sets
+(7 + 25 cases) are tiny, so their BA is noisy; per-seed average is more reliable
+there than the co-association consensus (see handoff.md pitfall #26).

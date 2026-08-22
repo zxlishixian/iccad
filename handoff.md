@@ -335,28 +335,32 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 
 ## 6.5 模型迭代记录（每一代的设置 + 分数）
 
-> 分数均为 **co-association 提交同款**（5 npz 各自 k-means → 逐对投票 → 层次共识聚类）。
-> 干净迁移 = 无偏泛化（官方集 held-out）；train-on-dev = 过拟合上界（官方在训练里）。
+> ⚠️ **评估口径教训（2026-08-22 晚）**：co-association 共识聚类在 **N<25 的小集上不可靠**（7 例的 set1 尤其）
+> ——它会因"错在哪个 case 上"的随机性把结论翻转（坑 #26）。**小集要看 per-seed 均值**；co-assoc 只在大集（≥25 例）可靠。
+> 下表同时给 per-seed 均值（小集可靠）和 co-assoc（提交同款，大集可靠）。
 
 ### 干净迁移系列（只训 fake → 测官方）
 
-| 代次 | 训练集 | set1 | set2 | 官方均值 | 备注 |
-|---|---:|---:|---:|---:|
-| 旧 fake 基线 | 旧 lui 级联 fake | 0.55 | 0.51 | 0.53 | 早期 per-seed 记录（handoff §5）|
-| A | 旧 5 fake | 0.43 | 0.71 | 0.57 | per-seed 单 seed |
-| B | 旧 5 fake + benchmark5 | 0.71 | 0.65 | 0.68 | per-seed 单 seed，+批1 |
-| 8 fake | B + benchmark8 + k32_new12 | 0.72 | 0.69 | 0.71 | +批2/3 |
-| **v4 旧** | **9 fake（+batch4）** | **1.00** | **0.70** | **0.85** | **打包 `final_submission_v4`** |
+| 代次 | 训练集 | 官方均值(per-seed) | 官方均值(co-assoc) | 备注 |
+|---|---:|---:|---:|
+| 旧 fake 基线 | 旧 lui 级联 fake | 0.53 | — | 早期记录 |
+| A | 旧 5 fake | 0.57 | — | 单 seed |
+| B | 旧 5 fake + benchmark5 | 0.68 | — | 单 seed，+批1 |
+| 8 fake | B + benchmark8 + k32_new12 | 0.71 | 0.71 | +批2/3 |
+| v4 旧 | 9 fake（+batch4）| 0.72 | 0.85 | 曾被误判为"泛化最好"，实际 set1 是 co-assoc 侥幸 |
 
 ### train-on-dev 系列（fake + 官方一起训）
 
-| 代次 | 训练集 | set1 | set2 | 官方均值 | 备注 |
-|---|---:|---:|---:|---:|
-| siamese_cat | 4 fake + 2 official | 1.00 | 0.91 | 0.955 | 最初提交（`final_submission`）|
-| **v3** | **7 fake + 2 official（2 新 ×2）** | **1.00** | **0.965** | **0.98** | **打包 `final_submission_v3`** |
-| v4b | 9 fake + 2 official（4 新 ×2）| 0.71 | 0.73 | 0.72 | 弃用（官方集退步）|
+| 代次 | 训练集 | 官方均值(per-seed) | 官方均值(co-assoc) | 备注 |
+|---|---:|---:|---:|
+| siamese_cat | 4 fake + 2 official | — | 0.955 | 最初提交（`final_submission`）|
+| **v3** | **7 fake + 2 official（2 新 ×2）** | 0.86 | **0.98** | **打包 `final_submission_v3`** |
+| **v4b** | **9 fake + 2 official（4 新 ×2）** | **0.82** | 0.72 | **打包 `final_submission_v4`（本次）** |
 
-**结论**：泛化性 **v4 旧（0.85 无偏）> v4b（0.72 有偏）**；官方集最高分 **v3（0.98）**。最终提交用 `v4 旧` 或 `v3`，**不用 v4b**。
+**最终结论（修正后）**：
+- **per-seed 上 v4b（0.82）≥ v4 旧（0.72）**——加官方数据确实有帮助，之前的"v4b 更差"是 co-assoc 小集噪声造成的误判。
+- 官方集 co-assoc 最高分仍是 **v3（0.98）**；但 v3 只有 7 fake（缺 k32_new12/batch4），hidden 集若含新 bug 类型泛化可能不足。
+- **提交用 v3（官方集最强）或 v4b（数据最全、per-seed 泛化不输）**；v4 旧（纯干净迁移）留作对照，不再作为推荐提交。
 
 ## 7. 采过的坑（不要再踩）
 
@@ -385,6 +389,7 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 23. **精确 opcode 特征会重新引入「同症状不同 bug」混淆（2026-08-15）**：曾经想把 first-mismatch 的精确 opcode 当特征（因为新集里 mul/mulhsu/xor/and/or/slt 的 opcode 都不同、理论上可分）。实测只训 fake→测官方，加 opcode 后 **set2 从 0.65 崩到 0.52**——官方 set2 的 bug 有重叠 opcode，opcode one-hot 让模型把不同 bug 聚到一起（正是官方「消歧」要避免的）。**坑 #13「opcode 被污染/不可靠」的判断在官方数据上依然成立，精确 opcode 不要当特征**；用「家族 + 分歧类型」就够。
 24. **干净迁移模型的 set1 可能高度依赖 LLM（2026-08-22）**：v4（9 fake 无官方）有 LLM 时 set1=1.0，无 LLM（零 LLM 块）时 **set1=0.56**（TNR 仅 0.33）——set1 那 2 个 bug 的判别信号落在了 LLM 语义块上；set2 相反（无 LLM 0.74 vs 有 LLM 0.70，靠 EDA 特征就够）。官方测评必设 LLM 端点（nomic），所以预期分数走"有 LLM"路径；但**若端点故障/超时（fetch 失败=零 LLM 块=无 LLM 路径），set1 会大跌**。评估提交风险时要把这个依赖算进去。
 25. **控制流 bug（分支/跳转）天生难分，不是造数错误（2026-08-22）**：batch4 的 11 个控制流 bug 里，5 个分支 bug 的首个 mismatch 是「ibex 在 PC-A 执行 X、spike 在 PC-B 执行 Y」——分歧在**随机后续指令**显形，opcode 五花八门且互相重叠；6 个 JAL/JALR bug 全报同一个标准断言 `read to uninitialized addr`（只差地址值）。v3 零样本 BA 仅 0.574（每 bug 拆 4~7 簇）。这是**数据内在难度**（官方 hidden 含分支 bug 时同样难），队友的 selection-level 消歧已经做到位。**对模型的启示**：要分控制流 bug，方向是「PC 分歧模式」类特征（PC region、分歧深度、分支方向、地址差值），不是 opcode。
+26. **co-association 共识聚类在 N<25 的小集上不可靠（2026-08-22）**：7 例的 set1 上，co-assoc 会因为"各 seed 错在哪个 case 上"的随机性把结论翻转——曾误判"v4b(0.72) 比 v4 旧(0.85) 差"，实际 per-seed 上 v4b(0.82) ≥ v4 旧(0.72)，是 co-assoc 的侥幸/不巧。**教训：小集（N<25）看 per-seed 均值，别信 co-assoc；co-assoc 只在大集（≥25 例）可靠**。
 
 ## 8. 关键命令速查
 
