@@ -11,12 +11,12 @@ PyTorch / pip / GPU).  Output is exactly `Case,bucket` with one row per case.
 
 ## Model
 
-O(N) siamese per-case encoder (5-seed ensemble) → consensus clustering.
+O(N) siamese per-case encoder (5-seed ensemble) → clustering.
 
-The 5 seeds are ensembled by **co-association voting**: each seed clusters the
-encoded cases independently, then the pairwise cluster agreement is voted across
-seeds and a final agglomerative consensus clustering produces the buckets.  This
-is more robust than averaging the (not mutually aligned) per-seed embeddings.
+The 5 seeds live in mutually-rotated embedding spaces, so they are first aligned
+to seed 0 via **orthogonal Procrustes**, then averaged and k-means-clustered.
+This is more robust than the naive mean (spaces not aligned) and than pairwise
+co-association voting (noisy on small sets); see handoff.md pitfalls #15/#26/#27.
 
 Per-case features:
 - LLM embedding (nomic-embed-text-v1.5, 768 → SVD 64)

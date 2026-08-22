@@ -324,6 +324,12 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 - 干净迁移（8 fake→官方）：set1 从 0.51→0.72、官方均值 0.61→0.71（平均 embedding 的未对齐问题被修掉）。
 - 已重打包、GLIBC 2.28 复验、双模式冒烟通过（set1=1.0/set2=0.965）。**注意**：层次聚类的 `AgglomerativeClustering(metric="precomputed")` 是 O(n²) 内存 + 较高时间复杂度，N=3000 时应实测运行时（本次 benchmark6 2944 例可跑完）。
 
+**2026-08-22 深夜：集成改为 Procrustes 对齐平均（取代 co-association）**
+
+- 发现 co-association 在 **N<25 小集不可靠**（坑 #26），并测了 **Procrustes 正交对齐 + 平均** 的替代方案（把 seed 1~N 对齐到 seed 0 再平均，修坑 #15 的"空间未对齐"根因）。
+- 11 集全量对比（v4b 模型，无 LLM）：Procrustes **在官方 set2 大赢 +0.236**（0.727→0.962，追平最好 seed）、batch4 +0.027、k32_new12 +0.008；**退化**在 fake 集 stable −0.071、benchmark6 −0.031、directed −0.016、benchmark5_500 −0.015。**非严格占优**，但赢在官方集、输在 fake 集 → 从提交价值看值得换。
+- 已把 `siamese_predict.py` 的 `_coassoc_cluster` 换成 `_procrustes_cluster`（正交 Procrustes 对齐平均 → k-means），重打包 v4。
+
 **2026-08-22 本轮工作总结（数据 ×2 批 + v4 模型 + 数据策略文档）：**
 
 - **新数据批 3 `k32_new12_380cases_official`**（12 bug，RV32C + MDU div/rem）：质量检查通过、与前批零重合、三日志歧义 0。补上了 RV32C 译码和 MDU 除余两个缺口。
@@ -390,6 +396,7 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 24. **干净迁移模型的 set1 可能高度依赖 LLM（2026-08-22）**：v4（9 fake 无官方）有 LLM 时 set1=1.0，无 LLM（零 LLM 块）时 **set1=0.56**（TNR 仅 0.33）——set1 那 2 个 bug 的判别信号落在了 LLM 语义块上；set2 相反（无 LLM 0.74 vs 有 LLM 0.70，靠 EDA 特征就够）。官方测评必设 LLM 端点（nomic），所以预期分数走"有 LLM"路径；但**若端点故障/超时（fetch 失败=零 LLM 块=无 LLM 路径），set1 会大跌**。评估提交风险时要把这个依赖算进去。
 25. **控制流 bug（分支/跳转）天生难分，不是造数错误（2026-08-22）**：batch4 的 11 个控制流 bug 里，5 个分支 bug 的首个 mismatch 是「ibex 在 PC-A 执行 X、spike 在 PC-B 执行 Y」——分歧在**随机后续指令**显形，opcode 五花八门且互相重叠；6 个 JAL/JALR bug 全报同一个标准断言 `read to uninitialized addr`（只差地址值）。v3 零样本 BA 仅 0.574（每 bug 拆 4~7 簇）。这是**数据内在难度**（官方 hidden 含分支 bug 时同样难），队友的 selection-level 消歧已经做到位。**对模型的启示**：要分控制流 bug，方向是「PC 分歧模式」类特征（PC region、分歧深度、分支方向、地址差值），不是 opcode。
 26. **co-association 共识聚类在 N<25 的小集上不可靠（2026-08-22）**：7 例的 set1 上，co-assoc 会因为"各 seed 错在哪个 case 上"的随机性把结论翻转——曾误判"v4b(0.72) 比 v4 旧(0.85) 差"，实际 per-seed 上 v4b(0.82) ≥ v4 旧(0.72)，是 co-assoc 的侥幸/不巧。**教训：小集（N<25）看 per-seed 均值，别信 co-assoc；co-assoc 只在大集（≥25 例）可靠**。
+27. **Procrustes 对齐平均不是严格占优，但赢在官方集（2026-08-22）**：11 集对比里 Procrustes 对齐平均在官方 set2 大赢 +0.236（0.727→0.962）、batch4 +0.027，但 fake 集 stable −0.071、benchmark6 −0.031、directed −0.016 退化。**没有"无退化"的免费午餐**；但退化全在 fake 集、赢在官方集 + 难分的控制流集，从提交价值看换 Procrustes 是对的。当前 `siamese_predict.py` 已用 Procrustes 对齐平均。
 
 ## 8. 关键命令速查
 

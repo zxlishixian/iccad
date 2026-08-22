@@ -110,13 +110,14 @@ def _cluster_kmeans(emb: np.ndarray, k: int, seed: int = 0) -> list[int]:
     return [int(x) for x in KMeans(n_clusters=k, random_state=seed, n_init=10).fit_predict(emb)]
 
 
-def _coassoc_cluster(matrix: np.ndarray, encoders: list[dict], k: int) -> list[int]:
-    """Consensus clustering over the 5-seed ensemble (handoff pitfall #15).
+def _procrustes_cluster(matrix: np.ndarray, encoders: list[dict], k: int) -> list[int]:
+    """Procrustes-aligned embedding average -> k-means (handoff pitfall #15/#26).
 
-    Averaging embeddings across seeds is unreliable — each seed's embedding space
-    is not aligned, so the mean blurs small-dataset structure.  Instead cluster each
-    seed independently, vote on the pairwise co-association, then run agglomerative
-    consensus clustering.  Strictly no worse than embedding-averaging in practice.
+    The per-seed encoders live in mutually-rotated embedding spaces, so neither the
+    naive mean nor pairwise co-association is reliable.  Align seeds 1..N to seed 0
+    via orthogonal Procrustes, average the aligned embeddings, then k-means.  Wins
+    big on the official dev set set2 (0.727 -> 0.962) and batch4, at the cost of
+    small regressions on some lui-cascade fake sets.
     """
     n = matrix.shape[0]
     k = max(1, min(int(k), n))
@@ -124,17 +125,14 @@ def _coassoc_cluster(matrix: np.ndarray, encoders: list[dict], k: int) -> list[i
         return [0] * n
     if k == n:
         return list(range(n))
-    co = np.zeros((n, n), dtype=np.float32)
-    for w in encoders:
-        emb = _numpy_forward(matrix, w)
-        lab = np.asarray(_cluster_kmeans(emb, k), dtype=np.int64)
-        co += (lab[:, None] == lab[None, :]).astype(np.float32)
-    co /= max(1, len(encoders))
-    from sklearn.cluster import AgglomerativeClustering
-    labels = AgglomerativeClustering(
-        n_clusters=k, metric="precomputed", linkage="average"
-    ).fit_predict(1.0 - co)
-    return [int(x) for x in labels]
+    embs = [_numpy_forward(matrix, w) for w in encoders]
+    ref = embs[0]
+    aligned = [ref]
+    for emb in embs[1:]:
+        u, _, vt = np.linalg.svd(emb.T @ ref)
+        aligned.append(emb @ (u @ vt))
+    avg = np.mean(np.stack(aligned), axis=0)
+    return _cluster_kmeans(avg, k)
 
 
 def run_siamese(args) -> int:
@@ -144,7 +142,7 @@ def run_siamese(args) -> int:
         raise RuntimeError("no encoder npz found")
     dataset = args.input.parent
     matrix, cases, n = _build_matrix(args, dataset, pre)
-    labels = _coassoc_cluster(matrix, encoders, args.k)
+    labels = _procrustes_cluster(matrix, encoders, args.k)
     with open(args.output, "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["Case", "bucket"])
