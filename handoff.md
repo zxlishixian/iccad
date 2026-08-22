@@ -333,6 +333,31 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 - **v3 vs v4 定位**：v3 = train-on-dev（7 fake + 2 official，官方均值 0.98，过拟合上界）；v4 = 干净迁移（9 fake 无 official，官方均值 0.85，诚实泛化下界）。**最终提交用哪个待用户定**（hidden 分布接近 dev 集选 v3；更广的 hidden 选 v4）。
 - **v4 的 LLM 依赖（坑 #24）**：v4 的 set1 高度依赖 LLM（有 LLM 1.0 / 无 LLM 0.56），set2 不依赖（无 LLM 反而 0.74）。官方必设 LLM 端点所以预期 0.85；若端点故障会跌到 0.65。
 
+## 6.5 模型迭代记录（每一代的设置 + 分数）
+
+> 分数均为 **co-association 提交同款**（5 npz 各自 k-means → 逐对投票 → 层次共识聚类）。
+> 干净迁移 = 无偏泛化（官方集 held-out）；train-on-dev = 过拟合上界（官方在训练里）。
+
+### 干净迁移系列（只训 fake → 测官方）
+
+| 代次 | 训练集 | set1 | set2 | 官方均值 | 备注 |
+|---|---:|---:|---:|---:|
+| 旧 fake 基线 | 旧 lui 级联 fake | 0.55 | 0.51 | 0.53 | 早期 per-seed 记录（handoff §5）|
+| A | 旧 5 fake | 0.43 | 0.71 | 0.57 | per-seed 单 seed |
+| B | 旧 5 fake + benchmark5 | 0.71 | 0.65 | 0.68 | per-seed 单 seed，+批1 |
+| 8 fake | B + benchmark8 + k32_new12 | 0.72 | 0.69 | 0.71 | +批2/3 |
+| **v4 旧** | **9 fake（+batch4）** | **1.00** | **0.70** | **0.85** | **打包 `final_submission_v4`** |
+
+### train-on-dev 系列（fake + 官方一起训）
+
+| 代次 | 训练集 | set1 | set2 | 官方均值 | 备注 |
+|---|---:|---:|---:|---:|
+| siamese_cat | 4 fake + 2 official | 1.00 | 0.91 | 0.955 | 最初提交（`final_submission`）|
+| **v3** | **7 fake + 2 official（2 新 ×2）** | **1.00** | **0.965** | **0.98** | **打包 `final_submission_v3`** |
+| v4b | 9 fake + 2 official（4 新 ×2）| 0.71 | 0.73 | 0.72 | 弃用（官方集退步）|
+
+**结论**：泛化性 **v4 旧（0.85 无偏）> v4b（0.72 有偏）**；官方集最高分 **v3（0.98）**。最终提交用 `v4 旧` 或 `v3`，**不用 v4b**。
+
 ## 7. 采过的坑（不要再踩）
 
 1. **LLM 混合宽度崩溃**：`np.vstack` 把 768 维（成功抓到）和 0 维（LLM 超时兜底产生的零向量）拼一起直接 ValueError（index 0 size 768, index 1979 size 0）。**修复**：`pairwise_llm_features.py` 里所有 reducer/apply 函数改用 `_stack_llm_vectors`（按公共最大宽度补零）替代 `np.vstack`；兜底零向量必须用 `llm_expected_dim`（768）造满维，不能造 0 维。**不要再用裸 `np.vstack` 拼 LLM 向量。**
