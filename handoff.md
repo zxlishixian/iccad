@@ -78,6 +78,16 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 - **--k 就是真实 bug 数**：QA A11「buckets 数 = bug 数」；QA A12「测评时 --k 按 §3.2 表原样传入，不会偏离」。所以直接拿 --k 当聚类簇数是正确做法；"soft" 只指打分对簇数不精确仍宽容（pairwise BA）。
 - **每个 benchmark 只跑一次**（§3.5），随机性自己控制（random.seed / PYTHONHASHSEED / np.random.seed / LLM temperature）。
 
+## 1.8 模型改进三大硬约束（2026-08-24 用户强调，设计任何改进前必读）
+
+任何模型升级（包括序列建模等表征升级）都必须满足这三条，缺一即否：
+
+1. **泛化能力优先**：在**未见过的 hidden 官方数据集**上也要有同样的分数表现。验证一律用**干净迁移**（只训 fake、测 official）+ fake LODO，**不许用 train-on-dev 当改进证据**（坑 #16）。特征/模型不能过拟合到 fake 的具体模式。
+
+2. **无 LLM 兜底机制**：如果官方 LLM 端点未响应，必须有兜底——当前机制是「LLM 块零向量化 + 模型照常跑」。**任何改进都不能依赖 LLM 作为唯一判别信号**（坑 #24：v4 的 set1 曾高度依赖 LLM，无 LLM 掉到 0.56）。序列/EDA 特征要保证在无 LLM 时也能拿到主要分数。
+
+3. **绝对不超时（避免 0 分）**：网络延迟计入运行时、超时该 benchmark 记 0。新加的序列模型必须**轻量、CPU 友好**，且在 N=3000（benchmark6/10，100s/300s 限制）下实测运行时，留足余量。LLM 调用量也要控制（batch 大、超时短）。
+
 ## 2. 环境与关键路径
 
 - **项目目录**：`/home/lishixian/iccad`（所有代码、数据、提交包都在这）
@@ -273,6 +283,40 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 
 **剩下真问题**：干净 official 迁移（只训 fake、测 official）只有 0.51~0.56，离 alpha hidden 0.72 还远。这是 fake→official 分布跨越，不是过拟合能解决的。
 
+## 4.6 业界文献调研（模型升级方向参考，2026-08-24）
+
+> 核心认知：**我们的"回归失败分桶"= 硬件版的"崩溃报告去重/crash bucketing"**。软件工程界对后者有成熟的深度学习解法，EDA 界也有直接对应的 RTL failure triage 文献。以下按"领域 + 代表作 + 对我们模型的启示"整理，便于随时查阅（之前模型从 pair→siamese+原型的方向转变，正是源于对 SupCon/原型学习的论文调研）。
+
+### A. 软件工程：crash report deduplication / bucketing（与我们问题同构）
+
+| 方法 | 核心思路 | 对我们的启示 |
+|---|---|---|
+| **[DeepCrash](https://www.semanticscholar.org/paper/DeepCrash%3A-deep-metric-learning-for-crash-bucketing-Liu-Xie/1c4848545a68bf76f45dc4644eea73243ee19ea5)**（2022）| frame2vec 把每个栈帧嵌入 → 深度度量模型建模**帧序列** → 聚类分桶 | 把每条 retired 指令（opcode+PC+寄存器）嵌入 → 序列建模 → 聚类，替代现在的哈希计数 |
+| **[S3M](https://opus.constructor.university/frontdoor/index/index/docId/1327)**（Siamese Stack Trace Similarity）| **Siamese + biLSTM** 编码栈轨迹算相似度 | 我们已是 Siamese，但用聚合特征；换成序列编码器是升级方向 |
+| **[DedupT](https://www.semanticscholar.org/paper/Stack-Trace-Based-Crash-Deduplication-with-Mamun-Uddin/dd6d31e03df9ebe90f0a9c648cdc83d9c1c40149)**（2025）| **Transformer** 整体建模栈轨迹（非孤立看帧）| 最对应"控制流 bug 分歧路径是序列信号"这个瓶颈 |
+| **[SANER 2025](https://ieeexplore.ieee.org/document/10992512)**（stack trace dedup）| embedding + **reranker 二段式**精排 | 二段式精排契合我们的 pairwise BA 指标 |
+
+### B. EDA：RTL failure triage（同问题的本领域解法）
+
+| 方法 | 核心思路 | 对我们的启示 |
+|---|---|---|
+| **[Clustering-based failure triage for RTL regression debugging](https://www.semanticscholar.org/paper/Clustering-based-failure-triage-for-RTL-regression-Poulos-Veneris/f488b3e1b19554ce9af164f2f0f8afe02519eea9)**（Poulos-Veneris）| 错误轨迹签名 + 聚类，报告 93% 准确率、misplacement −47% | 确认"签名+聚类"路线，但他们的签名含 SAT suspect set（我们没有）|
+| **[A failure triage engine based on error trace signature](https://ieeexplore.ieee.org/document/6604054)** | 错误轨迹签名提取 + ML 聚类，93% | 同上 |
+| **[Exemplar-based failure triage (affinity propagation)](https://www.eecg.toronto.edu/~veneris/15lats.pdf)** | exemplar/AP 聚类，87% 准确率 | AP 聚类可作为 k-means 的替代（软 k、非度量空间）|
+| [Synopsys Verdi RDA](https://qacf-www.synopsys.com/blogs/chip-design/ml-regression-failure-analysis.html) / [Cadence Verisium AutoTriage](https://community.cadence.com/cadence_blogs_8/b/fv/posts/automate-regression-failure-triage-with-the-cadence-verisium) | 商业 ML 分桶（UVM 消息/错误类型），~90% | 工业界确认"ML 分桶"是刚需 |
+
+### C. 多模态对比（日志+指标）
+
+- **[MAD-CMC](https://www.sciencedirect.com/science/article/abs/pii/S0306457324003728)**（2024）：对比式多模态表示聚类（logs + metrics 联合、BERT+SVD + AE + 跨模态 Transformer + k-means）。启示：sim/regr/trace 三视图可做多模态融合，而非简单拼接。
+
+### D. 映射到我们模型的三个升级方向（按价值排序）
+
+1. **序列级 trace 建模（主线，最对症）**：分歧点附近指令序列（opcode+PC+寄存器）→ biLSTM（S3M 式）或轻量 Transformer（DedupT 式），替换现在的 trace 残差哈希计数。直接打"控制流 bug 分歧路径是序列信号"这个确认瓶颈。
+2. **指令级 embedding（frame2vec 式）**：每条 retired 指令嵌入成稠密向量，而非手写 opcode 家族。
+3. **二段式 reranker（SANER 式）**：粗聚类 + 对不确定 case 对精排，直接优化 pairwise BA。
+
+> **结论**：加特征（P0 pc_same/pc_offset、P2 分歧深度）已经到头——都是混合结果（见坑 #28 和 §6.5 的 v5depth 消融）。下一轮升级应走**表征升级**（序列建模），不是再加聚合特征。
+
 ## 5. 卡在哪儿（当前阻塞点）
 
 1. **benchmark6 的 64-bug 分簇是 fake 数据固有上限**：TPR=0.134 是因为 fake benchmark6 的 56 个 mismatch bug 在日志里不可分（见 §4 模型迭代结论），3 个损失/特征实验都救不了。官方 hidden 集已消歧，大概率比 fake 好分，但无法本地验证。
@@ -397,6 +441,7 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 25. **控制流 bug（分支/跳转）天生难分，不是造数错误（2026-08-22）**：batch4 的 11 个控制流 bug 里，5 个分支 bug 的首个 mismatch 是「ibex 在 PC-A 执行 X、spike 在 PC-B 执行 Y」——分歧在**随机后续指令**显形，opcode 五花八门且互相重叠；6 个 JAL/JALR bug 全报同一个标准断言 `read to uninitialized addr`（只差地址值）。v3 零样本 BA 仅 0.574（每 bug 拆 4~7 簇）。这是**数据内在难度**（官方 hidden 含分支 bug 时同样难），队友的 selection-level 消歧已经做到位。**对模型的启示**：要分控制流 bug，方向是「PC 分歧模式」类特征（PC region、分歧深度、分支方向、地址差值），不是 opcode。
 26. **co-association 共识聚类在 N<25 的小集上不可靠（2026-08-22）**：7 例的 set1 上，co-assoc 会因为"各 seed 错在哪个 case 上"的随机性把结论翻转——曾误判"v4b(0.72) 比 v4 旧(0.85) 差"，实际 per-seed 上 v4b(0.82) ≥ v4 旧(0.72)，是 co-assoc 的侥幸/不巧。**教训：小集（N<25）看 per-seed 均值，别信 co-assoc；co-assoc 只在大集（≥25 例）可靠**。
 27. **Procrustes 对齐平均不是严格占优，但赢在官方集（2026-08-22）**：11 集对比里 Procrustes 对齐平均在官方 set2 大赢 +0.236（0.727→0.962）、batch4 +0.027，但 fake 集 stable −0.071、benchmark6 −0.031、directed −0.016 退化。**没有"无退化"的免费午餐**；但退化全在 fake 集、赢在官方集 + 难分的控制流集，从提交价值看换 Procrustes 是对的。当前 `siamese_predict.py` 已用 Procrustes 对齐平均。
+28. **PC 分歧特征（pc_same/pc_offset）是混合结果，不是清晰赢（2026-08-24）**：给 `parse_rich_signature` 加了 `pc_same`（同 PC=数据通路 / 异 PC=控制流）和 `pc_offset_norm`（PC 偏移量）。单 seed 消融：官方集持平（set2 0.700 vs 0.703），**混合集 catalog +0.10（0.655→0.756），但纯控制流集 batch4 −0.06（0.868→0.809）**。结论：pc_same 能劈开"控制流 vs 数据通路"的**粗粒度**，但分不开控制流 bug 彼此（batch4 全是异 PC，退化成常数噪声）。**真正的控制流判别信号在分支处操作数的值/具体分歧路径，非常细，单靠 PC 一个 bit 不够**。代码改动已留在工作区（4 个文件，未提交），是否保留待定。
 
 ## 8. 关键命令速查
 
