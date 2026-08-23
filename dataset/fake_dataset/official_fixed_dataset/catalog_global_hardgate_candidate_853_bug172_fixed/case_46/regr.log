@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[398] : pc[80000806] csrrwi	x6,mscratch,28: t1:00000018 
+spike[398] : pc[800007f2] mulhu   t2, a1, s7: t2:00000000 
+[FAILED]: 381 matched, 197 mismatch
+
+0 PASSED, 1 FAILED

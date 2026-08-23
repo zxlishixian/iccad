@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[65] : pc[80000190] c.andi	x15,-1: a5:00000015 
+spike[65] : pc[80000192] c.addi16sp sp, -16: sp:f4dfd5ba 
+[FAILED]: 62 matched, 947 mismatch
+
+0 PASSED, 1 FAILED

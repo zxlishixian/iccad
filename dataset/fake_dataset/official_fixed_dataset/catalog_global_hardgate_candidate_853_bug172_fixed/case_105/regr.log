@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[557] : pc[80004ba2] rem	x21,x1,x31: s5:00000000 
+spike[557] : pc[80004b92] sub     s8, s9, s4: s8:0000005d 
+[FAILED]: 522 matched, 17237 mismatch
+
+0 PASSED, 1 FAILED

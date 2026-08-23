@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[784] : pc[80002848] c.li	x2,20: sp:00000014 
+spike[784] : pc[800027f8] srli    a4, gp, 11: a4:00000000 
+[FAILED]: 785 matched, 2889 mismatch
+
+0 PASSED, 1 FAILED

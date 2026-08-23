@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[94] : pc[8003460c] and	x27,x30,x26: s11:00000000 
+spike[94] : pc[80034604] lbu     tp, -1645(t6): tp:00000092 
+[FAILED]: 119 matched, 34596 mismatch
+
+0 PASSED, 1 FAILED

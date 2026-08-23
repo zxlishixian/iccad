@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[162] : pc[8001081a] c.slli	x23,0x15: s7:00000000 
+spike[162] : pc[800107aa] add     s7, a0, t1: s7:80027e7c 
+[FAILED]: 146 matched, 6811 mismatch
+
+0 PASSED, 1 FAILED

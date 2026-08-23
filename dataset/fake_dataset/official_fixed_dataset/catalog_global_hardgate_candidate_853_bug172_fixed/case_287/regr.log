@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[318] : pc[800009c8] addi	x8,x26,-933: s0:fffffc5b 
+spike[318] : pc[800009a2] c.addi16sp sp, 208: sp:00000180 
+[FAILED]: 286 matched, 117 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[976] : pc[800029f4] xori	x21,x4,771: s5:80002b05 
+spike[976] : pc[800029b6] mul     s11, s6, t1: s11:4b4052d0 
+[FAILED]: 971 matched, 1694 mismatch
+
+0 PASSED, 1 FAILED

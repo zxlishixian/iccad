@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[112] : pc[8000028a] c.andi	x9,-1: s1:00000000 
+spike[112] : pc[8000028c] c.xor   s0, a1: s0:a1230c04 
+[FAILED]: 223 matched, 2006 mismatch
+
+0 PASSED, 1 FAILED

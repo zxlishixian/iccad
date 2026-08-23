@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[186] : pc[800053c8] mulh	x8,x31,x30: s0:ffffffff 
+spike[186] : pc[800053cc] div     t4, gp, t3: t4:ffffffff 
+[FAILED]: 193 matched, 7921 mismatch
+
+0 PASSED, 1 FAILED

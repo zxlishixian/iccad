@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[79] : pc[8001c888] lb	x27,-2(x22): s11:00000000 
+spike[79] : pc[8001c888] lb      s11, -2(s6): s11:ffffffc0 
+[FAILED]: 102 matched, 68378 mismatch
+
+0 PASSED, 1 FAILED

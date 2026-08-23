@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[138] : pc[800004ec] c.srai	x15,0x11: a5:00007a8c 
+spike[138] : pc[800004ec] c.srai  a5, 17: a5:fffffa8c 
+[FAILED]: 479 matched, 3401 mismatch
+
+0 PASSED, 1 FAILED

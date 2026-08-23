@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[80] : pc[800001a6] c.srai	x15,0x9: a5:00590284 
+spike[80] : pc[800001a6] c.srai  a5, 9: a5:ffd90284 
+[FAILED]: 258 matched, 7778 mismatch
+
+0 PASSED, 1 FAILED

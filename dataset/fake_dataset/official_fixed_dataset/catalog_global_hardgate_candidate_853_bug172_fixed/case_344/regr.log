@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[323] : pc[800004f2] c.srli	x9,0x17: s1:ffffff00 
+spike[323] : pc[800004f2] c.srli  s1, 23: s1:00000100 
+[FAILED]: 1775 matched, 6266 mismatch
+
+0 PASSED, 1 FAILED

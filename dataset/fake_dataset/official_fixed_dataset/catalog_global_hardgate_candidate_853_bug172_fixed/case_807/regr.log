@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[102] : pc[80000248] c.srai	x10,0x5: a0:fe36d000 
+spike[102] : pc[80000244] lbu     a4, 57(t3): a4:000000b2 
+[FAILED]: 128 matched, 46846 mismatch
+
+0 PASSED, 1 FAILED

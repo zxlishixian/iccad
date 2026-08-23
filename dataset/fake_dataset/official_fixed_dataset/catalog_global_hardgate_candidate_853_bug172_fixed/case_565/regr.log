@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[182] : pc[800002f8] c.srli	x13,0xd: a3:fffdb5a8 
+spike[182] : pc[800002f8] c.srli  a3, 13: a3:0005b5a8 
+[FAILED]: 231 matched, 7778 mismatch
+
+0 PASSED, 1 FAILED

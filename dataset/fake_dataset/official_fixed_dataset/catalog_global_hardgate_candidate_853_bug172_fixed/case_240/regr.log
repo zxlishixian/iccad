@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[157] : pc[80001acc] c.li	x1,-1: ra:0000001f 
+spike[157] : pc[80001ace] add     s7, s4, s1: s7:7ffe1185 
+[FAILED]: 283 matched, 2076 mismatch
+
+0 PASSED, 1 FAILED

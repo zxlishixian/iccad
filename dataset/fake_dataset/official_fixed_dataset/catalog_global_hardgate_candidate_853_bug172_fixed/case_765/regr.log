@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[120] : pc[8000033c] add	x19,x31,x26: s3:e4a9bfff 
+spike[120] : pc[8000033c] add     s3, t6, s10: s3:ffa2f073 
+[FAILED]: 103 matched, 1 mismatch
+
+0 PASSED, 1 FAILED

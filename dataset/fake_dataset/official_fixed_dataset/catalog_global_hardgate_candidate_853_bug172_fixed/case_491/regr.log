@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[161] : pc[80002018] c.andi	x12,-1: a2:0000001c 
+spike[161] : pc[8000201e] csrrc   a2, mscratch, zero: a2:ffffffff 
+[FAILED]: 157 matched, 2736 mismatch
+
+0 PASSED, 1 FAILED

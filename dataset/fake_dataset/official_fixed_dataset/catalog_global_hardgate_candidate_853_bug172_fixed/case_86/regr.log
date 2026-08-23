@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[96] : pc[80003aa6] sra	x28,x20,x23: t3:ffffffff 
+spike[96] : pc[80003ab6] jalr    t1, s1, -234: t1:80003aba 
+[FAILED]: 124 matched, 20614 mismatch
+
+0 PASSED, 1 FAILED

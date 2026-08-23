@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[103] : pc[8000037e] c.mv	x22,x1: s6:8000017c 
+spike[103] : pc[8000039a] lui     a6, 0x8aee3: a6:8aee3000 
+[FAILED]: 104 matched, 4477 mismatch
+
+0 PASSED, 1 FAILED

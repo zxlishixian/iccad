@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[133] : pc[800002be] sll	x5,x21,x3: t0:00000001 
+spike[133] : pc[800002f4] add     s9, t0, s6: s9:02e614f5 
+[FAILED]: 128 matched, 2038 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[75] : pc[800001d6] divu	x7,x2,x24: t2:8001ae1c 
+spike[75] : pc[8000020a] c.mv    s2, t4: s2:8001ee7c 
+[FAILED]: 86 matched, 2000 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[180] : pc[80000552] csrrci	x7,mscratch,18: t2:00000001 
+spike[180] : pc[80000536] xori    s11, t6, -1009: s11:7ffe5213 
+[FAILED]: 187 matched, 2583 mismatch
+
+0 PASSED, 1 FAILED

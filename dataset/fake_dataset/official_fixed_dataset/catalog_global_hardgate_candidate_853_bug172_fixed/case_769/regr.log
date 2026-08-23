@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[165] : pc[800002e6] mulh	x27,x16,x30: s11:00000000 
+spike[165] : pc[800002e6] mulh    s11, a6, t5: s11:ffffff00 
+[FAILED]: 1477 matched, 6236 mismatch
+
+0 PASSED, 1 FAILED

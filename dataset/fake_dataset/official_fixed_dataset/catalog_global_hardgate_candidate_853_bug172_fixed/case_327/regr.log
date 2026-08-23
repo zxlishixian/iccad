@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[594] : pc[80003c58] remu	x24,x21,x25: s8:dffffde9 
+spike[594] : pc[80003c58] remu    s8, s5, s9: s8:3f0d69ea 
+[FAILED]: 631 matched, 7470 mismatch
+
+0 PASSED, 1 FAILED

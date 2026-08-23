@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[113] : pc[8000623a] sll	x6,x18,x31: t1:17917000 
+spike[113] : pc[8000626e] slli    a6, sp, 15: a6:9ff80000 
+[FAILED]: 105 matched, 1205 mismatch
+
+0 PASSED, 1 FAILED

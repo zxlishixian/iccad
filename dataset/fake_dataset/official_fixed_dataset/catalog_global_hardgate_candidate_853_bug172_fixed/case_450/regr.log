@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[191] : pc[800019d8] sltiu	x31,x21,-295: t6:00000001 
+spike[191] : pc[80001a02] lui     t3, 0xec2c6: t3:ec2c6000 
+[FAILED]: 177 matched, 703 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[121] : pc[80007f36] remu	x29,x20,x7: t4:8001ef2f 
+spike[121] : pc[80007f36] remu    t4, s4, t2: t4:0000414b 
+[FAILED]: 434 matched, 5741 mismatch
+
+0 PASSED, 1 FAILED

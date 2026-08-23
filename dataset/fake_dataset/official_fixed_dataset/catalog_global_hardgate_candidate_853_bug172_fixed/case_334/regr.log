@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[78] : pc[8000117c] remu	x20,x15,x7: s4:fffe1384 
+spike[78] : pc[8000117c] remu    s4, a5, t2: s4:80000200 
+[FAILED]: 90 matched, 7483 mismatch
+
+0 PASSED, 1 FAILED

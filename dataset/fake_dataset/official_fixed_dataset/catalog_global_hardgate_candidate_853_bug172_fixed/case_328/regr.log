@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[86] : pc[800067be] c.li	x26,-1: s10:0000001f 
+spike[86] : pc[800067be] c.li    s10, -1: s10:ffffffff 
+[FAILED]: 345 matched, 7754 mismatch
+
+0 PASSED, 1 FAILED

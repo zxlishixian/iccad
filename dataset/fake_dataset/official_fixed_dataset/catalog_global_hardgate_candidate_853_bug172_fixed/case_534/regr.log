@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[186] : pc[800028d4] c.andi	x10,-1: a0:0000001c 
+spike[186] : pc[800028da] slt     s0, a2, s3: s0:00000000 
+[FAILED]: 446 matched, 716 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[81] : pc[800001ae] c.mv	x17,x29: a7:94000000 
+spike[81] : pc[800001ae] c.mv    a7, t4: a7:00000000 
+[FAILED]: 258 matched, 7766 mismatch
+
+0 PASSED, 1 FAILED

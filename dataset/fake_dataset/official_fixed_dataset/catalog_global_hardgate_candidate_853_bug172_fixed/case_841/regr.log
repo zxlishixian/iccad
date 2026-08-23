@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[203] : pc[80027b3e] lbu	x1,-1(x21): ra:ffffff9c 
+spike[203] : pc[80027b3e] lbu     ra, -1(s5): ra:0000009c 
+[FAILED]: 3778 matched, 9075 mismatch
+
+0 PASSED, 1 FAILED

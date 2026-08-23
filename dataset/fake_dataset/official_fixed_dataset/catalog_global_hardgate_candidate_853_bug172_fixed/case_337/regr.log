@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[89] : pc[80007cba] c.srai	x14,0x16: a4:00000200 
+spike[89] : pc[80007cba] c.srai  a4, 22: a4:fffffe00 
+[FAILED]: 489 matched, 6939 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[909] : pc[80001382] c.li	x3,28: gp:0000001c 
+spike[909] : pc[800013bc] mulhsu  s11, s10, a0: s11:00000000 
+[FAILED]: 830 matched, 185 mismatch
+
+0 PASSED, 1 FAILED

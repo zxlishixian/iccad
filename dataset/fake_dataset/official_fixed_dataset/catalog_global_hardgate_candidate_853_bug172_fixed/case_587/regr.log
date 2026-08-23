@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1335] : pc[8000fecc] c.jalr	x19: ra:8000fed0 
+spike[1335] : pc[8000fecc] c.jalr  s3: ra:8000fece 
+[FAILED]: 9278 matched, 38 mismatch
+
+0 PASSED, 1 FAILED

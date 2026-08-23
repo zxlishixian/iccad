@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[422] : pc[80000524] remu	x9,x16,x7: s1:fffffff7 
+spike[422] : pc[80000524] remu    s1, a6, t2: s1:00000023 
+[FAILED]: 938 matched, 457 mismatch
+
+0 PASSED, 1 FAILED

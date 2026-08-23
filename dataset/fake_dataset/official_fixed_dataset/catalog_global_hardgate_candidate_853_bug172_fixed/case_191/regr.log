@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[59] : pc[80000162] or	x20,x3,x31: s4:469dd36b 
+spike[59] : pc[80000172] xori    s4, a1, 1022: s4:000003fe 
+[FAILED]: 291 matched, 4066 mismatch
+
+0 PASSED, 1 FAILED

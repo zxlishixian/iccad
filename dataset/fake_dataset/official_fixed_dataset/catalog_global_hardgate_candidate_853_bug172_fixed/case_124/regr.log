@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[247] : pc[800003e8] c.andi	x13,-1: a3:00000001 
+spike[247] : pc[800003ea] srl     s0, t0, s6: s0:00000000 
+[FAILED]: 219 matched, 7652 mismatch
+
+0 PASSED, 1 FAILED

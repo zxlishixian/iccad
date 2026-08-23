@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[139] : pc[80006664] or	x7,x1,x7: t2:2d3be01f 
+spike[139] : pc[80006692] slli    ra, a1, 4: ra:4ed47000 
+[FAILED]: 136 matched, 6711 mismatch
+
+0 PASSED, 1 FAILED

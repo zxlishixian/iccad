@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2791] : pc[8000e5c4] c.jalr	x2: ra:8000e5c8 
+spike[2791] : pc[8000e5c4] c.jalr  sp: ra:8000e5c6 
+[FAILED]: 5971 matched, 8 mismatch
+
+0 PASSED, 1 FAILED

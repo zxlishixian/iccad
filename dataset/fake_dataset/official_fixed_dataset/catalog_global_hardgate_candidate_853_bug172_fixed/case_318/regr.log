@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[182] : pc[800003e6] divu	x2,x26,x18: sp:ffffffff 
+spike[182] : pc[800003e6] divu    sp, s10, s2: sp:04444442 
+[FAILED]: 383 matched, 8901 mismatch
+
+0 PASSED, 1 FAILED

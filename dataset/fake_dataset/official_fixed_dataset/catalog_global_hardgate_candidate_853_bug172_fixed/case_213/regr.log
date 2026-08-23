@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[188] : pc[8000397e] ori	x13,x21,-102: a3:ffffffff 
+spike[188] : pc[80003996] auipc   a6, 0x30191: a6:b0194996 
+[FAILED]: 165 matched, 2615 mismatch
+
+0 PASSED, 1 FAILED

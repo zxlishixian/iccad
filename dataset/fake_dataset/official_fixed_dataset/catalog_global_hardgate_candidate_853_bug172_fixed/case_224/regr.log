@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[127] : pc[80000370] c.srai	x8,0x8: s0:00000000 
+spike[127] : pc[8000033c] and     s10, a6, sp: s10:8001ae14 
+[FAILED]: 120 matched, 2646 mismatch
+
+0 PASSED, 1 FAILED

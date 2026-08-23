@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[208] : pc[8000b1e0] addi	x26,x26,-36: s10:80023de4 
+spike[208] : pc[8000b1de] c.add   gp, a2: gp:80027e7e 
+[FAILED]: 196 matched, 1795 mismatch
+
+0 PASSED, 1 FAILED

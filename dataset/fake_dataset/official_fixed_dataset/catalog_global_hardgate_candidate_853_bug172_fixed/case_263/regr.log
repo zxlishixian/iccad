@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[323] : pc[80000572] remu	x21,x16,x22: s5:800004c4 
+spike[323] : pc[80000552] c.li    t1, 13: t1:0000000d 
+[FAILED]: 333 matched, 664 mismatch
+
+0 PASSED, 1 FAILED

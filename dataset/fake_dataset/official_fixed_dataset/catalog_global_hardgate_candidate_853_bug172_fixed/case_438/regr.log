@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[109] : pc[80004ef0] c.andi	x8,-1: s0:00000000 
+spike[109] : pc[80004ef2] lui     t0, 0xfcf6: t0:0fcf6000 
+[FAILED]: 232 matched, 4146 mismatch
+
+0 PASSED, 1 FAILED

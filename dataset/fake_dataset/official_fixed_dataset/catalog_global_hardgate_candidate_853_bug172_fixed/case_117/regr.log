@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[228] : pc[80001a9c] c.andi	x12,-1: a2:00000016 
+spike[228] : pc[80001ab6] slt     s6, ra, a5: s6:00000000 
+[FAILED]: 210 matched, 7510 mismatch
+
+0 PASSED, 1 FAILED

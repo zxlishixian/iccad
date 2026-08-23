@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[223] : pc[800003ac] c.andi	x15,-1: a5:00000000 
+spike[223] : pc[800003b2] lui     s8, 0xbc1b9: s8:bc1b9000 
+[FAILED]: 231 matched, 7780 mismatch
+
+0 PASSED, 1 FAILED

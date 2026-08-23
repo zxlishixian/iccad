@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[861] : pc[80011270] slti	x16,x3,688: a6:00000001 
+spike[861] : pc[8001126c] divu    s7, a3, a2: s7:00000001 
+[FAILED]: 561 matched, 394 mismatch
+
+0 PASSED, 1 FAILED

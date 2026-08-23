@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[634] : pc[80000b44] andi	x8,x29,-207: s0:80000820 
+spike[634] : pc[80000b22] xor     t0, s5, s10: t0:731d32a5 
+[FAILED]: 653 matched, 1405 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[211] : pc[8000068e] div	x9,x5,x3: s1:00000001 
+spike[211] : pc[8000068e] div     s1, t0, gp: s1:ffffffff 
+[FAILED]: 267 matched, 7047 mismatch
+
+0 PASSED, 1 FAILED

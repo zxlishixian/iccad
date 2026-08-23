@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[75] : pc[80003f64] csrrwi	x1,mscratch,30: ra:00000000 
+spike[75] : pc[8001c080] addi    t6, t6, -124: t6:8002cd78 
+[FAILED]: 69 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

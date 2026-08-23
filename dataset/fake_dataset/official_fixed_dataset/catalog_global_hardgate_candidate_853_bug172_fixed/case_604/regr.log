@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[220] : pc[80000758] c.srai	x9,0xe: s1:00020006 
+spike[220] : pc[80000758] c.srai  s1, 14: s1:fffe0006 
+[FAILED]: 527 matched, 13 mismatch
+
+0 PASSED, 1 FAILED

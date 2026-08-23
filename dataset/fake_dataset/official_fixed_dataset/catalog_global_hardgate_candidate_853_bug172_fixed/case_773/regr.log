@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[110] : pc[800002ca] remu	x11,x18,x3: a1:8001ee7c 
+spike[110] : pc[800002c8] c.add   a0, t5: a0:b89cd209 
+[FAILED]: 129 matched, 5877 mismatch
+
+0 PASSED, 1 FAILED

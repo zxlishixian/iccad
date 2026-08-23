@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[74] : pc[80005bbe] csrrc	x20,mscratch,x7: s4:00000000 
+spike[74] : pc[80005bc2] c.addi  a2, -12: a2:80017e10 
+[FAILED]: 76 matched, 8434 mismatch
+
+0 PASSED, 1 FAILED
