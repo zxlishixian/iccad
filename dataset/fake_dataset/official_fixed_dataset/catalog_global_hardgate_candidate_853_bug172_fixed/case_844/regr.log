@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[140] : pc[80006e50] lhu	x8,1028(x28): s0:ffffa000 
-spike[140] : pc[80006e50] lhu     s0, 1028(t3): s0:0000a000 
-[FAILED]: 898 matched, 25922 mismatch
-
-0 PASSED, 1 FAILED

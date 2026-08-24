@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[364] : pc[80000582] or	x12,x10,x30: a2:80011e1d 
-spike[364] : pc[80000582] or      a2, a0, t5: a2:fffffebf 
-[FAILED]: 1650 matched, 6329 mismatch
-
-0 PASSED, 1 FAILED

@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[62] : pc[800001ac] addi	x28,x5,872: t3:00000368 
-spike[62] : pc[80000174] c.mv    a7, a6: a7:fc642494 
-[FAILED]: 61 matched, 7896 mismatch
-
-0 PASSED, 1 FAILED

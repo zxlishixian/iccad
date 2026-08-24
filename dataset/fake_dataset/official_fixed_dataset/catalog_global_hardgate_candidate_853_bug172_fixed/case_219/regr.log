@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[302] : pc[80000368] divu	x15,x4,x20: a5:00000001 
-spike[302] : pc[8000036c] sra     t0, a4, a6: t0:00000000 
-[FAILED]: 400 matched, 2644 mismatch
-
-0 PASSED, 1 FAILED

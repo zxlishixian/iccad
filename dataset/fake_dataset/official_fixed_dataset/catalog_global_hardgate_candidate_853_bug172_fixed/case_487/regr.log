@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[139] : pc[80000344] slli	x30,x7,0x1d: t5:00000000 
-spike[139] : pc[80000340] div     tp, t0, t2: tp:ffffffff 
-[FAILED]: 127 matched, 2812 mismatch
-
-0 PASSED, 1 FAILED

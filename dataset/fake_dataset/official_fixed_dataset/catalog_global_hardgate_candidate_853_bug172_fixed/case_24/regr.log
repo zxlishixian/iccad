@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[196] : pc[80000aee] c.srai	x15,0x14: a5:00000fff 
-spike[196] : pc[80000af0] c.sub   s1, a0: s1:8081d192 
-[FAILED]: 377 matched, 18056 mismatch
-
-0 PASSED, 1 FAILED

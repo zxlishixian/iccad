@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[102] : pc[80000268] c.srai	x9,0x3: s1:00000000 
-spike[102] : pc[8000025e] csrrwi  s9, mscratch, 15: s9:ffffffff 
-[FAILED]: 139 matched, 4909 mismatch
-
-0 PASSED, 1 FAILED

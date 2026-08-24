@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[880] : pc[800018f0] srli	x8,x18,0xd: s0:00076c80 
-spike[880] : pc[800018c0] sltu    t4, t0, s8: t4:00000001 
-[FAILED]: 826 matched, 20773 mismatch
-
-0 PASSED, 1 FAILED

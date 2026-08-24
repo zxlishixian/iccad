@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[59] : pc[8000015e] jal	x6,80000174: t1:00000004 
-spike[59] : pc[8000015e] jal     t1, 0x16: t1:80000162 
-[FAILED]: 52 matched, 239 mismatch
-
-0 PASSED, 1 FAILED

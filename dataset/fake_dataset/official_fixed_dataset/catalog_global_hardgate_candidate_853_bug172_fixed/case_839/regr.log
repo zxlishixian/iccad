@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[85] : pc[80012dd0] lw	x18,-5(x10): s2:b76ce68e 
-spike[85] : pc[8001c080] addi    sp, sp, -124: sp:8002cd98 
-[FAILED]: 79 matched, 18 mismatch
-
-0 PASSED, 1 FAILED

@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[643] : pc[80000b0e] csrrs	x18,mscratch,x11: s2:80000afc 
-spike[643] : pc[80000b40] c.srli  a5, 15: a5:00010000 
-[FAILED]: 616 matched, 1356 mismatch
-
-0 PASSED, 1 FAILED

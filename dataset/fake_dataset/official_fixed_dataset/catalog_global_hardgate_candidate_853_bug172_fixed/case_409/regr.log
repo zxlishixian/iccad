@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[296] : pc[800005f8] remu	x19,x3,x29: s3:ffffffb0 
-spike[296] : pc[800005f8] remu    s3, gp, t4: s3:000000b0 
-[FAILED]: 1561 matched, 3962 mismatch
-
-0 PASSED, 1 FAILED

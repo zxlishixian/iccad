@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[4142] : pc[8000e208] c.jalr	x30: ra:8000e20c 
-spike[4142] : pc[8000e208] c.jalr  t5: ra:8000e20a 
-[FAILED]: 7132 matched, 8 mismatch
-
-0 PASSED, 1 FAILED

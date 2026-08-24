@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[105] : pc[80001faa] c.srli	x12,0x2: a2:ffffff7e 
-spike[105] : pc[80001faa] c.srli  a2, 2: a2:3fffff7e 
-[FAILED]: 153 matched, 2352 mismatch
-
-0 PASSED, 1 FAILED

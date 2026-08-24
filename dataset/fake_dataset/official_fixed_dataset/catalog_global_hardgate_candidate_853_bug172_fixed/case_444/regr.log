@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[277] : pc[80007da0] divu	x4,x24,x30: tp:00000000 
-spike[277] : pc[80007da0] divu    tp, s8, t5: tp:3fffffff 
-[FAILED]: 936 matched, 3438 mismatch
-
-0 PASSED, 1 FAILED

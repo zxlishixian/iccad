@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[8099] : pc[80002402] c.jalr	x9: ra:80002406 
-spike[8099] : pc[80002402] c.jalr  s1: ra:80002404 
-[FAILED]: 19309 matched, 6 mismatch
-
-0 PASSED, 1 FAILED

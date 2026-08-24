@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[203] : pc[8000062c] c.andi	x10,-1: a0:00000014 
-spike[203] : pc[8000062e] c.addi  s9, -1: s9:ca43dffe 
-[FAILED]: 168 matched, 909 mismatch
-
-0 PASSED, 1 FAILED

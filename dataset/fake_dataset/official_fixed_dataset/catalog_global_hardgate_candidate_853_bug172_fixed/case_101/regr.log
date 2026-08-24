@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[122] : pc[80000288] xori	x2,x4,502: sp:f1acc3e5 
-spike[122] : pc[80000284] div     s6, s11, s11: s6:00000001 
-[FAILED]: 130 matched, 10774 mismatch
-
-0 PASSED, 1 FAILED

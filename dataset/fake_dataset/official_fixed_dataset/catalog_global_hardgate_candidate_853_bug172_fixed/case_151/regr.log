@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[69] : pc[800001ec] andi	x23,x31,-510: s7:c470da00 
-spike[69] : pc[80000226] c.addi4spn a0, sp, 976: a0:000003db 
-[FAILED]: 72 matched, 4555 mismatch
-
-0 PASSED, 1 FAILED

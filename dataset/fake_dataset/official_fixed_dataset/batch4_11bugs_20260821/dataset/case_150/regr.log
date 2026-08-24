@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[200] : pc[80000394] c.andi	x12,25: a2:00000019 
-spike[200] : pc[8000040c] jal     t1, 0x8: t1:80000410 
-[FAILED]: 210 matched, 3333 mismatch
-
-0 PASSED, 1 FAILED

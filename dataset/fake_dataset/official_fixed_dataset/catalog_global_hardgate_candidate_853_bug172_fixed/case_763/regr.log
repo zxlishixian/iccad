@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[60] : pc[80000164] or	x20,x31,x5: s4:fbbf6adf 
-spike[60] : pc[80000164] or      s4, t6, t0: s4:0000000f 
-[FAILED]: 421 matched, 7467 mismatch
-
-0 PASSED, 1 FAILED

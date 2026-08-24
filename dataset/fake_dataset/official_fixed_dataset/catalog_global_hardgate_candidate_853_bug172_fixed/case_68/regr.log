@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[127] : pc[800076fc] c.and	x11,x14: a1:00000000 
-spike[127] : pc[800076b6] addi    s0, tp, -292: s0:fffffedc 
-[FAILED]: 104 matched, 2347 mismatch
-
-0 PASSED, 1 FAILED

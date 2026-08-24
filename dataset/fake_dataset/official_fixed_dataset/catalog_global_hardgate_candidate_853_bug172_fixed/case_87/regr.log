@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[116] : pc[8000e9a6] c.xor	x13,x8: a3:07c31000 
-spike[116] : pc[8000e9b0] jalr    a5, s9, 455: a5:8000e9b4 
-[FAILED]: 101 matched, 2323 mismatch
-
-0 PASSED, 1 FAILED

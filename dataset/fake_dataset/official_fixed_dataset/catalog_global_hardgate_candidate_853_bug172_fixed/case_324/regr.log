@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[260] : pc[80000a2e] divu	x17,x3,x5: a7:ffffffff 
-spike[260] : pc[80000a2e] divu    a7, gp, t0: a7:00000001 
-[FAILED]: 854 matched, 8136 mismatch
-
-0 PASSED, 1 FAILED

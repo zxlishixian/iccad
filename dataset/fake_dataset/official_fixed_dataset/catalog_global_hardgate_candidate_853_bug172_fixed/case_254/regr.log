@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[830] : pc[800015ca] divu	x8,x18,x16: s0:ffffff80 
-spike[830] : pc[800015ce] mul     a4, s11, a7: a4:00000000 
-[FAILED]: 723 matched, 925 mismatch
-
-0 PASSED, 1 FAILED

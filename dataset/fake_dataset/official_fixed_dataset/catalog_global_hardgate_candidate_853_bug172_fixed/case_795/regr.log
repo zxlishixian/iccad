@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[40] : pc[8000010e] addi	x30,x30,1964: t5:000007ac 
-spike[40] : pc[8000010e] addi    t5, t5, 1964: t5:d20797ac 
-[FAILED]: 180 matched, 7616 mismatch
-
-0 PASSED, 1 FAILED

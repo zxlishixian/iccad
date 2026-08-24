@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[279] : pc[80000646] divu	x31,x8,x3: t6:c000e846 
-spike[279] : pc[80000646] divu    t6, s0, gp: t6:4000e846 
-[FAILED]: 261 matched, 33 mismatch
-
-0 PASSED, 1 FAILED

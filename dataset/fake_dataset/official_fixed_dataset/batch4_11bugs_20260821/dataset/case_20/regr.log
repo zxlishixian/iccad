@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[57] : pc[8000015e] mulhu	x24,x20,x27: s8:7c4d6876 
-spike[57] : pc[8000018a] csrrci  ra, mscratch, 7: ra:653a22e7 
-[FAILED]: 51 matched, 194 mismatch
-
-0 PASSED, 1 FAILED

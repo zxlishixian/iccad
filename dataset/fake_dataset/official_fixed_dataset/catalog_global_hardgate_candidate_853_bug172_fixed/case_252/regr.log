@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[182] : pc[800005d8] c.andi	x11,-1: a1:00000000 
-spike[182] : pc[800005da] mulhsu  s6, s5, a7: s6:00000000 
-[FAILED]: 166 matched, 1494 mismatch
-
-0 PASSED, 1 FAILED

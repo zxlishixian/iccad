@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[117] : pc[800002ca] c.srai	x10,0x14: a0:00000b97 
-spike[117] : pc[800002ca] c.srai  a0, 20: a0:fffffb97 
-[FAILED]: 558 matched, 1069 mismatch
-
-0 PASSED, 1 FAILED

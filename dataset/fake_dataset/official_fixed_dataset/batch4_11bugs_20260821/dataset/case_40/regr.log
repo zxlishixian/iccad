@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[197] : pc[80010f0c] auipc	x22,0xeb3d2: s6:6b3e2f0c 
-spike[197] : pc[80010f00] remu    s11, t4, s9: s11:00000001 
-[FAILED]: 186 matched, 169 mismatch
-
-0 PASSED, 1 FAILED

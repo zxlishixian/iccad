@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[139] : pc[80004b84] xori	x29,x3,747: t4:000002ea 
-spike[139] : pc[80004b58] slti    s0, t0, 490: s0:00000001 
-[FAILED]: 163 matched, 13770 mismatch
-
-0 PASSED, 1 FAILED

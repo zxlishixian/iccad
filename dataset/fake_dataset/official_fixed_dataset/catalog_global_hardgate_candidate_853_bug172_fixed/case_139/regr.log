@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[65] : pc[80000170] jalr	x11,-855(x8): a1:80000174 
-spike[65] : pc[8000016c] mulhu   s2, s6, s9: s2:00000007 
-[FAILED]: 72 matched, 5761 mismatch
-
-0 PASSED, 1 FAILED

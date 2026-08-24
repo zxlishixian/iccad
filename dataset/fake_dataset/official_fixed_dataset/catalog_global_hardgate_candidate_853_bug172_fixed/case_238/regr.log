@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[154] : pc[800003f8] slt	x21,x24,x15: s5:00000001 
-spike[154] : pc[800003f6] c.sub   a4, s1: a4:000e9e8b 
-[FAILED]: 139 matched, 2189 mismatch
-
-0 PASSED, 1 FAILED

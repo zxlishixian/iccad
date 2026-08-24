@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[359] : pc[800008ee] c.srli	x13,0x12: a3:00000000 
-spike[359] : pc[800008c8] rem     s4, ra, s3: s4:00000000 
-[FAILED]: 453 matched, 1872 mismatch
-
-0 PASSED, 1 FAILED

@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[1405] : pc[80001d20] c.addi16sp	x2,384: sp:00000180 
-spike[1405] : pc[80001d48] sra     s5, s9, t6: s5:00006000 
-[FAILED]: 1312 matched, 3357 mismatch
-
-0 PASSED, 1 FAILED

@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[747] : pc[8000e466] slti	x16,x2,303: a6:00000001 
-spike[747] : pc[8000e43c] mulhsu  t0, gp, a0: t0:ffffffff 
-[FAILED]: 716 matched, 8148 mismatch
-
-0 PASSED, 1 FAILED

@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[62] : pc[80000180] sub	x9,x31,x20: s1:00000000 
-spike[62] : pc[8001c080] addi    tp, tp, -124: tp:8002cda0 
-[FAILED]: 59 matched, 18 mismatch
-
-0 PASSED, 1 FAILED

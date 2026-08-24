@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[238] : pc[80002edc] ori	x14,x23,-534: a4:fffffdee 
-spike[238] : pc[80002eca] div     s2, t1, t4: s2:f6276282 
-[FAILED]: 222 matched, 2730 mismatch
-
-0 PASSED, 1 FAILED

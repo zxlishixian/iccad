@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[274] : pc[80000714] c.andi	x11,-1: a1:0000001f 
-spike[274] : pc[80000716] addi    s4, t4, -123: s4:8001ee01 
-[FAILED]: 304 matched, 1497 mismatch
-
-0 PASSED, 1 FAILED

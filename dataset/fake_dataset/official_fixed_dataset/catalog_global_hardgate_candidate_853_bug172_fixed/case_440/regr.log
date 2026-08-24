@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[129] : pc[80003e54] remu	x17,x16,x9: a7:fffffe7d 
-spike[129] : pc[80003e54] remu    a7, a6, s1: a7:7ab72783 
-[FAILED]: 1176 matched, 2998 mismatch
-
-0 PASSED, 1 FAILED

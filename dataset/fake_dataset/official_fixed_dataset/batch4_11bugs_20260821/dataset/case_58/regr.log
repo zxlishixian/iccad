@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[751] : pc[80000d76] divu	x25,x20,x4: s9:0000f0f0 
-spike[751] : pc[80000d8a] lui     s5, 0xdc068: s5:dc068000 
-[FAILED]: 743 matched, 4179 mismatch
-
-0 PASSED, 1 FAILED

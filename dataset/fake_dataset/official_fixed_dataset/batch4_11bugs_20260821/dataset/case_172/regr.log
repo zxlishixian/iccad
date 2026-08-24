@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[542] : pc[80000a24] c.srli	x10,0xe: a0:0003ffff 
-spike[542] : pc[80000a5c] divu    t0, tp, t2: t0:00000000 
-[FAILED]: 539 matched, 7376 mismatch
-
-0 PASSED, 1 FAILED

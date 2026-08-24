@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[108] : pc[8000037e] div	x19,x26,x2: s3:ffffffc6 
-spike[108] : pc[8000037e] div     s3, s10, sp: s3:fe2be2bf 
-[FAILED]: 210 matched, 12448 mismatch
-
-0 PASSED, 1 FAILED

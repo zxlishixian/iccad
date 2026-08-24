@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[85] : pc[8000f3f4] lb	x21,1882(x6): s5:00000000 
-spike[85] : pc[8001b080] addi    a3, a3, -124: a3:8002bd84 
-[FAILED]: 76 matched, 18 mismatch
-
-0 PASSED, 1 FAILED

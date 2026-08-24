@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[62] : pc[8000016c] lhu	x6,-255(x2): t1:00000000 
-spike[62] : pc[8001c080] addi    s8, s8, -124: s8:8002cda0 
-[FAILED]: 60 matched, 18 mismatch
-
-0 PASSED, 1 FAILED

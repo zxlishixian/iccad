@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[307] : pc[800006e8] c.andi	x8,-1: s0:00000009 
-spike[307] : pc[800006ea] csrrs   s2, mscratch, a5: s2:00000005 
-[FAILED]: 268 matched, 4403 mismatch
-
-0 PASSED, 1 FAILED

@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[570] : pc[80004ce0] mulhu	x11,x29,x2: a1:00000000 
-spike[570] : pc[80004cb6] c.xor   s0, a2: s0:ffeeeef9 
-[FAILED]: 959 matched, 277842 mismatch
-
-0 PASSED, 1 FAILED

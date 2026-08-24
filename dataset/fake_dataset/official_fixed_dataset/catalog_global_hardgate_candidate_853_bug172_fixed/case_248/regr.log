@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[158] : pc[800003c0] mulhsu	x16,x28,x30: a6:00000005 
-spike[158] : pc[800003ee] mulhsu  a4, s6, t2: a4:00000000 
-[FAILED]: 149 matched, 3459 mismatch
-
-0 PASSED, 1 FAILED

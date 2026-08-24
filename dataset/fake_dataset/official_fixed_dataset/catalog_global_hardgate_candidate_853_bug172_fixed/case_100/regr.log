@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[182] : pc[80009654] slti	x7,x0,34: t2:00000001 
-spike[182] : pc[80009650] div     s0, gp, gp: s0:00000001 
-[FAILED]: 919 matched, 9893 mismatch
-
-0 PASSED, 1 FAILED

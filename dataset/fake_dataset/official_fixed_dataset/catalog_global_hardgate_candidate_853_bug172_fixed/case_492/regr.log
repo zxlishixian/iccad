@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[171] : pc[800004b8] srai	x14,x23,0x17: a4:00000000 
-spike[171] : pc[800004b4] addi    a5, s7, 159: a5:0000009f 
-[FAILED]: 150 matched, 58 mismatch
-
-0 PASSED, 1 FAILED

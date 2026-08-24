@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[201] : pc[80000350] xori	x26,x31,106: s10:0000004b 
-spike[201] : pc[80000350] xori    s10, t6, 106: s10:0000006a 
-[FAILED]: 1124 matched, 6943 mismatch
-
-0 PASSED, 1 FAILED

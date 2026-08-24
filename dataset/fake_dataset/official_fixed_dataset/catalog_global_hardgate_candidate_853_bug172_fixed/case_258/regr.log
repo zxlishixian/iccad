@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[317] : pc[8000729c] c.lui	x17,0x1a: a7:0001a000 
-spike[317] : pc[8000728e] lui     s2, 0x68dac: s2:68dac000 
-[FAILED]: 282 matched, 1016 mismatch
-
-0 PASSED, 1 FAILED

@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[278] : pc[80004a84] sll	x1,x24,x25: ra:00000000 
-spike[278] : pc[80004a68] divu    tp, s10, a4: tp:0618619c 
-[FAILED]: 274 matched, 3933 mismatch
-
-0 PASSED, 1 FAILED

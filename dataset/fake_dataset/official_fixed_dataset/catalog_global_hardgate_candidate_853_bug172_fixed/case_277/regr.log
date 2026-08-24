@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[112] : pc[8000025c] sll	x8,x27,x23: s0:e0000000 
-spike[112] : pc[8000026e] mul     t2, a2, t0: t2:8a46a1dc 
-[FAILED]: 106 matched, 285 mismatch
-
-0 PASSED, 1 FAILED

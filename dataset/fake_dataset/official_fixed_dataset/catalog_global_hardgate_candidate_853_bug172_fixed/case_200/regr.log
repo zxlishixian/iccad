@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[331] : pc[800005d4] div	x22,x22,x25: s6:00000001 
-spike[331] : pc[800005ba] and     t6, s5, s0: t6:80000410 
-[FAILED]: 327 matched, 3484 mismatch
-
-0 PASSED, 1 FAILED

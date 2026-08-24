@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[70] : pc[800001d2] slt	x31,x28,x26: t6:00000000 
-spike[70] : pc[800001a6] lui     ra, 0x2164: ra:02164000 
-[FAILED]: 71 matched, 4270 mismatch
-
-0 PASSED, 1 FAILED

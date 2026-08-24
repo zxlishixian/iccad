@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[179] : pc[80001e0e] mulhsu	x2,x30,x5: sp:fffffffe 
-spike[179] : pc[80001e4c] c.lui   ra, 0xa: ra:0000a000 
-[FAILED]: 160 matched, 297 mismatch
-
-0 PASSED, 1 FAILED

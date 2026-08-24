@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[75] : pc[80002026] jal	x1,8000202a: ra:00000004 
-spike[75] : pc[80002026] jal     0x4: ra:8000202a 
-[FAILED]: 71 matched, 3756 mismatch
-
-0 PASSED, 1 FAILED

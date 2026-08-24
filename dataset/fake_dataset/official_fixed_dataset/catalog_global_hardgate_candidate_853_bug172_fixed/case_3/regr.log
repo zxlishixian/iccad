@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[170] : pc[800003ae] c.andi	x14,-1: a4:0000001c 
-spike[170] : pc[800003b4] srli    s3, a0, 16: s3:0000fe14 
-[FAILED]: 591 matched, 32473 mismatch
-
-0 PASSED, 1 FAILED

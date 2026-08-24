@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[112] : pc[80000d38] c.jalr	x24: ra:80000d3c 
-spike[112] : pc[80000d38] c.jalr  s8: ra:80000d3a 
-[FAILED]: 3611 matched, 8 mismatch
-
-0 PASSED, 1 FAILED

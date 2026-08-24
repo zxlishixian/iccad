@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[80] : pc[80008e12] c.addi16sp	x2,-16: sp:fffffff0 
-spike[80] : pc[80008e0a] lh      a6, 11(a2): a6:ffffbe4e 
-[FAILED]: 63 matched, 32 mismatch
-
-0 PASSED, 1 FAILED

@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[368] : pc[800033a0] c.andi	x9,-1: s1:00000000 
-spike[368] : pc[800033a2] div     a7, a0, s5: a7:ffffffff 
-[FAILED]: 323 matched, 4784 mismatch
-
-0 PASSED, 1 FAILED

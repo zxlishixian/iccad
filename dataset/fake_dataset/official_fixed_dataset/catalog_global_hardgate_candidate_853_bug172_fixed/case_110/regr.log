@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[325] : pc[8000ae8a] mul	x11,x22,x25: a1:00018000 
-spike[325] : pc[8000ae4a] c.addi  ra, 22: ra:00000016 
-[FAILED]: 258 matched, 7067 mismatch
-
-0 PASSED, 1 FAILED

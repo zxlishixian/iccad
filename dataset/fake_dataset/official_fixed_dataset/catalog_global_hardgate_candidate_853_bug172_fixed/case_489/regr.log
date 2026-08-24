@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[96] : pc[800002b0] c.li	x5,-1: t0:0000001f 
-spike[96] : pc[800002b0] c.li    t0, -1: t0:ffffffff 
-[FAILED]: 475 matched, 2260 mismatch
-
-0 PASSED, 1 FAILED

@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[81] : pc[800001e8] lb	x15,409(x20): a5:00000000 
-spike[81] : pc[800001d8] lbu     s5, -173(s4): s5:00000005 
-[FAILED]: 72 matched, 3261 mismatch
-
-0 PASSED, 1 FAILED

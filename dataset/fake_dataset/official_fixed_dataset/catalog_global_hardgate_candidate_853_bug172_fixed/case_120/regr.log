@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[62] : pc[800001ae] c.srli	x10,0x1e: a0:00000003 
-spike[62] : pc[800001b0] sltiu   a1, sp, 903: a1:00000001 
-[FAILED]: 109 matched, 7062 mismatch
-
-0 PASSED, 1 FAILED

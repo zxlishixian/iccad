@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[195] : pc[80000462] c.srli	x11,0x15: a1:fffffc00 
-spike[195] : pc[80000462] c.srli  a1, 21: a1:00000400 
-[FAILED]: 223 matched, 457 mismatch
-
-0 PASSED, 1 FAILED

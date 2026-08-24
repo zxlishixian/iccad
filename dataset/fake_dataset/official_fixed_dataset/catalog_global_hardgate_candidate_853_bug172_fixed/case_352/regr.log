@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[307] : pc[800004e8] c.srai	x8,0x11: s0:00006000 
-spike[307] : pc[800004e8] c.srai  s0, 17: s0:ffffe000 
-[FAILED]: 337 matched, 7617 mismatch
-
-0 PASSED, 1 FAILED

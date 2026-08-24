@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[105] : pc[8000028c] div	x15,x14,x21: a5:00000009 
-spike[105] : pc[8000028c] div     a5, a4, s5: a5:00000000 
-[FAILED]: 122 matched, 3074 mismatch
-
-0 PASSED, 1 FAILED

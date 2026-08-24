@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[545] : pc[800020c2] c.andi	x12,-1: a2:0000001f 
-spike[545] : pc[800020c4] c.addi  t6, -1: t6:d000020f 
-[FAILED]: 462 matched, 2651 mismatch
-
-0 PASSED, 1 FAILED

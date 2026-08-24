@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[1830] : pc[800021f6] slti	x6,x0,-185: t1:00000000 
-spike[1830] : pc[800021e0] xor     ra, a4, t6: ra:00000033 
-[FAILED]: 1765 matched, 5347 mismatch
-
-0 PASSED, 1 FAILED

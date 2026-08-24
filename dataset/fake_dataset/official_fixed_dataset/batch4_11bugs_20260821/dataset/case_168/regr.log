@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[1758] : pc[80008c8e] c.addi4spn	x15,x2,112: a5:8001dba6 
-spike[1758] : pc[80008c62] addi    t1, s10, 401: t1:8002800d 
-[FAILED]: 967 matched, 4879 mismatch
-
-0 PASSED, 1 FAILED

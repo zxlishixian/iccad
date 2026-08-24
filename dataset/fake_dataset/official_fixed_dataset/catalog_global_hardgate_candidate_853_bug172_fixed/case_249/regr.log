@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[256] : pc[80002fdc] or	x5,x3,x5: t0:f8000000 
-spike[256] : pc[80003010] sll     gp, a7, t5: gp:0035c2e0 
-[FAILED]: 220 matched, 1473 mismatch
-
-0 PASSED, 1 FAILED

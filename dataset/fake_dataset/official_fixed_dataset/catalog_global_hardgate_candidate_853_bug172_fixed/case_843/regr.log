@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[56] : pc[80000152] lh	x9,-24(x14): s1:00009986 
-spike[56] : pc[80000152] lh      s1, -24(a4): s1:ffff9986 
-[FAILED]: 6727 matched, 35305 mismatch
-
-0 PASSED, 1 FAILED

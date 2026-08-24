@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[158] : pc[80004f28] xori	x9,x10,859: s1:10a56773 
-spike[158] : pc[80004f38] rem     s10, s4, a5: s10:00000000 
-[FAILED]: 163 matched, 5631 mismatch
-
-0 PASSED, 1 FAILED

@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[84] : pc[80002628] div	x28,x24,x26: t3:f89d221b 
-spike[84] : pc[80002628] div     t3, s8, s10: t3:00000001 
-[FAILED]: 619 matched, 6014 mismatch
-
-0 PASSED, 1 FAILED

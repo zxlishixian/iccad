@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[97] : pc[800002a0] div	x12,x16,x6: a2:00000008 
-spike[97] : pc[800002a0] div     a2, a6, t1: a2:0d8036b0 
-[FAILED]: 109 matched, 3506 mismatch
-
-0 PASSED, 1 FAILED

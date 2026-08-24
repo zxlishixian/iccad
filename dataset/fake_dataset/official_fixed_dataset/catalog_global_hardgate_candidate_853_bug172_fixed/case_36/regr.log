@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[545] : pc[80001dbc] slti	x28,x18,244: t3:00000001 
-spike[545] : pc[80001dc6] csrrci  sp, mscratch, 24: sp:00000001 
-[FAILED]: 405 matched, 8743 mismatch
-
-0 PASSED, 1 FAILED

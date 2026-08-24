@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[398] : pc[800007ca] lui	x13,0xbe78d: a3:be78d000 
-spike[398] : pc[800007d8] andi    a7, t2, -601: a7:f7fa0827 
-[FAILED]: 593 matched, 85105 mismatch
-
-0 PASSED, 1 FAILED

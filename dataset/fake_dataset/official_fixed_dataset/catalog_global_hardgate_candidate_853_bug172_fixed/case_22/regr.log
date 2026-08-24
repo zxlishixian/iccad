@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[61] : pc[80000172] c.or	x9,x15: s1:fd79ef7f 
-spike[61] : pc[800001a2] slt     s1, t6, tp: s1:00000000 
-[FAILED]: 64 matched, 4595 mismatch
-
-0 PASSED, 1 FAILED

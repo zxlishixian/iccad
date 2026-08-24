@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[162] : pc[8000032e] remu	x26,x24,x8: s10:fffffffe 
-spike[162] : pc[8000032e] remu    s10, s8, s0: s10:00000002 
-[FAILED]: 3738 matched, 10562 mismatch
-
-0 PASSED, 1 FAILED

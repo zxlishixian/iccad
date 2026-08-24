@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[230] : pc[80000bfc] srl	x30,x21,x10: t5:000005c4 
-spike[230] : pc[80000c2c] div     a0, a1, t2: a0:00000000 
-[FAILED]: 220 matched, 3853 mismatch
-
-0 PASSED, 1 FAILED

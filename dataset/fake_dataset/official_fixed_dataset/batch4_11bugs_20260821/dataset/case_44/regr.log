@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[634] : pc[80002e6a] add	x22,x5,x11: s6:00000001 
-spike[634] : pc[80002e84] c.addi  t1, 16: t1:80022dbc 
-[FAILED]: 637 matched, 63583 mismatch
-
-0 PASSED, 1 FAILED

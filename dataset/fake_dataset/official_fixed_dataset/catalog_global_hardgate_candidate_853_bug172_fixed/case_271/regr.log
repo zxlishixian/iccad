@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[205] : pc[800111de] rem	x18,x21,x17: s2:0001a000 
-spike[205] : pc[800111d4] c.mv    tp, a5: tp:83d79174 
-[FAILED]: 189 matched, 11174 mismatch
-
-0 PASSED, 1 FAILED

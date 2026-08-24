@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[108] : pc[80000290] c.li	x15,-1: a5:0000001f 
-spike[108] : pc[80000290] c.li    a5, -1: a5:ffffffff 
-[FAILED]: 180 matched, 5942 mismatch
-
-0 PASSED, 1 FAILED

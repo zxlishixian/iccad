@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[109] : pc[800002d6] c.srli	x14,0x3: a4:fe7c9818 
-spike[109] : pc[800002d6] c.srli  a4, 3: a4:1e7c9818 
-[FAILED]: 3192 matched, 1900 mismatch
-
-0 PASSED, 1 FAILED

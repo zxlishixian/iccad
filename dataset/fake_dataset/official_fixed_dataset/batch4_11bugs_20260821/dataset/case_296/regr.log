@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[57] : pc[8000015a] jal	x19,8000015e: s3:00000004 
-spike[57] : pc[8000015a] jal     s3, 0x4: s3:8000015e 
-[FAILED]: 50 matched, 180 mismatch
-
-0 PASSED, 1 FAILED

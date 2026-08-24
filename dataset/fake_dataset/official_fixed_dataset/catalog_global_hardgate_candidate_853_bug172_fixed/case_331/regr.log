@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[294] : pc[80000bdc] c.srli	x13,0xd: a3:ffff8b7a 
-spike[294] : pc[80000bdc] c.srli  a3, 13: a3:00078b7a 
-[FAILED]: 322 matched, 7778 mismatch
-
-0 PASSED, 1 FAILED

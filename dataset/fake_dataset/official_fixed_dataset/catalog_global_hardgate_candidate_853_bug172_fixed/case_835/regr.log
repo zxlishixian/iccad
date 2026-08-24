@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[63] : pc[8000017a] lh	x3,23(x22): gp:00000000 
-spike[63] : pc[8001c080] addi    s3, s3, -124: s3:8002cda0 
-[FAILED]: 55 matched, 18 mismatch
-
-0 PASSED, 1 FAILED

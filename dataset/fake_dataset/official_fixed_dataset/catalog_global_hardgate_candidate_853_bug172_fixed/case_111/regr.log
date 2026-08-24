@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[80] : pc[800049e6] sra	x31,x5,x23: t6:ffe00000 
-spike[80] : pc[800049fc] slli    a4, s8, 12: a4:e9ce8000 
-[FAILED]: 82 matched, 7571 mismatch
-
-0 PASSED, 1 FAILED

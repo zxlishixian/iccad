@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[143] : pc[800041c6] divu	x22,x17,x4: s6:00000000 
-spike[143] : pc[800041da] xor     s8, a6, a5: s8:ffffffef 
-[FAILED]: 158 matched, 1979 mismatch
-
-0 PASSED, 1 FAILED

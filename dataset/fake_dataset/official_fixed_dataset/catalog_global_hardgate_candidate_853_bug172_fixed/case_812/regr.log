@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[130] : pc[8003100c] lhu	x27,10(x29): s11:00000000 
-spike[130] : pc[8003100c] lhu     s11, 10(t4): s11:00005c5d 
-[FAILED]: 306 matched, 60913 mismatch
-
-0 PASSED, 1 FAILED

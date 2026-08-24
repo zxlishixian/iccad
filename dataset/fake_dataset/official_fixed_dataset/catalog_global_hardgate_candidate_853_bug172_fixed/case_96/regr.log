@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[105] : pc[80000264] sra	x6,x1,x28: t1:00000000 
-spike[105] : pc[80000280] srli    a3, t0, 4: a3:00000000 
-[FAILED]: 106 matched, 11214 mismatch
-
-0 PASSED, 1 FAILED

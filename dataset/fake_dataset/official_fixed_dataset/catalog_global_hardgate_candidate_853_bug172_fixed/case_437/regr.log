@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[56] : pc[80000148] c.srli	x14,0x1e: a4:fffffffe 
-spike[56] : pc[80000148] c.srli  a4, 30: a4:00000002 
-[FAILED]: 84 matched, 4246 mismatch
-
-0 PASSED, 1 FAILED

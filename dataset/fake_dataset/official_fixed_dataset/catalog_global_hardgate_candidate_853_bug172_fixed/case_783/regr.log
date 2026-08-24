@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[185] : pc[80000316] sra	x19,x24,x31: s3:00000001 
-spike[185] : pc[80000316] sra     s3, s8, t6: s3:00000000 
-[FAILED]: 190 matched, 7816 mismatch
-
-0 PASSED, 1 FAILED

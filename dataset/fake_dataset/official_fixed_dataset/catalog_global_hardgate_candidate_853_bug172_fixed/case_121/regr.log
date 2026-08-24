@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[97] : pc[800037c0] c.addi	x29,19: t4:ffffe013 
-spike[97] : pc[80003788] csrrs   s7, mscratch, t4: s7:2c7fae5e 
-[FAILED]: 99 matched, 5276 mismatch
-
-0 PASSED, 1 FAILED

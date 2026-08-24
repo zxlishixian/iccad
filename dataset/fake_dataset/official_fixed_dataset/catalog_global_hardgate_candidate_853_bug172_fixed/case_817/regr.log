@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[100] : pc[80000434] div	x12,x28,x2: a2:ffffffff 
-spike[100] : pc[80000430] lb      s9, -116(s3): s9:00000060 
-[FAILED]: 176 matched, 64755 mismatch
-
-0 PASSED, 1 FAILED

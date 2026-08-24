@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[687] : pc[800039ac] rem	x2,x14,x18: sp:00000000 
-spike[687] : pc[80003994] c.lui   s4, 0x1d: s4:0001d000 
-[FAILED]: 685 matched, 9635 mismatch
-
-0 PASSED, 1 FAILED

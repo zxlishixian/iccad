@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[1287] : pc[8000300e] remu	x19,x9,x24: s3:020003a7 
-spike[1287] : pc[80003026] sra     s5, s10, tp: s5:00000000 
-[FAILED]: 1266 matched, 5246 mismatch
-
-0 PASSED, 1 FAILED

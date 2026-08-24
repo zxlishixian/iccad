@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[119] : pc[8000030e] xori	x16,x5,243: a6:800001ab 
-spike[119] : pc[8000033a] c.xor   a4, s1: a4:068ad23b 
-[FAILED]: 107 matched, 37 mismatch
-
-0 PASSED, 1 FAILED

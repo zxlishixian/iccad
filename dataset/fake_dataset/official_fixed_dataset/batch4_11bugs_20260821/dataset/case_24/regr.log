@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[137] : pc[800002cc] slti	x29,x27,198: t4:00000001 
-spike[137] : pc[800002dc] csrrs   a0, mscratch, s4: a0:1609ec0b 
-[FAILED]: 137 matched, 4896 mismatch
-
-0 PASSED, 1 FAILED

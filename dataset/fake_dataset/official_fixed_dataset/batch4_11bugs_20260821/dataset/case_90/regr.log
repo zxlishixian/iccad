@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[65] : pc[80000202] c.lui	x29,0x3: t4:00003000 
-spike[65] : pc[800001d8] csrrsi  s8, mscratch, 22: s8:00000012 
-[FAILED]: 65 matched, 883 mismatch
-
-0 PASSED, 1 FAILED

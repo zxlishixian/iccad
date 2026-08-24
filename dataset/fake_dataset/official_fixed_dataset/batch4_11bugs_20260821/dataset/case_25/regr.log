@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[106] : pc[8000a408] c.addi	x28,-8: t3:80023df0 
-spike[106] : pc[8000a404] sltu    s6, s7, t4: s6:00000001 
-[FAILED]: 149 matched, 18691 mismatch
-
-0 PASSED, 1 FAILED

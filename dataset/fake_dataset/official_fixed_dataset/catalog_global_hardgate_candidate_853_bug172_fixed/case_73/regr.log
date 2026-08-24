@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[80] : pc[80009562] jal	x19,80008922: s3:80000004 
-spike[80] : pc[80009562] jal     s3, -0xc40: s3:80009566 
-[FAILED]: 1012 matched, 3270 mismatch
-
-0 PASSED, 1 FAILED

@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[101] : pc[8000022e] slli	x22,x10,0x1b: s6:00000000 
-spike[101] : pc[80000216] auipc   a4, 0x16720: a4:96720216 
-[FAILED]: 108 matched, 3449 mismatch
-
-0 PASSED, 1 FAILED

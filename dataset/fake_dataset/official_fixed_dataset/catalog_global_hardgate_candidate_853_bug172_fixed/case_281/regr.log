@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[72] : pc[8000ded4] c.addi	x29,8: t4:80022e24 
-spike[72] : pc[8000dee4] sltiu   s2, tp, -533: s2:00000001 
-[FAILED]: 62 matched, 10968 mismatch
-
-0 PASSED, 1 FAILED

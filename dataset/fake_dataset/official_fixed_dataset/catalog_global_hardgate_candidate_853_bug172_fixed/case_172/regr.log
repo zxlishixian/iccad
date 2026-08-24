@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[1121] : pc[800027bc] slt	x10,x27,x25: a0:00000000 
-spike[1121] : pc[80002790] addi    s6, s6, -129: s6:ffffff7f 
-[FAILED]: 1127 matched, 3553 mismatch
-
-0 PASSED, 1 FAILED

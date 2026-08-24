@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[75] : pc[80003042] jal	x20,8000305a: s4:00000004 
-spike[75] : pc[80003042] jal     s4, 0x18: s4:80003046 
-[FAILED]: 75 matched, 4620 mismatch
-
-0 PASSED, 1 FAILED

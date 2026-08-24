@@ -1,9 +1,0 @@
-{
-  "dataset_root": "/home/yian/iccad/dataset/benchmark_batch4_11bugs_official_20260821",
-  "layout": "official",
-  "num_cases": 364,
-  "num_errors": 0,
-  "num_warnings": 0,
-  "errors": [],
-  "warnings": []
-}

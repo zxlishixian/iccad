@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[7717] : pc[8000cb88] c.jalr	x19: ra:8000cb8c 
-spike[7717] : pc[8000cb88] c.jalr  s3: ra:8000cb8a 
-[FAILED]: 9210 matched, 3 mismatch
-
-0 PASSED, 1 FAILED

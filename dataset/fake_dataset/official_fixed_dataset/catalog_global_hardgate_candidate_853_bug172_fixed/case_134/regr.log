@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[89] : pc[800001cc] c.andi	x12,-1: a2:00000000 
-spike[89] : pc[800001ce] rem     tp, a3, t2: tp:fffffff2 
-[FAILED]: 147 matched, 7652 mismatch
-
-0 PASSED, 1 FAILED

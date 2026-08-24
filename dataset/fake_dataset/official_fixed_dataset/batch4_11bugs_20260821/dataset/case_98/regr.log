@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[180] : pc[80000414] rem	x13,x14,x19: a3:f617daee 
-spike[180] : pc[80000420] srli    t0, a0, 23: t0:000001ff 
-[FAILED]: 173 matched, 29 mismatch
-
-0 PASSED, 1 FAILED

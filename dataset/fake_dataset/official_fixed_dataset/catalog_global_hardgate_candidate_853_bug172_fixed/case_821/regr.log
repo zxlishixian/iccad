@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[158] : pc[8000037a] lb	x6,-678(x4): t1:ffffffff 
-spike[158] : pc[8000037a] lb      t1, -678(tp): t1:ffffffda 
-[FAILED]: 2275 matched, 8517 mismatch
-
-0 PASSED, 1 FAILED

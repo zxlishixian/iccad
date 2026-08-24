@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[285] : pc[800036ac] slti	x17,x6,34: a7:00000001 
-spike[285] : pc[800036aa] c.srli  a1, 30: a1:00000003 
-[FAILED]: 360 matched, 4202 mismatch
-
-0 PASSED, 1 FAILED

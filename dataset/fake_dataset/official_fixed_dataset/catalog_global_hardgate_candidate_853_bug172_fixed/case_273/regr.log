@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[63] : pc[8000016c] sub	x28,x25,x1: t3:0216c50e 
-spike[63] : pc[80000176] jalr    ra, s4, 177: ra:8000017a 
-[FAILED]: 77 matched, 495 mismatch
-
-0 PASSED, 1 FAILED

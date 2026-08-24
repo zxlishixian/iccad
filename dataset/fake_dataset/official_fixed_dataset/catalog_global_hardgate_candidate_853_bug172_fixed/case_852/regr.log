@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[34858] : pc[800217c0] divu	x30,x20,x3: t5:00000000 
-spike[34858] : pc[80037080] addi    t2, t2, -124: t2:80047da0 
-[FAILED]: 33347 matched, 399418 mismatch
-
-0 PASSED, 1 FAILED

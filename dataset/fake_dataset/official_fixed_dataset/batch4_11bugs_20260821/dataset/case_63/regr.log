@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[144] : pc[800002e2] jalr	x29,1007(x19): t4:800002e6 
-spike[144] : pc[800002de] c.add   s5, s8: s5:73e36628 
-[FAILED]: 159 matched, 2708 mismatch
-
-0 PASSED, 1 FAILED

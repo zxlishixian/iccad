@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[143] : pc[800021fa] lui	x20,0x1d375: s4:1d375000 
-spike[143] : pc[800021ca] mulhu   s7, ra, s11: s7:0bf08de3 
-[FAILED]: 160 matched, 4835 mismatch
-
-0 PASSED, 1 FAILED

@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[86] : pc[80000234] srl	x16,x14,x1: a6:f830f6f5 
-spike[86] : pc[800001f8] srai    a1, s6, 24: a1:00000000 
-[FAILED]: 95 matched, 9516 mismatch
-
-0 PASSED, 1 FAILED

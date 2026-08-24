@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[463] : pc[800018e6] c.andi	x10,-1: a0:00000000 
-spike[463] : pc[8000191a] sltiu   t6, a0, -373: t6:00000000 
-[FAILED]: 507 matched, 15539 mismatch
-
-0 PASSED, 1 FAILED

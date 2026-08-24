@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[144] : pc[80000238] csrrs	x12,mscratch,x16: a2:adb6a69d 
-spike[144] : pc[80000228] div     s11, t3, t4: s11:ffffffff 
-[FAILED]: 91 matched, 124 mismatch
-
-0 PASSED, 1 FAILED

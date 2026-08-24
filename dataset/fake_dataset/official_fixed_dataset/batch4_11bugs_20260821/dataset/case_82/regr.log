@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[146] : pc[80004e40] csrrci	x10,mscratch,10: a0:0000000f 
-spike[146] : pc[80004e5e] csrrwi  t0, mscratch, 12: t0:00000000 
-[FAILED]: 156 matched, 4194 mismatch
-
-0 PASSED, 1 FAILED

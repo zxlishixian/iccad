@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[84] : pc[80000228] c.addi4spn	x9,x2,496: s1:000001fa 
-spike[84] : pc[80000220] mul     s10, t1, a0: s10:c51c386c 
-[FAILED]: 140 matched, 4371 mismatch
-
-0 PASSED, 1 FAILED

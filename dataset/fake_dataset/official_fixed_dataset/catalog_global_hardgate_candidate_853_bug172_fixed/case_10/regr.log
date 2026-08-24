@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[148] : pc[80004a52] srli	x8,x19,0x18: s0:00000000 
-spike[148] : pc[80004a4e] remu    sp, s6, a2: sp:80000000 
-[FAILED]: 180 matched, 38327 mismatch
-
-0 PASSED, 1 FAILED

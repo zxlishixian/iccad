@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[737] : pc[8000261a] addi	x25,x28,-814: s9:fffffcf9 
-spike[737] : pc[8000264e] xori    a0, a2, -892: a0:002ee076 
-[FAILED]: 693 matched, 2822 mismatch
-
-0 PASSED, 1 FAILED

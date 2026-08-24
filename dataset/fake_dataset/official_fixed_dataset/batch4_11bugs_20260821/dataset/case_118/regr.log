@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[225] : pc[80005538] or	x3,x20,x1: gp:d2be869d 
-spike[225] : pc[80005504] and     t3, t1, t0: t3:00000000 
-[FAILED]: 202 matched, 188 mismatch
-
-0 PASSED, 1 FAILED

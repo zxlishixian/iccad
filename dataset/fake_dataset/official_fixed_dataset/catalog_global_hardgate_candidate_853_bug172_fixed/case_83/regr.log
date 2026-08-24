@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[318] : pc[8000c972] mulhsu	x4,x15,x28: tp:00000000 
-spike[318] : pc[8000c994] c.sub   a2, a5: a2:ffffffff 
-[FAILED]: 251 matched, 1006 mismatch
-
-0 PASSED, 1 FAILED

@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[359] : pc[800006dc] remu	x14,x29,x3: a4:fffffff0 
-spike[359] : pc[800006e8] lb      a4, -161(t6): a4:00000000 
-[FAILED]: 1407 matched, 13690 mismatch
-
-0 PASSED, 1 FAILED

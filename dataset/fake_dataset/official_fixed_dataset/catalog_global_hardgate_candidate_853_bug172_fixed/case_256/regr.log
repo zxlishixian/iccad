@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[501] : pc[8000086e] divu	x27,x22,x2: s11:00000000 
-spike[501] : pc[8000088e] c.sub   s0, a5: s0:fffe47b2 
-[FAILED]: 507 matched, 951 mismatch
-
-0 PASSED, 1 FAILED

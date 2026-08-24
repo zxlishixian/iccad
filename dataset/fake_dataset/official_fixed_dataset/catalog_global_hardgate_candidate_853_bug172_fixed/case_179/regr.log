@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[142] : pc[80001730] sltu	x20,x7,x14: s4:00000001 
-spike[142] : pc[8000170e] srl     s8, s9, s5: s8:00080001 
-[FAILED]: 181 matched, 4243 mismatch
-
-0 PASSED, 1 FAILED

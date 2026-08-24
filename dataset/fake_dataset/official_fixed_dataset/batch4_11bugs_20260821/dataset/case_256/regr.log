@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[4006] : pc[80011332] c.jalr	x16: ra:80011336 
-spike[4006] : pc[80011332] c.jalr  a6: ra:80011334 
-[FAILED]: 9715 matched, 4 mismatch
-
-0 PASSED, 1 FAILED

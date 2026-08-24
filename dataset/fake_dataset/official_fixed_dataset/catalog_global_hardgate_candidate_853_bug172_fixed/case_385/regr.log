@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[706] : pc[80000a3e] c.srai	x12,0x8: a2:00fffffe 
-spike[706] : pc[80000a3e] c.srai  a2, 8: a2:fffffffe 
-[FAILED]: 826 matched, 7399 mismatch
-
-0 PASSED, 1 FAILED

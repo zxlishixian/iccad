@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[78] : pc[8000024c] c.srai	x8,0x1f: s0:ffffffff 
-spike[78] : pc[8000028e] srl     gp, ra, t3: gp:00000000 
-[FAILED]: 85 matched, 4019 mismatch
-
-0 PASSED, 1 FAILED

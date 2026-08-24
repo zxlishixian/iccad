@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[264] : pc[80000804] remu	x16,x20,x13: a6:ffffffce 
-spike[264] : pc[80000804] remu    a6, s4, a3: a6:f66568ba 
-[FAILED]: 420 matched, 13 mismatch
-
-0 PASSED, 1 FAILED

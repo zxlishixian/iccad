@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[100] : pc[800002e8] add	x12,x28,x13: a2:9047ec6c 
-spike[100] : pc[80000312] mulh    s10, s2, a5: s10:ffffffff 
-[FAILED]: 101 matched, 4254 mismatch
-
-0 PASSED, 1 FAILED

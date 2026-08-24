@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[332] : pc[800006a4] remu	x1,x27,x2: ra:ffa76f2c 
-spike[332] : pc[800006a4] remu    ra, s11, sp: ra:800171ed 
-[FAILED]: 2444 matched, 3581 mismatch
-
-0 PASSED, 1 FAILED

@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[232] : pc[80008070] c.li	x4,7: tp:00000007 
-spike[232] : pc[8000806c] div     s2, s2, s11: s2:00000000 
-[FAILED]: 209 matched, 4095 mismatch
-
-0 PASSED, 1 FAILED

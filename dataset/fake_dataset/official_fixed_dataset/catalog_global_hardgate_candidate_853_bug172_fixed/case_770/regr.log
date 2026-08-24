@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[78] : pc[80000198] c.mv	x25,x30: s9:00000000 
-spike[78] : pc[80000198] c.mv    s9, t5: s9:00000011 
-[FAILED]: 683 matched, 7207 mismatch
-
-0 PASSED, 1 FAILED

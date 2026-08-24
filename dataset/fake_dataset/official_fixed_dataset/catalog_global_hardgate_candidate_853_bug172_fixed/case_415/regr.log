@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[412] : pc[8000732c] div	x19,x14,x5: s3:00000005 
-spike[412] : pc[8000732c] div     s3, a4, t0: s3:00000000 
-[FAILED]: 629 matched, 4508 mismatch
-
-0 PASSED, 1 FAILED

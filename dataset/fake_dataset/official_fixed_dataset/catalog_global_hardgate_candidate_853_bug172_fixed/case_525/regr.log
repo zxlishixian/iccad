@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[116] : pc[80000292] remu	x11,x9,x4: a1:ffffffd8 
-spike[116] : pc[80000292] remu    a1, s1, tp: a1:8001c458 
-[FAILED]: 1102 matched, 9576 mismatch
-
-0 PASSED, 1 FAILED

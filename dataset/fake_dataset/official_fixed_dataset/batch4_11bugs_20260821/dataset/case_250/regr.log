@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[7183] : pc[8000bee4] c.jalr	x4: ra:8000bee8 
-spike[7183] : pc[8000bee4] c.jalr  tp: ra:8000bee6 
-[FAILED]: 7035 matched, 3 mismatch
-
-0 PASSED, 1 FAILED

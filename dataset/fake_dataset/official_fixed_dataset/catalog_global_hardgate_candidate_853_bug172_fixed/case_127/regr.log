@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[119] : pc[80000228] c.andi	x8,-1: s0:0000001c 
-spike[119] : pc[8000022a] auipc   s1, 0x50b1f: s1:d0b1f22a 
-[FAILED]: 118 matched, 8091 mismatch
-
-0 PASSED, 1 FAILED

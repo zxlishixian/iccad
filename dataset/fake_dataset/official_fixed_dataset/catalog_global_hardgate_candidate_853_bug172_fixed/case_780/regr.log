@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[62] : pc[80000174] lw	x1,-15(x19): ra:72736c6d 
-spike[62] : pc[8001b080] addi    t5, t5, -124: t5:8002bda0 
-[FAILED]: 53 matched, 18 mismatch
-
-0 PASSED, 1 FAILED

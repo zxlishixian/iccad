@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[641] : pc[800080d2] divu	x25,x15,x5: s9:00000000 
-spike[641] : pc[800080d2] divu    s9, a5, t0: s9:00000001 
-[FAILED]: 580 matched, 8990 mismatch
-
-0 PASSED, 1 FAILED

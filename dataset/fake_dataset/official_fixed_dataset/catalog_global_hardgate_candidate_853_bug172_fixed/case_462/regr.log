@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[118] : pc[800002c8] div	x31,x3,x25: t6:00000001 
-spike[118] : pc[800002c8] div     t6, gp, s9: t6:ffffffff 
-[FAILED]: 267 matched, 3540 mismatch
-
-0 PASSED, 1 FAILED

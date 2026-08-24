@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[94] : pc[80009ab6] srl	x6,x16,x22: t1:000000bc 
-spike[94] : pc[80009ad4] c.srli  a1, 26: a1:00000000 
-[FAILED]: 113 matched, 23396 mismatch
-
-0 PASSED, 1 FAILED

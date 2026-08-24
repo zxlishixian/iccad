@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[779] : pc[80003f32] mulh	x23,x3,x18: s7:00000000 
-spike[779] : pc[80003f0c] c.sub   a2, a2: a2:00000000 
-[FAILED]: 763 matched, 3406 mismatch
-
-0 PASSED, 1 FAILED

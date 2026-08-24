@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[114] : pc[80000248] mulhsu	x9,x28,x8: s1:bfffff4b 
-spike[114] : pc[80000258] slti    a2, ra, 758: a2:00000001 
-[FAILED]: 114 matched, 1365 mismatch
-
-0 PASSED, 1 FAILED

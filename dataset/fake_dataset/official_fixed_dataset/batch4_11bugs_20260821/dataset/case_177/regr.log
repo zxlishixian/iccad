@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[185] : pc[80010d8e] div	x5,x19,x4: t0:ffffffff 
-spike[185] : pc[80010d92] c.addi4spn a2, sp, 304: a2:8001bd29 
-[FAILED]: 165 matched, 10508 mismatch
-
-0 PASSED, 1 FAILED

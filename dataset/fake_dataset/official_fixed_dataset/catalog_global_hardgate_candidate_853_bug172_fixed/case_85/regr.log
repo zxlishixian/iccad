@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[753] : pc[8000103e] mulhsu	x16,x31,x1: a6:00000000 
-spike[753] : pc[8000100e] c.addi  s10, 29: s10:0000001d 
-[FAILED]: 554 matched, 10735 mismatch
-
-0 PASSED, 1 FAILED

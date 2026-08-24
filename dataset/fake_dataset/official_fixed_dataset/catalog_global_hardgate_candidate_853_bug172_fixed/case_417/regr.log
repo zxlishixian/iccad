@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[114] : pc[8000026c] c.andi	x10,-1: a0:00000000 
-spike[114] : pc[8000026e] slti    ra, s2, 564: ra:00000001 
-[FAILED]: 123 matched, 4930 mismatch
-
-0 PASSED, 1 FAILED

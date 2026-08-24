@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[127] : pc[800083ac] c.addi16sp	x2,-16: sp:02a1fff0 
-spike[127] : pc[800083ae] addi    t0, t0, -64: t0:80023d54 
-[FAILED]: 1029 matched, 321703 mismatch
-
-0 PASSED, 1 FAILED

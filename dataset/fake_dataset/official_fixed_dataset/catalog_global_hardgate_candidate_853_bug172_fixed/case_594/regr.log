@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[581] : pc[8000471a] c.srai	x12,0xa: a2:00319b91 
-spike[581] : pc[8000471a] c.srai  a2, 10: a2:fff19b91 
-[FAILED]: 812 matched, 33 mismatch
-
-0 PASSED, 1 FAILED

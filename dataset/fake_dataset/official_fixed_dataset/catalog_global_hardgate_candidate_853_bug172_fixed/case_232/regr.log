@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[63] : pc[80000178] csrrci	x9,mscratch,8: s1:80000000 
-spike[63] : pc[800001a8] div     a7, t3, a1: a7:00000000 
-[FAILED]: 60 matched, 2567 mismatch
-
-0 PASSED, 1 FAILED

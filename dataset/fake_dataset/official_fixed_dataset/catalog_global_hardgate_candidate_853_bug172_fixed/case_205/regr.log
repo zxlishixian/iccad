@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[395] : pc[80003f00] csrrci	x3,mscratch,30: gp:0000021a 
-spike[395] : pc[80003f32] mulhsu  s9, a5, t6: s9:c0000121 
-[FAILED]: 391 matched, 2243 mismatch
-
-0 PASSED, 1 FAILED

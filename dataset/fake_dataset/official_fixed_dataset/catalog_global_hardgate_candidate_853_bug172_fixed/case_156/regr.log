@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[91] : pc[80004aa0] csrrwi	x27,mscratch,3: s11:40916891 
-spike[91] : pc[80004aae] c.or    a5, s1: a5:00000022 
-[FAILED]: 96 matched, 5968 mismatch
-
-0 PASSED, 1 FAILED

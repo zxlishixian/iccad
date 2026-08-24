@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[64] : pc[80000176] auipc	x15,0x24: a5:80024176 
-spike[64] : pc[8001c080] addi    t6, t6, -124: t6:8002cda0 
-[FAILED]: 54 matched, 18 mismatch
-
-0 PASSED, 1 FAILED

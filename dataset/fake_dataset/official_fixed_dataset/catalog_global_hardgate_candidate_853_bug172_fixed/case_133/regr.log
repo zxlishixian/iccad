@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[113] : pc[80000228] div	x23,x30,x7: s7:001b4d81 
-spike[113] : pc[80000226] c.srli  a2, 17: a2:00007fff 
-[FAILED]: 271 matched, 7741 mismatch
-
-0 PASSED, 1 FAILED

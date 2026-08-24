@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[250] : pc[8000041a] c.li	x3,-1: gp:0000001f 
-spike[250] : pc[8000041a] c.li    gp, -1: gp:ffffffff 
-[FAILED]: 321 matched, 7774 mismatch
-
-0 PASSED, 1 FAILED

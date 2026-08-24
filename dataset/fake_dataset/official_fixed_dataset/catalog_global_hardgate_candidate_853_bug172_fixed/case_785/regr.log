@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[166] : pc[800002d4] sll	x14,x12,x31: a4:00000011 
-spike[166] : pc[800002d4] sll     a4, a2, t6: a4:01100000 
-[FAILED]: 215 matched, 7789 mismatch
-
-0 PASSED, 1 FAILED

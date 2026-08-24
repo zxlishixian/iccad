@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[57] : pc[8000015a] jal	x17,80000192: a7:00000004 
-spike[57] : pc[8000015a] jal     a7, 0x38: a7:8000015e 
-[FAILED]: 53 matched, 19 mismatch
-
-0 PASSED, 1 FAILED

@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[88] : pc[8000c488] sra	x26,x4,x23: s10:00000004 
-spike[88] : pc[8000c498] sub     a7, s3, a4: a7:fbffee90 
-[FAILED]: 80 matched, 223 mismatch
-
-0 PASSED, 1 FAILED

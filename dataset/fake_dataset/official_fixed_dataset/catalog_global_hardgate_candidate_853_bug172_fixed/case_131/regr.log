@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[156] : pc[800002a4] c.andi	x9,-1: s1:00000004 
-spike[156] : pc[800002a6] mulhu   ra, s1, s2: ra:331be9ae 
-[FAILED]: 136 matched, 7873 mismatch
-
-0 PASSED, 1 FAILED

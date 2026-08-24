@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[247] : pc[80004ff4] c.andi	x9,-1: s1:00000009 
-spike[247] : pc[80004ff6] mulhu   s3, t1, s6: s3:00000957 
-[FAILED]: 229 matched, 4140 mismatch
-
-0 PASSED, 1 FAILED

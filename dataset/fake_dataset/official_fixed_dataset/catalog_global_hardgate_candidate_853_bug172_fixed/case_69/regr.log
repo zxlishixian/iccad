@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[181] : pc[80000364] divu	x31,x8,x15: t6:00000000 
-spike[181] : pc[80000368] lw      ra, 308(t5): ra:34353637 
-[FAILED]: 1185 matched, 956 mismatch
-
-0 PASSED, 1 FAILED

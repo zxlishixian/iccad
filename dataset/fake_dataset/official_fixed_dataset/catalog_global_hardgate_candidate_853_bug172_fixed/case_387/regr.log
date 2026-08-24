@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[440] : pc[80000a5a] remu	x8,x17,x22: s0:f17155bb 
-spike[440] : pc[80000a5a] remu    s0, a7, s6: s0:0e93a75b 
-[FAILED]: 996 matched, 5965 mismatch
-
-0 PASSED, 1 FAILED

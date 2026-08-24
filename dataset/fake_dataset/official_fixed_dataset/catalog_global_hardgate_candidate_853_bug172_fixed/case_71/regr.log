@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[88] : pc[800001c4] c.li	x7,-1: t2:0000001f 
-spike[88] : pc[800001c4] c.li    t2, -1: t2:ffffffff 
-[FAILED]: 322 matched, 7808 mismatch
-
-0 PASSED, 1 FAILED

@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[286] : pc[8000350c] remu	x2,x25,x17: sp:fffd4e36 
-spike[286] : pc[8000350c] remu    sp, s9, a7: sp:0001ec40 
-[FAILED]: 268 matched, 5079 mismatch
-
-0 PASSED, 1 FAILED

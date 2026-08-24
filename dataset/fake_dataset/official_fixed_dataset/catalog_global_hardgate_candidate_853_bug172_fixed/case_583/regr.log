@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[76] : pc[800078fa] c.srai	x12,0xc: a2:000fd652 
-spike[76] : pc[800078fa] c.srai  a2, 12: a2:ffffd652 
-[FAILED]: 746 matched, 3708 mismatch
-
-0 PASSED, 1 FAILED

@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[78] : pc[800001ba] xor	x3,x31,x14: gp:000000d2 
-spike[78] : pc[800001ba] xor     gp, t6, a4: gp:000000d6 
-[FAILED]: 484 matched, 3291 mismatch
-
-0 PASSED, 1 FAILED

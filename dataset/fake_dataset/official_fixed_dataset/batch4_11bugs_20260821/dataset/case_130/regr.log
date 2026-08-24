@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[1674] : pc[80001f68] andi	x26,x23,793: s10:00000109 
-spike[1674] : pc[80001f2a] xori    t5, a7, -72: t5:ffff594e 
-[FAILED]: 1602 matched, 6935 mismatch
-
-0 PASSED, 1 FAILED

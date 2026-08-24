@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[77] : pc[800001c2] xori	x28,x9,-976: t3:0005e6ea 
-spike[77] : pc[800001a0] csrrsi  a4, mscratch, 5: a4:0000000e 
-[FAILED]: 79 matched, 4092 mismatch
-
-0 PASSED, 1 FAILED

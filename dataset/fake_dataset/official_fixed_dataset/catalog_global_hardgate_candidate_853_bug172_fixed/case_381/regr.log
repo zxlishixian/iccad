@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[202] : pc[80000366] c.andi	x11,-1: a1:0000001c 
-spike[202] : pc[8000036c] remu    ra, s4, gp: ra:1da09000 
-[FAILED]: 437 matched, 7317 mismatch
-
-0 PASSED, 1 FAILED

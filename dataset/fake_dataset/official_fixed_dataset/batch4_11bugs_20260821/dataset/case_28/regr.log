@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[69] : pc[8000d768] addi	x30,x30,-52: t5:80023de8 
-spike[69] : pc[8000d75c] c.li    s0, -1: s0:ffffffff 
-[FAILED]: 109 matched, 37594 mismatch
-
-0 PASSED, 1 FAILED

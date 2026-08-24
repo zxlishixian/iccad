@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[148] : pc[80007c1c] c.andi	x8,27: s0:00000018 
-spike[148] : pc[80007c14] sub     a7, s4, gp: a7:407a61b2 
-[FAILED]: 427 matched, 90601 mismatch
-
-0 PASSED, 1 FAILED

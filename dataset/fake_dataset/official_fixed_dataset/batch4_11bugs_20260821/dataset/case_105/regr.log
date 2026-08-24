@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[623] : pc[80000aea] divu	x13,x15,x15: a3:00000001 
-spike[623] : pc[80000aae] slli    s0, s4, 4: s0:00009b80 
-[FAILED]: 617 matched, 2859 mismatch
-
-0 PASSED, 1 FAILED

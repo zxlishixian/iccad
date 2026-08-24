@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[300] : pc[800007ce] csrrci	x23,mscratch,14: s7:ffffff9f 
-spike[300] : pc[800007da] add     gp, a5, s8: gp:00004007 
-[FAILED]: 308 matched, 2023 mismatch
-
-0 PASSED, 1 FAILED

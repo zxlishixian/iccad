@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[504] : pc[80000944] csrrci	x19,mscratch,11: s3:00000001 
-spike[504] : pc[8000094c] c.add   t2, sp: t2:fc01bd8b 
-[FAILED]: 506 matched, 21008 mismatch
-
-0 PASSED, 1 FAILED

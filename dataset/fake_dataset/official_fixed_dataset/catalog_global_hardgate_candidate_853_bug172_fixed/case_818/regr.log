@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[96] : pc[8000b0c4] remu	x23,x29,x13: s7:80026092 
-spike[96] : pc[8001c080] addi    t2, t2, -124: t2:8002cd50 
-[FAILED]: 89 matched, 17 mismatch
-
-0 PASSED, 1 FAILED

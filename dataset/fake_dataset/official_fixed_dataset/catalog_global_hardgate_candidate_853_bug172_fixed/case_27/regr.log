@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[114] : pc[80000216] sltiu	x5,x15,-830: t0:00000001 
-spike[114] : pc[80000214] c.srli  a0, 18: a0:00003fff 
-[FAILED]: 157 matched, 7990 mismatch
-
-0 PASSED, 1 FAILED

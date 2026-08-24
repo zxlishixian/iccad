@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[155] : pc[80000362] or	x9,x12,x28: s1:4001ee7f 
-spike[155] : pc[80000378] slti    ra, a4, 528: ra:00000001 
-[FAILED]: 141 matched, 3422 mismatch
-
-0 PASSED, 1 FAILED

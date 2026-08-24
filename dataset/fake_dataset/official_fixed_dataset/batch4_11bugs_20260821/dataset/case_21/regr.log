@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[134] : pc[8000037e] csrrs	x22,mscratch,x16: s6:0000000d 
-spike[134] : pc[80000366] srai    s3, gp, 23: s3:fffffff3 
-[FAILED]: 121 matched, 4421 mismatch
-
-0 PASSED, 1 FAILED

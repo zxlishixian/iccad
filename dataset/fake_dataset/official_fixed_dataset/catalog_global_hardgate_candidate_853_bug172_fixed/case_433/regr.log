@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[64] : pc[80000176] c.andi	x11,-1: a1:00000000 
-spike[64] : pc[80000178] or      s0, s4, s11: s0:f2756e9a 
-[FAILED]: 70 matched, 4518 mismatch
-
-0 PASSED, 1 FAILED

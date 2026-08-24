@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[412] : pc[800007e0] div	x26,x1,x25: s10:ffffffe4 
-spike[412] : pc[800007e0] div     s10, ra, s9: s10:fcb7cbac 
-[FAILED]: 428 matched, 8153 mismatch
-
-0 PASSED, 1 FAILED

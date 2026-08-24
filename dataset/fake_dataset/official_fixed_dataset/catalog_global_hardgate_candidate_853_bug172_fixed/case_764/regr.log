@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[46] : pc[8000012c] addi	x31,x31,-1183: t6:845e8c94 
-spike[46] : pc[8000012c] addi    t6, t6, -1183: t6:f14ddb61 
-[FAILED]: 204 matched, 1982 mismatch
-
-0 PASSED, 1 FAILED

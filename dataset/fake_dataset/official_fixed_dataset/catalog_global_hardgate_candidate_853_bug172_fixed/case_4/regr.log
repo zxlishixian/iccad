@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[153] : pc[8000334e] c.srli	x13,0x1: a3:c000d6ae 
-spike[153] : pc[8000334e] c.srli  a3, 1: a3:4000d6ae 
-[FAILED]: 348 matched, 32140 mismatch
-
-0 PASSED, 1 FAILED

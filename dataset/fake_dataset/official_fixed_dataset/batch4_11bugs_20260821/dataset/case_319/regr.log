@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[65] : pc[80000176] jalr	x31,689(x13): t6:8000230b 
-spike[65] : pc[80000176] jalr    t6, a3, 689: t6:8000017a 
-[FAILED]: 102 matched, 14168 mismatch
-
-0 PASSED, 1 FAILED

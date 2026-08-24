@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[227] : pc[80005946] mulhu	x25,x5,x3: s9:00000000 
-spike[227] : pc[80005942] or      s3, t5, t3: s3:06433000 
-[FAILED]: 197 matched, 5801 mismatch
-
-0 PASSED, 1 FAILED

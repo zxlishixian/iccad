@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[58] : pc[80000162] slti	x1,x1,441: ra:00000001 
-spike[58] : pc[8000015e] srl     gp, s4, t6: gp:8001ee7c 
-[FAILED]: 60 matched, 1934 mismatch
-
-0 PASSED, 1 FAILED

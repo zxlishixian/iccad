@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[70] : pc[800001b2] remu	x23,x4,x18: s7:fb7f9db8 
-spike[70] : pc[800001b2] remu    s7, tp, s2: s7:037194bb 
-[FAILED]: 323 matched, 3377 mismatch
-
-0 PASSED, 1 FAILED

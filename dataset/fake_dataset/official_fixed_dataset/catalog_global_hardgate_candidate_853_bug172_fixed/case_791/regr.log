@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[92] : pc[8000021a] sll	x2,x15,x31: sp:0510b25d 
-spike[92] : pc[8000021a] sll     sp, a5, t6: sp:510b25d0 
-[FAILED]: 179 matched, 2902 mismatch
-
-0 PASSED, 1 FAILED

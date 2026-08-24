@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[365] : pc[8000079e] divu	x28,x14,x26: t3:ffffff3b 
-spike[365] : pc[8000079e] divu    t3, a4, s10: t3:0234f666 
-[FAILED]: 426 matched, 12231 mismatch
-
-0 PASSED, 1 FAILED

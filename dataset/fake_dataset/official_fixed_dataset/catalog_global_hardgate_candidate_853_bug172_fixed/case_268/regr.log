@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[376] : pc[80000b32] c.andi	x14,-1: a4:00000018 
-spike[376] : pc[80000b44] csrrci  ra, mscratch, 24: ra:0000005b 
-[FAILED]: 336 matched, 671 mismatch
-
-0 PASSED, 1 FAILED

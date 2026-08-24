@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[62] : pc[8000019a] csrrs	x9,mscratch,x12: s1:00000000 
-spike[62] : pc[80000160] c.addi4spn a3, sp, 752: a3:f9098783 
-[FAILED]: 60 matched, 4428 mismatch
-
-0 PASSED, 1 FAILED

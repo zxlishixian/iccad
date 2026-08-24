@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[68] : pc[8000018e] mul	x20,x0,x26: s4:00000000 
-spike[68] : pc[8001b080] addi    a5, a5, -124: a5:8002bda0 
-[FAILED]: 56 matched, 18 mismatch
-
-0 PASSED, 1 FAILED

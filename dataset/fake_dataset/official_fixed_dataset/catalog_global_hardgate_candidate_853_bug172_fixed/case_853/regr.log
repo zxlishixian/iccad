@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[67] : pc[80000188] lhu	x7,-46(x18): t2:0000467b 
-spike[67] : pc[8001c080] addi    a5, a5, -124: a5:8002cda0 
-[FAILED]: 62 matched, 18 mismatch
-
-0 PASSED, 1 FAILED

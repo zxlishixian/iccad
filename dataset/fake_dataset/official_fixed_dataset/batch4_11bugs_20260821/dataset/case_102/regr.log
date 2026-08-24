@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[1397] : pc[80000df6] c.addi16sp	x2,128: sp:00000080 
-spike[1397] : pc[80000e1c] c.mv    s0, gp: s0:00000345 
-[FAILED]: 1321 matched, 2087 mismatch
-
-0 PASSED, 1 FAILED

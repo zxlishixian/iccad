@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[101] : pc[8000034c] srl	x25,x16,x30: s9:000fd95c 
-spike[101] : pc[8000034c] srl     s9, a6, t5: s9:07ecae2b 
-[FAILED]: 168 matched, 7435 mismatch
-
-0 PASSED, 1 FAILED

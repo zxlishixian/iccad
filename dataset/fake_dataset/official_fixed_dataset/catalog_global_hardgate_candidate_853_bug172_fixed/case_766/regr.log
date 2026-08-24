@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[131] : pc[80000f5a] addi	x31,x31,-988: t6:fffffc24 
-spike[131] : pc[80000f5a] addi    t6, t6, -988: t6:0000ac24 
-[FAILED]: 434 matched, 3790 mismatch
-
-0 PASSED, 1 FAILED

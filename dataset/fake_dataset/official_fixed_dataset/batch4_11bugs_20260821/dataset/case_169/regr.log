@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[87] : pc[800001e0] add	x19,x29,x1: s3:fffffd54 
-spike[87] : pc[80000212] sra     a7, a4, ra: a7:00001a1a 
-[FAILED]: 74 matched, 8 mismatch
-
-0 PASSED, 1 FAILED

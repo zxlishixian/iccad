@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[169] : pc[800111a4] csrrs	x17,mscratch,x30: a7:00000000 
-spike[169] : pc[80011178] c.xor   a2, s0: a2:71c16000 
-[FAILED]: 243 matched, 59512 mismatch
-
-0 PASSED, 1 FAILED

@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[196] : pc[8000034e] c.srai	x9,0x2: s1:3ff6d4c8 
-spike[196] : pc[8000034e] c.srai  s1, 2: s1:fff6d4c8 
-[FAILED]: 2097 matched, 5974 mismatch
-
-0 PASSED, 1 FAILED

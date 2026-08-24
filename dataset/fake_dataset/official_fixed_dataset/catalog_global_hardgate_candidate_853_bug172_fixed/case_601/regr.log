@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[66] : pc[8000017c] slt	x22,x27,x10: s6:00000000 
-spike[66] : pc[800001d4] mulhsu  a7, t3, a6: a7:00000000 
-[FAILED]: 55 matched, 4 mismatch
-
-0 PASSED, 1 FAILED

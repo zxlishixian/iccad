@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[70] : pc[800020d6] jal	x1,800020de: ra:00000004 
-spike[70] : pc[800020d6] jal     0x8: ra:800020da 
-[FAILED]: 62 matched, 3747 mismatch
-
-0 PASSED, 1 FAILED

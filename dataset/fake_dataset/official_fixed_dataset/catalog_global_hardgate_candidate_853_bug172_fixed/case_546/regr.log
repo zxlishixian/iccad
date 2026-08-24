@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[146] : pc[80000376] div	x2,x31,x21: sp:00000000 
-spike[146] : pc[80000376] div     sp, t6, s5: sp:00000183 
-[FAILED]: 405 matched, 365 mismatch
-
-0 PASSED, 1 FAILED

@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[250] : pc[80000740] srai	x19,x26,0xb: s3:fff0003d 
-spike[250] : pc[80000716] slt     a0, gp, s1: a0:00000000 
-[FAILED]: 247 matched, 1638 mismatch
-
-0 PASSED, 1 FAILED

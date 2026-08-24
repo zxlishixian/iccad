@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[731] : pc[80005ebe] andi	x5,x20,933: t0:000003a1 
-spike[731] : pc[80005eca] sltu    s10, a6, a3: s10:00000001 
-[FAILED]: 557 matched, 8203 mismatch
-
-0 PASSED, 1 FAILED

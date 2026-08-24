@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[3017] : pc[8000ff7a] c.jalr	x18: ra:8000ff7e 
-spike[3017] : pc[8000ff7a] c.jalr  s2: ra:8000ff7c 
-[FAILED]: 25576 matched, 20 mismatch
-
-0 PASSED, 1 FAILED

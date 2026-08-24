@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[100] : pc[800001e4] add	x17,x7,x31: a7:00000001 
-spike[100] : pc[800001e4] add     a7, t2, t6: a7:2696cf16 
-[FAILED]: 146 matched, 7650 mismatch
-
-0 PASSED, 1 FAILED

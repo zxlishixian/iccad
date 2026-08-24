@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[692] : pc[80000efc] c.lui	x3,0xd: gp:0000d000 
-spike[692] : pc[80000ec6] slt     s3, t3, a4: s3:00000000 
-[FAILED]: 752 matched, 66851 mismatch
-
-0 PASSED, 1 FAILED

@@ -1,6 +1,0 @@
-Mismatch[1]:
-ibex[226] : pc[80000610] c.andi	x13,-1: a3:00000011 
-spike[226] : pc[80000662] lui     s3, 0x41012: s3:41012000 
-[FAILED]: 337 matched, 3503 mismatch
-
-0 PASSED, 1 FAILED
