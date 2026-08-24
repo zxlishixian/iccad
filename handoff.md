@@ -120,6 +120,7 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 | benchmark8_500cases_official | 500 | 新 fake（批2，官方格式）| ✅ 高质量（10 bug，ALU-shift/LSU/branch/AUIPC/CSR）|
 | k32_new12_380cases_official | 380 | 新 fake（批3，官方格式）| ✅ 高质量（12 bug，**RV32C + MDU div/rem**）|
 | batch4_11bugs_20260821/dataset | 364 | 新 fake（批4，官方格式）| ✅ 高质量（11 **控制流 bug**，流程最规范：patch+manifest+机器审计）|
+| catalog_global_hardgate_final_20260824 | 944 | 新 fake（最终批，官方格式）| ⭐ **当前最对齐官方的集**（0~1 mismatch 块、bucket 不平衡、首个 mismatch 是功能单元指令），见 §3.7 |
 | benchmark_set_1 | 7 | **官方 dev**（有 golden.csv）| ✅ 保留，微调目标之一 |
 | benchmark_set_2 | 25 | **官方 dev**（有 golden.csv）| ✅ 保留，微调目标之一 |
 
@@ -176,6 +177,26 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 | benchmark_set_2 | 25 | 4 | 3/6.2/15 | 0 | 均衡（official）✅ |
 
 **决策：benchmark5 剪枝后 32 桶只有 96 例、37.5% 的桶 ≤2 例，是极稀疏聚类任务，先排除出训练。** 排除后训练集 = **5 fake + 2 official = 3713 唯一 case**（640+40+65+24+2944）。benchmark5 的数据没删，仍在 `dataset/` 里，只是不进训练。
+
+## 3.7 数据质量 vs 官方造数约束（2026-08-24，来源 information_files 原文）
+
+官方文档（`information_files/B_20260601.pdf` + `QA/B_QA_20260820.pdf`）写明了造数硬约束，fake 数据要逐条对齐。**队友造数必读**（完整反馈见下方聊天区）：
+
+| # | 官方约束 | 出处 | 我们 fake 现状 |
+|---|---|---|---|
+| C1 | regr.log 只有 **0 或 1 个 Mismatch 块**（`mismatch_print_limit=1`）| QA A13 | catalog ✅ / benchmark5/8_500 有 2 块 ⚠️ / k32_new12 有 2 块 ⚠️ |
+| C2 | **两种失败类型**：mismatch（regr 有 Mismatch、sim 无 UVM_FATAL）vs fatal（regr 只有测试名、sim 有 UVM_FATAL）| B §2.1.4 | 都有 ✅ |
+| C3 | **bucket 大小不平衡** | QA A25 | catalog ✅(2~54) / benchmark5/8_500 均匀 50 ⚠️ / k32 均匀 ⚠️ |
+| C4 | **同一 bug 跨多个不同测试**（multi-modal across tests）| QA A25 + §2.3 | ❌ **全部 fake 都「1 bug ≈ 1 test」**（1.0~1.32，官方 3.25）|
+| C5 | 无固定 fault taxonomy、症状可重叠 | QA A2 | ✅ |
+| C6 | 剔除 diff-bugs-same-syndrome（同测试同症状不同 bug）| QA A5 | catalog 基本做到 |
+| C7 | sim.log 主导 Max Lines；seed 可随机 | QA A21/A17 | ✅ |
+
+**最致命且已修复**：旧 benchmark6 的「从 `lui` 初始化就 cascade 全错」（见 `encorpus_data/fake_vs_official_gap.md` 差异 1&2），最新 **catalog_hardgate** 已修掉——第一个 mismatch 现在落在 remu/divu/c.andi/c.srai/c.srli 等**功能单元指令**，与官方 set2 一致（实测：旧 benchmark6 首个 mismatch 60% 是 lui，catalog 已无 lui、全功能单元）。
+
+**还剩一个系统性缺口（C4，最重要）**：官方造数据是「同一 bug 撒在多个不同测试上」（set2 里 3-case 的小 bug 都跨 2~3 个测试），我们 fake 是「每 bug 钉在 1 个测试上、换 seed」。后果：训练集里「**测试名 ≈ bug**」信号泄漏，模型在 fake 上靠测试名拿高分（虚高），官方 hidden（1 bug = 多测试）上崩——这是「fake 上分高、官方上分低」的最可能机制。
+
+**结论**：模型训练应**主用 catalog_hardgate**（最新、最对齐官方），`official_format_fake_dataset`（benchmark6 等）仅作信息参考（队友已确认其造数流程偏离官方）。数据侧还需补「1 bug = 多测试」的 case（见 C4）。
 
 ## 4. 完成了什么
 
@@ -443,6 +464,9 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 27. **Procrustes 对齐平均不是严格占优，但赢在官方集（2026-08-22）**：11 集对比里 Procrustes 对齐平均在官方 set2 大赢 +0.236（0.727→0.962）、batch4 +0.027，但 fake 集 stable −0.071、benchmark6 −0.031、directed −0.016 退化。**没有"无退化"的免费午餐**；但退化全在 fake 集、赢在官方集 + 难分的控制流集，从提交价值看换 Procrustes 是对的。当前 `siamese_predict.py` 已用 Procrustes 对齐平均。
 28. **PC 分歧特征（pc_same/pc_offset）是混合结果，不是清晰赢（2026-08-24）**：给 `parse_rich_signature` 加了 `pc_same`（同 PC=数据通路 / 异 PC=控制流）和 `pc_offset_norm`（PC 偏移量）。单 seed 消融：官方集持平（set2 0.700 vs 0.703），**混合集 catalog +0.10（0.655→0.756），但纯控制流集 batch4 −0.06（0.868→0.809）**。结论：pc_same 能劈开"控制流 vs 数据通路"的**粗粒度**，但分不开控制流 bug 彼此（batch4 全是异 PC，退化成常数噪声）。**真正的控制流判别信号在分支处操作数的值/具体分歧路径，非常细，单靠 PC 一个 bit 不够**。代码改动已留在工作区（4 个文件，未提交），是否保留待定。
 29. **序列模型（CNN 和 GRU 两个版本）都没帮上控制流 bug（2026-08-24）**：把 trace 的"有序指令序列"喂给序列编码器（先 max-pool CNN + 家族 token，后 GRU + 精确 opcode token），替换/并联哈希残差。结果：**batch4（纯控制流）反而从 0.868 掉到 0.857（CNN）/0.817（GRU）**；只在大混合集 set2/catalog 小幅提升（+0.03~0.13），set1 噪声。根因：控制流 bug（BNE/BLT/BGE）的分歧症状同质（都是"PC 分叉"），真正区分它们的是**分支处操作数的值**（哪个寄存器、什么值触发误判），而指令序列（opcode 序列）不含这个信息。**但注意**：官方 beta 结果里有人到了 0.85~0.9，说明 0.85+ 可达、信号在日志里，只是"指令序列"不是那条信号——下一步该换方向，不是宣告天花板。
+30. **completion LLM（qwen3-coder-480b）当聚类/根因 oracle 彻底走不通（2026-08-24，锚定官方 set2 实测）**：四种用法全试过、全否：① 逐 case 打功能单元标签 → bug_107 拿 4 个不同标签（Branch/MDU/RV32C/Shift）；② 直接「把 25 case 聚成 4 桶」→ 0.68 过分割；③ pairwise 连续打分（TrustJudge 式 0~100）→ 全部 uniform 30、不判别；④ pairwise 二分类 SAME/DIFFERENT → **连 bug_107 自己的 remu-case vs srai-case 都判 DIFFERENT**。根因：480B 模型和手写特征一样，只会看「分歧在哪条指令」（症状），看不到「哪个单元坏」（根因）。业界「LLM 辅助判断」正道是 RAG（检索相似 case 再推理）+ pairwise 连续分（[TrustJudge](https://ar5iv.labs.arxiv.org/html/2509.21117)，pointwise 离散标签低熵不稳），但即便这样，多模态 bug 的根因对 LLM 也不可见。**结论：别再拿 completion LLM 当根因判别器；它最多当稀疏重排/兜底，主引擎必须是确定性特征+嵌入+聚类。** 相关文献：[GPTrace](https://conf.researchr.org/details/icse-2026/icse-2026-research-track/119/GPTrace-Effective-Crash-Deduplication-Using-LLM-Embeddings)、[Cadence ChipStack](https://www.hpcwire.com/aiwire/2026/02/10/cadence-introduces-agentic-ai-system-for-chip-design-and-verification/)。
+31. **fake 数据「1 bug = 1 test」是训练分布没对齐官方的关键（2026-08-24）**：官方造数据把同一 bug 撒在多个测试上（set2 平均 3.25 测试/bug，连 3-case 小 bug 都跨 2~3 测试），我们 fake 全是「1 bug ≈ 1 test」（catalog 1.32、k32_new12 精确 1.0）。这让「测试名 ≈ bug」在训练集里泄漏，模型学到捷径、fake 分虚高，官方 hidden（1 bug = 多测试）上崩。详见 §3.7 与 `encorpus_data/fake_vs_official_gap.md`。**教训：造数必须复刻「同 bug 跨多测试」，否则训练分布与官方错位，模型再好也白搭。**
+32. **「测试名泄漏」被消融证伪——测试名 category 是真信号、LLM 精确名零贡献（2026-08-24）**：2×2 消融（训 catalog 944 例→测 set2，单 seed 无 trace）结果：+LLM+测试名 0.732 / +LLM−测试名 0.619 / −LLM+测试名 0.741 / −LLM−测试名 0.619。**关掉测试名 category 掉 0.113（反而 hurt）**——因为模型用的是**语义类别**（csr/interrupt/debug/mul…）不是精确测试名，而「CSR bug ↔ CSR 测试」在官方数据里真实成立（QA A2），是可泛化的真信号。**LLM 嵌入（含 sim.log 里精确 UVM_TESTNAME）对 set2 贡献 ≈0**（0.732 vs 0.741，−0.009），印证坑 #24。**结论：模型没在测试名上泄漏；低官方分是数据分布缺口（坑 #31），不是测试名。别去测试名特征。** 代码已加 `--no-test-name` 消融开关（`run_siamese_train.py`），结论见上方 2×2。
 
 ## 8. 关键命令速查
 

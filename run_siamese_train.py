@@ -106,11 +106,12 @@ def build_case_matrix(args, datasets, reducer=None, trace_bundle=None, snippet_r
     test_categories = ["csr", "interrupt", "debug", "mmu", "branch", "jump", "machine",
                        "mul", "div", "shift", "load", "store", "fence", "illegal"]
     test_mat = np.zeros((len(all_test_names), len(test_categories)), dtype=np.float32)
-    for i, tn in enumerate(all_test_names):
-        tl = tn.lower()
-        for j, cat in enumerate(test_categories):
-            if cat in tl:
-                test_mat[i, j] = 1.0
+    if not getattr(args, "no_test_name", False):
+        for i, tn in enumerate(all_test_names):
+            tl = tn.lower()
+            for j, cat in enumerate(test_categories):
+                if cat in tl:
+                    test_mat[i, j] = 1.0
 
     # LLM embedding of the semantic mismatch snippet (NOT the whole-log boilerplate)
     if args.use_mismatch_llm and all_snippets:
@@ -159,7 +160,7 @@ def build_case_matrix(args, datasets, reducer=None, trace_bundle=None, snippet_r
     case_matrix = np.nan_to_num(np.hstack([llm_mat, sig_mat, test_mat, snippet_reduced, fatal_reduced, residual]), nan=0.0, posinf=0.0, neginf=0.0).astype(np.float32)
 
     # ordered instruction-family sequence around the divergence (for the 1D-CNN)
-    case_seq = ttf.build_trace_sequence(all_trace) if (args.use_trace and all_trace) else None
+    case_seq = ttf.build_trace_sequence(all_trace) if (args.use_trace and all_trace and not getattr(args, "no_seq", False)) else None
 
     # integer bug labels (global across datasets)
     bug_to_id: dict[str, int] = {}
@@ -211,6 +212,10 @@ def parse_args(argv=None):
     p.add_argument("--trace-chunk-size", type=int, default=512)
     p.add_argument("--trace-anchor-sizes", nargs="+", type=int, default=[32, 64, 128])
     p.add_argument("--use-trace", action="store_true", default=False)
+    p.add_argument("--no-seq", action="store_true", default=False,
+                   help="Disable the trace-sequence branch (GRU over opcode sequence); keep the trace residual features.")
+    p.add_argument("--no-test-name", action="store_true", default=False,
+                   help="Ablation: zero out the failing-test-name semantic category features.")
     p.add_argument("--use-mismatch-llm", action="store_true", default=False)
     p.add_argument("--use-fatal-llm", action="store_true", default=False)
     p.add_argument("--epochs", type=int, default=40)
