@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[211] : pc[8000036e] or	x7,x22,x30: t2:f6ccb670 
+spike[211] : pc[8000036e] or      t2, s6, t5: t2:6594ee70 
+[FAILED]: 1586 matched, 6545 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1107] : pc[80001df8] slti	x9,x16,949: s1:00000001 
+spike[1107] : pc[80001dfe] c.addi16sp sp, 144: sp:80001db8 
+[FAILED]: 1104 matched, 6630 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[75] : pc[800001a0] mulhu	x6,x10,x30: t1:4000f73e 
+spike[75] : pc[800001a0] mulhu   t1, a0, t5: t1:4a490dab 
+[FAILED]: 99 matched, 442 mismatch
+
+0 PASSED, 1 FAILED

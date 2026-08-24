@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[59] : pc[80000184] csrrci	x16,mscratch,7: a6:00000000 
+spike[59] : pc[800001a0] and     a3, gp, a2: a3:00000000 
+[FAILED]: 58 matched, 4487 mismatch
+
+0 PASSED, 1 FAILED

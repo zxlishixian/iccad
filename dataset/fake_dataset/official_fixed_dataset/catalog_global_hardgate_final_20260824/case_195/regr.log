@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[93] : pc[8000028a] div	x7,x16,x20: t2:00000000 
+spike[93] : pc[800002a4] srli    s0, s11, 1: s0:7a3a2800 
+[FAILED]: 87 matched, 3876 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[474] : pc[800101a8] addi	x6,x6,56: t1:80023e54 
+spike[474] : pc[800101b4] c.li    a2, 3: a2:00000003 
+[FAILED]: 425 matched, 18635 mismatch
+
+0 PASSED, 1 FAILED

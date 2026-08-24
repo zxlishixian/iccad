@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[384] : pc[800061f6] csrrci	x2,mscratch,14: sp:900049c1 
+spike[384] : pc[80006206] andi    t6, a1, -825: t6:801e1083 
+[FAILED]: 377 matched, 10754 mismatch
+
+0 PASSED, 1 FAILED

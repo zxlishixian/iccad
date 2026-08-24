@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[99] : pc[80001030] c.li	x13,-1: a3:0000001f 
+spike[99] : pc[80001030] c.li    a3, -1: a3:ffffffff 
+[FAILED]: 318 matched, 3088 mismatch
+
+0 PASSED, 1 FAILED

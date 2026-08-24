@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[73] : pc[800001d4] xor	x25,x28,x30: s9:00000000 
+spike[73] : pc[800001d4] xor     s9, t3, t5: s9:00000001 
+[FAILED]: 100 matched, 9365 mismatch
+
+0 PASSED, 1 FAILED

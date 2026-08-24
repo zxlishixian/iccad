@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[207] : pc[8000036e] c.andi	x15,-1: a5:00000000 
+spike[207] : pc[80000370] sltu    s8, t0, a3: s8:00000000 
+[FAILED]: 458 matched, 7692 mismatch
+
+0 PASSED, 1 FAILED

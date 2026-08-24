@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[76] : pc[8000156a] divu	x12,x17,x28: a2:00000000 
+spike[76] : pc[8000156a] divu    a2, a7, t3: a2:00000001 
+[FAILED]: 77 matched, 4576 mismatch
+
+0 PASSED, 1 FAILED

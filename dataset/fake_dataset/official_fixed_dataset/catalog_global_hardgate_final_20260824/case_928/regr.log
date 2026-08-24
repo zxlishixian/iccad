@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[39] : pc[80000106] addi	x30,x30,1375: t5:0000055f 
+spike[39] : pc[80000106] addi    t5, t5, 1375: t5:fe03955f 
+[FAILED]: 116 matched, 7833 mismatch
+
+0 PASSED, 1 FAILED

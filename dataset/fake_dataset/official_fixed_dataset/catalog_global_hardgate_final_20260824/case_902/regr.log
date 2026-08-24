@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[181] : pc[8000030e] add	x5,x26,x30: t0:1d052262 
+spike[181] : pc[8000030e] add     t0, s10, t5: t0:1d05228f 
+[FAILED]: 291 matched, 7726 mismatch
+
+0 PASSED, 1 FAILED

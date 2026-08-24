@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[62] : pc[80000164] lw	x23,-229(x2): s7:aa9fe776 
+spike[62] : pc[8001b080] addi    s4, s4, -124: s4:8002cda0 
+[FAILED]: 55 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

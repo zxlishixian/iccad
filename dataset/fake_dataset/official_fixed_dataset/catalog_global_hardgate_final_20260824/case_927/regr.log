@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[141] : pc[80000296] sub	x10,x18,x12: a0:fffffffd 
+spike[141] : pc[80000292] rem     s1, t5, tp: s1:00000007 
+[FAILED]: 132 matched, 7895 mismatch
+
+0 PASSED, 1 FAILED

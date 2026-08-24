@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[94] : pc[800001e0] c.andi	x15,-1: a5:00000019 
+spike[94] : pc[800001e2] xori    t0, s1, 142: t0:250cb580 
+[FAILED]: 89 matched, 7987 mismatch
+
+0 PASSED, 1 FAILED

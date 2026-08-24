@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[395] : pc[800068b8] sra	x7,x27,x22: t2:00000000 
+spike[395] : pc[800068f6] csrrw   s11, mscratch, t3: s11:00000010 
+[FAILED]: 371 matched, 13067 mismatch
+
+0 PASSED, 1 FAILED

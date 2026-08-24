@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[156] : pc[80000a84] divu	x3,x25,x11: gp:00000001 
+spike[156] : pc[80000a8a] csrrs   s8, mscratch, ra: s8:8000000e 
+[FAILED]: 391 matched, 3843 mismatch
+
+0 PASSED, 1 FAILED

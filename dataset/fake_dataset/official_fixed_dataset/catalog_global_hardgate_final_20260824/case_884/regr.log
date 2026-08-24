@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[132] : pc[80000262] rem	x26,x31,x23: s10:f48b3b90 
+spike[132] : pc[80000262] rem     s10, t6, s7: s10:00000000 
+[FAILED]: 502 matched, 7594 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[90] : pc[800001c8] rem	x23,x31,x8: s7:fcfb404f 
+spike[90] : pc[800001c8] rem     s7, t6, s0: s7:fec7735e 
+[FAILED]: 1054 matched, 7077 mismatch
+
+0 PASSED, 1 FAILED

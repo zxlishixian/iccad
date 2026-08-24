@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[67] : pc[80000174] srl	x14,x4,x30: a4:00002000 
+spike[67] : pc[80000174] srl     a4, tp, t5: a4:80015e7c 
+[FAILED]: 731 matched, 7285 mismatch
+
+0 PASSED, 1 FAILED

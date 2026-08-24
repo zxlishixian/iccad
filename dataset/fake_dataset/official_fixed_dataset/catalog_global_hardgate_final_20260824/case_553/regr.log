@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[118] : pc[8000024e] c.andi	x14,-1: a4:00000019 
+spike[118] : pc[80000250] mulh    t6, a1, a6: t6:00000000 
+[FAILED]: 130 matched, 283 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[282] : pc[80000afa] divu	x3,x27,x8: gp:00000000 
+spike[282] : pc[80000afa] divu    gp, s11, s0: gp:00000009 
+[FAILED]: 470 matched, 1280 mismatch
+
+0 PASSED, 1 FAILED

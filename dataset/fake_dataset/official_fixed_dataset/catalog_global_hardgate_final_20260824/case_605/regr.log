@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1564] : pc[800018ac] c.jalr	x28: ra:800018b0 
+spike[1564] : pc[800018ac] c.jalr  t3: ra:800018ae 
+[FAILED]: 4312 matched, 10 mismatch
+
+0 PASSED, 1 FAILED

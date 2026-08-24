@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[474] : pc[800054da] c.srai	x12,0x1e: a2:00000002 
+spike[474] : pc[800054da] c.srai  a2, 30: a2:fffffffe 
+[FAILED]: 450 matched, 3013 mismatch
+
+0 PASSED, 1 FAILED

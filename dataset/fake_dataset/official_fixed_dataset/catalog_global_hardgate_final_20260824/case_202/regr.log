@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[310] : pc[800007c6] c.lui	x11,0x17: a1:00017000 
+spike[310] : pc[800007f0] srai    a7, s0, 3: a7:00000001 
+[FAILED]: 291 matched, 2985 mismatch
+
+0 PASSED, 1 FAILED

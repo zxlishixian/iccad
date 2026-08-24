@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[540] : pc[80006808] c.li	x31,-1: t6:0000001f 
+spike[540] : pc[80006808] c.li    t6, -1: t6:ffffffff 
+[FAILED]: 480 matched, 2153 mismatch
+
+0 PASSED, 1 FAILED

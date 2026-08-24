@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[96] : pc[800003a6] andi	x8,x31,-223: s0:f952d121 
+spike[96] : pc[8000039c] c.slli  a2, 29: a2:80000000 
+[FAILED]: 117 matched, 29900 mismatch
+
+0 PASSED, 1 FAILED

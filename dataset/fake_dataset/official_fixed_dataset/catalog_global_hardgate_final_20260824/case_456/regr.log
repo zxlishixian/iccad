@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[602] : pc[800009f2] c.andi	x8,22: s0:00000000 
+spike[602] : pc[800009d4] sll     s10, s8, s8: s10:00000000 
+[FAILED]: 594 matched, 3424 mismatch
+
+0 PASSED, 1 FAILED

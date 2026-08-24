@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[367] : pc[80001c6c] slli	x15,x24,0xc: a5:fffff000 
+spike[367] : pc[80001ca8] c.mv    a5, t5: a5:00000016 
+[FAILED]: 371 matched, 3046 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[62] : pc[80000162] mulhsu	x19,x24,x30: s3:00000000 
+spike[62] : pc[80000162] mulhsu  s3, s8, t5: s3:fffffff9 
+[FAILED]: 67 matched, 7986 mismatch
+
+0 PASSED, 1 FAILED

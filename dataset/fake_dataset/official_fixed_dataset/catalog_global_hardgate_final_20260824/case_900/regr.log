@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[211] : pc[80000380] rem	x21,x2,x30: s5:00000171 
+spike[211] : pc[80000386] csrrci  t2, mscratch, 16: t2:ffffffff 
+[FAILED]: 324 matched, 7810 mismatch
+
+0 PASSED, 1 FAILED

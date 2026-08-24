@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[104] : pc[800006cc] csrrw	x7,mscratch,x21: t2:8001ee7c 
+spike[104] : pc[800006cc] csrrw   t2, mscratch, s5: t2:00000014 
+[FAILED]: 337 matched, 7013 mismatch
+
+0 PASSED, 1 FAILED

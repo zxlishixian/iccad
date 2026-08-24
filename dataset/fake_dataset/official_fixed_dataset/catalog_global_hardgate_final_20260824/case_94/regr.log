@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[174] : pc[8000061a] c.mv	x21,x20: s5:8001ee7d 
+spike[174] : pc[80000616] div     a5, t4, a4: a5:ffffffff 
+[FAILED]: 260 matched, 11449 mismatch
+
+0 PASSED, 1 FAILED

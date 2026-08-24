@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[135] : pc[8000834e] remu	x22,x13,x28: s6:ffcb038e 
+spike[135] : pc[8000834e] remu    s6, a3, t3: s6:0000038e 
+[FAILED]: 1777 matched, 3452 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[74] : pc[800001ce] c.add	x7,x30: t2:f3694691 
+spike[74] : pc[800001d2] slt     s11, a5, a3: s11:00000000 
+[FAILED]: 224 matched, 264 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[106] : pc[800083a6] c.andi	x11,-1: a1:00000000 
+spike[106] : pc[800083a8] c.sub   s1, a4: s1:8aa818b1 
+[FAILED]: 108 matched, 7123 mismatch
+
+0 PASSED, 1 FAILED

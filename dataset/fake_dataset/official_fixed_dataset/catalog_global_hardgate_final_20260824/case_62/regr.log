@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[125] : pc[80003b10] remu	x18,x30,x12: s2:265151e4 
+spike[125] : pc[80003b3a] csrrsi  gp, mscratch, 20: gp:00000019 
+[FAILED]: 123 matched, 2814 mismatch
+
+0 PASSED, 1 FAILED

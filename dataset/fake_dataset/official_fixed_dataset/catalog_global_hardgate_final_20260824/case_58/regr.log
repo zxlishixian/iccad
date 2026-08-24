@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[440] : pc[80003d8e] c.andi	x12,11: a2:00000009 
+spike[440] : pc[80003dc6] c.mv    t6, t0: t6:ffffff95 
+[FAILED]: 436 matched, 8342 mismatch
+
+0 PASSED, 1 FAILED

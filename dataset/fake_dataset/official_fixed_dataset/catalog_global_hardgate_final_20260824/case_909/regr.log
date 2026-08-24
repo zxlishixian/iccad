@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[284] : pc[80000476] sltu	x4,x31,x5: tp:00000001 
+spike[284] : pc[80000476] sltu    tp, t6, t0: tp:00000000 
+[FAILED]: 284 matched, 7812 mismatch
+
+0 PASSED, 1 FAILED

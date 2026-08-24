@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[117] : pc[800074cc] add	x29,x28,x9: t4:00099e1c 
+spike[117] : pc[800074fc] srl     s7, s3, s10: s7:4000f73e 
+[FAILED]: 105 matched, 2295 mismatch
+
+0 PASSED, 1 FAILED

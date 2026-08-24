@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[80] : pc[800001c6] c.lui	x29,0x6: t4:00006000 
+spike[80] : pc[800001be] mulh    a1, a6, t1: a1:fffffff9 
+[FAILED]: 86 matched, 4025 mismatch
+
+0 PASSED, 1 FAILED

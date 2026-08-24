@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[156] : pc[80000382] c.andi	x8,-1: s0:00000000 
+spike[156] : pc[80000384] xor     t6, a1, a5: t6:0000d161 
+[FAILED]: 141 matched, 4520 mismatch
+
+0 PASSED, 1 FAILED

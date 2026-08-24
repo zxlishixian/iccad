@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[456] : pc[80003db8] c.xor	x11,x15: a1:7ffffe17 
+spike[456] : pc[80003d9a] mulh    s1, a1, a7: s1:ffffffff 
+[FAILED]: 417 matched, 37882 mismatch
+
+0 PASSED, 1 FAILED

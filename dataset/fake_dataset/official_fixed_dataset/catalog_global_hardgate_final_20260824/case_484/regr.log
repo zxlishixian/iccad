@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[208] : pc[800053f6] c.srli	x14,0xb: a4:ffffffff 
+spike[208] : pc[800053f6] c.srli  a4, 11: a4:001fffff 
+[FAILED]: 1276 matched, 1809 mismatch
+
+0 PASSED, 1 FAILED

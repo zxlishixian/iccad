@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[279] : pc[8000046c] slli	x1,x31,0x3: ra:00000000 
+spike[279] : pc[8000046c] slli    ra, t6, 3: ra:000000f8 
+[FAILED]: 294 matched, 7841 mismatch
+
+0 PASSED, 1 FAILED

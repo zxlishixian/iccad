@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[117] : pc[80000232] c.andi	x12,-1: a2:00000000 
+spike[117] : pc[80000234] csrrc   t2, mscratch, s4: t2:80015dfe 
+[FAILED]: 115 matched, 8015 mismatch
+
+0 PASSED, 1 FAILED

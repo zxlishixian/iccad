@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[62] : pc[80000172] jal	x19,80000194: s3:00000004 
+spike[62] : pc[80000172] jal     s3, 0x22: s3:80000176 
+[FAILED]: 85 matched, 9 mismatch
+
+0 PASSED, 1 FAILED

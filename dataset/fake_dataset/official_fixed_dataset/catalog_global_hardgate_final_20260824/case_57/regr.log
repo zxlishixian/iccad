@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[62] : pc[80000174] ori	x20,x24,71: s4:0000004f 
+spike[62] : pc[80000180] jalr    ra, t1, -155: ra:80000184 
+[FAILED]: 68 matched, 7148 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[98] : pc[800001f4] c.addi16sp	x2,-16: sp:fffffff0 
+spike[98] : pc[800001fa] sltu    a1, a1, s9: a1:00000001 
+[FAILED]: 84 matched, 4025 mismatch
+
+0 PASSED, 1 FAILED

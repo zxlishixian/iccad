@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[67] : pc[80000182] addi	x1,x22,-360: ra:477c786b 
+spike[67] : pc[80000186] jalr    s8, s3, 295: s8:8000018a 
+[FAILED]: 63 matched, 2949 mismatch
+
+0 PASSED, 1 FAILED

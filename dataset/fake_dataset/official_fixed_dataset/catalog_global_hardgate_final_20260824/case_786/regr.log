@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[302] : pc[800007b6] csrrs	x28,mscratch,x21: t3:00010f7e 
+spike[302] : pc[800007b2] sub     gp, s4, t6: gp:6f97ff32 
+[FAILED]: 246 matched, 720 mismatch
+
+0 PASSED, 1 FAILED

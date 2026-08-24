@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[203] : pc[8000035a] c.andi	x14,-1: a4:0000001a 
+spike[203] : pc[8000035c] or      s8, t0, gp: s8:00001ff3 
+[FAILED]: 1221 matched, 6809 mismatch
+
+0 PASSED, 1 FAILED

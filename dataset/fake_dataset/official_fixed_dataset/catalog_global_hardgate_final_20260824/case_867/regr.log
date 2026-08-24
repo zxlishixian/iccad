@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[84] : pc[800001b6] c.add	x11,x30: a1:72eea020 
+spike[84] : pc[800001b8] slti    s5, s2, 961: s5:00000001 
+[FAILED]: 85 matched, 8123 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[258] : pc[80000626] mulhu	x25,x13,x16: s9:00000002 
+spike[258] : pc[80000612] srl     s6, t3, sp: s6:00000000 
+[FAILED]: 215 matched, 534 mismatch
+
+0 PASSED, 1 FAILED

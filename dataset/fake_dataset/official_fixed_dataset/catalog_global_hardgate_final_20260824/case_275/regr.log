@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[166] : pc[800004e8] sltu	x3,x23,x29: gp:00000000 
+spike[166] : pc[80000512] sltu    sp, a6, ra: sp:00000000 
+[FAILED]: 151 matched, 333 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[65] : pc[80000188] slti	x18,x6,245: s2:00000001 
+spike[65] : pc[80000196] sra     t6, s0, a7: t6:18805978 
+[FAILED]: 67 matched, 4650 mismatch
+
+0 PASSED, 1 FAILED

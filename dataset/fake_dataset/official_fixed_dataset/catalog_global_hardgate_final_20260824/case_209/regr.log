@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[314] : pc[80002244] auipc	x1,0x2d9ff: ra:ada01244 
+spike[314] : pc[80002272] slt     a7, a1, tp: a7:00000000 
+[FAILED]: 308 matched, 3845 mismatch
+
+0 PASSED, 1 FAILED

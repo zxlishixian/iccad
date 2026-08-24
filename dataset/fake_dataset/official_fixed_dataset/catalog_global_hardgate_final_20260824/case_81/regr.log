@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[229] : pc[800082c4] c.li	x1,14: ra:0000000e 
+spike[229] : pc[8000834c] sub     s0, s2, s5: s0:00000001 
+[FAILED]: 217 matched, 5110 mismatch
+
+0 PASSED, 1 FAILED

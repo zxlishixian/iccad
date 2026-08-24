@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[62] : pc[80000170] c.lw	x12,12(x8): a2:acbf6552 
+spike[62] : pc[8001c080] addi    sp, sp, -124: sp:8002cda0 
+[FAILED]: 54 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

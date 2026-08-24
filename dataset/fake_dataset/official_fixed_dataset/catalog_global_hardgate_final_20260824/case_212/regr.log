@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[302] : pc[80000520] c.li	x10,-1: a0:ffffffff 
+spike[302] : pc[8000055c] slt     a2, zero, a1: a2:00000000 
+[FAILED]: 313 matched, 2866 mismatch
+
+0 PASSED, 1 FAILED

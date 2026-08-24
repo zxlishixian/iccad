@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[85] : pc[800001b0] c.mv	x26,x30: s10:00000001 
+spike[85] : pc[800001b6] c.add   s8, a3: s8:00000008 
+[FAILED]: 87 matched, 7893 mismatch
+
+0 PASSED, 1 FAILED

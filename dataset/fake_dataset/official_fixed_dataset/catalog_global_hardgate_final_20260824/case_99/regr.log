@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[81] : pc[80004714] div	x21,x24,x22: s5:ffffffff 
+spike[81] : pc[80004724] slti    s0, sp, 340: s0:00000001 
+[FAILED]: 90 matched, 9196 mismatch
+
+0 PASSED, 1 FAILED
