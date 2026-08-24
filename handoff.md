@@ -442,6 +442,7 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 26. **co-association 共识聚类在 N<25 的小集上不可靠（2026-08-22）**：7 例的 set1 上，co-assoc 会因为"各 seed 错在哪个 case 上"的随机性把结论翻转——曾误判"v4b(0.72) 比 v4 旧(0.85) 差"，实际 per-seed 上 v4b(0.82) ≥ v4 旧(0.72)，是 co-assoc 的侥幸/不巧。**教训：小集（N<25）看 per-seed 均值，别信 co-assoc；co-assoc 只在大集（≥25 例）可靠**。
 27. **Procrustes 对齐平均不是严格占优，但赢在官方集（2026-08-22）**：11 集对比里 Procrustes 对齐平均在官方 set2 大赢 +0.236（0.727→0.962）、batch4 +0.027，但 fake 集 stable −0.071、benchmark6 −0.031、directed −0.016 退化。**没有"无退化"的免费午餐**；但退化全在 fake 集、赢在官方集 + 难分的控制流集，从提交价值看换 Procrustes 是对的。当前 `siamese_predict.py` 已用 Procrustes 对齐平均。
 28. **PC 分歧特征（pc_same/pc_offset）是混合结果，不是清晰赢（2026-08-24）**：给 `parse_rich_signature` 加了 `pc_same`（同 PC=数据通路 / 异 PC=控制流）和 `pc_offset_norm`（PC 偏移量）。单 seed 消融：官方集持平（set2 0.700 vs 0.703），**混合集 catalog +0.10（0.655→0.756），但纯控制流集 batch4 −0.06（0.868→0.809）**。结论：pc_same 能劈开"控制流 vs 数据通路"的**粗粒度**，但分不开控制流 bug 彼此（batch4 全是异 PC，退化成常数噪声）。**真正的控制流判别信号在分支处操作数的值/具体分歧路径，非常细，单靠 PC 一个 bit 不够**。代码改动已留在工作区（4 个文件，未提交），是否保留待定。
+29. **序列模型（CNN 和 GRU 两个版本）都没帮上控制流 bug（2026-08-24）**：把 trace 的"有序指令序列"喂给序列编码器（先 max-pool CNN + 家族 token，后 GRU + 精确 opcode token），替换/并联哈希残差。结果：**batch4（纯控制流）反而从 0.868 掉到 0.857（CNN）/0.817（GRU）**；只在大混合集 set2/catalog 小幅提升（+0.03~0.13），set1 噪声。根因：控制流 bug（BNE/BLT/BGE）的分歧症状同质（都是"PC 分叉"），真正区分它们的是**分支处操作数的值**（哪个寄存器、什么值触发误判），而指令序列（opcode 序列）不含这个信息。**但注意**：官方 beta 结果里有人到了 0.85~0.9，说明 0.85+ 可达、信号在日志里，只是"指令序列"不是那条信号——下一步该换方向，不是宣告天花板。
 
 ## 8. 关键命令速查
 
