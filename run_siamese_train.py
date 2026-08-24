@@ -158,6 +158,9 @@ def build_case_matrix(args, datasets, reducer=None, trace_bundle=None, snippet_r
 
     case_matrix = np.nan_to_num(np.hstack([llm_mat, sig_mat, test_mat, snippet_reduced, fatal_reduced, residual]), nan=0.0, posinf=0.0, neginf=0.0).astype(np.float32)
 
+    # ordered instruction-family sequence around the divergence (for the 1D-CNN)
+    case_seq = ttf.build_trace_sequence(all_trace) if (args.use_trace and all_trace) else None
+
     # integer bug labels (global across datasets)
     bug_to_id: dict[str, int] = {}
     case_labels = []
@@ -167,19 +170,19 @@ def build_case_matrix(args, datasets, reducer=None, trace_bundle=None, snippet_r
         case_labels.append(bug_to_id[b])
     case_labels = np.asarray(case_labels, dtype=np.int64)
     case_domains = np.asarray(all_domains, dtype=np.float32)
-    return case_matrix, case_labels, reducer, trace_bundle, snippet_reducer, test_name_vocab, fatal_reducer, case_domains
+    return case_matrix, case_labels, reducer, trace_bundle, snippet_reducer, test_name_vocab, fatal_reducer, case_domains, case_seq
 
 
 def evaluate(args, model, datasets, reducer, trace_bundle, snippet_reducer, test_name_vocab, fatal_reducer):
     rows = []
     for ds in datasets:
-        case_matrix, case_labels, _, _, _, _, _, _ = build_case_matrix(
+        case_matrix, case_labels, _, _, _, _, _, _, case_seq = build_case_matrix(
             args, [ds], reducer=reducer, trace_bundle=trace_bundle,
             snippet_reducer=snippet_reducer, test_name_vocab=test_name_vocab, fatal_reducer=fatal_reducer,
         )
         gold = [str(b) for b in case_labels]
         k = len(set(gold))
-        emb = tsm.encode_cases(model, case_matrix)
+        emb = tsm.encode_cases(model, case_matrix, case_seq=case_seq)
         labels = tsm.cluster_embeddings(emb, k, random_state=args.seed)
         pred = [f"bucket_{int(x):03d}" for x in labels]
         ba, tpr, tnr = pairwise_scores(gold, pred)
@@ -232,9 +235,9 @@ def main(argv=None):
     eval_datasets = [resolve(x) for x in args.eval_datasets]
     t0 = time.perf_counter()
     args.random_state = args.seed  # train_siamese_model reads args.random_state
-    case_matrix, case_labels, reducer, trace_bundle, snippet_reducer, test_name_vocab, fatal_reducer, case_domains = build_case_matrix(args, train_datasets)
-    print(f"[train] cases={case_matrix.shape[0]} feat_dim={case_matrix.shape[1]} bugs={len(set(case_labels.tolist()))}", flush=True)
-    pkg = tsm.train_siamese_model(case_matrix, case_labels, args, case_domains=case_domains)
+    case_matrix, case_labels, reducer, trace_bundle, snippet_reducer, test_name_vocab, fatal_reducer, case_domains, case_seq = build_case_matrix(args, train_datasets)
+    print(f"[train] cases={case_matrix.shape[0]} feat_dim={case_matrix.shape[1]} bugs={len(set(case_labels.tolist()))} seq={None if case_seq is None else case_seq.shape}", flush=True)
+    pkg = tsm.train_siamese_model(case_matrix, case_labels, args, case_domains=case_domains, case_seq=case_seq)
     # Save the encoder + reducers so seeds can be ensembled later.
     import torch
     import joblib

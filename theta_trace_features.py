@@ -788,6 +788,46 @@ def apply_trace_reducers(bundle: dict[str, Any], features: Sequence[Hierarchical
     }
 
 
+def build_trace_sequence(
+    features: Sequence[HierarchicalTraceFeature],
+    seq_len: int = 128,
+) -> np.ndarray:
+    """Ordered SPECIFIC-opcode sequence centered on the divergence anchor.
+
+    Returns an int32 array of shape (n_cases, seq_len): each position is the
+    SPECIFIC opcode index (0..71 via failure_signature.OPCODE_VOCAB) of the retired
+    instruction nearest the divergence, ordered by trace position.  72 = OOV,
+    73 = PAD.  Using the specific opcode (not just the family) is essential to
+    separate same-family control-flow bugs (BNE vs BLT vs BGE vs C.BEQZ).
+    """
+    import failure_signature as fsig
+    vocab = len(fsig.OPCODE_VOCAB)  # 72
+    OOV = vocab      # 72
+    PAD = vocab + 1  # 73
+    out = np.full((len(features), seq_len), PAD, dtype=np.int64)
+    for i, f in enumerate(features):
+        opcodes = f.anchor_opcodes.get(128) or f.anchor_opcodes.get(64) or f.anchor_opcodes.get(32) or ()
+        if not opcodes:
+            continue
+        toks = [fsig.OPCODE_IDX.get(op, OOV) for op in opcodes]
+        if len(toks) > seq_len:
+            half = len(toks) // 2
+            start = max(0, half - seq_len // 2)
+            toks = toks[start:start + seq_len]
+        offset = (seq_len - len(toks)) // 2
+        out[i, offset:offset + len(toks)] = toks
+    return out
+    raw = build_trace_raw_views(features)
+    return {
+        "global_struct": _apply_dense_view(raw["global_struct"], bundle["global_struct"]),
+        "global_text": _apply_text_view(raw["global_text"], bundle["global_text"]),
+        "anchor_struct": _apply_dense_view(raw["anchor_struct"], bundle["anchor_struct"]),
+        "anchor_text": _apply_text_view(raw["anchor_text"], bundle["anchor_text"]),
+        "residual_struct": _apply_dense_view(raw["residual_struct"], bundle["residual_struct"]),
+        "residual_text": _apply_text_view(raw["residual_text"], bundle["residual_text"]),
+    }
+
+
 def _relation(matrix: np.ndarray, left: int, right: int) -> np.ndarray:
     a, b = matrix[left], matrix[right]
     cosine = float(np.dot(a, b) / max(float(np.linalg.norm(a) * np.linalg.norm(b)), 1e-12))

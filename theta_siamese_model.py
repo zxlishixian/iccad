@@ -177,20 +177,54 @@ class DomainDiscriminator(nn.Module):
         return self.net(x).squeeze(-1)
 
 
-class SiameseEncoder(nn.Module):
-    """Per-case MLP encoder mapping a case feature vector to a normalized embedding."""
+class TraceSeqEncoder(nn.Module):
+    """Order-sensitive GRU over the instruction-family sequence (DeepLog-style).
 
-    def __init__(self, input_dim: int, hidden: int = 256, out_dim: int = 256, dropout: float = 0.2) -> None:
+    The divergence path is a SEQUENCE; a GRU (unlike a max-pool CNN) preserves the
+    order of the retired instructions, which is the key signal for separating
+    control-flow bugs from each other.
+    """
+
+    def __init__(self, vocab: int = 74, embed_dim: int = 32, hidden: int = 48, out_dim: int = 64) -> None:
+        super().__init__()
+        self.embed = nn.Embedding(vocab, embed_dim, padding_idx=vocab - 1)
+        self.gru = nn.GRU(embed_dim, hidden, batch_first=True)
+        self.proj = nn.Linear(hidden, out_dim)
+
+    def forward(self, seq: torch.Tensor) -> torch.Tensor:
+        # seq: (batch, seq_len) long
+        x = self.embed(seq)                # (batch, seq_len, embed_dim)
+        out, _ = self.gru(x)               # (batch, seq_len, hidden)
+        pooled = out.mean(dim=1)           # mean-pool over time (order-aware via GRU)
+        return self.proj(pooled)           # (batch, out_dim)
+
+
+class SiameseEncoder(nn.Module):
+    """Per-case MLP encoder mapping a case feature vector to a normalized embedding.
+
+    Optionally fuses a per-case instruction-family SEQUENCE via a 1D-CNN (``use_seq``)
+    so the embedding sees the ordered divergence path, not just the hash-count residual.
+    """
+
+    def __init__(self, input_dim: int, hidden: int = 256, out_dim: int = 256, dropout: float = 0.2,
+                 use_seq: bool = False, seq_vocab: int = 74, seq_out: int = 64) -> None:
         super().__init__()
         self.net = nn.Sequential(
             nn.Linear(input_dim, hidden), nn.LayerNorm(hidden), nn.GELU(), nn.Dropout(dropout),
             nn.Linear(hidden, hidden), nn.LayerNorm(hidden), nn.GELU(), nn.Dropout(dropout),
             nn.Linear(hidden, out_dim),
         )
+        self.use_seq = use_seq
+        if use_seq:
+            self.seq_enc = TraceSeqEncoder(vocab=seq_vocab, out_dim=seq_out)
+            self.proj = nn.Linear(out_dim + seq_out, out_dim)
 
-    def forward(self, value: torch.Tensor) -> torch.Tensor:
+    def forward(self, value: torch.Tensor, seq: torch.Tensor | None = None) -> torch.Tensor:
         from torch.nn import functional as F
-        return F.normalize(self.net(value), dim=1)
+        flat = self.net(value)
+        if self.use_seq and seq is not None:
+            flat = self.proj(torch.cat([flat, self.seq_enc(seq)], dim=1))
+        return F.normalize(flat, dim=1)
 
 
 def train_siamese_model(
@@ -198,10 +232,13 @@ def train_siamese_model(
     case_labels: np.ndarray,
     args: Any,
     case_domains: np.ndarray | None = None,
+    case_seq: np.ndarray | None = None,
 ) -> dict:
     """Train a per-case siamese encoder with SupCon + prototype loss.
 
     ``case_matrix`` is (n_cases, feature_dim); ``case_labels`` is integer bug ids.
+    ``case_seq`` (optional) is (n_cases, seq_len) instruction-family sequence; when
+    given, a 1D-CNN fuses it into the embedding (replacing the hash-count residual).
     ``case_domains`` (optional) is 0/1 (fake/official) per case; when given and
     ``args.domain_adv_weight > 0``, a gradient-reversed domain discriminator is
     added so the encoder learns domain-invariant embeddings (DANN).
@@ -211,6 +248,9 @@ def train_siamese_model(
 
     case_matrix = np.asarray(case_matrix, dtype=np.float32)
     case_labels = np.asarray(case_labels)
+    use_seq = case_seq is not None
+    if use_seq:
+        case_seq = np.asarray(case_seq, dtype=np.int64)
     seed = int(args.random_state)
     supcon_w = float(getattr(args, "supcon_weight", 0.1))
     proto_w = float(getattr(args, "prototype_weight", 0.1))
@@ -222,7 +262,7 @@ def train_siamese_model(
     np.random.seed(seed)
 
     device = resolve_torch_device(str(args.device))
-    model = SiameseEncoder(int(case_matrix.shape[1]), dropout=float(args.dropout)).to(device)
+    model = SiameseEncoder(int(case_matrix.shape[1]), dropout=float(args.dropout), use_seq=use_seq).to(device)
     discriminator = None
     if domain_adv_w > 0.0 and case_domains is not None:
         discriminator = DomainDiscriminator().to(device)
@@ -246,22 +286,18 @@ def train_siamese_model(
         rng.shuffle(indices)
         split = max(1, int(round(0.85 * n)))
         tr_idx, va_idx = indices[:split], indices[split:]
+    tensors = [torch.from_numpy(case_matrix[tr_idx]), torch.from_numpy(case_labels[tr_idx])]
     if case_domains is not None and domain_adv_w > 0.0:
-        dom = np.asarray(case_domains, dtype=np.float32)
-        loader = DataLoader(
-            TensorDataset(torch.from_numpy(case_matrix[tr_idx]), torch.from_numpy(case_labels[tr_idx]),
-                          torch.from_numpy(dom[tr_idx])),
-            batch_size=max(1, int(args.batch_size)), shuffle=True,
-            generator=torch.Generator().manual_seed(seed),
-        )
-    else:
-        loader = DataLoader(
-            TensorDataset(torch.from_numpy(case_matrix[tr_idx]), torch.from_numpy(case_labels[tr_idx])),
-            batch_size=max(1, int(args.batch_size)), shuffle=True,
-            generator=torch.Generator().manual_seed(seed),
-        )
+        tensors.append(torch.from_numpy(np.asarray(case_domains, dtype=np.float32)[tr_idx]))
+    if use_seq:
+        tensors.append(torch.from_numpy(case_seq[tr_idx]))
+    loader = DataLoader(
+        TensorDataset(*tensors), batch_size=max(1, int(args.batch_size)), shuffle=True,
+        generator=torch.Generator().manual_seed(seed),
+    )
     val_x = torch.from_numpy(case_matrix[va_idx]).to(device)
     val_y = torch.from_numpy(case_labels[va_idx]).to(device)
+    val_seq = torch.from_numpy(case_seq[va_idx]).to(device) if use_seq else None
 
     best_state = None
     best_val = float("inf")
@@ -271,9 +307,10 @@ def train_siamese_model(
         for batch in loader:
             batch_x = batch[0].to(device)
             batch_y = batch[1].to(device)
-            batch_domain = batch[2].to(device) if len(batch) > 2 else None
+            batch_domain = batch[2].to(device) if (case_domains is not None and domain_adv_w > 0.0 and len(batch) > 2) else None
+            batch_seq = batch[-1].to(device) if use_seq else None
             optimizer.zero_grad(set_to_none=True)
-            z = model(batch_x)
+            z = model(batch_x, batch_seq)
             loss = torch.zeros((), device=device)
             if supcon_w > 0.0:
                 loss = loss + supcon_w * supcon_loss(z, batch_y, temperature)
@@ -300,7 +337,7 @@ def train_siamese_model(
         # Validation loss (early stopping target — prevents overfitting).
         model.eval()
         with torch.no_grad():
-            zv = model(val_x)
+            zv = model(val_x, val_seq)
             val_loss = torch.zeros((), device=device)
             if supcon_w > 0.0:
                 val_loss = val_loss + supcon_w * supcon_loss(zv, val_y, temperature)
@@ -331,16 +368,19 @@ def train_siamese_model(
     }
 
 
-def encode_cases(model: nn.Module, case_matrix: np.ndarray, batch_size: int = 4096) -> np.ndarray:
+def encode_cases(model: nn.Module, case_matrix: np.ndarray, batch_size: int = 4096,
+                 case_seq: np.ndarray | None = None) -> np.ndarray:
     """Encode all cases to embeddings (O(N))."""
     import torch
     model = model.cpu().eval()
     out = []
     x = np.asarray(case_matrix, dtype=np.float32)
+    s = np.asarray(case_seq, dtype=np.int64) if case_seq is not None else None
     with torch.no_grad():
         for start in range(0, len(x), batch_size):
             chunk = torch.from_numpy(x[start:start + batch_size])
-            out.append(model(chunk).numpy())
+            seq_chunk = torch.from_numpy(s[start:start + batch_size]) if s is not None else None
+            out.append(model(chunk, seq_chunk).numpy())
     return np.concatenate(out, axis=0) if out else np.zeros((0, 256), dtype=np.float32)
 
 

@@ -71,7 +71,7 @@ def main(argv=None):
         gold = None
         k = 0
         for enc, pre in zip(encoders, preps):
-            cm, case_labels, _, _, _, _, _, _ = rst.build_case_matrix(
+            cm, case_labels, _, _, _, _, _, _, _ = rst.build_case_matrix(
                 args, [ds], reducer=pre["reducer"], trace_bundle=pre["trace_bundle"],
                 snippet_reducer=pre["snippet_reducer"], test_name_vocab=pre.get("test_name_vocab"),
             )
