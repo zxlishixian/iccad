@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[204] : pc[8000041a] xori	x9,x27,331: s1:fffffe51 
+spike[204] : pc[800003fc] remu    a3, s2, a0: a3:8001ee7c 
+[FAILED]: 175 matched, 3968 mismatch
+
+0 PASSED, 1 FAILED

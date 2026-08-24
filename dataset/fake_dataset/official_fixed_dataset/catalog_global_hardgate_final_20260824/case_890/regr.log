@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[83] : pc[800001ac] sub	x22,x31,x29: s6:015e6c67 
+spike[83] : pc[800001ac] sub     s6, t6, t4: s6:f84a058f 
+[FAILED]: 887 matched, 7190 mismatch
+
+0 PASSED, 1 FAILED

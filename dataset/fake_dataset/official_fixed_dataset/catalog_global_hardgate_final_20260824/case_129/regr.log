@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[156] : pc[800002a6] c.andi	x12,-1: a2:00000014 
+spike[156] : pc[800002a8] ori     t4, a3, 125: t4:0000007d 
+[FAILED]: 287 matched, 7680 mismatch
+
+0 PASSED, 1 FAILED

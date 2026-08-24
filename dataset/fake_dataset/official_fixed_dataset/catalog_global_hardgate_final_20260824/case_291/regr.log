@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1768] : pc[8000208c] remu	x8,x10,x20: s0:ffffffb1 
+spike[1768] : pc[8000208c] remu    s0, a0, s4: s0:000000b1 
+[FAILED]: 2260 matched, 19441 mismatch
+
+0 PASSED, 1 FAILED

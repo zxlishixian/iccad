@@ -1,0 +1,9 @@
+{
+  "dataset_root": "D:\\ICCAD\\tmp\\catalog_global_hardgate_final_20260824",
+  "layout": "official",
+  "num_cases": 944,
+  "num_errors": 0,
+  "num_warnings": 0,
+  "errors": [],
+  "warnings": []
+}

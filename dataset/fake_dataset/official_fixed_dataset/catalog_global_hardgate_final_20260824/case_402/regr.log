@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[379] : pc[80007306] c.andi	x14,-1: a4:0000000f 
+spike[379] : pc[80007308] sltiu   s10, a4, -796: s10:00000001 
+[FAILED]: 366 matched, 5348 mismatch
+
+0 PASSED, 1 FAILED

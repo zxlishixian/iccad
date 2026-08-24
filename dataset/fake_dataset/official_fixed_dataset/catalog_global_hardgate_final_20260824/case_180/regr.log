@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[80] : pc[800001ac] c.srai	x8,0x19: s0:0000007f 
+spike[80] : pc[800001e2] csrrsi  s6, mscratch, 7: s6:0448c3c0 
+[FAILED]: 486 matched, 3939 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[63] : pc[8000016e] c.sub	x15,x8: a5:8f4e6c6a 
+spike[63] : pc[8000017c] jalr    ra, s4, -916: ra:80000180 
+[FAILED]: 1788 matched, 292749 mismatch
+
+0 PASSED, 1 FAILED

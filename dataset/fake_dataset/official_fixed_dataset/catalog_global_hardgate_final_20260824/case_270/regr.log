@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[72] : pc[8000755a] c.addi	x3,21: gp:00000015 
+spike[72] : pc[8000756a] sub     tp, a3, t5: tp:00000000 
+[FAILED]: 67 matched, 38602 mismatch
+
+0 PASSED, 1 FAILED

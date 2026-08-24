@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[436] : pc[80001ec2] and	x8,x14,x12: s0:00000000 
+spike[436] : pc[80001edc] c.lui   gp, 0x8: gp:00008000 
+[FAILED]: 436 matched, 579 mismatch
+
+0 PASSED, 1 FAILED

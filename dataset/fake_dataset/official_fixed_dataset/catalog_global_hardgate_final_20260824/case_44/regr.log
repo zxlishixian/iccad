@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[98] : pc[80004d8c] c.sub	x13,x8: a3:384ab0a6 
+spike[98] : pc[80004d72] mulhsu  s9, a5, zero: s9:00000000 
+[FAILED]: 93 matched, 5106 mismatch
+
+0 PASSED, 1 FAILED

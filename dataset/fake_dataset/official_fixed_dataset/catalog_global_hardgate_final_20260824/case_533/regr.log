@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[57] : pc[80000150] jal	x1,80000156: ra:00000004 
+spike[57] : pc[80000150] jal     0x6: ra:80000154 
+[FAILED]: 52 matched, 1286 mismatch
+
+0 PASSED, 1 FAILED

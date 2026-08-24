@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[4072] : pc[80001e3c] c.jalr	x26: ra:80001e40 
+spike[4072] : pc[80001e3c] c.jalr  s10: ra:80001e3e 
+[FAILED]: 4354 matched, 91600 mismatch
+
+0 PASSED, 1 FAILED

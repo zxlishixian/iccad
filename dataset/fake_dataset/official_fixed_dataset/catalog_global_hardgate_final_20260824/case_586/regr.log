@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[183] : pc[8000049c] c.li	x19,-1: s3:0000001f 
+spike[183] : pc[8000049c] c.li    s3, -1: s3:ffffffff 
+[FAILED]: 316 matched, 2998 mismatch
+
+0 PASSED, 1 FAILED

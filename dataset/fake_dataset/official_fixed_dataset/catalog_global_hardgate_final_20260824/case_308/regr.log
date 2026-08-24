@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[174] : pc[80003292] remu	x26,x9,x10: s10:e7319094 
+spike[174] : pc[80003292] remu    s10, s1, a0: s10:cd971334 
+[FAILED]: 1562 matched, 9158 mismatch
+
+0 PASSED, 1 FAILED

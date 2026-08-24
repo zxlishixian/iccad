@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[90] : pc[8000054c] c.andi	x14,-1: a4:00000002 
+spike[90] : pc[80000554] srli    a2, s2, 4: a2:0f70cbb5 
+[FAILED]: 79 matched, 4719 mismatch
+
+0 PASSED, 1 FAILED

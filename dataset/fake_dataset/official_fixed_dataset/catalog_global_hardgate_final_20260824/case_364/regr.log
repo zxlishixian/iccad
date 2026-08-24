@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[468] : pc[80000726] c.andi	x11,-1: a1:00000001 
+spike[468] : pc[80000728] c.mv    t3, s2: t3:80011e1c 
+[FAILED]: 1346 matched, 6728 mismatch
+
+0 PASSED, 1 FAILED

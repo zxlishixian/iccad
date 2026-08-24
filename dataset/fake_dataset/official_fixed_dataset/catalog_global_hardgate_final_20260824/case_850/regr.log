@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[53] : pc[80000144] c.lw	x8,112(x11): s0:00000013 
+spike[53] : pc[80000146] auipc   s10, 0x1b: s10:8001b146 
+[FAILED]: 47 matched, 4167 mismatch
+
+0 PASSED, 1 FAILED

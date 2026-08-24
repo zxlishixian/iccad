@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[69] : pc[8000019c] mulh	x19,x22,x11: s3:ffffffff 
+spike[69] : pc[80000198] divu    s0, a0, s8: s0:00000006 
+[FAILED]: 57 matched, 139 mismatch
+
+0 PASSED, 1 FAILED

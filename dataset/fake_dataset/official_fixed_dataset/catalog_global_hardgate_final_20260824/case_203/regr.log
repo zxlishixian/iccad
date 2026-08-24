@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[184] : pc[80005f56] and	x22,x18,x18: s6:ffffffc5 
+spike[184] : pc[80005f78] and     t4, t3, t2: t4:18e53ea4 
+[FAILED]: 179 matched, 11516 mismatch
+
+0 PASSED, 1 FAILED

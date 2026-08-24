@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[103] : pc[800067b2] and	x26,x27,x21: s10:00000000 
+spike[103] : pc[80006794] addi    gp, gp, -616: gp:fffffd99 
+[FAILED]: 107 matched, 9066 mismatch
+
+0 PASSED, 1 FAILED

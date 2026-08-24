@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[217] : pc[80000398] sra	x13,x31,x22: a3:fffffea5 
+spike[217] : pc[8000039c] csrrw   t4, mscratch, a7: t4:00000000 
+[FAILED]: 524 matched, 7600 mismatch
+
+0 PASSED, 1 FAILED

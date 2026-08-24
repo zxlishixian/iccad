@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[72] : pc[800008dc] lh	x4,78(x9): tp:ffffa2a3 
+spike[72] : pc[800008d4] div     sp, sp, sp: sp:ffffffff 
+[FAILED]: 176 matched, 9657 mismatch
+
+0 PASSED, 1 FAILED

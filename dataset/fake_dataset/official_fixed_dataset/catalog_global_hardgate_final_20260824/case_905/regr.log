@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[125] : pc[80000252] csrrsi	x13,mscratch,23: a3:80015e7b 
+spike[125] : pc[80000252] csrrsi  a3, mscratch, 23: a3:80015e7f 
+[FAILED]: 216 matched, 7903 mismatch
+
+0 PASSED, 1 FAILED

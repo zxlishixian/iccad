@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[70] : pc[80000184] mulh	x10,x31,x8: a0:00000001 
+spike[70] : pc[80000184] mulh    a0, t6, s0: a0:00000000 
+[FAILED]: 699 matched, 753 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[69] : pc[8000019a] ori	x26,x14,-274: s10:fffffeee 
+spike[69] : pc[8000018a] mulhsu  s9, s5, s10: s9:00000004 
+[FAILED]: 60 matched, 298 mismatch
+
+0 PASSED, 1 FAILED

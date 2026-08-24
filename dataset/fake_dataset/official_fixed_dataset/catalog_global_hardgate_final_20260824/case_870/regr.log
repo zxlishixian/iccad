@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[188] : pc[8000031a] c.addi	x4,-1: tp:f41f875d 
+spike[188] : pc[80000316] xor     a2, a2, t5: a2:80011b7c 
+[FAILED]: 491 matched, 7576 mismatch
+
+0 PASSED, 1 FAILED

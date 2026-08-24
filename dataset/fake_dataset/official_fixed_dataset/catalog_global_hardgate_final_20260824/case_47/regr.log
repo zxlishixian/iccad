@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[138] : pc[800028da] rem	x28,x27,x27: t3:00000000 
+spike[138] : pc[800028d8] c.srli  a2, 24: a2:000000ff 
+[FAILED]: 173 matched, 7731 mismatch
+
+0 PASSED, 1 FAILED

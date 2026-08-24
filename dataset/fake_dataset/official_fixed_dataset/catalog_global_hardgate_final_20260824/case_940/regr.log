@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[35] : pc[800000f4] addi	x30,x30,-406: t5:fffffe6a 
+spike[35] : pc[800000f4] addi    t5, t5, -406: t5:f7f3de6a 
+[FAILED]: 105 matched, 7989 mismatch
+
+0 PASSED, 1 FAILED

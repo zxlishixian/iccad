@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[95] : pc[8000025c] c.andi	x8,-1: s0:00000017 
+spike[95] : pc[8000025e] srl     t5, t4, a7: t5:00010003 
+[FAILED]: 119 matched, 1629 mismatch
+
+0 PASSED, 1 FAILED

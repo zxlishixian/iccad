@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[104] : pc[800001f8] xor	x9,x21,x1: s1:80000000 
+spike[104] : pc[800001ec] mul     s9, t6, sp: s9:00023c38 
+[FAILED]: 133 matched, 7630 mismatch
+
+0 PASSED, 1 FAILED

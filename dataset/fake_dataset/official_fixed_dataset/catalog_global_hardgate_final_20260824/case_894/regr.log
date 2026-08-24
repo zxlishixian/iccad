@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[108] : pc[80000212] sub	x14,x28,x30: a4:00000009 
+spike[108] : pc[80000212] sub     a4, t3, t5: a4:aa30f00e 
+[FAILED]: 677 matched, 7359 mismatch
+
+0 PASSED, 1 FAILED

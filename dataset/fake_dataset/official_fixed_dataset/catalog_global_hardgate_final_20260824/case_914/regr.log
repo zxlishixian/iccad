@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[44] : pc[80000122] addi	x31,x31,1105: t6:00000451 
+spike[44] : pc[80000122] addi    t6, t6, 1105: t6:f0660451 
+[FAILED]: 155 matched, 7740 mismatch
+
+0 PASSED, 1 FAILED

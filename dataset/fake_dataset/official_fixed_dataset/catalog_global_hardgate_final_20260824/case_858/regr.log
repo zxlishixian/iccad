@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[360] : pc[8000057e] xori	x13,x31,229: a3:000000e5 
+spike[360] : pc[8000057e] xori    a3, t6, 229: a3:ffffff1a 
+[FAILED]: 545 matched, 7416 mismatch
+
+0 PASSED, 1 FAILED

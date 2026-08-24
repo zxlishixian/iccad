@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[471] : pc[80000a18] lh	x5,-378(x2): t0:0000c000 
+spike[471] : pc[80000a18] lh      t0, -378(sp): t0:ffffc000 
+[FAILED]: 257 matched, 2180 mismatch
+
+0 PASSED, 1 FAILED

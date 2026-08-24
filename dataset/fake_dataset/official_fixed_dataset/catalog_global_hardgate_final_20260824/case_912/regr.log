@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[199] : pc[8000034a] c.add	x20,x25: s4:80015e7c 
+spike[199] : pc[80000346] csrrsi  s3, mscratch, 28: s3:80011e1c 
+[FAILED]: 192 matched, 7886 mismatch
+
+0 PASSED, 1 FAILED

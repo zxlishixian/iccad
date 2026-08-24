@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[81] : pc[800001dc] csrrsi	x10,mscratch,6: a0:00000000 
+spike[81] : pc[800001f0] xori    t3, a6, -111: t3:ffffff91 
+[FAILED]: 70 matched, 2708 mismatch
+
+0 PASSED, 1 FAILED

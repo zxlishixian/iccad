@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[327] : pc[800007e0] divu	x13,x10,x12: a3:ffffffff 
+spike[327] : pc[800007e0] divu    a3, a0, a2: a3:0ccccccb 
+[FAILED]: 315 matched, 2691 mismatch
+
+0 PASSED, 1 FAILED

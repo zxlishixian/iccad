@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[61] : pc[800001ba] and	x25,x30,x29: s9:00000000 
+spike[61] : pc[800001b6] sra     s2, s2, t6: s2:000039f0 
+[FAILED]: 77 matched, 6255 mismatch
+
+0 PASSED, 1 FAILED

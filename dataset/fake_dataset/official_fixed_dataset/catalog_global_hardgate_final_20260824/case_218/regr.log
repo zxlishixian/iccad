@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[578] : pc[80003594] sltu	x18,x3,x27: s2:00000000 
+spike[578] : pc[800035c2] xor     s3, s5, s11: s3:80005192 
+[FAILED]: 568 matched, 8185 mismatch
+
+0 PASSED, 1 FAILED

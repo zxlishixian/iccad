@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[103] : pc[80000204] slti	x6,x31,985: t1:00000000 
+spike[103] : pc[80000204] slti    t1, t6, 985: t1:00000001 
+[FAILED]: 163 matched, 7853 mismatch
+
+0 PASSED, 1 FAILED

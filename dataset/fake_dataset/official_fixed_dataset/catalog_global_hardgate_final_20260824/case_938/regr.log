@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[60] : pc[8000015e] andi	x2,x30,479: sp:00000000 
+spike[60] : pc[8000015e] andi    sp, t5, 479: sp:0000000f 
+[FAILED]: 89 matched, 3089 mismatch
+
+0 PASSED, 1 FAILED

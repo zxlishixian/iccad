@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[678] : pc[80000f52] csrrsi	x1,mscratch,22: ra:9001ee45 
+spike[678] : pc[80000f4e] remu    a0, a3, t6: a0:00003fff 
+[FAILED]: 598 matched, 3996 mismatch
+
+0 PASSED, 1 FAILED

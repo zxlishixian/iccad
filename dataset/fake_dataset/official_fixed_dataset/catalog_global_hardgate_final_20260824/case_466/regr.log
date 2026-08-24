@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[98] : pc[80004a96] c.li	x20,-1: s4:0000001f 
+spike[98] : pc[80004a96] c.li    s4, -1: s4:ffffffff 
+[FAILED]: 796 matched, 2744 mismatch
+
+0 PASSED, 1 FAILED

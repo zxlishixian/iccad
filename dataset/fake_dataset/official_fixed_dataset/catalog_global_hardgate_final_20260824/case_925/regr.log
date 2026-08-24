@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[44] : pc[80000120] addi	x30,x30,735: t5:000002df 
+spike[44] : pc[80000120] addi    t5, t5, 735: t5:fc21c2df 
+[FAILED]: 265 matched, 7784 mismatch
+
+0 PASSED, 1 FAILED

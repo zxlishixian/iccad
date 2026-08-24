@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[73] : pc[8000018c] c.andi	x8,-1: s0:00000000 
+spike[73] : pc[8000018e] sll     tp, s2, t2: tp:8e040921 
+[FAILED]: 73 matched, 8064 mismatch
+
+0 PASSED, 1 FAILED

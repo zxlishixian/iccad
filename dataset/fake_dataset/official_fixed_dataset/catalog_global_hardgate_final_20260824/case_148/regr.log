@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[98] : pc[80005c0e] srli	x22,x1,0xb: s6:000b59a4 
+spike[98] : pc[80005c0c] c.addi16sp sp, -16: sp:fffffff0 
+[FAILED]: 118 matched, 5747 mismatch
+
+0 PASSED, 1 FAILED

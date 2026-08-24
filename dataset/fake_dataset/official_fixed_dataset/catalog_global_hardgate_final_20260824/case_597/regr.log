@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[7024] : pc[8001158c] c.jalr	x22: ra:80011590 
+spike[7024] : pc[8001158c] c.jalr  s6: ra:8001158e 
+[FAILED]: 15899 matched, 21 mismatch
+
+0 PASSED, 1 FAILED

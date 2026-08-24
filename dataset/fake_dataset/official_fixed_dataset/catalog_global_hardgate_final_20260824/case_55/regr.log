@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[489] : pc[8000a2e6] divu	x25,x28,x6: s9:00000001 
+spike[489] : pc[8000a2ea] lbu     s0, 4(a2): s0:00000000 
+[FAILED]: 888 matched, 8002 mismatch
+
+0 PASSED, 1 FAILED

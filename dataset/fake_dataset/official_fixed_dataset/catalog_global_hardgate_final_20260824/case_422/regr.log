@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[59] : pc[8000015c] c.srai	x10,0x11: a0:00004000 
+spike[59] : pc[8000015c] c.srai  a0, 17: a0:ffffc000 
+[FAILED]: 115 matched, 4765 mismatch
+
+0 PASSED, 1 FAILED

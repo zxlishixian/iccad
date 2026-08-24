@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[113] : pc[8000021e] c.srli	x13,0x1: a3:c0008f0e 
+spike[113] : pc[8000021e] c.srli  a3, 1: a3:40008f0e 
+[FAILED]: 735 matched, 7400 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[149] : pc[80000298] c.srai	x9,0x14: s1:00000fff 
+spike[149] : pc[8000029a] sltu    a3, s6, a6: a3:00000001 
+[FAILED]: 1504 matched, 6527 mismatch
+
+0 PASSED, 1 FAILED

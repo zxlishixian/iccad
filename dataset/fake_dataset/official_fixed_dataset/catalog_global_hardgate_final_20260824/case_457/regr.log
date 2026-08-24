@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[194] : pc[80000458] divu	x18,x27,x21: s2:ffffffff 
+spike[194] : pc[80000458] divu    s2, s11, s5: s2:0000000c 
+[FAILED]: 574 matched, 4346 mismatch
+
+0 PASSED, 1 FAILED

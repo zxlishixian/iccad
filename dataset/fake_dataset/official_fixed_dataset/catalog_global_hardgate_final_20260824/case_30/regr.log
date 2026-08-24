@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[307] : pc[800009de] c.srai	x15,0xa: a5:003fffff 
+spike[307] : pc[800009e0] ori     a2, t1, 832: a2:0000036a 
+[FAILED]: 267 matched, 4336 mismatch
+
+0 PASSED, 1 FAILED

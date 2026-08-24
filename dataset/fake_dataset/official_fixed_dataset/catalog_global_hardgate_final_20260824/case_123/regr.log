@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[112] : pc[800002e2] and	x7,x7,x5: t2:e0005001 
+spike[112] : pc[8000030c] slti    s8, s10, -906: s8:00000001 
+[FAILED]: 137 matched, 6781 mismatch
+
+0 PASSED, 1 FAILED

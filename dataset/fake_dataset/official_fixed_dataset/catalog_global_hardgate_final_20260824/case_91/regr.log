@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[315] : pc[800025b4] sltiu	x28,x1,-567: t3:00000001 
+spike[315] : pc[8000258e] lui     t1, 0xdfc23: t1:dfc23000 
+[FAILED]: 287 matched, 11873 mismatch
+
+0 PASSED, 1 FAILED

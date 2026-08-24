@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2159] : pc[800025e4] slti	x24,x31,-391: s8:00000000 
+spike[2159] : pc[800025dc] divu    s5, t3, a0: s5:00000001 
+[FAILED]: 1268 matched, 6934 mismatch
+
+0 PASSED, 1 FAILED

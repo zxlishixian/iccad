@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[170] : pc[800002ec] andi	x16,x27,-537: a6:00000000 
+spike[170] : pc[800002e8] c.srli  a2, 28: a2:0000000f 
+[FAILED]: 153 matched, 7971 mismatch
+
+0 PASSED, 1 FAILED

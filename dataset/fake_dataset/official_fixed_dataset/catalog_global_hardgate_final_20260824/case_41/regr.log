@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[404] : pc[80000690] mulh	x23,x23,x8: s7:00000000 
+spike[404] : pc[800006b6] c.addi16sp sp, -16: sp:27f18ff0 
+[FAILED]: 392 matched, 4698 mismatch
+
+0 PASSED, 1 FAILED

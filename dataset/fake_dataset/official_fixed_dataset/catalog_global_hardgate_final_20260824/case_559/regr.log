@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[162] : pc[80000406] xori	x26,x25,-164: s10:ffffff5c 
+spike[162] : pc[80000358] srai    sp, s8, 22: sp:00000000 
+[FAILED]: 151 matched, 34 mismatch
+
+0 PASSED, 1 FAILED

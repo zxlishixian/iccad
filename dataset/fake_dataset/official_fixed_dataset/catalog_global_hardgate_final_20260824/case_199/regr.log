@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[81] : pc[80001978] c.addi16sp	x2,-48: sp:8001adc0 
+spike[81] : pc[80001974] auipc   s11, 0xfffba: s11:7ffbb974 
+[FAILED]: 82 matched, 4085 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[226] : pc[80000394] add	x28,x14,x30: t3:80015e7c 
+spike[226] : pc[80000394] add     t3, a4, t5: t3:801149cb 
+[FAILED]: 203 matched, 8092 mismatch
+
+0 PASSED, 1 FAILED

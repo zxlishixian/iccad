@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[251] : pc[800060f6] sltu	x4,x8,x30: tp:00000000 
+spike[251] : pc[800060fa] srai    s3, s1, 17: s3:0000193d 
+[FAILED]: 304 matched, 12645 mismatch
+
+0 PASSED, 1 FAILED

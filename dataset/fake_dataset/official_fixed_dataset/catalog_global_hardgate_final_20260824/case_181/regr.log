@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[131] : pc[80005364] c.li	x28,-1: t3:0000001f 
+spike[131] : pc[80005366] mulhu   a4, a2, t3: a4:851f0773 
+[FAILED]: 126 matched, 4193 mismatch
+
+0 PASSED, 1 FAILED

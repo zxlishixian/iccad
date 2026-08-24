@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[73] : pc[8000018a] xor	x25,x1,x30: s9:cc916a58 
+spike[73] : pc[8000018a] xor     s9, ra, t5: s9:00000007 
+[FAILED]: 247 matched, 7701 mismatch
+
+0 PASSED, 1 FAILED

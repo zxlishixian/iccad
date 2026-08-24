@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[214] : pc[80000392] c.add	x27,x30: s11:00000017 
+spike[214] : pc[80000392] c.add   s11, t5: s11:ffa77114 
+[FAILED]: 799 matched, 7371 mismatch
+
+0 PASSED, 1 FAILED

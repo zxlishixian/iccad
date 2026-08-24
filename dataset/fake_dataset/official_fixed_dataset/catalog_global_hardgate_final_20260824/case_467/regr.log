@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[314] : pc[800012fa] divu	x8,x25,x31: s0:fffffff6 
+spike[314] : pc[800012fe] csrrs   s9, mscratch, a4: s9:00000000 
+[FAILED]: 267 matched, 3630 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[85] : pc[80000428] c.lui	x29,0x5: t4:00005000 
+spike[85] : pc[80000452] or      tp, s8, t5: tp:b7424adf 
+[FAILED]: 92 matched, 5786 mismatch
+
+0 PASSED, 1 FAILED

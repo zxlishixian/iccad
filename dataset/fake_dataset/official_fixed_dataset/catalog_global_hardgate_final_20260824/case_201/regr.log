@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[216] : pc[80001844] div	x7,x30,x9: t2:00000001 
+spike[216] : pc[8000184c] c.addi16sp sp, -16: sp:00000043 
+[FAILED]: 217 matched, 1571 mismatch
+
+0 PASSED, 1 FAILED

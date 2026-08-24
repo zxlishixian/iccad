@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[87] : pc[80005b90] lb	x25,1921(x19): s9:000000f2 
+spike[87] : pc[80005b90] lb      s9, 1921(s3): s9:fffffff2 
+[FAILED]: 117 matched, 15183 mismatch
+
+0 PASSED, 1 FAILED

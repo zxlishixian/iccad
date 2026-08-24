@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[106] : pc[8000274e] jal	x31,80002762: t6:00000004 
+spike[106] : pc[8000274e] jal     t6, 0x14: t6:80002752 
+[FAILED]: 82 matched, 2694 mismatch
+
+0 PASSED, 1 FAILED

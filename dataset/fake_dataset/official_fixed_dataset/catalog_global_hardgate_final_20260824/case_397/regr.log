@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[133] : pc[800002b2] divu	x11,x21,x20: a1:ff7ced94 
+spike[133] : pc[800002b2] divu    a1, s5, s4: a1:00831270 
+[FAILED]: 2988 matched, 3067 mismatch
+
+0 PASSED, 1 FAILED

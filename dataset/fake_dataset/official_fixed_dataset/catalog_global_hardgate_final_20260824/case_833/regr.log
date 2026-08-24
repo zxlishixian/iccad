@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[63] : pc[8000016e] lw	x8,-10(x2): s0:5152534c 
+spike[63] : pc[8001c080] addi    a6, a6, -124: a6:8002cda0 
+[FAILED]: 58 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

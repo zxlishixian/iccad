@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[188] : pc[800003b2] csrrc	x3,mscratch,x5: gp:00000002 
+spike[188] : pc[800003d0] sltu    s1, a7, a5: s1:00000001 
+[FAILED]: 123 matched, 2729 mismatch
+
+0 PASSED, 1 FAILED
