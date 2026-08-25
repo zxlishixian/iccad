@@ -13,8 +13,8 @@ __pycache__/
 **/credentials.json
 models/
 # 提交包内 _internal/models 是打包好的编码器权重（~3.6MB），必须入库，否则二进制回退基线
-!submission_files/final/final_submission/_internal/models/
-!submission_files/final/final_submission/_internal/models/**
+!submission_files/**/_internal/models/
+!submission_files/**/_internal/models/**
 token_weights*.json
 *.pt
 *.pth
