@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[147] : pc[80007d52] srli	x5,x23,0x1f: t0:00000000 
+spike[147] : pc[80007d4e] divu    s0, sp, t6: s0:00000001 
+[FAILED]: 120 matched, 671 mismatch
+
+0 PASSED, 1 FAILED

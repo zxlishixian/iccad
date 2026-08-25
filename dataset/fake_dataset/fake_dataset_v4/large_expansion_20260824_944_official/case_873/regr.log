@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[71] : pc[80000210] mulh	x22,x31,x10: s6:00000000 
+spike[71] : pc[80000210] mulh    s6, t6, a0: s6:3fff26fd 
+Mismatch[26]:
+[203] ibex : pc[800004c2] csrrwi	x4,mscratch,12: tp:00000002 
+[FAILED]: 154 matched, 26 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[131] : pc[8000202e] mul	x27,x7,x23: s11:0000005a 
+spike[131] : pc[80002064] csrrs   t5, mscratch, t0: t5:00003001 
+Mismatch[1953]:
+[2493] ibex : pc[800074ea] div	x10,x29,x30: a0:ffffffff 
+[FAILED]: 124 matched, 1953 mismatch
+
+0 PASSED, 1 FAILED

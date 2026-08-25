@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[70] : pc[80000212] c.xor	x12,x11: a2:80000000 
+spike[70] : pc[8000023c] c.lui   a1, 0x19: a1:00019000 
+[FAILED]: 60 matched, 3501 mismatch
+
+0 PASSED, 1 FAILED

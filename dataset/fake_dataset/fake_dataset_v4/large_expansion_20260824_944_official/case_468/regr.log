@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[240] : pc[80000438] div	x1,x16,x14: ra:00000032 
+spike[240] : pc[80000438] div     ra, a6, a4: ra:00000000 
+[FAILED]: 628 matched, 1420 mismatch
+
+0 PASSED, 1 FAILED

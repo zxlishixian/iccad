@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[212] : pc[8002c820] lh	x19,-5(x7): s3:00008004 
+spike[212] : pc[8002c820] lh      s3, -5(t2): s3:ffff8004 
+[FAILED]: 1971 matched, 71728 mismatch
+
+0 PASSED, 1 FAILED

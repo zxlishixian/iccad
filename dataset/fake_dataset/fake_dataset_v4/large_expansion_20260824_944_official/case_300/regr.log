@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2217] : pc[800106cc] c.jalr	x1: ra:800106d0 
+spike[2217] : pc[800106cc] c.jalr  ra: ra:800106ce 
+[FAILED]: 1957 matched, 11 mismatch
+
+0 PASSED, 1 FAILED

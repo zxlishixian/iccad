@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[225] : pc[8000078c] divu	x24,x11,x1: s8:00000000 
+spike[225] : pc[800007c2] mulh    ra, t1, s10: ra:11ef4ea3 
+[FAILED]: 187 matched, 1677 mismatch
+
+0 PASSED, 1 FAILED

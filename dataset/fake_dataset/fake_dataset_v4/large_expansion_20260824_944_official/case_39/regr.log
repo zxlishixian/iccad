@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[557] : pc[80001734] auipc	x20,0x9320c: s4:1320d734 
+spike[557] : pc[80001706] csrrw   t6, mscratch, s1: t6:00000000 
+Mismatch[4275]:
+[5269] ibex : pc[80000ea2] c.or	x14,x15: a4:dfe3ffbe 
+[FAILED]: 551 matched, 4275 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[928] : pc[800037f6] xori	x4,x3,476: tp:80003718 
+spike[928] : pc[8000383a] srl     t1, sp, sp: t1:00000000 
+[FAILED]: 901 matched, 1062 mismatch
+
+0 PASSED, 1 FAILED

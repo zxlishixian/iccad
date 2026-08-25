@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[76] : pc[800001b8] lui	x31,0x524cf: t6:524cf000 
+spike[76] : pc[800001c0] add     s3, s6, s5: s3:0001ee7c 
+[FAILED]: 135 matched, 11801 mismatch
+
+0 PASSED, 1 FAILED

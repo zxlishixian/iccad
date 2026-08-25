@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[114] : pc[8000029e] remu	x25,x20,x12: s9:00000008 
+spike[114] : pc[8000029a] mulh    gp, t6, a1: gp:00000000 
+Mismatch[10995]:
+[13044] ibex : pc[8000673a] addi	x6,x22,68: t1:ffffc044 
+[FAILED]: 124 matched, 10995 mismatch
+
+0 PASSED, 1 FAILED

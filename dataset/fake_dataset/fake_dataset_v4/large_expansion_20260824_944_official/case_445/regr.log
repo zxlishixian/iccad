@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[312] : pc[800005e6] sub	x21,x18,x20: s5:00000002 
+spike[312] : pc[800005b8] c.addi4spn a5, sp, 864: a5:00000360 
+Mismatch[461]:
+[874] ibex : pc[800017fc] mulhsu	x29,x3,x11: t4:00000000 
+[FAILED]: 275 matched, 461 mismatch
+
+0 PASSED, 1 FAILED

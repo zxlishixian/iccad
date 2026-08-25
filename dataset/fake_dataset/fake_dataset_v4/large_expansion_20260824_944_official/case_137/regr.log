@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[737] : pc[80002b92] c.addi	x28,-1: t3:0000efff 
+spike[737] : pc[80002bc2] c.andi  a5, 3: a5:00000000 
+[FAILED]: 759 matched, 2068 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[915] : pc[8000116a] sll	x14,x17,x23: a4:10000000 
+spike[915] : pc[80001146] c.slli  sp, 30: sp:40000000 
+[FAILED]: 884 matched, 4681 mismatch
+
+0 PASSED, 1 FAILED

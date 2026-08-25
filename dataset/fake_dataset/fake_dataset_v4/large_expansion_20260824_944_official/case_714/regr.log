@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[150] : pc[800002ac] xor	x4,x10,x30: tp:000060c8 
+spike[150] : pc[800002ac] xor     tp, a0, t5: tp:800060c9 
+Mismatch[6845]:
+[9433] ibex : pc[80008402] c.slli	x29,0x15: t4:ffe00000 
+[FAILED]: 1192 matched, 6845 mismatch
+
+0 PASSED, 1 FAILED

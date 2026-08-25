@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[78] : pc[800001c2] addi	x18,x18,-923: s2:c5bb89d5 
+spike[78] : pc[800001dc] slli    a6, s5, 18: a6:00000000 
+[FAILED]: 79 matched, 1497 mismatch
+
+0 PASSED, 1 FAILED

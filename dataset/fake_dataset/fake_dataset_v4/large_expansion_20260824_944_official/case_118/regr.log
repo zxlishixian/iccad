@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[215] : pc[8000041a] or	x24,x14,x22: s8:000000f0 
+spike[215] : pc[8000040c] csrrsi  s2, mscratch, 9: s2:0000000f 
+Mismatch[221630]:
+[250181] ibex : pc[80010ce6] and	x26,x20,x4: s10:00000000 
+[FAILED]: 519 matched, 221630 mismatch
+
+0 PASSED, 1 FAILED

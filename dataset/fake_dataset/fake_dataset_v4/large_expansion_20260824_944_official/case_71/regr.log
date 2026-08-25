@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[249] : pc[800071ee] c.or	x15,x10: a5:d726737f 
+spike[249] : pc[800071f4] mulhu   a2, ra, s4: a2:00000000 
+Mismatch[2376]:
+[3184] ibex : pc[80006b9e] c.addi	x15,14: a5:4fd15fbc 
+[FAILED]: 229 matched, 2376 mismatch
+
+0 PASSED, 1 FAILED

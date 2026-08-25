@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[114] : pc[8000029a] mulh	x3,x31,x11: gp:3fff28f2 
+spike[114] : pc[8000029a] mulh    gp, t6, a1: gp:00000000 
+[FAILED]: 166 matched, 11789 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[43] : pc[80000110] addi	x31,x31,151: t6:00000097 
+spike[43] : pc[80000110] addi    t6, t6, 151: t6:f6d90097 
+Mismatch[7669]:
+[9397] ibex : pc[80008398] ori	x20,x9,1010: s4:000003f2 
+[FAILED]: 131 matched, 7669 mismatch
+
+0 PASSED, 1 FAILED

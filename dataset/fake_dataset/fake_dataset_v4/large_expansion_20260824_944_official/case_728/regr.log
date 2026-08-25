@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[83] : pc[800001a0] c.mv	x1,x30: ra:fffc9cf4 
+spike[83] : pc[800001a2] sra     t2, a7, s3: t2:ffffffff 
+Mismatch[7722]:
+[9409] ibex : pc[800083c6] and	x4,x6,x31: tp:d6d0f37d 
+[FAILED]: 78 matched, 7722 mismatch
+
+0 PASSED, 1 FAILED

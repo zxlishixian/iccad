@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[100] : pc[800002aa] slti	x1,x17,-248: ra:00000000 
+spike[100] : pc[800002be] sltiu   s8, t5, -950: s8:00000001 
+Mismatch[2514]:
+[3119] ibex : pc[80003ade] srl	x1,x19,x11: ra:007a0180 
+[FAILED]: 91 matched, 2514 mismatch
+
+0 PASSED, 1 FAILED

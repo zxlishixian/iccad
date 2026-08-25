@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[57] : pc[80000150] c.srli	x14,0x10: a4:ffff8000 
+spike[57] : pc[80000150] c.srli  a4, 16: a4:00008000 
+Mismatch[4688]:
+[7005] ibex : pc[80003128] andi	x16,x14,974: a6:00000346 
+[FAILED]: 1267 matched, 4688 mismatch
+
+0 PASSED, 1 FAILED

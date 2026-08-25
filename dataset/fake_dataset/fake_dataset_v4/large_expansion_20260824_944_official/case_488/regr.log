@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[789] : pc[800063ac] remu	x24,x31,x2: s8:fffffffd 
+spike[789] : pc[800063ac] remu    s8, t6, sp: s8:8001ad74 
+Mismatch[822]:
+[2502] ibex : pc[800002b0] lui	x1,0x201ff: ra:201ff000 
+[FAILED]: 1367 matched, 822 mismatch
+
+0 PASSED, 1 FAILED

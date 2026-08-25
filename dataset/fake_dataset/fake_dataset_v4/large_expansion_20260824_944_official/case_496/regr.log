@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[4411] : pc[8000911c] remu	x26,x11,x12: s10:80023dd4 
+spike[4411] : pc[8000911c] remu    s10, a1, a2: s10:0000c2a2 
+[FAILED]: 3296 matched, 17981 mismatch
+
+0 PASSED, 1 FAILED

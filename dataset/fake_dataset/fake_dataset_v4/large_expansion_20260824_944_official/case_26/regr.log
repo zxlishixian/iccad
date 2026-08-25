@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[702] : pc[80000d08] addi	x30,x18,-2: t5:80023e1a 
+spike[702] : pc[80000d28] sub     ra, s4, a1: ra:6ad7ee08 
+Mismatch[4009]:
+[5253] ibex : pc[8000285e] divu	x13,x24,x24: a3:00000001 
+[FAILED]: 677 matched, 4009 mismatch
+
+0 PASSED, 1 FAILED

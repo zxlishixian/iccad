@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[240] : pc[800006a8] xor	x26,x5,x13: s10:7ffe51e4 
+spike[240] : pc[800006be] csrrw   s0, mscratch, s6: s0:00002000 
+Mismatch[4278]:
+[5228] ibex : pc[80002f62] sltiu	x12,x27,-132: a2:00000001 
+[FAILED]: 205 matched, 4278 mismatch
+
+0 PASSED, 1 FAILED

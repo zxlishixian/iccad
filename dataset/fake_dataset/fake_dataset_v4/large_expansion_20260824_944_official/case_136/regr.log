@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[65] : pc[80000174] c.mv	x16,x4: a6:80000168 
+spike[65] : pc[800001cc] sra     t4, zero, s1: t4:00000000 
+Mismatch[3]:
+[68] ibex : pc[8000017e] c.xor	x10,x14: a0:870fb48b 
+[FAILED]: 55 matched, 3 mismatch
+
+0 PASSED, 1 FAILED

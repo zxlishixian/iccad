@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[70] : pc[800001d0] c.srli	x12,0x12: a2:fffffd48 
+spike[70] : pc[800001d0] c.srli  a2, 18: a2:00003d48 
+Mismatch[1995]:
+[2387] ibex : pc[80001f32] rem	x13,x11,x3: a3:5b135000 
+[FAILED]: 82 matched, 1995 mismatch
+
+0 PASSED, 1 FAILED

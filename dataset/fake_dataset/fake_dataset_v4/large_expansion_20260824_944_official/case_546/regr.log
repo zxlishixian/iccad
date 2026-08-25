@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[70] : pc[800001aa] lh	x1,-2034(x24): ra:0000d000 
+spike[70] : pc[800001aa] lh      ra, -2034(s8): ra:ffffd000 
+Mismatch[20996]:
+[40439] ibex : pc[800003be] rem	x1,x18,x20: ra:0165fedf 
+[FAILED]: 6436 matched, 20996 mismatch
+
+0 PASSED, 1 FAILED

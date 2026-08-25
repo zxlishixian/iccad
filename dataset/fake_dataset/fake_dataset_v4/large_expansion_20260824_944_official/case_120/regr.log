@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[764] : pc[80000e70] remu	x23,x26,x6: s7:00000000 
+spike[764] : pc[80000e30] mul     a5, t4, t0: a5:0000291e 
+[FAILED]: 752 matched, 3934 mismatch
+
+0 PASSED, 1 FAILED

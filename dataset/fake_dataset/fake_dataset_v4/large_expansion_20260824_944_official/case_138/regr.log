@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[491] : pc[8000088a] srai	x23,x15,0x1: s7:c00003d0 
+spike[491] : pc[8000088e] rem     s7, a3, t6: s7:80000770 
+[FAILED]: 480 matched, 3311 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[305] : pc[80000632] sltiu	x3,x28,-153: gp:00000001 
+spike[305] : pc[80000626] lhu     t2, 13(s0): t2:0000ff9a 
+[FAILED]: 282 matched, 26302 mismatch
+
+0 PASSED, 1 FAILED

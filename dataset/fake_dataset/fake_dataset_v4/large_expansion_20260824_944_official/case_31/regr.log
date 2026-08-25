@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[152] : pc[80006b94] slt	x8,x14,x21: s0:00000001 
+spike[152] : pc[80006bd2] c.xor   a1, a2: a1:4126cbe3 
+Mismatch[10268]:
+[11657] ibex : pc[8000d290] add	x21,x16,x10: s5:80027e7c 
+[FAILED]: 159 matched, 10268 mismatch
+
+0 PASSED, 1 FAILED

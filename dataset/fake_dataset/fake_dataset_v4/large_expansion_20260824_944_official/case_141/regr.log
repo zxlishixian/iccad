@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[644] : pc[80002f88] or	x14,x1,x10: a4:80002f7d 
+spike[644] : pc[80002ff2] sltu    a1, ra, t5: a1:00000001 
+Mismatch[1325]:
+[2100] ibex : pc[80002722] c.lui	x7,0x17: t2:00017000 
+[FAILED]: 635 matched, 1325 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[483] : pc[80000834] c.and	x8,x9: s0:00000000 
+spike[483] : pc[80000840] c.mv    s6, s1: s6:0001c000 
+Mismatch[3046]:
+[3902] ibex : pc[80002130] ori	x27,x19,702: s11:fffffffe 
+[FAILED]: 476 matched, 3046 mismatch
+
+0 PASSED, 1 FAILED

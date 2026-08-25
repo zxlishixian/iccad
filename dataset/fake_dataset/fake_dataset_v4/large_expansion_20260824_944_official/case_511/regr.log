@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[53] : pc[8000013e] lb	x8,11(x15): s0:000000c5 
+spike[53] : pc[8000013e] lb      s0, 11(a5): s0:ffffffc5 
+[FAILED]: 137 matched, 339389 mismatch
+
+0 PASSED, 1 FAILED

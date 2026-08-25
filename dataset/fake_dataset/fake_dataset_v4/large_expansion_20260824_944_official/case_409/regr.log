@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[153] : pc[800003aa] ori	x26,x27,571: s10:0000023b 
+spike[153] : pc[800003c6] csrrci  t2, mscratch, 21: t2:ffffffc4 
+Mismatch[41]:
+[201] ibex : pc[800004da] sltu	x25,x6,x27: s9:00000000 
+[FAILED]: 139 matched, 41 mismatch
+
+0 PASSED, 1 FAILED

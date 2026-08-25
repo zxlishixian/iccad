@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[167] : pc[80008570] div	x14,x20,x6: a4:00000000 
+spike[167] : pc[80008568] csrrci  a1, mscratch, 2: a1:00000019 
+Mismatch[4223]:
+[5005] ibex : pc[8000cc2e] ori	x26,x26,534: s10:00000216 
+[FAILED]: 157 matched, 4223 mismatch
+
+0 PASSED, 1 FAILED

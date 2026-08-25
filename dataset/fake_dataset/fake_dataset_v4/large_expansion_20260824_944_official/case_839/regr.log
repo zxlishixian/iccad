@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[86] : pc[8002e8c6] lh	x3,263(x26): gp:00000000 
+spike[86] : pc[8002e8c6] lh      gp, 263(s10): gp:ffffdf13 
+[FAILED]: 233 matched, 35637 mismatch
+
+0 PASSED, 1 FAILED

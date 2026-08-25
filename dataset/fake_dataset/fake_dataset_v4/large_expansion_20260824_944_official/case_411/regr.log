@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[90] : pc[800067ea] slti	x18,x1,-580: s2:00000001 
+spike[90] : pc[80006832] rem     a1, tp, t0: a1:00059d89 
+[FAILED]: 96 matched, 2711 mismatch
+
+0 PASSED, 1 FAILED

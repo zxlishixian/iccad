@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[92] : pc[800002ee] csrrs	x22,mscratch,x13: s6:00000000 
+spike[92] : pc[8000031c] xori    s0, t3, 184: s0:000000b7 
+Mismatch[3465]:
+[4275] ibex : pc[8000596c] srai	x14,x29,0x4: a4:00000000 
+[FAILED]: 93 matched, 3465 mismatch
+
+0 PASSED, 1 FAILED

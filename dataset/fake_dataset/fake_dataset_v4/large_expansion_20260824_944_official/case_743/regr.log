@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[188] : pc[8000226a] sltiu	x9,x24,365: s1:00000001 
+spike[188] : pc[800022a6] sub     ra, s5, a0: ra:5aaf4d1f 
+[FAILED]: 168 matched, 1915 mismatch
+
+0 PASSED, 1 FAILED

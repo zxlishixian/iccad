@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[83] : pc[800112a8] c.srai	x10,0x10: a0:00000000 
+spike[83] : pc[8001129c] srli    t5, t2, 3: t5:00000000 
+[FAILED]: 82 matched, 4460 mismatch
+
+0 PASSED, 1 FAILED

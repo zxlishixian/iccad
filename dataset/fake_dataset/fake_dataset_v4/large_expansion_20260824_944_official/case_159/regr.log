@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[71] : pc[800001ce] ori	x7,x4,-504: t2:fffffeac 
+spike[71] : pc[800001f2] c.xor   a4, a4: a4:00000000 
+[FAILED]: 70 matched, 5114 mismatch
+
+0 PASSED, 1 FAILED

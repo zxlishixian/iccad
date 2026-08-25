@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[54] : pc[8000a080] addi	x9,x9,-124: s1:ffffff84 
+spike[54] : pc[8000013e] auipc   s1, 0x1b: s1:8001b13e 
+[FAILED]: 47 matched, 2884 mismatch
+
+0 PASSED, 1 FAILED

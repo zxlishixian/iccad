@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[232] : pc[8000073a] xor	x4,x29,x20: tp:99077cf1 
+spike[232] : pc[8000070e] slli    a7, s9, 24: a7:7c000000 
+Mismatch[5709]:
+[7359] ibex : pc[80003f26] slti	x1,x8,104: ra:00000000 
+[FAILED]: 223 matched, 5709 mismatch
+
+0 PASSED, 1 FAILED

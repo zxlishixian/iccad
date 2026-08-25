@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[64] : pc[80000176] lw	x3,-14(x30): gp:fcfb6902 
+spike[64] : pc[80000172] lh      a1, 552(a6): a1:0000751b 
+Mismatch[19]:
+[85] ibex : pc[800001e2] sltiu	x19,x10,39: s3:00000001 
+[FAILED]: 53 matched, 19 mismatch
+
+0 PASSED, 1 FAILED

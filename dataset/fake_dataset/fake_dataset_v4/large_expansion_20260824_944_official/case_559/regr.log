@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[65] : pc[8000016c] lh	x24,16(x27): s8:0000b2b3 
+spike[65] : pc[8000016c] lh      s8, 16(s11): s8:ffffb2b3 
+Mismatch[72112]:
+[78215] ibex : pc[80014d46] c.srai	x13,0x18: a3:00000000 
+[FAILED]: 447 matched, 72112 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[63] : pc[8000018a] sra	x5,x29,x17: t0:ffffffff 
+spike[63] : pc[8000019c] srli    a2, s7, 19: a2:00000c79 
+[FAILED]: 62 matched, 7298 mismatch
+
+0 PASSED, 1 FAILED

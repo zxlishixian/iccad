@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[519] : pc[800009ca] mulhsu	x29,x19,x14: t4:00000000 
+spike[519] : pc[800009ee] c.xor   a2, s1: a2:7240e52c 
+[FAILED]: 495 matched, 4408 mismatch
+
+0 PASSED, 1 FAILED

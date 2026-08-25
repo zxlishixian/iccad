@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[300] : pc[80001228] c.li	x22,-1: s6:0000001f 
+spike[300] : pc[80001228] c.li    s6, -1: s6:ffffffff 
+Mismatch[13004]:
+[15478] ibex : pc[80006982] xori	x5,x1,375: t0:00000177 
+[FAILED]: 343 matched, 13004 mismatch
+
+0 PASSED, 1 FAILED

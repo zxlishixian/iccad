@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[147] : pc[800056e2] srli	x6,x1,0xb: t1:001fffff 
+spike[147] : pc[800056be] mulh    s4, s6, t0: s4:e11377ea 
+[FAILED]: 136 matched, 2053 mismatch
+
+0 PASSED, 1 FAILED

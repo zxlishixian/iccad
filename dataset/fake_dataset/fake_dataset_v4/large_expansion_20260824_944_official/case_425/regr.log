@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[74] : pc[800001e4] xori	x5,x4,672: t0:000002a0 
+spike[74] : pc[800001a8] div     s11, s9, sp: s11:00000000 
+[FAILED]: 64 matched, 1327 mismatch
+
+0 PASSED, 1 FAILED

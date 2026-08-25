@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[55] : pc[80000192] xori	x24,x3,973: s8:f733b091 
+spike[55] : pc[8000014c] sub     a5, t3, s2: a5:7ffffff9 
+[FAILED]: 73 matched, 4415 mismatch
+
+0 PASSED, 1 FAILED

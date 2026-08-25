@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1386] : pc[8000185a] c.srli	x14,0x1: a4:00000000 
+spike[1386] : pc[8000184e] addi    ra, s7, -526: ra:fffffdd2 
+[FAILED]: 1370 matched, 1733 mismatch
+
+0 PASSED, 1 FAILED

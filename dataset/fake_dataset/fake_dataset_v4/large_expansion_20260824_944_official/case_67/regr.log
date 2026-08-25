@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[90] : pc[800002f4] slli	x19,x1,0xf: s3:20398000 
+spike[90] : pc[800002e2] ori     t6, t4, -792: t6:fffffde8 
+Mismatch[9183]:
+[10760] ibex : pc[800019bc] c.addi4spn	x9,x2,544: s1:00000220 
+[FAILED]: 160 matched, 9183 mismatch
+
+0 PASSED, 1 FAILED

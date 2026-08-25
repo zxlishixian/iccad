@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[93] : pc[800031a0] sra	x18,x11,x18: s2:00000000 
+spike[93] : pc[80003168] ori     t3, a7, 81: t3:80000051 
+Mismatch[3789]:
+[4755] ibex : pc[80003cb0] lui	x27,0x2a297: s11:2a297000 
+[FAILED]: 98 matched, 3789 mismatch
+
+0 PASSED, 1 FAILED

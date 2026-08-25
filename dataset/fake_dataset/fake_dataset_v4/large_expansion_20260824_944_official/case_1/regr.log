@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[56] : pc[80000152] c.addi	x14,31: a4:00000020 
+spike[56] : pc[800001c0] add     a3, t2, s6: a3:7efc0a6c 
+Mismatch[128]:
+[203] ibex : pc[80004814] remu	x2,x13,x19: sp:00000001 
+[FAILED]: 52 matched, 128 mismatch
+
+0 PASSED, 1 FAILED

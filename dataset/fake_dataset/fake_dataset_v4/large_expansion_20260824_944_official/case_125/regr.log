@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[263] : pc[80006eaa] csrrs	x2,mscratch,x11: sp:00000005 
+spike[263] : pc[80006e92] c.addi  a1, 13: a1:00000015 
+[FAILED]: 254 matched, 10639 mismatch
+
+0 PASSED, 1 FAILED

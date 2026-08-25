@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[66] : pc[80002094] jal	x26,800020cc: s10:00000004 
+spike[66] : pc[80002094] jal     s10, 0x38: s10:80002098 
+[FAILED]: 60 matched, 2795 mismatch
+
+0 PASSED, 1 FAILED

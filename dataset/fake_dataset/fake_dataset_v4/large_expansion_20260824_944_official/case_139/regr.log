@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[468] : pc[800007a8] lui	x30,0xf1457: t5:f1457000 
+spike[468] : pc[800007ac] slt     s2, s9, a1: s2:00000000 
+Mismatch[6141]:
+[7165] ibex : pc[80005cc4] srl	x1,x16,x4: ra:00000000 
+[FAILED]: 468 matched, 6141 mismatch
+
+0 PASSED, 1 FAILED

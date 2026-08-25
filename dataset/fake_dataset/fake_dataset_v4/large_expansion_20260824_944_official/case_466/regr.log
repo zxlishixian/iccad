@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[139] : pc[80010e3e] div	x24,x30,x21: s8:fffffffd 
+spike[139] : pc[80010e3e] div     s8, t5, s5: s8:06bca1af 
+Mismatch[1278]:
+[2317] ibex : pc[800008ec] sltiu	x9,x3,-234: s1:00000001 
+[FAILED]: 719 matched, 1278 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[187] : pc[80000344] add	x6,x15,x10: t1:00010005 
+spike[187] : pc[8000035a] mv      t0, t2: t0:0000fcb3 
+[FAILED]: 395 matched, 232255 mismatch
+
+0 PASSED, 1 FAILED

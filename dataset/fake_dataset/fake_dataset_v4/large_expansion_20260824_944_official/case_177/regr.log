@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[73] : pc[800001de] slt	x15,x14,x31: a5:00000000 
+spike[73] : pc[800001cc] c.xor   a1, a5: a1:00000009 
+[FAILED]: 63 matched, 135 mismatch
+
+0 PASSED, 1 FAILED

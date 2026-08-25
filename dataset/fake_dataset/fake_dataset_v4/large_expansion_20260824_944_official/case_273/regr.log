@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[59] : pc[80013080] addi	x11,x11,-124: a1:80023da0 
+spike[59] : pc[800108ea] addi    a1, a1, -60: a1:80023de0 
+[FAILED]: 49 matched, 15260 mismatch
+
+0 PASSED, 1 FAILED

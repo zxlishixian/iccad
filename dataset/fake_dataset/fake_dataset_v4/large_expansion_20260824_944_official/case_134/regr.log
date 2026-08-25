@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[522] : pc[80000a1a] c.and	x15,x9: a5:80017dc0 
+spike[522] : pc[800009fc] and     a4, s3, a1: a4:00000000 
+[FAILED]: 497 matched, 4335 mismatch
+
+0 PASSED, 1 FAILED

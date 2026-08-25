@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[89] : pc[8000030c] jal	x1,8000033a: ra:00000004 
+spike[89] : pc[8000030c] jal     0x2e: ra:80000310 
+[FAILED]: 69 matched, 4868 mismatch
+
+0 PASSED, 1 FAILED

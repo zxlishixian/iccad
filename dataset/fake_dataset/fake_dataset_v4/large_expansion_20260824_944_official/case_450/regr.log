@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[68] : pc[800071c4] div	x20,x24,x27: s4:00000000 
+spike[68] : pc[800071c4] div     s4, s8, s11: s4:ffffffff 
+[FAILED]: 348 matched, 9000 mismatch
+
+0 PASSED, 1 FAILED

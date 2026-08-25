@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[65] : pc[8000018c] jalr	x2,-686(x5): sp:80000190 
+spike[65] : pc[80000184] csrrw   a5, mscratch, tp: a5:00000000 
+Mismatch[6932]:
+[7594] ibex : pc[80005200] c.addi	x22,-1: s6:ffffffff 
+[FAILED]: 100 matched, 6932 mismatch
+
+0 PASSED, 1 FAILED

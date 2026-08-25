@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[69] : pc[800066f6] addi	x9,x9,-60: s1:8001ade0 
+spike[69] : pc[800066f2] mulh    gp, a0, gp: gp:faa6acb7 
+Mismatch[2701]:
+[3300] ibex : pc[800040e4] c.addi	x2,-1: sp:00722353 
+[FAILED]: 86 matched, 2701 mismatch
+
+0 PASSED, 1 FAILED

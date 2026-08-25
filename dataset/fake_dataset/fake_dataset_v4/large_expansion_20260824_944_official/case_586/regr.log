@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[156] : pc[8000cdd4] c.jal	8000c7f8: ra:8000cdd6 
+spike[156] : pc[8000cddc] slli    s4, s0, 4: s4:ffde2070 
+[FAILED]: 113 matched, 8350 mismatch
+
+0 PASSED, 1 FAILED

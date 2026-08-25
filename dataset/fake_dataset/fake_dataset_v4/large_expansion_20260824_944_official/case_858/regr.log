@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[81] : pc[800001b8] xor	x2,x11,x31: sp:060fbb4a 
+spike[81] : pc[800001b8] xor     sp, a1, t6: sp:060fbb4b 
+[FAILED]: 154 matched, 7903 mismatch
+
+0 PASSED, 1 FAILED

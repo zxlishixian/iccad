@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[96] : pc[800001e0] mulh	x31,x27,x30: t6:00000000 
+spike[96] : pc[800001e0] mulh    t6, s11, t5: t6:fda92eff 
+Mismatch[7859]:
+[9432] ibex : pc[80008402] mulhu	x12,x9,x16: a2:40013e4d 
+[FAILED]: 86 matched, 7859 mismatch
+
+0 PASSED, 1 FAILED

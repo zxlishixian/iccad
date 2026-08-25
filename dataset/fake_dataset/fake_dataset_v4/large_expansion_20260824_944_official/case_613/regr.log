@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[615] : pc[80001276] divu	x14,x5,x23: a4:e0006b6e 
+spike[615] : pc[80001276] divu    a4, t0, s7: a4:20006b6e 
+[FAILED]: 1328 matched, 3747 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[193] : pc[80010180] divu	x13,x31,x15: a3:eaab0a52 
+spike[193] : pc[80010180] divu    a3, t6, a5: a3:1555b4fc 
+[FAILED]: 171 matched, 966 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[148] : pc[80000e6e] div	x22,x19,x0: s6:00000000 
+spike[148] : pc[80000e6e] div     s6, s3, zero: s6:ffffffff 
+Mismatch[13132]:
+[15426] ibex : pc[80000566] andi	x7,x8,578: t2:00000000 
+[FAILED]: 215 matched, 13132 mismatch
+
+0 PASSED, 1 FAILED

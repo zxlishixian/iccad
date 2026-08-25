@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[157] : pc[800056f2] ori	x2,x26,153: sp:00000099 
+spike[157] : pc[800056fe] sltiu   a1, s1, 697: a1:00000001 
+[FAILED]: 185 matched, 2004 mismatch
+
+0 PASSED, 1 FAILED

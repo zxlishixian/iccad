@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[90] : pc[800001fa] div	x4,x30,x4: tp:00000005 
+spike[90] : pc[800001fa] div     tp, t5, tp: tp:00000000 
+[FAILED]: 523 matched, 6468 mismatch
+
+0 PASSED, 1 FAILED

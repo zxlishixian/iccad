@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[127] : pc[80006b8a] div	x27,x6,x25: s11:ffffffff 
+spike[127] : pc[80006bc0] lui     s6, 0x204da: s6:204da000 
+Mismatch[2799]:
+[3344] ibex : pc[80002d7a] andi	x12,x18,416: a2:00000080 
+[FAILED]: 116 matched, 2799 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[80] : pc[800001a2] c.li	x14,-1: a4:0000001f 
+spike[80] : pc[800001a2] c.li    a4, -1: a4:ffffffff 
+Mismatch[7832]:
+[9450] ibex : pc[800083c4] c.andi	x12,17: a2:00000000 
+[FAILED]: 339 matched, 7832 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2809] : pc[8000ac66] c.jalr	x22: ra:8000ac6a 
+spike[2809] : pc[8000ac66] c.jalr  s6: ra:8000ac68 
+[FAILED]: 3171 matched, 3049 mismatch
+
+0 PASSED, 1 FAILED

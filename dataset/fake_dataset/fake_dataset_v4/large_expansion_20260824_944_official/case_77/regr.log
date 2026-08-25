@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[538] : pc[8000163a] auipc	x9,0x280c7: s1:a80c863a 
+spike[538] : pc[80001650] and     a4, s11, a0: a4:00000001 
+Mismatch[4292]:
+[5267] ibex : pc[80000eb0] xor	x30,x3,x17: t5:800005d7 
+[FAILED]: 534 matched, 4292 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[137] : pc[80000262] c.srai	x9,0x12: s1:00003fff 
+spike[137] : pc[80000264] auipc   a2, 0x87d9a: a2:07d9a264 
+Mismatch[7789]:
+[9464] ibex : pc[800083fc] addi	x25,x16,-621: s9:fffffd92 
+[FAILED]: 312 matched, 7789 mismatch
+
+0 PASSED, 1 FAILED

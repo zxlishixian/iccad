@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[70] : pc[80000174] c.li	x8,-1: s0:0000001f 
+spike[70] : pc[800001d0] c.srli  a2, 18: a2:00003d48 
+Mismatch[2009]:
+[2400] ibex : pc[80001f24] csrrc	x14,mscratch,x6: a4:00000007 
+[FAILED]: 68 matched, 2009 mismatch
+
+0 PASSED, 1 FAILED

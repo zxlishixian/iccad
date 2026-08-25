@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[313] : pc[80000518] c.slli	x19,0x11: s3:f0e80000 
+spike[313] : pc[80000542] c.xor   a4, s1: a4:800004d2 
+[FAILED]: 313 matched, 3052 mismatch
+
+0 PASSED, 1 FAILED

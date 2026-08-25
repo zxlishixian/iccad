@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[51] : pc[8000013a] sll	x26,x31,x0: s10:00000000 
+spike[51] : pc[8000013a] sll     s10, t6, zero: s10:80000000 
+Mismatch[632]:
+[910] ibex : pc[80000b22] rem	x19,x30,x1: s3:0000001f 
+[FAILED]: 158 matched, 632 mismatch
+
+0 PASSED, 1 FAILED

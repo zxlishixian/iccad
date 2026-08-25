@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[142] : pc[800003ea] slli	x27,x18,0x14: s11:e1c00000 
+spike[142] : pc[800003ca] sub     a4, s2, a1: a4:8000ee1c 
+Mismatch[5815]:
+[6925] ibex : pc[80002cbe] c.andi	x12,26: a2:00000000 
+[FAILED]: 140 matched, 5815 mismatch
+
+0 PASSED, 1 FAILED

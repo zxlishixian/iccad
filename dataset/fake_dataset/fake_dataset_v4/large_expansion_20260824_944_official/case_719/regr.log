@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[91] : pc[800001c6] divu	x14,x18,x30: a4:ffffffff 
+spike[91] : pc[800001c6] divu    a4, s2, t5: a4:00000001 
+Mismatch[7145]:
+[9466] ibex : pc[80008404] divu	x14,x6,x5: a4:00000001 
+[FAILED]: 956 matched, 7145 mismatch
+
+0 PASSED, 1 FAILED

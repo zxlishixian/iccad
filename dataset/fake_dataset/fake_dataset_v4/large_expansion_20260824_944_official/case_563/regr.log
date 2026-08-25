@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[99] : pc[80000236] lhu	x9,-7(x5): s1:ffffd6d7 
+spike[99] : pc[80000236] lhu     s1, -7(t0): s1:0000d6d7 
+Mismatch[21015]:
+[23266] ibex : pc[80020fc4] c.lui	x6,0x3: t1:00003000 
+[FAILED]: 976 matched, 21015 mismatch
+
+0 PASSED, 1 FAILED

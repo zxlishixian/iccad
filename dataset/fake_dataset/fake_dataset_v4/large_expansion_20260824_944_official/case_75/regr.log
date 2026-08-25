@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[86] : pc[80004f2e] c.and	x11,x10: a1:80004666 
+spike[86] : pc[80004ef8] ori     a6, zero, 920: a6:00000398 
+[FAILED]: 94 matched, 1445 mismatch
+
+0 PASSED, 1 FAILED

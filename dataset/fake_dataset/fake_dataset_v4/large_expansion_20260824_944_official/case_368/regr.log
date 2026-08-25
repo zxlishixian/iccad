@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[55] : pc[80000152] jal	x9,8000017a: s1:00000004 
+spike[55] : pc[80000152] jal     s1, 0x28: s1:80000156 
+[FAILED]: 52 matched, 1195 mismatch
+
+0 PASSED, 1 FAILED

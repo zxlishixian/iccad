@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[122] : pc[80001fa0] lui	x19,0x750d2: s3:750d2000 
+spike[122] : pc[80001fca] c.srai  a2, 20: a2:00000400 
+Mismatch[1971]:
+[2413] ibex : pc[80006acc] c.addi	x9,-1: s1:00000001 
+[FAILED]: 106 matched, 1971 mismatch
+
+0 PASSED, 1 FAILED

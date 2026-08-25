@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[232] : pc[800023a0] or	x15,x27,x31: a5:9c042000 
+spike[232] : pc[800023a0] or      a5, s11, t6: a5:9c872f4b 
+Mismatch[1767]:
+[2465] ibex : pc[80001f54] srai	x1,x7,0x0: ra:0001f000 
+[FAILED]: 310 matched, 1767 mismatch
+
+0 PASSED, 1 FAILED

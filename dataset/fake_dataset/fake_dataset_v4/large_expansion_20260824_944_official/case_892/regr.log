@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[295] : pc[800004ae] c.li	x3,-1: gp:0000001f 
+spike[295] : pc[800004ae] c.li    gp, -1: gp:ffffffff 
+Mismatch[7571]:
+[9466] ibex : pc[8000837c] csrrw	x13,mscratch,x25: a3:80015e7c 
+[FAILED]: 360 matched, 7571 mismatch
+
+0 PASSED, 1 FAILED

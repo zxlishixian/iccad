@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[100] : pc[800002e6] sub	x10,x4,x19: a0:67ca246c 
+spike[100] : pc[80000290] c.srli  a2, 31: a2:00000001 
+[FAILED]: 97 matched, 1542 mismatch
+
+0 PASSED, 1 FAILED

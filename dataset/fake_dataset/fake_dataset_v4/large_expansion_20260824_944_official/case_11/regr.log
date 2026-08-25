@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[77] : pc[8000023c] andi	x2,x1,-693: sp:00000000 
+spike[77] : pc[80000278] srai    s1, t2, 16: s1:00000000 
+Mismatch[9252]:
+[10907] ibex : pc[80004d08] xori	x11,x1,-572: a1:fffffdc6 
+[FAILED]: 91 matched, 9252 mismatch
+
+0 PASSED, 1 FAILED

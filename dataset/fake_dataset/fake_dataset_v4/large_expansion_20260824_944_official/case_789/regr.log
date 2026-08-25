@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[87] : pc[8002ef62] lh	x9,16(x2): s1:00000000 
+spike[87] : pc[8002ef62] lh      s1, 16(sp): s1:ffff9899 
+[FAILED]: 189 matched, 34303 mismatch
+
+0 PASSED, 1 FAILED

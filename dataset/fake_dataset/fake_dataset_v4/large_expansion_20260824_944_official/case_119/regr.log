@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[87] : pc[8000021e] csrrc	x11,mscratch,x24: a1:0000001d 
+spike[87] : pc[800001f2] lui     gp, 0x3a968: gp:3a968000 
+[FAILED]: 72 matched, 66 mismatch
+
+0 PASSED, 1 FAILED

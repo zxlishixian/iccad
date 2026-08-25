@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[327] : pc[8000eff8] auipc	x2,0x30: sp:8003eff8 
+spike[327] : pc[8000eff4] lbu     t3, -1431(t6): t3:00000009 
+[FAILED]: 331 matched, 27524 mismatch
+
+0 PASSED, 1 FAILED

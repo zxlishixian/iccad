@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[132] : pc[80000254] c.li	x9,-1: s1:0000001f 
+spike[132] : pc[80000254] c.li    s1, -1: s1:ffffffff 
+Mismatch[7982]:
+[9467] ibex : pc[80008408] c.add	x19,x13: s3:17084dfa 
+[FAILED]: 119 matched, 7982 mismatch
+
+0 PASSED, 1 FAILED

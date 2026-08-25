@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[87] : pc[800001b8] mulhu	x22,x31,x25: s6:00000001 
+spike[87] : pc[800001b8] mulhu   s6, t6, s9: s6:3f5c3800 
+Mismatch[7777]:
+[9467] ibex : pc[8000841c] c.slli	x4,0x1b: tp:08000000 
+[FAILED]: 317 matched, 7777 mismatch
+
+0 PASSED, 1 FAILED

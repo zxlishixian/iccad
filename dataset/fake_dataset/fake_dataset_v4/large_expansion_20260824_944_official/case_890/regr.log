@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[60] : pc[80000168] c.li	x7,-1: t2:0000001f 
+spike[60] : pc[80000168] c.li    t2, -1: t2:ffffffff 
+Mismatch[7970]:
+[9422] ibex : pc[800083f2] csrrsi	x18,mscratch,0: s2:00000000 
+[FAILED]: 156 matched, 7970 mismatch
+
+0 PASSED, 1 FAILED

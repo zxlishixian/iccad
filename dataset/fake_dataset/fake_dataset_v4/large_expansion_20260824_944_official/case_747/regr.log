@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[233] : pc[800005cc] c.add	x19,x30: s3:98c1af87 
+spike[233] : pc[800005d0] c.addi4spn a4, sp, 864: a4:000004c1 
+[FAILED]: 227 matched, 10943 mismatch
+
+0 PASSED, 1 FAILED

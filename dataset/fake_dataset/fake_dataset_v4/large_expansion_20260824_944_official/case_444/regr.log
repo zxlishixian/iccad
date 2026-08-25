@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[326] : pc[80010e3c] and	x8,x27,x13: s0:00000000 
+spike[326] : pc[80010dde] c.srai  s0, 2: s0:1fff7082 
+[FAILED]: 297 matched, 13418 mismatch
+
+0 PASSED, 1 FAILED

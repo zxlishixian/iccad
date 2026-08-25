@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1742] : pc[8000ba44] c.jalr	x25: ra:8000ba48 
+spike[1742] : pc[8000ba44] c.jalr  s9: ra:8000ba46 
+[FAILED]: 28481 matched, 14 mismatch
+
+0 PASSED, 1 FAILED

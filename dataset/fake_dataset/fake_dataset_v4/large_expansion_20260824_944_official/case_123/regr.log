@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[405] : pc[800007ce] slti	x6,x10,236: t1:00000001 
+spike[405] : pc[800007d6] addi    sp, s11, -126: sp:ffffff34 
+[FAILED]: 390 matched, 3767 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[77] : pc[8000019e] c.mv	x7,x30: t2:00000001 
+spike[77] : pc[8000019e] c.mv    t2, t5: t2:00000000 
+[FAILED]: 254 matched, 7461 mismatch
+
+0 PASSED, 1 FAILED

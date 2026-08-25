@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[197] : pc[800034e2] c.addi	x4,26: tp:00000005 
+spike[197] : pc[800034ca] mul     t3, t2, a2: t3:0003ac50 
+[FAILED]: 165 matched, 4926 mismatch
+
+0 PASSED, 1 FAILED

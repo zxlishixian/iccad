@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[221] : pc[800035d0] div	x20,x5,x30: s4:e0006b7e 
+spike[221] : pc[800035d0] div     s4, t0, t5: s4:d555e4a8 
+Mismatch[4507]:
+[6015] ibex : pc[800040e8] srai	x9,x25,0x17: s1:ffffff20 
+[FAILED]: 565 matched, 4507 mismatch
+
+0 PASSED, 1 FAILED

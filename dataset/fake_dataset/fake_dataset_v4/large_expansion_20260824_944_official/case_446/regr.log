@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[74] : pc[8000021c] div	x26,x22,x21: s10:3fff26fd 
+spike[74] : pc[8000021c] div     s10, s6, s5: s10:ffffffff 
+Mismatch[49]:
+[200] ibex : pc[800004fc] c.li	x3,1: gp:00000001 
+[FAILED]: 131 matched, 49 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[122] : pc[8000690a] c.li	x4,-1: tp:0000001f 
+spike[122] : pc[8000690a] c.li    tp, -1: tp:ffffffff 
+[FAILED]: 167 matched, 2744 mismatch
+
+0 PASSED, 1 FAILED

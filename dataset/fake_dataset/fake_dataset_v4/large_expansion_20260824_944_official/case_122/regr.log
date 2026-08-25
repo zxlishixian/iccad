@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[620] : pc[8000f8b0] sra	x16,x13,x6: a6:00000001 
+spike[620] : pc[8000f8a8] lui     s3, 0x1453f: s3:1453f000 
+[FAILED]: 614 matched, 27896 mismatch
+
+0 PASSED, 1 FAILED

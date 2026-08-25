@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[144] : pc[8000f0fa] addi	x30,x30,-56: t5:80023d64 
+spike[144] : pc[8000f0ea] ori     t0, tp, 986: t0:000003db 
+Mismatch[15542]:
+[21074] ibex : pc[80009a26] sltu	x23,x5,x5: s7:00000000 
+[FAILED]: 222 matched, 15542 mismatch
+
+0 PASSED, 1 FAILED

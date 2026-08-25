@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[189] : pc[80000f34] remu	x29,x22,x21: t4:ffffffff 
+spike[189] : pc[80000f34] remu    t4, s6, s5: t4:58028833 
+Mismatch[13155]:
+[15363] ibex : pc[80000370] addi	x19,x15,313: s3:8000050f 
+[FAILED]: 192 matched, 13155 mismatch
+
+0 PASSED, 1 FAILED

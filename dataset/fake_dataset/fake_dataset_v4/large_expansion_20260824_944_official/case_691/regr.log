@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[57] : pc[8000015e] addi	x22,x2,697: s6:800002b9 
+spike[57] : pc[80000152] add     s10, t0, s9: s10:8001ee7c 
+Mismatch[3714]:
+[4404] ibex : pc[80003efc] c.or	x12,x14: a2:fd0a007f 
+[FAILED]: 56 matched, 3714 mismatch
+
+0 PASSED, 1 FAILED

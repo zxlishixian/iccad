@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[425] : pc[80000882] c.srai	x11,0x9: a1:ffffffff 
+spike[425] : pc[80000846] c.mv    a7, s10: a7:ffffffff 
+Mismatch[3753]:
+[4773] ibex : pc[8000b0e2] lb	x26,53(x20): s10:fffffffe 
+[FAILED]: 403 matched, 3753 mismatch
+
+0 PASSED, 1 FAILED

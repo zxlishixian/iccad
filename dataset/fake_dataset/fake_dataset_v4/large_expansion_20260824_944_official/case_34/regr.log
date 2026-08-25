@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[451] : pc[800034e8] andi	x30,x12,-29: t5:000001c0 
+spike[451] : pc[80003520] sll     s3, s2, t5: s3:24000000 
+Mismatch[5771]:
+[7035] ibex : pc[800024f2] xor	x13,x21,x0: a3:fffffd8b 
+[FAILED]: 449 matched, 5771 mismatch
+
+0 PASSED, 1 FAILED

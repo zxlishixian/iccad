@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[88] : pc[80010d8a] jal	x2,80010dce: sp:80010d8e 
+spike[88] : pc[80010d5e] div     s5, a0, t4: s5:ffffffff 
+[FAILED]: 126 matched, 21159 mismatch
+
+0 PASSED, 1 FAILED

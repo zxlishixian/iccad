@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[101] : pc[800001f6] ori	x10,x31,226: a0:000000e2 
+spike[101] : pc[800001f6] ori     a0, t6, 226: a0:bf6d61e2 
+[FAILED]: 355 matched, 7741 mismatch
+
+0 PASSED, 1 FAILED

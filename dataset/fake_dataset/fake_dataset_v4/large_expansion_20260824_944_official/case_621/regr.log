@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[56] : pc[80000146] divu	x6,x24,x5: t1:00000002 
+spike[56] : pc[80000146] divu    t1, s8, t0: t1:00000000 
+Mismatch[9705]:
+[14081] ibex : pc[8000655a] mul	x1,x26,x16: ra:e906592f 
+[FAILED]: 2931 matched, 9705 mismatch
+
+0 PASSED, 1 FAILED

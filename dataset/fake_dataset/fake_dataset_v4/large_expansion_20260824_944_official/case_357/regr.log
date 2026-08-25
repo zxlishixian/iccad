@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[83] : pc[800001b8] jal	x27,800001d8: s11:00000004 
+spike[83] : pc[800001b8] jal     s11, 0x20: s11:800001bc 
+[FAILED]: 87 matched, 8 mismatch
+
+0 PASSED, 1 FAILED

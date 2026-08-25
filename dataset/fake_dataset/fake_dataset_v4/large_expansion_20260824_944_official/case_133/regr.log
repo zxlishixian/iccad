@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[174] : pc[80005ab6] or	x3,x4,x17: gp:800059ea 
+spike[174] : pc[80005a94] sra     s8, s4, t2: s8:f80005a6 
+[FAILED]: 169 matched, 6875 mismatch
+
+0 PASSED, 1 FAILED

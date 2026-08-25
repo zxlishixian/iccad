@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[4092] : pc[80002200] c.jalr	x2: ra:80002204 
+spike[4092] : pc[80002200] c.jalr  sp: ra:80002202 
+[FAILED]: 10415 matched, 11 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[110] : pc[8000024e] xori	x8,x29,74: s0:0000004a 
+spike[110] : pc[800002a2] c.addi16sp sp, -16: sp:fffffff1 
+Mismatch[10]:
+[121] ibex : pc[80007848] addi	x27,x27,-64: s11:80023ddc 
+[FAILED]: 97 matched, 10 mismatch
+
+0 PASSED, 1 FAILED

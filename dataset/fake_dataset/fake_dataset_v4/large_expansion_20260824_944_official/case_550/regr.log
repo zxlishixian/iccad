@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[77] : pc[80011c16] lhu	x3,1926(x2): gp:ffffc1e5 
+spike[77] : pc[80011c16] lhu     gp, 1926(sp): gp:0000c1e5 
+Mismatch[26299]:
+[29089] ibex : pc[80003f78] slt	x10,x24,x16: a0:00000000 
+[FAILED]: 1153 matched, 26299 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[101] : pc[800001f4] c.slli	x31,0x1b: t6:00000000 
+spike[101] : pc[800001f4] c.slli  t6, 27: t6:08000000 
+[FAILED]: 415 matched, 7300 mismatch
+
+0 PASSED, 1 FAILED

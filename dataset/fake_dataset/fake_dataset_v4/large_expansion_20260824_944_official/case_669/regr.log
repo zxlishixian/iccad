@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[101] : pc[800001f6] ori	x10,x31,226: a0:80011efe 
+spike[101] : pc[800001f6] ori     a0, t6, 226: a0:bf6d61e2 
+Mismatch[7546]:
+[9372] ibex : pc[800082c0] mul	x7,x19,x6: t2:7fd58efc 
+[FAILED]: 533 matched, 7546 mismatch
+
+0 PASSED, 1 FAILED

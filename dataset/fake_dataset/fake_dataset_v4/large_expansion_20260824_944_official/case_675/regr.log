@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[39] : pc[80000106] addi	x31,x31,-307: t6:fffffecd 
+spike[39] : pc[80000106] addi    t6, t6, -307: t6:f38b2ecd 
+[FAILED]: 1693 matched, 6430 mismatch
+
+0 PASSED, 1 FAILED

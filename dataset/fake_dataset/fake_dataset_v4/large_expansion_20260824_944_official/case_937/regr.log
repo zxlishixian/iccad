@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[89] : pc[80003124] c.srli	x12,0xd: a2:fffc0000 
+spike[89] : pc[80003124] c.srli  a2, 13: a2:00040000 
+Mismatch[3636]:
+[4800] ibex : pc[80003f4a] c.addi	x7,-1: t2:0000001c 
+[FAILED]: 251 matched, 3636 mismatch
+
+0 PASSED, 1 FAILED

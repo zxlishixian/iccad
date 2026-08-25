@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[71] : pc[8000019e] lhu	x8,-178(x17): s0:ffffb82e 
+spike[71] : pc[8000019e] lhu     s0, -178(a7): s0:0000b82e 
+Mismatch[15437]:
+[19385] ibex : pc[80019b80] slti	x8,x13,607: s0:00000001 
+[FAILED]: 2878 matched, 15437 mismatch
+
+0 PASSED, 1 FAILED

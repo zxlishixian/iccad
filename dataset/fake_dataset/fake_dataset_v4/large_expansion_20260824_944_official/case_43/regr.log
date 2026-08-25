@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[471] : pc[800007f6] csrrs	x7,mscratch,x11: t2:800007a0 
+spike[471] : pc[80000802] mulh    sp, s7, a1: sp:00000000 
+[FAILED]: 468 matched, 3191 mismatch
+
+0 PASSED, 1 FAILED

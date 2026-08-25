@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[258] : pc[800004bc] srli	x29,x27,0x1d: t4:00000004 
+spike[258] : pc[800004b8] div     s10, s0, ra: s10:0e38b3ea 
+Mismatch[2690]:
+[3391] ibex : pc[800037d6] andi	x11,x4,931: a1:00000000 
+[FAILED]: 225 matched, 2690 mismatch
+
+0 PASSED, 1 FAILED

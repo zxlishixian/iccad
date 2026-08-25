@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[262] : pc[80002444] csrrsi	x24,mscratch,4: s8:0000001a 
+spike[262] : pc[80002488] rem     a3, ra, s7: a3:fffffffd 
+[FAILED]: 235 matched, 1862 mismatch
+
+0 PASSED, 1 FAILED

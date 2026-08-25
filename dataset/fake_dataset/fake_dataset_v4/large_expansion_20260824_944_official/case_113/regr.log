@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[190] : pc[800051bc] srai	x24,x17,0x0: s8:0000001d 
+spike[190] : pc[800051e8] mulhsu  s1, s5, t2: s1:00000000 
+[FAILED]: 170 matched, 1386 mismatch
+
+0 PASSED, 1 FAILED

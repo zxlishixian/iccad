@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[872] : pc[80001178] c.li	x13,28: a3:0000001c 
+spike[872] : pc[800011b0] c.lui   s6, 0x16: s6:00016000 
+Mismatch[2384]:
+[3595] ibex : pc[80003966] xori	x30,x13,572: t5:00000343 
+[FAILED]: 842 matched, 2384 mismatch
+
+0 PASSED, 1 FAILED

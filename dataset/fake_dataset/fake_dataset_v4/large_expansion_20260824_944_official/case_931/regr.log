@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[165] : pc[80006a70] c.sub	x13,x15: a3:e98a2f88 
+spike[165] : pc[80006a6e] c.srli  a4, 9: a4:007fffff 
+[FAILED]: 146 matched, 2641 mismatch
+
+0 PASSED, 1 FAILED

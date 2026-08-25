@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[105] : pc[800002e8] div	x4,x1,x25: tp:ff7ec762 
+spike[105] : pc[800002e8] div     tp, ra, s9: tp:00000037 
+[FAILED]: 175 matched, 4379 mismatch
+
+0 PASSED, 1 FAILED

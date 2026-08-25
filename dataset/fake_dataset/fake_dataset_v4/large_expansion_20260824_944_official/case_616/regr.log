@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[251] : pc[80011130] divu	x19,x20,x27: s3:ffffffff 
+spike[251] : pc[80011130] divu    s3, s4, s11: s3:00000001 
+Mismatch[20187]:
+[28694] ibex : pc[80003626] lui	x1,0x20f0f: ra:20f0f000 
+[FAILED]: 1087 matched, 20187 mismatch
+
+0 PASSED, 1 FAILED

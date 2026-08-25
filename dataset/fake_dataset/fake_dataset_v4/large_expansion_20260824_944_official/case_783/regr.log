@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[105] : pc[8000b00c] lhu	x23,-135(x26): s7:00006000 
+spike[105] : pc[8001c080] addi    a3, a3, -124: a3:8002dd90 
+Mismatch[18]:
+[125] ibex : pc[8000b05c] c.li	x29,-1: t4:ffffffff 
+[FAILED]: 92 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

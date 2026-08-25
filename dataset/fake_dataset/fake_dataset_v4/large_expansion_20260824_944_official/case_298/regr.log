@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[677] : pc[80007a96] c.jalr	x19: ra:80007a9a 
+spike[677] : pc[80007a96] c.jalr  s3: ra:80007a98 
+[FAILED]: 15743 matched, 20 mismatch
+
+0 PASSED, 1 FAILED

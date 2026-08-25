@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[303] : pc[800004a2] c.xor	x11,x13: a1:f15f67cc 
+spike[303] : pc[8000049e] sltu    t2, s10, t5: t2:00000001 
+Mismatch[7278]:
+[9432] ibex : pc[80008410] c.and	x11,x9: a1:00000000 
+[FAILED]: 848 matched, 7278 mismatch
+
+0 PASSED, 1 FAILED

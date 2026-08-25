@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[103] : pc[80007c64] div	x19,x4,x10: s3:00000005 
+spike[103] : pc[80007c64] div     s3, tp, a0: s3:ffffffff 
+[FAILED]: 359 matched, 431 mismatch
+
+0 PASSED, 1 FAILED

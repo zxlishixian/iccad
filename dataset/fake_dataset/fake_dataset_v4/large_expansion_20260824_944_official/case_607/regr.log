@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[142] : pc[80006c04] divu	x8,x28,x12: s0:f2ea2fb0 
+spike[142] : pc[80006c04] divu    s0, t3, a2: s0:1d94da5a 
+[FAILED]: 367 matched, 2551 mismatch
+
+0 PASSED, 1 FAILED

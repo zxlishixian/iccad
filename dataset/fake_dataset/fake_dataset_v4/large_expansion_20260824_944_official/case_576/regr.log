@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[74] : pc[8000019c] lhu	x27,45(x2): s11:0000433d 
+spike[74] : pc[8001c080] addi    a5, a5, -124: a5:8002cda0 
+Mismatch[18]:
+[93] ibex : pc[800001e4] c.srli	x14,0x5: a4:00004000 
+[FAILED]: 66 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[781] : pc[80000ec0] sltu	x18,x7,x10: s2:00000000 
+spike[781] : pc[80000ef2] addi    a0, t6, -261: a0:002f9fbc 
+Mismatch[2377]:
+[3610] ibex : pc[80003aa4] addi	x5,x5,48: t0:80017e1c 
+[FAILED]: 849 matched, 2377 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[114] : pc[8002efee] lh	x9,16(x2): s1:000002ed 
+spike[114] : pc[8002efee] lh      s1, 16(sp): s1:ffffed1a 
+[FAILED]: 330 matched, 33992 mismatch
+
+0 PASSED, 1 FAILED

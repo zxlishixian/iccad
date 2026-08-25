@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[69] : pc[80000196] lh	x24,116(x6): s8:00000000 
+spike[69] : pc[80000196] lh      s8, 116(t1): s8:0000163f 
+[FAILED]: 217 matched, 18173 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[436] : pc[80001c10] and	x9,x8,x30: s1:00000200 
+spike[436] : pc[80001c10] and     s1, s0, t5: s1:0000008c 
+Mismatch[8361]:
+[10764] ibex : pc[80001154] slti	x19,x26,-439: s3:00000001 
+[FAILED]: 982 matched, 8361 mismatch
+
+0 PASSED, 1 FAILED

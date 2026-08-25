@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[405] : pc[800007da] divu	x2,x3,x25: sp:ffffff4a 
+spike[405] : pc[800007da] divu    sp, gp, s9: sp:00000000 
+[FAILED]: 1466 matched, 9726 mismatch
+
+0 PASSED, 1 FAILED

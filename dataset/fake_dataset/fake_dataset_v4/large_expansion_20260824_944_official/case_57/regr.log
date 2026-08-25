@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[179] : pc[80000496] csrrsi	x14,mscratch,13: a4:00000009 
+spike[179] : pc[8000047c] lui     s5, 0x77b35: s5:77b35000 
+[FAILED]: 161 matched, 19 mismatch
+
+0 PASSED, 1 FAILED

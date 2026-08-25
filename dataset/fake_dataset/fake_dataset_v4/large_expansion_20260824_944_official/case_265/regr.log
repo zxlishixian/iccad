@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[107] : pc[80013080] addi	x5,x5,-124: t0:80023d1c 
+spike[107] : pc[800110dc] addi    s1, s11, 862: s1:b2c1c35e 
+[FAILED]: 97 matched, 33369 mismatch
+
+0 PASSED, 1 FAILED

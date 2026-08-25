@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[5287] : pc[800111d2] c.jalr	x20: ra:800111d6 
+spike[5287] : pc[800111d2] c.jalr  s4: ra:800111d4 
+[FAILED]: 221435 matched, 713 mismatch
+
+0 PASSED, 1 FAILED

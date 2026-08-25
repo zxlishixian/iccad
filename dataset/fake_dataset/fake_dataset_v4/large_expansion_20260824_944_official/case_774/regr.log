@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[81] : pc[80011c2e] auipc	x19,0x28: s3:80039c2e 
+spike[81] : pc[80011c2a] lbu     t3, 1045(sp): t3:000000c8 
+[FAILED]: 100 matched, 27477 mismatch
+
+0 PASSED, 1 FAILED

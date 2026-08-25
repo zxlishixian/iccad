@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[260] : pc[80006516] c.lui	x29,0xf: t4:0000f000 
+spike[260] : pc[80006500] c.addi4spn a2, sp, 272: a2:00000369 
+Mismatch[8429]:
+[10397] ibex : pc[80006e8e] andi	x12,x18,-378: a2:8001ee04 
+[FAILED]: 280 matched, 8429 mismatch
+
+0 PASSED, 1 FAILED

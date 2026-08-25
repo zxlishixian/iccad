@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[63] : pc[80000166] ori	x13,x31,19: a3:00000013 
+spike[63] : pc[80000166] ori     a3, t6, 19: a3:001ee7d3 
+[FAILED]: 471 matched, 5498 mismatch
+
+0 PASSED, 1 FAILED

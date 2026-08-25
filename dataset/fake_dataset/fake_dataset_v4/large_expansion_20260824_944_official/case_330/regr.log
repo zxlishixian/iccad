@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[76] : pc[800066e8] xori	x28,x27,582: t3:6d5e8dd7 
+spike[76] : pc[800066f6] addi    s2, s2, -36: s2:80023df8 
+[FAILED]: 64 matched, 2188 mismatch
+
+0 PASSED, 1 FAILED

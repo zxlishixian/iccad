@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[78] : pc[80000a6c] lhu	x2,-37(x1): sp:00000000 
+spike[78] : pc[80000a6c] lhu     sp, -37(ra): sp:000097a8 
+[FAILED]: 105 matched, 36628 mismatch
+
+0 PASSED, 1 FAILED

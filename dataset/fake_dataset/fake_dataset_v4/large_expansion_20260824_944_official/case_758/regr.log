@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[69] : pc[8000720e] c.or	x9,x15: s1:de18e162 
+spike[69] : pc[800071f4] mulh    t1, ra, s11: t1:00000000 
+[FAILED]: 87 matched, 9260 mismatch
+
+0 PASSED, 1 FAILED

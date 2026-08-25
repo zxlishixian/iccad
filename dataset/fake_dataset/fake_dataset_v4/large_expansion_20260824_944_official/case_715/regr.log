@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[72] : pc[8000019c] srl	x24,x31,x30: s8:00007fff 
+spike[72] : pc[8000019c] srl     s8, t6, t5: s8:07ffffff 
+[FAILED]: 2827 matched, 5247 mismatch
+
+0 PASSED, 1 FAILED

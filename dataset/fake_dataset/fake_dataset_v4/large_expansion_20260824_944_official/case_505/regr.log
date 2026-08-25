@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[77] : pc[8002ef2e] lb	x14,121(x23): a4:000000e4 
+spike[77] : pc[8002ef2e] lb      a4, 121(s7): a4:ffffffe4 
+Mismatch[33497]:
+[36241] ibex : pc[8002ed0c] csrrs	x25,mscratch,x18: s9:0000000a 
+[FAILED]: 795 matched, 33497 mismatch
+
+0 PASSED, 1 FAILED

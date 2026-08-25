@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[327] : pc[800082a2] slt	x10,x25,x30: a0:00000000 
+spike[327] : pc[800082a2] slt     a0, s9, t5: a0:00000001 
+[FAILED]: 285 matched, 505 mismatch
+
+0 PASSED, 1 FAILED

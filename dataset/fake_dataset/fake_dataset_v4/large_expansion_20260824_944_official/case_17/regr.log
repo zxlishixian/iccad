@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[103] : pc[80000298] or	x20,x7,x16: s4:f5efdfdf 
+spike[103] : pc[800002b6] sltu    t0, s4, s8: t0:00000001 
+[FAILED]: 108 matched, 4438 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[98] : pc[80007366] mulhsu	x1,x29,x8: ra:c0730000 
+spike[98] : pc[80007398] c.add   s2, s1: s2:f20a1432 
+Mismatch[2479]:
+[3068] ibex : pc[800079e2] lui	x6,0x40d68: t1:40d68000 
+[FAILED]: 94 matched, 2479 mismatch
+
+0 PASSED, 1 FAILED

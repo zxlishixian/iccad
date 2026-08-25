@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[92] : pc[8000027e] rem	x28,x21,x14: t3:00000000 
+spike[92] : pc[800002bc] csrrs   t4, mscratch, a1: t4:8001ae1e 
+[FAILED]: 141 matched, 5039 mismatch
+
+0 PASSED, 1 FAILED

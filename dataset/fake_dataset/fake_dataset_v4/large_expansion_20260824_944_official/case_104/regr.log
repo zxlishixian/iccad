@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[305] : pc[800025f6] c.mv	x25,x9: s9:00e732ff 
+spike[305] : pc[800025be] c.xor   a1, a0: a1:292d5806 
+[FAILED]: 279 matched, 1801 mismatch
+
+0 PASSED, 1 FAILED

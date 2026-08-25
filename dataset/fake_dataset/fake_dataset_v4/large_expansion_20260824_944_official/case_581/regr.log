@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[55] : pc[8000014e] lh	x19,-3(x28): s3:0000f983 
+spike[55] : pc[8000014e] lh      s3, -3(t3): s3:fffff983 
+Mismatch[19]:
+[80] ibex : pc[800001ca] lw	x13,167(x9): a3:732ab912 
+[FAILED]: 52 matched, 19 mismatch
+
+0 PASSED, 1 FAILED

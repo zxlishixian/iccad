@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[486] : pc[80003692] remu	x19,x7,x20: s3:fffffcd4 
+spike[486] : pc[80003692] remu    s3, t2, s4: s3:0000034a 
+[FAILED]: 629 matched, 5329 mismatch
+
+0 PASSED, 1 FAILED

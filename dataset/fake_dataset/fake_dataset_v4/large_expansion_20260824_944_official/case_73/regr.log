@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[105] : pc[800002ea] add	x13,x11,x27: a3:8001ae1f 
+spike[105] : pc[800002c8] srl     a5, s5, t3: a5:8001ae1c 
+Mismatch[4388]:
+[5208] ibex : pc[80002f88] csrrw	x2,mscratch,x27: sp:00000000 
+[FAILED]: 95 matched, 4388 mismatch
+
+0 PASSED, 1 FAILED

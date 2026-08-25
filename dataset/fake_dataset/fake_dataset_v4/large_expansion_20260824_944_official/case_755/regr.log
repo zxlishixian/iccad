@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[97] : pc[80000dae] c.add	x3,x21: gp:a7fd7764 
+spike[97] : pc[80000daa] mul     s4, s6, t5: s4:00000000 
+Mismatch[12126]:
+[15421] ibex : pc[80000652] c.addi	x8,-1: s0:8001ee7b 
+[FAILED]: 1221 matched, 12126 mismatch
+
+0 PASSED, 1 FAILED

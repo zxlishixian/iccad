@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[126] : pc[80005002] or	x1,x6,x17: ra:8000001d 
+spike[126] : pc[80005016] xori    s4, s7, -557: s4:05b52a01 
+[FAILED]: 128 matched, 1411 mismatch
+
+0 PASSED, 1 FAILED

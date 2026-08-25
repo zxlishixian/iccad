@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[59] : pc[80000164] c.mv	x24,x6: s8:0000000a 
+spike[59] : pc[80000166] andi    a2, t4, -1020: a2:029a0400 
+Mismatch[1330]:
+[1659] ibex : pc[80003e78] lui	x1,0x26e0b: ra:26e0b000 
+[FAILED]: 50 matched, 1330 mismatch
+
+0 PASSED, 1 FAILED

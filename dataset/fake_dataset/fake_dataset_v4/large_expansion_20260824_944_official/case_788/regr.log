@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[73] : pc[80015258] lw	x15,-66(x8): a5:e95e7519 
+spike[73] : pc[8001c080] addi    t4, t4, -124: t4:8002cd88 
+Mismatch[18]:
+[93] ibex : pc[800152bc] remu	x12,x26,x9: a2:00000000 
+[FAILED]: 65 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

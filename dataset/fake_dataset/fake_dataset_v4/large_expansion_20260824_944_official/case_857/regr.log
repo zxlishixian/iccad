@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[55] : pc[8000014a] lhu	x11,11(x15): a1:0000c40d 
+spike[55] : pc[8000014a] lhu     a1, 11(a5): a1:0000c4bb 
+[FAILED]: 581 matched, 39625 mismatch
+
+0 PASSED, 1 FAILED

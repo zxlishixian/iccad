@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[953] : pc[80000f1e] xori	x8,x2,165: s0:80000e81 
+spike[953] : pc[80000f3a] c.srli  a3, 30: a3:00000002 
+[FAILED]: 939 matched, 3259 mismatch
+
+0 PASSED, 1 FAILED

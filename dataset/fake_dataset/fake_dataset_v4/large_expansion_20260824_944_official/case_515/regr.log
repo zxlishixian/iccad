@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[102] : pc[800009ca] lbu	x3,1(x2): gp:ffffffa7 
+spike[102] : pc[800009ca] lbu     gp, 1(sp): gp:000000a7 
+[FAILED]: 1735 matched, 33498 mismatch
+
+0 PASSED, 1 FAILED

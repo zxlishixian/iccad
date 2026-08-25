@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[413] : pc[800022e8] c.li	x1,-1: ra:0000001f 
+spike[413] : pc[800022e8] c.li    ra, -1: ra:ffffffff 
+Mismatch[3988]:
+[5413] ibex : pc[80001e72] lui	x18,0xd1224: s2:d1224000 
+[FAILED]: 564 matched, 3988 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[91] : pc[80000d60] div	x5,x26,x19: t0:ffffffff 
+spike[91] : pc[80000d96] c.addi16sp sp, 480: sp:8000042c 
+Mismatch[13235]:
+[15421] ibex : pc[80005cc0] rem	x9,x13,x15: s1:00000000 
+[FAILED]: 112 matched, 13235 mismatch
+
+0 PASSED, 1 FAILED

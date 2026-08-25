@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[302] : pc[8000058a] c.mv	x14,x27: a4:80023b15 
+spike[302] : pc[80000592] csrrw   tp, mscratch, s4: tp:00000011 
+Mismatch[470]:
+[868] ibex : pc[8000169e] and	x5,x30,x3: t0:00000000 
+[FAILED]: 266 matched, 470 mismatch
+
+0 PASSED, 1 FAILED

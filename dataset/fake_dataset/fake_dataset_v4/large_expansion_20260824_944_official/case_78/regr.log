@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[203] : pc[80005b56] ori	x30,x25,-636: t5:ffffff9e 
+spike[203] : pc[80005b34] csrrci  tp, mscratch, 30: tp:8001be7f 
+[FAILED]: 202 matched, 6835 mismatch
+
+0 PASSED, 1 FAILED

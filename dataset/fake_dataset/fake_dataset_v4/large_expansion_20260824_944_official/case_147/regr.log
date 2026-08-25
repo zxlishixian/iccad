@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[475] : pc[800007e2] sra	x14,x7,x14: a4:ffffffff 
+spike[475] : pc[80000828] srli    ra, t4, 10: ra:00200001 
+Mismatch[731]:
+[1337] ibex : pc[80002b3a] sub	x6,x1,x9: t1:0000bf34 
+[FAILED]: 471 matched, 731 mismatch
+
+0 PASSED, 1 FAILED

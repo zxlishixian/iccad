@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[105] : pc[80006a9e] auipc	x13,0xb5bde: a3:35be4a9e 
+spike[105] : pc[80006ad6] sltiu   s8, t0, -354: s8:00000001 
+Mismatch[2812]:
+[3431] ibex : pc[80003978] lw	x1,4(x9): ra:800001b2 
+[FAILED]: 103 matched, 2812 mismatch
+
+0 PASSED, 1 FAILED

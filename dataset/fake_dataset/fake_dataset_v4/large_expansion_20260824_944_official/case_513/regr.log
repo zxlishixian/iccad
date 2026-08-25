@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[92] : pc[8002e8ee] lb	x22,-3(x13): s6:000000ae 
+spike[92] : pc[8002e8ee] lb      s6, -3(a3): s6:ffffffae 
+Mismatch[34933]:
+[38335] ibex : pc[8000039e] lui	x18,0x96507: s2:96507000 
+[FAILED]: 693 matched, 34933 mismatch
+
+0 PASSED, 1 FAILED

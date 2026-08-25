@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[121] : pc[800002a0] lb	x5,-1935(x25): t0:00000082 
+spike[121] : pc[800002a0] lb      t0, -1935(s9): t0:ffffff82 
+[FAILED]: 1287 matched, 9777 mismatch
+
+0 PASSED, 1 FAILED

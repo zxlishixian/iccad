@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[187] : pc[80010af2] c.addi4spn	x9,x2,144: s1:00000091 
+spike[187] : pc[80010b24] c.addi16sp sp, 80: sp:00000051 
+[FAILED]: 168 matched, 1832 mismatch
+
+0 PASSED, 1 FAILED

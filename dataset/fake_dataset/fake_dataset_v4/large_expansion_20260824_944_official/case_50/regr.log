@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[979] : pc[80003f0e] mulh	x31,x1,x24: t6:3fffc3af 
+spike[979] : pc[80003edc] xor     a3, sp, sp: a3:00000000 
+[FAILED]: 954 matched, 2411 mismatch
+
+0 PASSED, 1 FAILED

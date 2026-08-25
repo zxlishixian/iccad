@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[61] : pc[80000156] sll	x16,x31,x1: a6:50000000 
+spike[61] : pc[80000156] sll     a6, t6, ra: a6:40000000 
+Mismatch[8005]:
+[9457] ibex : pc[800083da] andi	x4,x31,995: tp:00000263 
+[FAILED]: 166 matched, 8005 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[473] : pc[800075f2] c.addi	x29,28: t4:80023e38 
+spike[473] : pc[80007606] addi    t4, t4, -56: t4:80023de4 
+[FAILED]: 436 matched, 4246 mismatch
+
+0 PASSED, 1 FAILED

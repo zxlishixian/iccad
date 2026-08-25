@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[574] : pc[80003d96] c.srai	x8,0xf: s0:00000000 
+spike[574] : pc[80003dc0] srl     gp, t0, s4: gp:035fdf68 
+[FAILED]: 531 matched, 6481 mismatch
+
+0 PASSED, 1 FAILED

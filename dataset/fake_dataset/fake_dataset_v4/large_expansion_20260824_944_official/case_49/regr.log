@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[621] : pc[80000afc] mulh	x6,x24,x7: t1:3ffff806 
+spike[621] : pc[80000ac8] mulh    s1, a5, a1: s1:00000000 
+[FAILED]: 615 matched, 5101 mismatch
+
+0 PASSED, 1 FAILED

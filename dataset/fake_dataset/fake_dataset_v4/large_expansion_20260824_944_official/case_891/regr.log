@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[92] : pc[800001d0] c.li	x30,-1: t5:0000001f 
+spike[92] : pc[800001d0] c.li    t5, -1: t5:ffffffff 
+Mismatch[7726]:
+[9408] ibex : pc[800083ea] addi	x2,x7,364: sp:0000016c 
+[FAILED]: 170 matched, 7726 mismatch
+
+0 PASSED, 1 FAILED

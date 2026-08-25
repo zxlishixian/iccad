@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[162] : pc[8000756c] c.mv	x20,x22: s4:f52a8000 
+spike[162] : pc[8000753a] ori     t1, a5, 362: t1:0000016a 
+Mismatch[2408]:
+[3088] ibex : pc[80007530] slt	x8,x31,x24: s0:00000000 
+[FAILED]: 165 matched, 2408 mismatch
+
+0 PASSED, 1 FAILED

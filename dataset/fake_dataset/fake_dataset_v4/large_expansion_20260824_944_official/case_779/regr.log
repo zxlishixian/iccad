@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[73] : pc[80019420] lb	x25,-59(x16): s9:00000000 
+spike[73] : pc[80019420] lb      s9, -59(a6): s9:ffffffbe 
+Mismatch[19]:
+[95] ibex : pc[8001948c] lhu	x31,-28(x16): t6:0000dedf 
+[FAILED]: 71 matched, 19 mismatch
+
+0 PASSED, 1 FAILED

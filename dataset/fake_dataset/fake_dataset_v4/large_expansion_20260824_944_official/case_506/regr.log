@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[64] : pc[80000192] lb	x22,1174(x24): s6:000000b6 
+spike[64] : pc[80000192] lb      s6, 1174(s8): s6:ffffffb6 
+Mismatch[26763]:
+[40426] ibex : pc[8000ec1c] rem	x31,x25,x27: t6:ffffffff 
+[FAILED]: 669 matched, 26763 mismatch
+
+0 PASSED, 1 FAILED

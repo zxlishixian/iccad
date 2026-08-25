@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[71] : pc[8000028c] c.addi	x8,-32: s0:80017dfc 
+spike[71] : pc[80000282] slt     s7, s7, a7: s7:00000000 
+[FAILED]: 68 matched, 5580 mismatch
+
+0 PASSED, 1 FAILED

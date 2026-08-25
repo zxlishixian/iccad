@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[68] : pc[80000204] div	x20,x17,x24: s4:00000006 
+spike[68] : pc[80000208] srli    s4, t0, 23: s4:000000af 
+[FAILED]: 66 matched, 3650 mismatch
+
+0 PASSED, 1 FAILED

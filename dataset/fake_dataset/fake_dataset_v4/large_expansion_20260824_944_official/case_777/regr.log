@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[89] : pc[8002e8da] lbu	x4,46(x26): tp:00000000 
+spike[89] : pc[8002e8da] lbu     tp, 46(s10): tp:00000073 
+[FAILED]: 151 matched, 35828 mismatch
+
+0 PASSED, 1 FAILED

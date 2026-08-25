@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[59] : pc[800108d4] c.addi4spn	x13,x2,880: a3:80000370 
+spike[59] : pc[800108ea] addi    a1, a1, -60: a1:80023de0 
+[FAILED]: 62 matched, 13605 mismatch
+
+0 PASSED, 1 FAILED

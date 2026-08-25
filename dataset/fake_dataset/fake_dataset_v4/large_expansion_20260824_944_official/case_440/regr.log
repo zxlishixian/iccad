@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[802] : pc[80000c6a] c.addi	x22,-1: s6:00000000 
+spike[802] : pc[80000c28] srai    t6, gp, 22: t6:ffffff00 
+Mismatch[1201]:
+[2287] ibex : pc[80000312] c.li	x3,1: gp:00000001 
+[FAILED]: 768 matched, 1201 mismatch
+
+0 PASSED, 1 FAILED

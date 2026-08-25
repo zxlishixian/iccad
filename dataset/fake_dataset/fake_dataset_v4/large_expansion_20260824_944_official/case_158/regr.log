@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[116] : pc[800002c8] rem	x16,x10,x4: a6:80000156 
+spike[116] : pc[800002a4] xor     gp, s4, t0: gp:ffffdf8f 
+Mismatch[5775]:
+[7050] ibex : pc[80002ae2] auipc	x30,0xc7723: t5:47725ae2 
+[FAILED]: 180 matched, 5775 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[815] : pc[80002d8c] c.and	x14,x10: a4:800028f8 
+spike[815] : pc[80002dc4] mulh    a4, t2, a6: a4:00000000 
+[FAILED]: 832 matched, 1995 mismatch
+
+0 PASSED, 1 FAILED

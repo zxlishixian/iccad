@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[58] : pc[80000152] div	x3,x19,x30: gp:00000000 
+spike[58] : pc[80000152] div     gp, s3, t5: gp:00000001 
+Mismatch[5640]:
+[6978] ibex : pc[80002f8a] csrrc	x13,mscratch,x31: a3:00000000 
+[FAILED]: 315 matched, 5640 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1045] : pc[800012b8] slli	x7,x12,0x14: t2:00100000 
+spike[1045] : pc[8000129a] c.mv    s3, ra: s3:00000005 
+[FAILED]: 1034 matched, 3164 mismatch
+
+0 PASSED, 1 FAILED

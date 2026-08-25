@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[61] : pc[8000016e] lb	x22,10(x2): s6:000000bd 
+spike[61] : pc[8000016e] lb      s6, 10(sp): s6:ffffffbd 
+Mismatch[19]:
+[81] ibex : pc[800001c8] auipc	x5,0x27: t0:800271c8 
+[FAILED]: 53 matched, 19 mismatch
+
+0 PASSED, 1 FAILED

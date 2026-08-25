@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[107] : pc[80007c74] c.li	x17,-1: a7:0000001f 
+spike[107] : pc[80007c74] c.li    a7, -1: a7:ffffffff 
+[FAILED]: 209 matched, 583 mismatch
+
+0 PASSED, 1 FAILED

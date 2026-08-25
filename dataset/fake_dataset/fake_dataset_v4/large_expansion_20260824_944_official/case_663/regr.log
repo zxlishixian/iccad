@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[103] : pc[800001f6] ori	x27,x31,411: s11:0000019b 
+spike[103] : pc[800001f6] ori     s11, t6, 411: s11:aca0d19b 
+Mismatch[7805]:
+[9448] ibex : pc[800083e6] csrrsi	x7,mscratch,30: t2:0000001f 
+[FAILED]: 132 matched, 7805 mismatch
+
+0 PASSED, 1 FAILED

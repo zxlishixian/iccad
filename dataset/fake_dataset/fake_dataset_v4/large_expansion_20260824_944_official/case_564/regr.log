@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[60] : pc[8000016a] lh	x21,167(x7): s5:0000d6d7 
+spike[60] : pc[8000016a] lh      s5, 167(t2): s5:ffffd6d7 
+[FAILED]: 2072 matched, 12158 mismatch
+
+0 PASSED, 1 FAILED

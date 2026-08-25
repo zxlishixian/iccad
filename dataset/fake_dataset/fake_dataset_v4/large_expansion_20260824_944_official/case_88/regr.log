@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[1443] : pc[80003d66] sltiu	x2,x23,921: sp:00000001 
+spike[1443] : pc[80003d5c] sub     t6, a5, sp: t6:f53cd9c1 
+Mismatch[4202]:
+[6339] ibex : pc[80002b34] andi	x26,x7,-247: s10:ffffff09 
+[FAILED]: 1491 matched, 4202 mismatch
+
+0 PASSED, 1 FAILED

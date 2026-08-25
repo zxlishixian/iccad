@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[94] : pc[80000206] lhu	x3,1183(x30): gp:00000000 
+spike[94] : pc[80000206] lhu     gp, 1183(t5): gp:0000eb9d 
+[FAILED]: 103 matched, 6406 mismatch
+
+0 PASSED, 1 FAILED

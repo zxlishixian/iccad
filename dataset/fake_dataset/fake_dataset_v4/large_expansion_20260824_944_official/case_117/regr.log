@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[730] : pc[80003704] slt	x1,x2,x4: ra:00000000 
+spike[730] : pc[80003718] c.xor   a3, a4: a3:ffffffff 
+[FAILED]: 693 matched, 42202 mismatch
+
+0 PASSED, 1 FAILED

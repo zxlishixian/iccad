@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2694] : pc[800048cc] lui	x16,0xb3a94: a6:b3a94000 
+spike[2694] : pc[800048a0] mul     s10, s5, a6: s10:00000000 
+[FAILED]: 1636 matched, 5776 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[63] : pc[8000016a] mul	x4,x16,x30: tp:00000000 
+spike[63] : pc[8000016a] mul     tp, a6, t5: tp:80000000 
+Mismatch[6925]:
+[9457] ibex : pc[800083f6] slt	x25,x22,x16: s9:00000001 
+[FAILED]: 1169 matched, 6925 mismatch
+
+0 PASSED, 1 FAILED

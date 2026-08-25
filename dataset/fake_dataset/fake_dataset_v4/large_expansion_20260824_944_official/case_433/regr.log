@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[107] : pc[800002ba] c.lui	x7,0xf: t2:0000f000 
+spike[107] : pc[8000027c] c.lui   a0, 0x17: a0:00017000 
+[FAILED]: 87 matched, 54 mismatch
+
+0 PASSED, 1 FAILED

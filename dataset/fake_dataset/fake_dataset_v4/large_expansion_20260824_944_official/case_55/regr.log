@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[432] : pc[80001458] c.add	x27,x6: s11:8000140f 
+spike[432] : pc[80001436] slli    t4, a6, 10: t4:00003400 
+Mismatch[1994]:
+[2672] ibex : pc[8000339c] sltiu	x13,x28,-238: a3:00000001 
+[FAILED]: 399 matched, 1994 mismatch
+
+0 PASSED, 1 FAILED

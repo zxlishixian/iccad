@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1382] : pc[80006342] remu	x28,x7,x2: t3:fffffeda 
+spike[1382] : pc[80006342] remu    t3, t2, sp: t3:7ffe454c 
+[FAILED]: 2551 matched, 9547 mismatch
+
+0 PASSED, 1 FAILED

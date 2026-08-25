@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[428] : pc[80000aaa] lui	x15,0xd7b1b: a5:d7b1b000 
+spike[428] : pc[80000a96] c.lui   a5, 0x17: a5:00017000 
+[FAILED]: 531 matched, 10735 mismatch
+
+0 PASSED, 1 FAILED

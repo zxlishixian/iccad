@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[75] : pc[8002ef26] lhu	x24,-206(x23): s8:ffffa200 
+spike[75] : pc[8002ef26] lhu     s8, -206(s7): s8:0000a200 
+Mismatch[31948]:
+[36250] ibex : pc[80001750] c.lui	x31,0x1a: t6:0001a000 
+[FAILED]: 2344 matched, 31948 mismatch
+
+0 PASSED, 1 FAILED

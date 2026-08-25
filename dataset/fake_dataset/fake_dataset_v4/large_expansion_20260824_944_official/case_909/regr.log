@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[374] : pc[800005be] xor	x1,x27,x3: ra:0e904001 
+spike[374] : pc[800005bc] c.srli  a0, 23: a0:000001ff 
+[FAILED]: 338 matched, 7701 mismatch
+
+0 PASSED, 1 FAILED

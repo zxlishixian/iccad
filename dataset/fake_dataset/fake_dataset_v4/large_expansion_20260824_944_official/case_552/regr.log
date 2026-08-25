@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[305] : pc[80000626] lhu	x7,13(x8): t2:ffffff9a 
+spike[305] : pc[80000626] lhu     t2, 13(s0): t2:0000ff9a 
+Mismatch[26010]:
+[38551] ibex : pc[8000ba96] csrrs	x24,mscratch,x29: s8:ffffffec 
+[FAILED]: 427 matched, 26010 mismatch
+
+0 PASSED, 1 FAILED

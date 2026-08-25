@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[59] : pc[80000166] lh	x17,-12(x2): a7:0000aaab 
+spike[59] : pc[80000166] lh      a7, -12(sp): a7:ffffaaab 
+Mismatch[19]:
+[81] ibex : pc[800001c8] auipc	x5,0x27: t0:800271c8 
+[FAILED]: 53 matched, 19 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[359] : pc[800007ea] lhu	x22,1110(x5): s6:ffffb754 
+spike[359] : pc[800007ea] lhu     s6, 1110(t0): s6:0000b754 
+Mismatch[8164]:
+[17857] ibex : pc[80014a2c] xori	x16,x22,-420: a6:fffffe5c 
+[FAILED]: 2882 matched, 8164 mismatch
+
+0 PASSED, 1 FAILED

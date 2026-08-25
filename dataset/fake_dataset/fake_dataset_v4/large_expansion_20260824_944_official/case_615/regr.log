@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[272] : pc[80011062] divu	x1,x24,x13: ra:00000000 
+spike[272] : pc[80011062] divu    ra, s8, a3: ra:01ffffff 
+[FAILED]: 832 matched, 1166 mismatch
+
+0 PASSED, 1 FAILED

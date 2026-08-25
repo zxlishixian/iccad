@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[657] : pc[80000be4] c.srli	x12,0xf: a2:00000000 
+spike[657] : pc[80000bbe] div     a3, s1, s6: a3:00000000 
+Mismatch[2771]:
+[3911] ibex : pc[800020ea] slli	x2,x19,0x5: sp:ffffb700 
+[FAILED]: 776 matched, 2771 mismatch
+
+0 PASSED, 1 FAILED

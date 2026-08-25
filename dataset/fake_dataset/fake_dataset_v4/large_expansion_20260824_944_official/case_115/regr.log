@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[251] : pc[80003aa6] c.and	x10,x8: a0:6cd6a1b4 
+spike[251] : pc[80003a82] mul     tp, tp, a1: tp:00000000 
+[FAILED]: 236 matched, 4148 mismatch
+
+0 PASSED, 1 FAILED

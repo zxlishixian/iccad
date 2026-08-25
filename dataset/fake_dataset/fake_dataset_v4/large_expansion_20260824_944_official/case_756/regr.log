@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[486] : pc[80007332] c.lui	x29,0x4: t4:00004000 
+spike[486] : pc[80007384] srl     s5, a1, s0: s5:00000110 
+Mismatch[2129]:
+[3281] ibex : pc[800002ee] andi	x12,x14,945: a2:00000000 
+[FAILED]: 658 matched, 2129 mismatch
+
+0 PASSED, 1 FAILED

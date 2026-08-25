@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[80] : pc[80009758] lh	x15,-16(x26): a5:0000d0d1 
+spike[80] : pc[80009758] lh      a5, -16(s10): a5:ffffd0d1 
+Mismatch[20]:
+[100] ibex : pc[800097c6] lhu	x14,-1100(x18): a4:ffffa8a9 
+[FAILED]: 72 matched, 20 mismatch
+
+0 PASSED, 1 FAILED

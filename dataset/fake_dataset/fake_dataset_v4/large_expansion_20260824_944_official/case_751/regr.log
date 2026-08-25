@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[66] : pc[80000208] srli	x20,x5,0x17: s4:000000af 
+spike[66] : pc[800001f8] xor     s2, gp, t5: s2:00000001 
+[FAILED]: 54 matched, 3508 mismatch
+
+0 PASSED, 1 FAILED

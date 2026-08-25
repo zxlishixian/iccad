@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[273] : pc[8000066e] mulhu	x7,x18,x26: t2:00000000 
+spike[273] : pc[80000664] c.addi  s2, 19: s2:000002bb 
+[FAILED]: 230 matched, 4956 mismatch
+
+0 PASSED, 1 FAILED

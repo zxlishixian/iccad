@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[534] : pc[80000904] csrrci	x8,mscratch,9: s0:00000006 
+spike[534] : pc[8000090a] c.add   s3, tp: s3:c8000000 
+Mismatch[781]:
+[1444] ibex : pc[80002890] c.sub	x8,x15: s0:7ffe80b7 
+[FAILED]: 555 matched, 781 mismatch
+
+0 PASSED, 1 FAILED

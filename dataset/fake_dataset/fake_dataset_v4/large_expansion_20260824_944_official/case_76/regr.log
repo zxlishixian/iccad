@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[281] : pc[80003666] c.slli	x14,0x1c: a4:f0000000 
+spike[281] : pc[8000369e] ori     a2, gp, -961: a2:fffffc3f 
+[FAILED]: 318 matched, 6674 mismatch
+
+0 PASSED, 1 FAILED

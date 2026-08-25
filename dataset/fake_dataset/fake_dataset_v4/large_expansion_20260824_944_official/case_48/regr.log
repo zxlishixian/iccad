@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[615] : pc[80000b78] c.srli	x8,0x1b: s0:0000001f 
+spike[615] : pc[80000baa] mul     ra, s10, tp: ra:00000018 
+[FAILED]: 586 matched, 750 mismatch
+
+0 PASSED, 1 FAILED

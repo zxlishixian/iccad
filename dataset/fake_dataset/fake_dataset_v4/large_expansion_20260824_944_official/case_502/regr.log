@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[660] : pc[80000916] remu	x3,x1,x3: gp:ffffffea 
+spike[660] : pc[80000916] remu    gp, ra, gp: gp:31968fea 
+[FAILED]: 1282 matched, 7339 mismatch
+
+0 PASSED, 1 FAILED

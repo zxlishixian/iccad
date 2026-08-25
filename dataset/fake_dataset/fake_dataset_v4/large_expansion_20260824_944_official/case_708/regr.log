@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[233] : pc[800023a4] c.add	x31,x31: t6:808d81be 
+spike[233] : pc[800023a4] c.add   t6, t6: t6:010e5e96 
+[FAILED]: 290 matched, 1807 mismatch
+
+0 PASSED, 1 FAILED

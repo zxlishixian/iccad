@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[102] : pc[800001ee] c.li	x25,-1: s9:0000001f 
+spike[102] : pc[800001ee] c.li    s9, -1: s9:ffffffff 
+[FAILED]: 230 matched, 7766 mismatch
+
+0 PASSED, 1 FAILED

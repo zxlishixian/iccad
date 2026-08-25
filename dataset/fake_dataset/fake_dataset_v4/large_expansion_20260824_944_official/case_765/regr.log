@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[141] : pc[80000430] sra	x5,x13,x30: t0:00000007 
+spike[141] : pc[80000430] sra     t0, a3, t5: t0:0003fff2 
+[FAILED]: 392 matched, 1699 mismatch
+
+0 PASSED, 1 FAILED

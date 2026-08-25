@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[82] : pc[800001ba] and	x8,x31,x5: s0:00000000 
+spike[82] : pc[800001ba] and     s0, t6, t0: s0:80000000 
+[FAILED]: 139 matched, 8083 mismatch
+
+0 PASSED, 1 FAILED

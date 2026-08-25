@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[679] : pc[80000cba] div	x6,x11,x4: t1:faaaab2e 
+spike[679] : pc[80000cf2] mulhsu  t0, a3, t5: t0:00000000 
+[FAILED]: 646 matched, 691 mismatch
+
+0 PASSED, 1 FAILED

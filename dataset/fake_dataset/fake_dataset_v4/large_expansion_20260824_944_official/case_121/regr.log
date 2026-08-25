@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[146] : pc[80000380] sub	x9,x11,x5: s1:bc88508b 
+spike[146] : pc[80000396] mulhsu  a7, s10, s2: a7:bffee0f2 
+Mismatch[60]:
+[208] ibex : pc[800004fa] csrrsi	x20,mscratch,31: s4:00000006 
+[FAILED]: 131 matched, 60 mismatch
+
+0 PASSED, 1 FAILED

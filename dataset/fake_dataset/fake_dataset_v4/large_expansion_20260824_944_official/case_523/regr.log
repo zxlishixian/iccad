@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[102] : pc[80000244] lbu	x28,-2(x5): t3:ffffffda 
+spike[102] : pc[80000244] lbu     t3, -2(t0): t3:000000da 
+Mismatch[21190]:
+[23263] ibex : pc[80021098] xor	x24,x9,x11: s8:000fdf60 
+[FAILED]: 801 matched, 21190 mismatch
+
+0 PASSED, 1 FAILED

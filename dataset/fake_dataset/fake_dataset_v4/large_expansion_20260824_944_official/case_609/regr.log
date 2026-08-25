@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[378] : pc[800068e0] divu	x30,x28,x15: t5:fffe5000 
+spike[378] : pc[800068ec] c.sub   s1, a2: s1:8001aaaf 
+[FAILED]: 472 matched, 8249 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[663] : pc[80000c10] slli	x26,x27,0xb: s10:b0dac000 
+spike[663] : pc[80000c1c] slti    t4, t6, -684: t4:00000001 
+[FAILED]: 628 matched, 2170 mismatch
+
+0 PASSED, 1 FAILED

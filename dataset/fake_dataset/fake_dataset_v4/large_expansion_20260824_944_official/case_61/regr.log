@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[629] : pc[80006f8a] csrrc	x8,mscratch,x5: s0:0000000d 
+spike[629] : pc[80006f6c] c.srai  a2, 21: a2:fffffdff 
+Mismatch[8164]:
+[10441] ibex : pc[80007444] c.addi16sp	x2,432: sp:000001c5 
+[FAILED]: 545 matched, 8164 mismatch
+
+0 PASSED, 1 FAILED

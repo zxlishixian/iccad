@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[127] : pc[8000565a] mulhsu	x25,x7,x30: s9:62dfffff 
+spike[127] : pc[80005660] xor     t0, s8, sp: t0:4ddc01e0 
+Mismatch[2059]:
+[2510] ibex : pc[8000030c] c.li	x3,1: gp:00000001 
+[FAILED]: 130 matched, 2059 mismatch
+
+0 PASSED, 1 FAILED

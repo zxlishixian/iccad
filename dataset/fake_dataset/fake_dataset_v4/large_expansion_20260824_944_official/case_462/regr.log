@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[67] : pc[8000017c] lui	x9,0x64f25: s1:64f25000 
+spike[67] : pc[80000178] div     a0, a2, tp: a0:ffffffff 
+Mismatch[4411]:
+[5251] ibex : pc[80002e58] sub	x10,x3,x13: a0:fffff957 
+[FAILED]: 72 matched, 4411 mismatch
+
+0 PASSED, 1 FAILED

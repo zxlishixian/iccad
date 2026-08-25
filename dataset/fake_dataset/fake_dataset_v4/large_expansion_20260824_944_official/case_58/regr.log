@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[460] : pc[8000173e] csrrc	x15,mscratch,x1: a5:64592d2d 
+spike[460] : pc[800016fe] mulhu   s0, t4, s11: s0:88f9c168 
+Mismatch[12937]:
+[15473] ibex : pc[8000679e] add	x2,x6,x14: sp:fffffec4 
+[FAILED]: 410 matched, 12937 mismatch
+
+0 PASSED, 1 FAILED

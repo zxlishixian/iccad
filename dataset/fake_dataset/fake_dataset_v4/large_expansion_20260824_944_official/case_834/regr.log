@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[84] : pc[80011266] lh	x28,-6(x26): t3:00000000 
+spike[84] : pc[80011266] lh      t3, -6(s10): t3:00006273 
+[FAILED]: 277 matched, 37312 mismatch
+
+0 PASSED, 1 FAILED

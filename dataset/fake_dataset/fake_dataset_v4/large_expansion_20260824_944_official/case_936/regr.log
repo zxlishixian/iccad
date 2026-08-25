@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[114] : pc[80000312] c.srli	x8,0x10: s0:ffff8e0b 
+spike[114] : pc[80000312] c.srli  s0, 16: s0:00008e0b 
+Mismatch[4364]:
+[5365] ibex : pc[80001d80] remu	x2,x7,x7: sp:00000000 
+[FAILED]: 188 matched, 4364 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[63] : pc[80000166] ori	x13,x31,19: a3:00000013 
+spike[63] : pc[80000166] ori     a3, t6, 19: a3:001ee7d3 
+Mismatch[5845]:
+[6922] ibex : pc[80002e34] sll	x31,x31,x29: t6:00008000 
+[FAILED]: 110 matched, 5845 mismatch
+
+0 PASSED, 1 FAILED

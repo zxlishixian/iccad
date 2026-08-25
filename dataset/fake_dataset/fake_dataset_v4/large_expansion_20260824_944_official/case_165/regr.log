@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[67] : pc[800001a2] andi	x16,x29,-995: a6:cceafc04 
+spike[67] : pc[8000018e] mulhu   s1, t4, a6: s1:00000008 
+Mismatch[3216]:
+[3966] ibex : pc[80003748] sll	x7,x29,x1: t2:23d1c510 
+[FAILED]: 76 matched, 3216 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[115] : pc[80001f86] remu	x5,x11,x24: t0:f189aa19 
+spike[115] : pc[80001f86] remu    t0, a1, s8: t0:3186c0f6 
+Mismatch[1962]:
+[2401] ibex : pc[80001f50] slt	x4,x14,x15: tp:00000001 
+[FAILED]: 115 matched, 1962 mismatch
+
+0 PASSED, 1 FAILED

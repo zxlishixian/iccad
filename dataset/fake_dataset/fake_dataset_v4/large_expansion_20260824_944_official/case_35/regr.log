@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[194] : pc[80000690] add	x26,x28,x8: s10:80023b96 
+spike[194] : pc[800006a4] c.lui   ra, 0xb: ra:0000b000 
+Mismatch[1704]:
+[2555] ibex : pc[80001c1a] andi	x15,x27,-949: a5:00400000 
+[FAILED]: 157 matched, 1704 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[128] : pc[80000392] c.sub	x12,x15: a2:7ffe1184 
+spike[128] : pc[80000376] c.sub   a2, a3: a2:ffffffff 
+Mismatch[1459]:
+[1879] ibex : pc[800032b8] andi	x24,x0,1013: s8:00000000 
+[FAILED]: 110 matched, 1459 mismatch
+
+0 PASSED, 1 FAILED

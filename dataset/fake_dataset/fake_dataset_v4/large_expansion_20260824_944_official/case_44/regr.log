@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[605] : pc[80000b9a] c.li	x23,23: s7:00000017 
+spike[605] : pc[80000bcc] c.lui   a4, 0x4: a4:00004000 
+[FAILED]: 609 matched, 6260 mismatch
+
+0 PASSED, 1 FAILED

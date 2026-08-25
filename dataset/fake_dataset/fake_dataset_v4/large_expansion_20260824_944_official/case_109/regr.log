@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[228] : pc[80007170] sltu	x4,x6,x16: tp:00000001 
+spike[228] : pc[8000716c] auipc   t5, 0x7d42b: t5:fd43216c 
+[FAILED]: 210 matched, 2396 mismatch
+
+0 PASSED, 1 FAILED

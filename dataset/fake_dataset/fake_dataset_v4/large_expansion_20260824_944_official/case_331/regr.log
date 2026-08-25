@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2356] : pc[80004188] and	x7,x17,x12: t2:00000000 
+spike[2356] : pc[80004192] c.addi4spn a0, sp, 992: a0:800171c7 
+[FAILED]: 2043 matched, 729 mismatch
+
+0 PASSED, 1 FAILED

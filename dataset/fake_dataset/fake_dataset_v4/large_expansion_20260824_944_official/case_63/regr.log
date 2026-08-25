@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[367] : pc[80003372] sub	x29,x16,x30: t4:8b4001c4 
+spike[367] : pc[800033b6] c.mv    a2, tp: a2:80000000 
+Mismatch[5597]:
+[6941] ibex : pc[80002fb2] c.addi16sp	x2,208: sp:000000ae 
+[FAILED]: 358 matched, 5597 mismatch
+
+0 PASSED, 1 FAILED

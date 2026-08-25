@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[316] : pc[8000526e] divu	x17,x3,x4: a7:00000000 
+spike[316] : pc[8000526e] divu    a7, gp, tp: a7:00000001 
+Mismatch[1601]:
+[2510] ibex : pc[800002d2] div	x25,x27,x4: s9:00000000 
+[FAILED]: 588 matched, 1601 mismatch
+
+0 PASSED, 1 FAILED

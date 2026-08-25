@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[562] : pc[8000f6d0] c.addi4spn	x15,x2,64: a5:00000040 
+spike[562] : pc[8000f68e] c.lui   s3, 0x1e: s3:0001e000 
+Mismatch[27920]:
+[33351] ibex : pc[8000b01a] andi	x13,x18,585: a3:00000048 
+[FAILED]: 576 matched, 27920 mismatch
+
+0 PASSED, 1 FAILED

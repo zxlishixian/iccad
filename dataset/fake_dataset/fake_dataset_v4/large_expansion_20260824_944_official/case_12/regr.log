@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[73] : pc[800001e8] mul	x26,x11,x5: s10:de1ec292 
+spike[73] : pc[80000214] c.addi4spn a3, sp, 560: a3:6419dfd9 
+Mismatch[2020]:
+[2364] ibex : pc[80007470] csrrw	x20,mscratch,x26: s4:00010000 
+[FAILED]: 70 matched, 2020 mismatch
+
+0 PASSED, 1 FAILED

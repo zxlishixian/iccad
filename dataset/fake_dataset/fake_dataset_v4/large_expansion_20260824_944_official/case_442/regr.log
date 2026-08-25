@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[410] : pc[80003450] divu	x7,x10,x3: t2:ffffffff 
+spike[410] : pc[8000341e] xor     s7, s11, s7: s7:ffffaeae 
+[FAILED]: 397 matched, 5859 mismatch
+
+0 PASSED, 1 FAILED

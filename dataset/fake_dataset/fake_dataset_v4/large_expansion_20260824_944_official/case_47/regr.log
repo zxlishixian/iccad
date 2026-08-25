@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[1367] : pc[8000178e] sub	x29,x19,x8: t4:00004169 
+spike[1367] : pc[800017c2] slt     t4, t5, s11: t4:00000001 
+Mismatch[1808]:
+[3438] ibex : pc[80003982] jal	x6,80003988: t1:80003986 
+[FAILED]: 1293 matched, 1808 mismatch
+
+0 PASSED, 1 FAILED

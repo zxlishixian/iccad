@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[250] : pc[800006c0] mulhu	x25,x31,x6: s9:10cf7226 
+spike[250] : pc[800006c0] mulhu   s9, t6, t1: s9:00000000 
+[FAILED]: 274 matched, 9085 mismatch
+
+0 PASSED, 1 FAILED

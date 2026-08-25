@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[105] : pc[80002ea0] sll	x15,x13,x8: a5:00000007 
+spike[105] : pc[80002eb6] jal     t1, 0xdad6: t1:80002eba 
+Mismatch[1879]:
+[2304] ibex : pc[80002be2] add	x19,x14,x7: s3:fe000190 
+[FAILED]: 90 matched, 1879 mismatch
+
+0 PASSED, 1 FAILED

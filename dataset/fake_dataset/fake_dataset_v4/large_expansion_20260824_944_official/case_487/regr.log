@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[616] : pc[8000060e] remu	x11,x28,x26: a1:b17d1e1e 
+spike[616] : pc[8000060e] remu    a1, t3, s10: a1:317ec9fd 
+Mismatch[1750]:
+[3291] ibex : pc[800036b0] add	x2,x6,x26: sp:c001ef96 
+[FAILED]: 1037 matched, 1750 mismatch
+
+0 PASSED, 1 FAILED

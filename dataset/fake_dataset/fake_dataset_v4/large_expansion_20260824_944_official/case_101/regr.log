@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[170] : pc[800004a8] srl	x15,x4,x21: a5:00000008 
+spike[170] : pc[8000046c] sltiu   s7, tp, -233: s7:00000001 
+[FAILED]: 165 matched, 6186 mismatch
+
+0 PASSED, 1 FAILED

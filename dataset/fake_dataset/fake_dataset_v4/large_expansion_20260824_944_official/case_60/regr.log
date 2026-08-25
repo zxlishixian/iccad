@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[71] : pc[80000194] csrrs	x29,mscratch,x0: t4:8001ae1c 
+spike[71] : pc[8000019c] jalr    s11, t1, 396: s11:800001a0 
+[FAILED]: 85 matched, 2104 mismatch
+
+0 PASSED, 1 FAILED

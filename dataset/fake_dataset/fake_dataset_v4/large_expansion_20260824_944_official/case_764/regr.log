@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[87] : pc[800072a0] mul	x1,x1,x30: ra:0ac80000 
+spike[87] : pc[800072a0] mul     ra, ra, t5: ra:001426e0 
+[FAILED]: 404 matched, 2172 mismatch
+
+0 PASSED, 1 FAILED

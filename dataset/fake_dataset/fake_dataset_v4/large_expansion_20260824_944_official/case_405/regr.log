@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2355] : pc[800036e6] jalr	x1,1002(x22): ra:80003dac 
+spike[2355] : pc[800036e6] jalr    ra, s6, 1002: ra:800036ea 
+[FAILED]: 2077 matched, 707 mismatch
+
+0 PASSED, 1 FAILED

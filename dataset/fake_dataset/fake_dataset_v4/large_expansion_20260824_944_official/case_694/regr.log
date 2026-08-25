@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[364] : pc[80000928] rem	x21,x31,x8: s5:00000000 
+spike[364] : pc[80000928] rem     s5, t6, s0: s5:0000000a 
+Mismatch[1307]:
+[1997] ibex : pc[8000352c] and	x5,x13,x14: t0:00000000 
+[FAILED]: 332 matched, 1307 mismatch
+
+0 PASSED, 1 FAILED

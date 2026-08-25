@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[288] : pc[800005de] div	x28,x14,x24: t3:ffffffdf 
+spike[288] : pc[800005de] div     t3, a4, s8: t3:ffffffff 
+Mismatch[7686]:
+[9197] ibex : pc[8000bde4] mulhu	x13,x26,x31: a3:00000000 
+[FAILED]: 704 matched, 7686 mismatch
+
+0 PASSED, 1 FAILED

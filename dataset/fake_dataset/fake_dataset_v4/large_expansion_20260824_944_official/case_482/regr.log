@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[377] : pc[800007b0] div	x3,x29,x9: gp:00000dd2 
+spike[377] : pc[800007b0] div     gp, t4, s1: gp:00000000 
+Mismatch[13192]:
+[15790] ibex : pc[800061a2] auipc	x21,0x6b616: s5:eb61c1a2 
+[FAILED]: 1062 matched, 13192 mismatch
+
+0 PASSED, 1 FAILED

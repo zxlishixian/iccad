@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[67] : pc[80000186] slli	x4,x3,0x1a: tp:44000000 
+spike[67] : pc[800001be] csrrwi  t5, mscratch, 29: t5:00000014 
+Mismatch[4479]:
+[5418] ibex : pc[800010bc] lui	x8,0xfc8a2: s0:fc8a2000 
+[FAILED]: 73 matched, 4479 mismatch
+
+0 PASSED, 1 FAILED

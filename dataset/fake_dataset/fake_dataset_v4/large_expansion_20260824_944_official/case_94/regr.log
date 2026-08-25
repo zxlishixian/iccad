@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[281] : pc[800010c4] c.andi	x15,8: a5:00000000 
+spike[281] : pc[8000112c] xori    s8, sp, 553: s8:8001cc55 
+Mismatch[2101]:
+[2673] ibex : pc[8000348a] csrrsi	x16,mscratch,24: a6:ffff8700 
+[FAILED]: 292 matched, 2101 mismatch
+
+0 PASSED, 1 FAILED

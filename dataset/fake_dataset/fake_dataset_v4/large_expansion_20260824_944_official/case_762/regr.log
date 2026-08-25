@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[140] : pc[800032ac] c.add	x13,x30: a3:aaa6f2ab 
+spike[140] : pc[800032ac] c.add   a3, t5: a3:ff4a0fb1 
+Mismatch[3697]:
+[4840] ibex : pc[80003fb4] sltu	x31,x2,x20: t6:00000000 
+[FAILED]: 190 matched, 3697 mismatch
+
+0 PASSED, 1 FAILED

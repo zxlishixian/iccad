@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[304] : pc[800066ea] div	x29,x14,x7: t4:00000000 
+spike[304] : pc[800066be] csrrc   a5, mscratch, tp: a5:00000007 
+[FAILED]: 345 matched, 9002 mismatch
+
+0 PASSED, 1 FAILED

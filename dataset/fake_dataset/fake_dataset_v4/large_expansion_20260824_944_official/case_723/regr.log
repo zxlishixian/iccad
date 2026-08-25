@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[153] : pc[800002c2] rem	x13,x8,x30: a3:fffffea3 
+spike[153] : pc[800002c2] rem     a3, s0, t5: a3:00000000 
+Mismatch[6603]:
+[9479] ibex : pc[800083aa] csrrs	x28,mscratch,x25: t3:00000000 
+[FAILED]: 1328 matched, 6603 mismatch
+
+0 PASSED, 1 FAILED

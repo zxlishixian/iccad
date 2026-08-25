@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[204] : pc[80006d78] csrrc	x2,mscratch,x25: sp:80027e7c 
+spike[204] : pc[80006d46] ori     a4, ra, 282: a4:ffffffbe 
+[FAILED]: 333 matched, 10558 mismatch
+
+0 PASSED, 1 FAILED

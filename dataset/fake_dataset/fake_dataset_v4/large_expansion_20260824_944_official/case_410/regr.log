@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[90] : pc[80000cec] c.xor	x9,x11: s1:8001ade8 
+spike[90] : pc[80000d56] csrrs   a3, mscratch, t6: a3:00000005 
+Mismatch[13240]:
+[15635] ibex : pc[8000673e] c.slli	x8,0x1c: s0:60000000 
+[FAILED]: 107 matched, 13240 mismatch
+
+0 PASSED, 1 FAILED

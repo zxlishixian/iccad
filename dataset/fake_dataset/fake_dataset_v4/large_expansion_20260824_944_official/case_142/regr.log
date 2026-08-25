@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[695] : pc[800016ec] mulhsu	x18,x27,x4: s2:bffffff9 
+spike[695] : pc[800016fe] c.addi4spn s0, sp, 336: s0:80001760 
+[FAILED]: 706 matched, 2399 mismatch
+
+0 PASSED, 1 FAILED

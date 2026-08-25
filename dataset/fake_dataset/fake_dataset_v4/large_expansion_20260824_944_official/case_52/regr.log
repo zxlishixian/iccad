@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[626] : pc[80000ce8] c.lui	x20,0x11: s4:00011000 
+spike[626] : pc[80000d28] addi    ra, t1, -495: ra:fffffe11 
+Mismatch[597]:
+[1350] ibex : pc[80002216] mulhsu	x3,x7,x20: gp:00000006 
+[FAILED]: 605 matched, 597 mismatch
+
+0 PASSED, 1 FAILED

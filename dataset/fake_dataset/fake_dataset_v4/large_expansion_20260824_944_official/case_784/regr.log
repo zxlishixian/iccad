@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[58] : pc[80000162] c.mv	x14,x16: a4:0000000e 
+spike[58] : pc[8001c080] addi    s2, s2, -124: s2:8002cda0 
+Mismatch[18]:
+[78] ibex : pc[800001d2] addi	x3,x7,-734: gp:7ffffd22 
+[FAILED]: 48 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

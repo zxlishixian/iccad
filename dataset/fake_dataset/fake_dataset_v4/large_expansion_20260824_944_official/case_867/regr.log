@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[119] : pc[80000256] sra	x25,x31,x15: s9:00000000 
+spike[119] : pc[80000256] sra     s9, t6, a5: s9:00001f2a 
+[FAILED]: 631 matched, 7313 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[77] : pc[80011c16] lhu	x3,1926(x2): gp:00000000 
+spike[77] : pc[80011c16] lhu     gp, 1926(sp): gp:0000c1e5 
+[FAILED]: 202 matched, 27321 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[56] : pc[8000015e] lb	x13,9(x30): a3:00000099 
+spike[56] : pc[8000015e] lb      a3, 9(t5): a3:ffffff99 
+Mismatch[12101]:
+[13864] ibex : pc[80012834] mulhsu	x1,x2,x16: ra:b53a4a91 
+[FAILED]: 955 matched, 12101 mismatch
+
+0 PASSED, 1 FAILED

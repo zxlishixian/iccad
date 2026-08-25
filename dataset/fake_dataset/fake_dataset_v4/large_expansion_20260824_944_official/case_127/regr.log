@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[996] : pc[80001446] remu	x10,x23,x11: a0:0293e619 
+spike[996] : pc[80001470] add     s2, t3, t3: s2:fae004ba 
+[FAILED]: 918 matched, 1785 mismatch
+
+0 PASSED, 1 FAILED

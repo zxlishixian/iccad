@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[205] : pc[800070c2] div	x6,x18,x8: t1:00000371 
+spike[205] : pc[800070c6] c.xor   a0, a2: a0:0000000b 
+Mismatch[2419]:
+[3160] ibex : pc[800001a6] xor	x21,x30,x9: s5:00000000 
+[FAILED]: 186 matched, 2419 mismatch
+
+0 PASSED, 1 FAILED

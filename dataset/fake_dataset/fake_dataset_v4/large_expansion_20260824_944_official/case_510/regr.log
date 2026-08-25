@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[81] : pc[80011c2a] lbu	x28,1045(x2): t3:ffffffc8 
+spike[81] : pc[80011c2a] lbu     t3, 1045(sp): t3:000000c8 
+Mismatch[26505]:
+[29133] ibex : pc[80034ada] c.addi16sp	x2,384: sp:000003c0 
+[FAILED]: 947 matched, 26505 mismatch
+
+0 PASSED, 1 FAILED

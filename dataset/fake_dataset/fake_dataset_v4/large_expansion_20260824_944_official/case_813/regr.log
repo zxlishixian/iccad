@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[631] : pc[80000cd0] c.sub	x14,x8: a4:fffffffc 
+spike[631] : pc[80036080] addi    s2, s2, -124: s2:80046da0 
+[FAILED]: 613 matched, 62558 mismatch
+
+0 PASSED, 1 FAILED

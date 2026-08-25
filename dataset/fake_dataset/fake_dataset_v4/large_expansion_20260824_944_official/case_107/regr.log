@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[122] : pc[800002ca] sub	x21,x3,x22: s5:78dae3b7 
+spike[122] : pc[800002b6] slt     t4, s9, s2: t4:00000000 
+Mismatch[3659]:
+[4381] ibex : pc[8000319a] csrrsi	x15,mscratch,15: a5:00000018 
+[FAILED]: 111 matched, 3659 mismatch
+
+0 PASSED, 1 FAILED

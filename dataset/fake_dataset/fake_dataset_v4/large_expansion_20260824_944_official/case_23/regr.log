@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[760] : pc[80003788] xori	x19,x29,-498: s3:fffffe0e 
+spike[760] : pc[800037bc] divu    s8, s11, s10: s8:00000000 
+Mismatch[38344]:
+[44900] ibex : pc[80008504] c.lui	x24,0x2: s8:00002000 
+[FAILED]: 769 matched, 38344 mismatch
+
+0 PASSED, 1 FAILED

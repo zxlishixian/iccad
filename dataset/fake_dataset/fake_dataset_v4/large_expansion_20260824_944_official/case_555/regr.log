@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[219] : pc[80000c60] lh	x21,-210(x11): s5:0000a84d 
+spike[219] : pc[80000c60] lh      s5, -210(a1): s5:ffffa84d 
+[FAILED]: 1907 matched, 154428 mismatch
+
+0 PASSED, 1 FAILED

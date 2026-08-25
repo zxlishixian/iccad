@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[355] : pc[800013ae] divu	x31,x22,x11: t6:00000000 
+spike[355] : pc[800013ae] divu    t6, s6, a1: t6:00000001 
+Mismatch[12877]:
+[15377] ibex : pc[800006c6] srl	x25,x12,x10: s9:000000b4 
+[FAILED]: 470 matched, 12877 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[117] : pc[800002a8] divu	x16,x20,x10: a6:00000000 
+spike[117] : pc[800002a8] divu    a6, s4, a0: a6:00000001 
+Mismatch[5651]:
+[6964] ibex : pc[80003044] srli	x29,x23,0x12: t4:0000170d 
+[FAILED]: 304 matched, 5651 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[117] : pc[80011114] jal	x6,8000eea6: t1:80011118 
+spike[117] : pc[80011108] xor     t1, a5, s6: t1:d36f55f9 
+[FAILED]: 128 matched, 31302 mismatch
+
+0 PASSED, 1 FAILED

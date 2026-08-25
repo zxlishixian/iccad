@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[396] : pc[8001102a] c.mv	x1,x27: ra:00000005 
+spike[396] : pc[80011074] mulhsu  tp, s8, t6: tp:00000031 
+[FAILED]: 674 matched, 1297 mismatch
+
+0 PASSED, 1 FAILED

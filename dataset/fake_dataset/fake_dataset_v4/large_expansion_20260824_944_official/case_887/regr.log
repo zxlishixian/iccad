@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[333] : pc[80000540] c.li	x26,-1: s10:0000001f 
+spike[333] : pc[80000540] c.li    s10, -1: s10:ffffffff 
+Mismatch[7214]:
+[9453] ibex : pc[800083f6] slti	x24,x11,-728: s8:00000000 
+[FAILED]: 723 matched, 7214 mismatch
+
+0 PASSED, 1 FAILED

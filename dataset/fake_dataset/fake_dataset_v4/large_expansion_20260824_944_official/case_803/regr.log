@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[77] : pc[80019432] lhu	x3,-23(x16): gp:0000e1e2 
+spike[77] : pc[8001c080] addi    a5, a5, -124: a5:8002cd84 
+Mismatch[18]:
+[95] ibex : pc[8001948c] lhu	x31,-28(x16): t6:0000dedf 
+[FAILED]: 72 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

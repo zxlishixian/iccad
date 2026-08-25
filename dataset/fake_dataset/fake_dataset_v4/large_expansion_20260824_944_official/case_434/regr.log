@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[725] : pc[80000db8] c.xor	x15,x14: a5:fffffff8 
+spike[725] : pc[80000d8e] rem     ra, tp, a4: ra:00000001 
+[FAILED]: 696 matched, 3997 mismatch
+
+0 PASSED, 1 FAILED

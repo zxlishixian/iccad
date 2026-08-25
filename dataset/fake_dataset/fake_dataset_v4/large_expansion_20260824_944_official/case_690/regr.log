@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[45] : pc[80000126] addi	x31,x31,-594: t6:f1bea311 
+spike[45] : pc[80000126] addi    t6, t6, -594: t6:a5f50dae 
+Mismatch[1569]:
+[2389] ibex : pc[800053f6] c.add	x4,x15: tp:850227d8 
+[FAILED]: 521 matched, 1569 mismatch
+
+0 PASSED, 1 FAILED

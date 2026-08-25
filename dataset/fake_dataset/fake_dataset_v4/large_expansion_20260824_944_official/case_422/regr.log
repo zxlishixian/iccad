@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[288] : pc[800006a4] rem	x13,x19,x15: a3:e27b6036 
+spike[288] : pc[800006d2] c.xor   s1, a0: s1:0000023f 
+Mismatch[2999]:
+[3974] ibex : pc[8000794e] addi	x14,x16,749: a4:0000ee4f 
+[FAILED]: 293 matched, 2999 mismatch
+
+0 PASSED, 1 FAILED

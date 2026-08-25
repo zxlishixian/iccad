@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[107] : pc[80000204] c.srai	x9,0x8: s1:00fffffe 
+spike[107] : pc[80000204] c.srai  s1, 8: s1:fffffffe 
+Mismatch[7113]:
+[9459] ibex : pc[8000840a] sltiu	x4,x0,-63: tp:00000001 
+[FAILED]: 824 matched, 7113 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[75] : pc[8000267c] remu	x13,x3,x2: a3:ffffffff 
+spike[75] : pc[8000267c] remu    a3, gp, sp: a3:00000000 
+Mismatch[4583]:
+[5761] ibex : pc[8000050a] c.addi	x28,9: t3:00000015 
+[FAILED]: 336 matched, 4583 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[86] : pc[8002e8c6] lh	x3,263(x26): gp:0000df13 
+spike[86] : pc[8002e8c6] lh      gp, 263(s10): gp:ffffdf13 
+Mismatch[32308]:
+[38370] ibex : pc[80000402] lbu	x12,47(x16): a2:0000002a 
+[FAILED]: 3318 matched, 32308 mismatch
+
+0 PASSED, 1 FAILED

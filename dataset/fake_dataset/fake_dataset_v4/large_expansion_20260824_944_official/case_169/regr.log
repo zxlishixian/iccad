@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[74] : pc[80000262] xor	x29,x25,x31: t4:80000000 
+spike[74] : pc[8000024e] srli    a0, zero, 22: a0:00000000 
+[FAILED]: 67 matched, 3627 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[777] : pc[80006372] c.li	x3,-1: gp:0000001f 
+spike[777] : pc[80006372] c.li    gp, -1: gp:ffffffff 
+[FAILED]: 861 matched, 1334 mismatch
+
+0 PASSED, 1 FAILED

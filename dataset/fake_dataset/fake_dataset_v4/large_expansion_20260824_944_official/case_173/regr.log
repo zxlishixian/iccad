@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[108] : pc[8000028e] c.li	x3,1: gp:00000001 
+spike[108] : pc[80000246] mulhu   s4, a4, s7: s4:00008002 
+[FAILED]: 90 matched, 9644 mismatch
+
+0 PASSED, 1 FAILED

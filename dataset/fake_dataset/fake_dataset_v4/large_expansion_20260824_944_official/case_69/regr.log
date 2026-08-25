@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[98] : pc[8000024c] mulhu	x14,x14,x8: a4:00000000 
+spike[98] : pc[80000226] sltu    s8, t6, s7: s8:00000000 
+[FAILED]: 88 matched, 3682 mismatch
+
+0 PASSED, 1 FAILED

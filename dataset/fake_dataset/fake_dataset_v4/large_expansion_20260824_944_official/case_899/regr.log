@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[105] : pc[8000027a] c.li	x17,-1: a7:0000001f 
+spike[105] : pc[8000027a] c.li    a7, -1: a7:ffffffff 
+Mismatch[5556]:
+[6946] ibex : pc[80002d78] srl	x31,x28,x31: t6:0000001f 
+[FAILED]: 399 matched, 5556 mismatch
+
+0 PASSED, 1 FAILED

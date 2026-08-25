@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[137] : pc[8002c698] lw	x8,10(x23): s0:00000000 
+spike[137] : pc[8002c684] lhu     a1, -8(s7): a1:00006e00 
+[FAILED]: 128 matched, 73621 mismatch
+
+0 PASSED, 1 FAILED

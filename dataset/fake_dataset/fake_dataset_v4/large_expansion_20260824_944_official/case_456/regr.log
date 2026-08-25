@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[99] : pc[80000304] div	x14,x18,x3: a4:0000000d 
+spike[99] : pc[80000304] div     a4, s2, gp: a4:ffffffff 
+Mismatch[9083]:
+[10775] ibex : pc[800018de] xor	x4,x16,x15: tp:8001ee7c 
+[FAILED]: 260 matched, 9083 mismatch
+
+0 PASSED, 1 FAILED

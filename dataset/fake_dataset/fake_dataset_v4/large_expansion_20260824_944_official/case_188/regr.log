@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[294] : pc[8000057e] mulh	x30,x8,x1: t5:00000000 
+spike[294] : pc[8000056c] c.addi16sp sp, -16: sp:fffffff0 
+Mismatch[477]:
+[844] ibex : pc[80001720] csrrc	x4,mscratch,x8: tp:00000010 
+[FAILED]: 259 matched, 477 mismatch
+
+0 PASSED, 1 FAILED

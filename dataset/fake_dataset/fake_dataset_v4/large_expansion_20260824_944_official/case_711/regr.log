@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[97] : pc[80000236] mulh	x12,x31,x28: a2:00000007 
+spike[97] : pc[8000023a] remu    t6, t1, gp: t6:00000000 
+Mismatch[5833]:
+[7265] ibex : pc[8000775e] mulh	x6,x6,x9: t1:00000000 
+[FAILED]: 99 matched, 5833 mismatch
+
+0 PASSED, 1 FAILED

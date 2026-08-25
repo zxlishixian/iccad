@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[104] : pc[80000386] c.slli	x19,0x19: s3:00000000 
+spike[104] : pc[80000360] csrrsi  s11, mscratch, 15: s11:8000000b 
+Mismatch[3450]:
+[4216] ibex : pc[80005a6e] c.mv	x24,x2: s8:ffffff47 
+[FAILED]: 108 matched, 3450 mismatch
+
+0 PASSED, 1 FAILED

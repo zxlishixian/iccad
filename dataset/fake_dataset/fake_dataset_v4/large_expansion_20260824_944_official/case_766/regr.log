@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[117] : pc[80000322] div	x2,x22,x30: sp:00000000 
+spike[117] : pc[80000322] div     sp, s6, t5: sp:ffffffff 
+Mismatch[5430]:
+[7336] ibex : pc[80007a6e] lui	x5,0x9beac: t0:9beac000 
+[FAILED]: 502 matched, 5430 mismatch
+
+0 PASSED, 1 FAILED

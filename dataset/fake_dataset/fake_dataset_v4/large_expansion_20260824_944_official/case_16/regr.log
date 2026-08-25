@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[71] : pc[800001ae] c.mv	x13,x6: a3:00000000 
+spike[71] : pc[800001b4] div     t4, a7, s4: t4:ffffffff 
+Mismatch[1569]:
+[2012] ibex : pc[800030ee] c.addi	x26,8: s10:7a090ee8 
+[FAILED]: 70 matched, 1569 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[81] : pc[800001ca] div	x17,x12,x16: a7:f522a80c 
+spike[81] : pc[800001ce] csrrci  s4, mscratch, 14: s4:0000002b 
+Mismatch[8777]:
+[11364] ibex : pc[80003e08] csrrs	x27,mscratch,x22: s11:7ffdc6fd 
+[FAILED]: 1405 matched, 8777 mismatch
+
+0 PASSED, 1 FAILED

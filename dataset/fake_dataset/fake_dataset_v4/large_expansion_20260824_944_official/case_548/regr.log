@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[101] : pc[800112c2] lh	x29,1583(x17): t4:00008d1a 
+spike[101] : pc[800112c2] lh      t4, 1583(a7): t4:ffff8d1a 
+Mismatch[32874]:
+[39513] ibex : pc[80015212] addi	x17,x30,-522: a7:fffffdf6 
+[FAILED]: 4652 matched, 32874 mismatch
+
+0 PASSED, 1 FAILED

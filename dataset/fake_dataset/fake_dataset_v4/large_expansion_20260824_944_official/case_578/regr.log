@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[62] : pc[8000017a] lhu	x2,30(x10): sp:ffffd91d 
+spike[62] : pc[8000017a] lhu     sp, 30(a0): sp:0000d91d 
+Mismatch[19]:
+[82] ibex : pc[800001d2] lw	x23,-54(x20): s7:40c9b7df 
+[FAILED]: 57 matched, 19 mismatch
+
+0 PASSED, 1 FAILED

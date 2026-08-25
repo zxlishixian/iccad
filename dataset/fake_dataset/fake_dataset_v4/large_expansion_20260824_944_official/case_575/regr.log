@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[80] : pc[8000bdb8] lbu	x8,-51(x5): s0:00000000 
+spike[80] : pc[8001b080] addi    t5, t5, -124: t5:8002bd70 
+Mismatch[18]:
+[102] ibex : pc[8000be3c] xori	x22,x2,-61: s6:ffffffc3 
+[FAILED]: 71 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[92] : pc[80000208] csrrsi	x8,mscratch,16: s0:0000000a 
+spike[92] : pc[800001e4] and     t1, a0, s4: t1:00000000 
+Mismatch[4735]:
+[5226] ibex : pc[800009a4] c.andi	x12,4: a2:00000004 
+[FAILED]: 91 matched, 4735 mismatch
+
+0 PASSED, 1 FAILED

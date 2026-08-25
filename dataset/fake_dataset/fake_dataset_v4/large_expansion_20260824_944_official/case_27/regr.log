@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[95] : pc[800002fe] c.srai	x10,0x1f: a0:00000000 
+spike[95] : pc[8000022a] c.addi4spn a2, sp, 672: a2:000002a1 
+Mismatch[108]:
+[226] ibex : pc[800034ac] lhu	x7,-225(x16): t2:0000eced 
+[FAILED]: 83 matched, 108 mismatch
+
+0 PASSED, 1 FAILED

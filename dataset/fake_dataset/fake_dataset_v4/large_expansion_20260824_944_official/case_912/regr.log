@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[71] : pc[80000188] c.srli	x8,0x1b: s0:fffffff0 
+spike[71] : pc[80000188] c.srli  s0, 27: s0:00000010 
+[FAILED]: 74 matched, 7930 mismatch
+
+0 PASSED, 1 FAILED

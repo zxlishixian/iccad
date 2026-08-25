@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[76] : pc[800001ca] div	x26,x3,x9: s10:00000009 
+spike[76] : pc[800001ca] div     s10, gp, s1: s10:05e910de 
+Mismatch[4045]:
+[5495] ibex : pc[800071b0] sltiu	x9,x20,187: s1:00000001 
+[FAILED]: 1061 matched, 4045 mismatch
+
+0 PASSED, 1 FAILED

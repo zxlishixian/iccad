@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[103] : pc[800001f6] ori	x27,x31,411: s11:0000019b 
+spike[103] : pc[800001f6] ori     s11, t6, 411: s11:aca0d19b 
+[FAILED]: 98 matched, 7851 mismatch
+
+0 PASSED, 1 FAILED

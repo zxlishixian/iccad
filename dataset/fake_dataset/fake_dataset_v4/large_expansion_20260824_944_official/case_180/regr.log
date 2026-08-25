@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[389] : pc[80000794] c.xor	x14,x14: a4:00000000 
+spike[389] : pc[8000076c] divu    t2, s0, s5: t2:00000000 
+Mismatch[3761]:
+[4609] ibex : pc[80001716] remu	x12,x10,x8: a2:0000020b 
+[FAILED]: 395 matched, 3761 mismatch
+
+0 PASSED, 1 FAILED

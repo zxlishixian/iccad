@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[60] : pc[8000017a] csrrwi	x26,mscratch,16: s10:00000000 
+spike[60] : pc[800001ac] mulhu   t6, s3, a7: t6:00000000 
+[FAILED]: 64 matched, 2027 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[392] : pc[8000077a] lui	x13,0xbc828: a3:bc828000 
+spike[392] : pc[80000794] c.xor   a4, a4: a4:00000000 
+Mismatch[3781]:
+[4658] ibex : pc[8000d092] sltu	x5,x19,x6: t0:00000001 
+[FAILED]: 375 matched, 3781 mismatch
+
+0 PASSED, 1 FAILED

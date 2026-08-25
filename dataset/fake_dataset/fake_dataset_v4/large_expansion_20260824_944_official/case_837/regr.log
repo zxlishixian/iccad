@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[54] : pc[80000142] lh	x26,11(x15): s10:00000000 
+spike[54] : pc[80000142] lh      s10, 11(a5): s10:ffffc4c5 
+[FAILED]: 87 matched, 203098 mismatch
+
+0 PASSED, 1 FAILED

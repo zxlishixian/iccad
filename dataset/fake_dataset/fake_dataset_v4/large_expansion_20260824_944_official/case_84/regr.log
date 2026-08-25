@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[692] : pc[80000c02] c.and	x9,x11: s1:00000000 
+spike[692] : pc[80000c16] ori     ra, t4, 427: ra:d9ce81ab 
+Mismatch[2539]:
+[3628] ibex : pc[800001a0] jal	x1,800001ca: ra:800001a4 
+[FAILED]: 687 matched, 2539 mismatch
+
+0 PASSED, 1 FAILED

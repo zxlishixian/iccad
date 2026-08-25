@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[85] : pc[80007c18] csrrc	x5,mscratch,x29: t0:00000005 
+spike[85] : pc[80007c02] mulh    s8, a7, sp: s8:1f3eead5 
+[FAILED]: 70 matched, 727 mismatch
+
+0 PASSED, 1 FAILED

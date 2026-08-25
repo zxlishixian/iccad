@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[126] : pc[8000024a] sll	x28,x24,x30: t3:38400000 
+spike[126] : pc[8000024a] sll     t3, s8, t5: t3:5fbec1c2 
+Mismatch[7438]:
+[9409] ibex : pc[8000836a] mul	x20,x21,x18: s4:00000000 
+[FAILED]: 682 matched, 7438 mismatch
+
+0 PASSED, 1 FAILED

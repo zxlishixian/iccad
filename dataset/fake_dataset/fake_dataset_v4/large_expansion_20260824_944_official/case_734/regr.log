@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[103] : pc[800002a4] mulhsu	x11,x9,x30: a1:d54f3f4f 
+spike[103] : pc[800002a4] mulhsu  a1, s1, t5: a1:00000000 
+Mismatch[78]:
+[194] ibex : pc[800004c2] csrrwi	x4,mscratch,12: tp:0000000a 
+[FAILED]: 102 matched, 78 mismatch
+
+0 PASSED, 1 FAILED

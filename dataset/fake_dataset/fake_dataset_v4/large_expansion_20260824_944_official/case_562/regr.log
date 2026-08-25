@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[95] : pc[800240be] lh	x31,34(x2): t6:0000f253 
+spike[95] : pc[800240be] lh      t6, 34(sp): t6:fffff253 
+[FAILED]: 589 matched, 39632 mismatch
+
+0 PASSED, 1 FAILED

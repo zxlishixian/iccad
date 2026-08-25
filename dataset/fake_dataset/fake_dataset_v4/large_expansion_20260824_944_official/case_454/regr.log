@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[98] : pc[800031f2] div	x31,x5,x6: t6:8001adf8 
+spike[98] : pc[800031f6] slli    a2, a4, 28: a2:a0000000 
+[FAILED]: 245 matched, 4842 mismatch
+
+0 PASSED, 1 FAILED

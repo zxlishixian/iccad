@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1045] : pc[8000128a] csrrci	x7,mscratch,17: t2:80000dff 
+spike[1045] : pc[8000129a] c.mv    s3, ra: s3:00000005 
+[FAILED]: 1092 matched, 2920 mismatch
+
+0 PASSED, 1 FAILED

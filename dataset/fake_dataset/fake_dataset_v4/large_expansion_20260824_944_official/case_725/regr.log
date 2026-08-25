@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[318] : pc[80000504] and	x30,x23,x30: t5:00000000 
+spike[318] : pc[80000504] and     t5, s7, t5: t5:00000001 
+[FAILED]: 1541 matched, 6602 mismatch
+
+0 PASSED, 1 FAILED

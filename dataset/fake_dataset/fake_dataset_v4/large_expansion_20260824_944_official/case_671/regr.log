@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[148] : pc[80000272] csrrwi	x29,mscratch,6: t4:0000e013 
+spike[148] : pc[80000272] csrrwi  t4, mscratch, 6: t4:00000013 
+Mismatch[7816]:
+[9454] ibex : pc[800083c6] c.and	x12,x14: a2:20c0a000 
+[FAILED]: 327 matched, 7816 mismatch
+
+0 PASSED, 1 FAILED

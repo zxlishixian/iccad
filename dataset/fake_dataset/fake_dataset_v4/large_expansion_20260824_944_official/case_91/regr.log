@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[499] : pc[80000982] sub	x10,x4,x19: a0:80018378 
+spike[499] : pc[800009a0] or      s8, s9, a5: s8:fff84f7c 
+Mismatch[710]:
+[1294] ibex : pc[8000344e] jal	x9,80003470: s1:80003452 
+[FAILED]: 492 matched, 710 mismatch
+
+0 PASSED, 1 FAILED

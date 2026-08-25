@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[956] : pc[80001248] mulhsu	x22,x18,x9: s6:00000000 
+spike[956] : pc[80001234] csrrsi  s2, mscratch, 1: s2:00000001 
+Mismatch[4614]:
+[6147] ibex : pc[80005ac0] add	x29,x16,x23: t4:8001be9b 
+[FAILED]: 930 matched, 4614 mismatch
+
+0 PASSED, 1 FAILED

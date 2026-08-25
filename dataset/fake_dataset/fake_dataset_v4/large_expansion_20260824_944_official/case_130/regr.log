@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[297] : pc[80010d12] ori	x2,x11,-392: sp:fffffff8 
+spike[297] : pc[80010d1a] c.srai  s0, 10: s0:ffe00043 
+[FAILED]: 269 matched, 13719 mismatch
+
+0 PASSED, 1 FAILED

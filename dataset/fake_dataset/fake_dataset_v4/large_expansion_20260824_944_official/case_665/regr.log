@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[100] : pc[800001e8] sll	x22,x31,x4: s6:00000000 
+spike[100] : pc[800001e8] sll     s6, t6, tp: s6:fffffed3 
+Mismatch[7197]:
+[9383] ibex : pc[8000834c] xor	x26,x7,x16: s10:fc5e0000 
+[FAILED]: 796 matched, 7197 mismatch
+
+0 PASSED, 1 FAILED

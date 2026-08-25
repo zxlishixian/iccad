@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[160] : pc[80006c7a] or	x15,x17,x13: a5:fffffff3 
+spike[160] : pc[80006c44] sll     a4, a7, s5: a4:fffff490 
+Mismatch[2746]:
+[3374] ibex : pc[800037fc] csrrwi	x31,mscratch,19: t6:00000000 
+[FAILED]: 169 matched, 2746 mismatch
+
+0 PASSED, 1 FAILED

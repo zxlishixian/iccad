@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[49] : pc[8000a080] addi	x18,x18,-124: s2:ffffff92 
+spike[49] : pc[8000012e] auipc   s2, 0x1b: s2:8001b12e 
+Mismatch[5903]:
+[6955] ibex : pc[80002ed6] c.xor	x13,x11: a3:0000000a 
+[FAILED]: 52 matched, 5903 mismatch
+
+0 PASSED, 1 FAILED

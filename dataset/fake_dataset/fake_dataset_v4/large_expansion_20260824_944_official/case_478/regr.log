@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[404] : pc[800006b2] div	x30,x18,x12: t5:80023e1c 
+spike[404] : pc[800006b2] div     t5, s2, a2: t5:00000000 
+Mismatch[4285]:
+[5418] ibex : pc[800085d6] xori	x24,x7,-51: s8:ffffc8ca 
+[FAILED]: 462 matched, 4285 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[672] : pc[80002a78] mulhu	x1,x28,x31: ra:0000000f 
+spike[672] : pc[80002a62] rem     t1, a0, s1: t1:ffe8f738 
+[FAILED]: 657 matched, 2168 mismatch
+
+0 PASSED, 1 FAILED

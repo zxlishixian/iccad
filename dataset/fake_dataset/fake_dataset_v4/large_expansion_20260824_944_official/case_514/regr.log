@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[82] : pc[800001e6] lb	x1,3(x11): ra:000000c7 
+spike[82] : pc[800001e6] lb      ra, 3(a1): ra:ffffffc7 
+Mismatch[17594]:
+[19370] ibex : pc[8003528a] slt	x17,x12,x30: a7:00000001 
+[FAILED]: 714 matched, 17594 mismatch
+
+0 PASSED, 1 FAILED

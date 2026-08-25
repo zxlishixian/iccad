@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[98] : pc[8000021a] andi	x5,x23,306: t0:00000032 
+spike[98] : pc[8000025c] c.sub   a0, a0: a0:00000000 
+Mismatch[3]:
+[101] ibex : pc[80000224] c.slli	x10,0x6: a0:ffffe140 
+[FAILED]: 87 matched, 3 mismatch
+
+0 PASSED, 1 FAILED
