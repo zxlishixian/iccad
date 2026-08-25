@@ -121,6 +121,7 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 | k32_new12_380cases_official | 380 | 新 fake（批3，官方格式）| ✅ 高质量（12 bug，**RV32C + MDU div/rem**）|
 | batch4_11bugs_20260821/dataset | 364 | 新 fake（批4，官方格式）| ✅ 高质量（11 **控制流 bug**，流程最规范：patch+manifest+机器审计）|
 | catalog_global_hardgate_final_20260824 | 944 | 新 fake（最终批，官方格式）| ⭐ **当前最对齐官方的集**（0~1 mismatch 块、bucket 不平衡、首个 mismatch 是功能单元指令），见 §3.7 |
+| large_expansion_20260824_944_official | 944 | 新 fake（**v4 扩展批**，官方格式）| ⭐⭐ **测试多样性补上了**（2.20 tests/bug vs 旧 1.32）、cascade 彻底修好（lui 仅 1.3%）、功能域对齐，见 §3.7 质量检查 |
 | benchmark_set_1 | 7 | **官方 dev**（有 golden.csv）| ✅ 保留，微调目标之一 |
 | benchmark_set_2 | 25 | **官方 dev**（有 golden.csv）| ✅ 保留，微调目标之一 |
 
@@ -197,6 +198,23 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 **还剩一个系统性缺口（C4，最重要）**：官方造数据是「同一 bug 撒在多个不同测试上」（set2 里 3-case 的小 bug 都跨 2~3 个测试），我们 fake 是「每 bug 钉在 1 个测试上、换 seed」。后果：训练集里「**测试名 ≈ bug**」信号泄漏，模型在 fake 上靠测试名拿高分（虚高），官方 hidden（1 bug = 多测试）上崩——这是「fake 上分高、官方上分低」的最可能机制。
 
 **结论**：模型训练应**主用 catalog_hardgate**（最新、最对齐官方），`official_format_fake_dataset`（benchmark6 等）仅作信息参考（队友已确认其造数流程偏离官方）。数据侧还需补「1 bug = 多测试」的 case（见 C4）。
+
+### v4 扩展批质量检查（2026-08-25，`large_expansion_20260824_944_official`）
+
+队友的新数据 **944 cases / 30 bugs / 10 tests**，关键缺口已补上：
+
+| 检查项 | 结果 | 对比 |
+|---|---|---|
+| **C4 测试多样性** | ✅ **均值 2.20**（27/30 bug 跨 ≥2 测试，9 个跨 3）| 旧 catalog 1.32 → 官方 3.25，**质的改善** |
+| **cascade（首个 mismatch 不是 lui）** | ✅ lui 仅 **1.3%**，首个 mismatch 是 lhu/lw/div/divu/remu/lb/lh | 旧 benchmark6 是 60% lui |
+| **功能域对齐** | ✅ jump bug→jump test→jump 指令；LSU→mmu/unaligned→lhu/lw；MDU→rv32im→div/remu | 符合 QA A2 |
+| **C3 bucket 不平衡** | ✅ min=6 max=58（比 9.7）| 之前均匀 46/50 |
+| **消歧** | ✅ 0 跨 bug 重复 | 符合 QA A5 |
+| **独立（不嵌套）** | ✅ 与 catalog(v3) 内容重叠仅 7 | 无嵌套泄漏 |
+
+**唯一轻微差异**：regr.log 有 **2 个 Mismatch 块**（`Mismatch[1]` + 最后一个 `Mismatch[N]`），而官方（set2 + QA A13）只有单个 `Mismatch[1]`。影响小（特征只用第一个 mismatch），但严格说是 C1 的轻微偏离，已反馈队友。
+
+**结论**：这是队友造得**最好的一批数据**，两个历史缺口（1 bug=1 test、lui cascade）都补上了。**下一步用 v4(944) + 4 faithful(2324) = 3268 例重训。**
 
 ## 4. 完成了什么
 
@@ -433,6 +451,31 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 - 官方集 co-assoc 最高分仍是 **v3（0.98）**；但 v3 只有 7 fake（缺 k32_new12/batch4），hidden 集若含新 bug 类型泛化可能不足。
 - **提交用 v3（官方集最强）或 v4b（数据最全、per-seed 泛化不输）**；v4 旧（纯干净迁移）留作对照，不再作为推荐提交。
 
+### theta（2026-08-25，纯 faithful 干净迁移 + fatal-msg，当前最诚实基线）
+
+| 配置 | 值 |
+|---|---|
+| 训练集 | **4 faithful fake（无官方）**：catalog(944) + benchmark5_500(500) + benchmark8_500(500) + k32_new12(380) = 2324 例 |
+| 特征 | llm 64 + sig 14 + test 14 + **fatal-msg 128** + trace residual 96 = **316 维**（no-seq）|
+| 集成 | Procrustes 对齐平均 → k-means |
+| 官方分（打包二进制，有 LLM）| **set1=0.722、set2=0.741、官方均值 0.731** |
+| 官方分（无 LLM 兜底）| set2=0.610 |
+| 打包位置 | `submission_files/theta/`（GLIBC 2.28 达标、冒烟通过）|
+
+**定位**：这是**诚实干净迁移**的基线（不用 train-on-dev 背答案），比 v4 旧（9 fake 含非 faithful benchmark6，0.72）数据更干净 + fatal-msg 特征。**诚实天花板 ~0.72，要突破靠数据侧（队友补「1 bug = 多测试」）。** 注意打包时修了坑 #36（训练/推理特征不一致）。
+
+### theta-v5（2026-08-25，加入 v4 扩展批，突破诚实天花板）
+
+| 配置 | 值 |
+|---|---|
+| 训练集 | **v4 扩展(944) + 4 faithful(2324) = 3268 例**（v4 补上了「1 bug = 多测试」，见 §3.7）|
+| 特征 | fatal-msg 128 + anchor 48 + llm 64 + sig 14 + test 14 + residual 96 = **364 维**（no-seq）|
+| bug 数 | 73（catalog+v4 共享官方 bug id 已合并，`SHARED_BUG_ID_DATASETS`）|
+| 官方分（Procrustes）| **set1=1.000、set2=0.741、官方均值 0.870** |
+| per-seed set2 | 0.743/0.741/0.596/0.695/0.677（均值 0.690）|
+
+**这是首次突破诚实天花板 ~0.72**：官方均值 0.721 → **0.870（+0.15）**。set1 0.722→1.0（+0.278）、set2 0.720→0.741（+0.021）。**印证了贯穿全程的核心结论：数据分布（1 bug = 多测试）是决定性的，模型侧（特征/loss/聚类）早已到头。** 注意：set1 仅 7 例，1.0 有小样本噪声，但 set2（25 例）+0.021 是可靠的；且 per-seed set1 从（0.71/1.0/0.51/0.72/0.71）提升到（1.0/1.0/0.72/1.0/0.71），真实有提升。
+
 ## 7. 采过的坑（不要再踩）
 
 1. **LLM 混合宽度崩溃**：`np.vstack` 把 768 维（成功抓到）和 0 维（LLM 超时兜底产生的零向量）拼一起直接 ValueError（index 0 size 768, index 1979 size 0）。**修复**：`pairwise_llm_features.py` 里所有 reducer/apply 函数改用 `_stack_llm_vectors`（按公共最大宽度补零）替代 `np.vstack`；兜底零向量必须用 `llm_expected_dim`（768）造满维，不能造 0 维。**不要再用裸 `np.vstack` 拼 LLM 向量。**
@@ -467,6 +510,10 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 30. **completion LLM（qwen3-coder-480b）当聚类/根因 oracle 彻底走不通（2026-08-24，锚定官方 set2 实测）**：四种用法全试过、全否：① 逐 case 打功能单元标签 → bug_107 拿 4 个不同标签（Branch/MDU/RV32C/Shift）；② 直接「把 25 case 聚成 4 桶」→ 0.68 过分割；③ pairwise 连续打分（TrustJudge 式 0~100）→ 全部 uniform 30、不判别；④ pairwise 二分类 SAME/DIFFERENT → **连 bug_107 自己的 remu-case vs srai-case 都判 DIFFERENT**。根因：480B 模型和手写特征一样，只会看「分歧在哪条指令」（症状），看不到「哪个单元坏」（根因）。业界「LLM 辅助判断」正道是 RAG（检索相似 case 再推理）+ pairwise 连续分（[TrustJudge](https://ar5iv.labs.arxiv.org/html/2509.21117)，pointwise 离散标签低熵不稳），但即便这样，多模态 bug 的根因对 LLM 也不可见。**结论：别再拿 completion LLM 当根因判别器；它最多当稀疏重排/兜底，主引擎必须是确定性特征+嵌入+聚类。** 相关文献：[GPTrace](https://conf.researchr.org/details/icse-2026/icse-2026-research-track/119/GPTrace-Effective-Crash-Deduplication-Using-LLM-Embeddings)、[Cadence ChipStack](https://www.hpcwire.com/aiwire/2026/02/10/cadence-introduces-agentic-ai-system-for-chip-design-and-verification/)。
 31. **fake 数据「1 bug = 1 test」是训练分布没对齐官方的关键（2026-08-24）**：官方造数据把同一 bug 撒在多个测试上（set2 平均 3.25 测试/bug，连 3-case 小 bug 都跨 2~3 测试），我们 fake 全是「1 bug ≈ 1 test」（catalog 1.32、k32_new12 精确 1.0）。这让「测试名 ≈ bug」在训练集里泄漏，模型学到捷径、fake 分虚高，官方 hidden（1 bug = 多测试）上崩。详见 §3.7 与 `encorpus_data/fake_vs_official_gap.md`。**教训：造数必须复刻「同 bug 跨多测试」，否则训练分布与官方错位，模型再好也白搭。**
 32. **「测试名泄漏」被消融证伪——测试名 category 是真信号、LLM 精确名零贡献（2026-08-24）**：2×2 消融（训 catalog 944 例→测 set2，单 seed 无 trace）结果：+LLM+测试名 0.732 / +LLM−测试名 0.619 / −LLM+测试名 0.741 / −LLM−测试名 0.619。**关掉测试名 category 掉 0.113（反而 hurt）**——因为模型用的是**语义类别**（csr/interrupt/debug/mul…）不是精确测试名，而「CSR bug ↔ CSR 测试」在官方数据里真实成立（QA A2），是可泛化的真信号。**LLM 嵌入（含 sim.log 里精确 UVM_TESTNAME）对 set2 贡献 ≈0**（0.732 vs 0.741，−0.009），印证坑 #24。**结论：模型没在测试名上泄漏；低官方分是数据分布缺口（坑 #31），不是测试名。别去测试名特征。** 代码已加 `--no-test-name` 消融开关（`run_siamese_train.py`），结论见上方 2×2。
+33. **sim.log 的 UVM_FATAL/ERROR 消息是有效的关键信号（2026-08-24）**：官方 `test_case/solution/` 的 char_embedding/naive_completion 样例都提取「sim.log 第一条 UVM_FATAL/ERROR 行」。检查 set2 发现这条消息**每个 bug 高度一致**：bug_107 全是 bare `UVM_ERROR`、bug_7021 是 `[ASSERT FAILED]`、bug_2014/304 是 `Did not receive core_s`。加一个**确定性 char n-gram 特征**（`_fatal_char_ngram`，数字塌成 N、L1 归一化，128 维）后，4-faithful no-seq 5-seed + Procrustes：set1 0.708→0.722、**set2 0.686→0.718**、官方均值 **0.697→0.720**（+0.023）。set2 TPR 0.470→0.556（bug_107 的 bare UVM_ERROR 把被拆的簇合并回来了）。**教训：这是官方样例明确提取、我们之前只经 LLM 嵌入 drain 模板间接用到、且 `--use-fatal-llm` 默认关掉的信号；直接提取它是零训练、零新数据的净正。** 特征已在 `build_case_matrix` 常开（`all_fatal_msgs` → `fatal_char_mat`）。
+34. **trace 尾段循环特征（unique PC + backward jump）是负结果（2026-08-25）**：诊断发现 set2 里 bug_107（MDU）尾 64 条是死循环（3 unique PC + 21 跳回）、bug_7021（CSR）是纯顺序（64 unique + 0 跳回）——判别性看着很强。但把 `tail_unique`/`tail_backward` 作为特征**直接拼进 case_matrix**（不经过 trace SVD，因为两个标量会被 SVD 降维抹掉），重训 5 seed + Procrustes：**set2 0.718→0.610（−0.108）**，官方均值 0.720→0.659。**负结果，已撤销。** 根因（推测）：① 与 fatal-msg 特征高度冗余——死循环 bug 恰好就是 bare `UVM_ERROR`、顺序 bug 恰好就是 `[ASSERT FAILED]`，两个信号重复；② fake 训练集里 tail 循环度是噪声（fake bug 注入方式和官方不同，trace 尾部模式不对齐）。**教训：局部循环信号对官方有判别性，但作为特征直接喂模型反而有害；「特征有判别性」≠「加进模型有正收益」，要警惕与已有特征的冗余 + fake/官方分布错位。** 代码已从 case_matrix 撤销（`theta_trace_features.py` 里 global_struct 的 tail 标量留着无害，被 SVD 抹掉）。
+35. **LLM 反向根因推理（FVDebug/TraceSurgeon 式）也失败（2026-08-25）**：用 contract-style prompt（明确要求「区分症状 vs 根因」「反向追踪数据流：看分歧指令的源寄存器往前找最后写者」）+ 喂「sim.log UVM_FATAL 行 + regr 分歧点 + trace 分歧点前后窗口」，让 qwen3-coder 输出结构化根因签名。结果 bug_107 的 4 个多模态 case（ori/remu/srai/sra 分歧）拿到**不一致的根因**（ALU/ALU/ALU/MDU），连「明确 rd vs rs1/rs2」的最小修正都救不回。**根因**：bug_107 的根因（MDU 写坏寄存器）和症状（下游 ori/sra 分歧）之间隔着**完整的数据流传播链**（几十到几百条指令 + 寄存器值被中间指令覆盖），LLM 的「找最后写者」只追一步、追不到真正的根因（在更上游）。这印证了业界警告「LLM reasoning cannot fix the math」——embedding 空间没有「根因 vs 症状」的区分特征时，LLM 推理救不了。**结论：completion LLM 无论当分类器/聚类器/根因推理器都走不通（累计 6 个失败），彻底放弃；主引擎必须是确定性特征 + 嵌入 + 聚类。** 相关文献：[FVDebug](https://research.nvidia.com/index.php/publication/2025-09_fvdebug-llm-driven-debugging-assistant-automated-root-cause-analysis-formal)、[TraceSurgeon](https://github.com/ahhbhishek/tracesurgeon)。
+36. **训练/推理特征必须逐维一致，否则打包出来的模型维度不匹配（2026-08-25，打包 theta 时踩到）**：`run_siamese_train.py` 的训练特征和 `siamese_predict.py` 的推理特征**是两套独立代码**，加 fatal-msg 特征时只改了训练侧、没同步推理侧 → 训练 feat_dim=316（llm 64 + sig 14 + test 14 + **fatal 128** + residual 96）、推理还是 188（缺 fatal、test_categories 拼在 sig 里）。打包后 numpy 推理会报 `StandardScaler expecting 391 features but X has 393`（trace bundle 维度对不上），或静默产出错误特征。**已修**：`siamese_predict.py` 的 `_build_matrix` 改成和训练完全一致（`_signature_features` 只返回 family+type、单独 `_test_categories`、加 `_fatal_char_ngram`）。**教训：任何特征改动必须同时改 `run_siamese_train.build_case_matrix` 和 `siamese_predict._build_matrix` 两处，改完用打包前的 numpy 冒烟验证 feat_dim 一致。**
 
 ## 8. 关键命令速查
 
@@ -542,3 +589,33 @@ LLM_MODEL_CONFIG="$(cat /tmp/llm_local.yaml)" submission_files/final/final_submi
 - `evaluation_leakage_guard.py` / `GENERALIZATION_AUDIT_20260713.md`：泄漏审计（历史）
 - `ICCAD阶段性成果报告.md` / `MATERIALS_INDEX.md` / `README.md`：项目背景与历史
 - `handoff.md`：本文件
+
+## 3.8 造数据功能域全覆盖清单（2026-08-25 用户强调，队友造数据固定指导）
+
+> 原则：**12 个功能域全覆盖，不留空白，总数 ≥ 64（对标 hidden k=64）。** 不要拿 6 个公开样本（set1/set2）的分布去倾斜——6 个样本抽样误差太大，hidden 64 bug 大概率均匀覆盖各功能域。
+
+| # | 功能域 | catalog/v4 现状 | 目标 | 优先级 |
+|---|---|---|---|---|
+| 1 | ALU（算术/逻辑/移位）| ⚠️ 缺失（官方 bug_234 就是）| 补 6+ | P0 |
+| 2 | MDU（乘除）| 3 个 | 补到 8+ | P0 |
+| 3 | Branch/Jump（控制流）| 11 个 | 保持 | — |
+| 4 | Decode（译码）| ⚠️ 基本缺失 | 补 5+ | P0 |
+| 5 | LSU（访存）| 9 个 | 保持 | — |
+| 6 | RV32C（压缩）| 4 个 | 补到 6 | P1 |
+| 7 | RV32B（位操作）| ⚠️ 缺失 | 补 3+ | P1 |
+| 8 | CSR（特权）| ~9 个 | 补到 12+ | P0 |
+| 9 | 中断/异常 | 部分 | 补到 8+ | P0 |
+| 10 | Debug | 部分 | 补到 4+ | P1 |
+| 11 | PMP（物理内存保护）| ⚠️ 缺失 | 补 2+ | P1 |
+| 12 | 流水线/微架构（forwarding/stall/hazard）| ⚠️ 缺失 | 补 3+ | P1 |
+
+**缺失域的具体 bug（P0 重点补）**：
+- ALU：add/sub 进位错、sll/srl/sra 移位量错、slt/sltu 比较错、and/or/xor 逻辑错、立即数符号扩展错
+- Decode：opcode 译码错（add→sub）、funct3/funct7 判断错、立即数字段选错、寄存器字段选错
+- MDU：mulh/mulhsu 高位符号错、div/rem 除零处理错、rem 余数符号错、mul 结果截断错
+- CSR：mstatus.MIE/MPIE 反、mepc 对齐错、mcause 中断位清错、mtvec mode 错、mie/mip 读写错
+- 中断：优先级反、mtvec 向量错、handler 进入/退出错、使能/屏蔽错
+
+**P1 缺失域**：RV32B（clz/ctz/ror/andn）、PMP（权限反/地址匹配错）、流水线（forwarding 错/load-use 停顿错/flush 错/冒险处理错）
+
+**参考**：`encorpus_data/bug_type_taxonomy.md`（12 类全景）、`official_bug_injection.md`（源码级注入方法）、Ibex RTL commit `8ce399d...`。

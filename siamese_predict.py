@@ -59,13 +59,17 @@ def _load_encoders(model_dir: Path) -> list[dict]:
 
 
 # ---- feature building (mirrors run_siamese_train.build_case_matrix) ----
-def _signature_features(signatures, test_names, test_name_vocab):
+def _signature_features(signatures):
     n_type = 3
     type_idx = {"mismatch": 0, "test_fail": 1, "other": 2}
     sig = np.zeros((len(signatures), len(fs.FAMILY_LIST) + n_type), dtype=np.float32)
     for i, (dtype, opcode, _reg, _pc) in enumerate(signatures):
         sig[i, fs.FAMILY_IDX[fs._family_of(opcode)]] = 1.0
         sig[i, len(fs.FAMILY_LIST) + type_idx.get(dtype, 2)] = 1.0
+    return sig
+
+
+def _test_categories(test_names):
     test_categories = ["csr", "interrupt", "debug", "mmu", "branch", "jump", "machine",
                        "mul", "div", "shift", "load", "store", "fence", "illegal"]
     tmat = np.zeros((len(test_names), len(test_categories)), dtype=np.float32)
@@ -74,7 +78,23 @@ def _signature_features(signatures, test_names, test_name_vocab):
         for j, cat in enumerate(test_categories):
             if cat in tl:
                 tmat[i, j] = 1.0
-    return np.hstack([sig, tmat]).astype(np.float32)
+    return tmat
+
+
+def _fatal_char_ngram(messages, dim: int = 128):
+    """Deterministic char n-gram of the sim.log UVM failure message (mirrors run_siamese_train)."""
+    import re
+    feats = np.zeros((len(messages), dim), dtype=np.float32)
+    for i, msg in enumerate(messages):
+        norm = re.sub(r"\d+", "N", str(msg))
+        for ch in norm:
+            code = ord(ch)
+            if code < dim:
+                feats[i, code] += 1.0
+        s = feats[i].sum()
+        if s > 0:
+            feats[i] = feats[i] / s
+    return feats
 
 
 def _build_matrix(args, dataset, pre):
@@ -88,14 +108,17 @@ def _build_matrix(args, dataset, pre):
     n = len(ep)
     plf.apply_llm_reducer(ep, pre["reducer"], args.view_dim)
     llm_mat = np.stack([f.effective_llm_vec for f in ep]).astype(np.float32)
-    sig_mat = _signature_features(sig, names, pre.get("test_name_vocab"))
+    sig_mat = _signature_features(sig)
+    test_mat = _test_categories(names)
+    fatal_char_mat = _fatal_char_ngram(fs.extract_sim_failure_messages(dataset))
     tr, _ = ttf.build_hierarchical_trace_features(
         dataset / "input.csv", cache_dir=Path("/tmp/theta_trilog_trace_cache"),
         segment_count=16, chunk_size=512, anchor_sizes=[32, 64, 128],
     )
     tm = ttf.apply_trace_reducers(pre["trace_bundle"], tr)
     residual = np.hstack([tm["residual_struct"], tm["residual_text"]]).astype(np.float32)
-    matrix = np.nan_to_num(np.hstack([llm_mat, sig_mat, residual]), nan=0.0).astype(np.float32)
+    anchor_mat = np.stack([f.anchor_struct for f in tr]).astype(np.float32)
+    matrix = np.nan_to_num(np.hstack([llm_mat, sig_mat, test_mat, fatal_char_mat, anchor_mat, residual]), nan=0.0).astype(np.float32)
     return matrix, cases, n
 
 

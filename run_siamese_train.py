@@ -30,6 +30,30 @@ from run_alpha_improved_train import (
 )
 
 
+def _fatal_char_ngram(messages: Sequence[str], dim: int = 128) -> np.ndarray:
+    """Deterministic char-frequency n-gram of the sim.log UVM failure message.
+
+    The sim.log's first UVM_FATAL/ERROR line carries the *why* of a failure
+    ('Did not receive core_s...' vs '[ASSERT FAILED]...' vs a bare 'UVM_ERROR'),
+    which is a strong, training-free discriminator for the fatal-type bugs
+    (handoff §3.7 + the official char_embedding sample).  Digits are collapsed to
+    'N' to drop timestamps/line numbers; rows are L1-normalized so message length
+    doesn't dominate.
+    """
+    import re
+    feats = np.zeros((len(messages), dim), dtype=np.float32)
+    for i, msg in enumerate(messages):
+        norm = re.sub(r"\d+", "N", str(msg))
+        for ch in norm:
+            code = ord(ch)
+            if code < dim:
+                feats[i, code] += 1.0
+        s = feats[i].sum()
+        if s > 0:
+            feats[i] = feats[i] / s
+    return feats
+
+
 def signature_features(signatures: Sequence[tuple[str, str, str, int]]) -> np.ndarray:
     """Per-case failure-signature: functional-unit family (11) + divergence type (3).
 
@@ -48,6 +72,14 @@ def signature_features(signatures: Sequence[tuple[str, str, str, int]]) -> np.nd
     return feats
 
 
+# Official-Ibex-bug-id datasets share the same bug ids (bug_128 == "bne decoded as beq"
+# in both), so their labels must merge across datasets rather than be prefixed apart.
+SHARED_BUG_ID_DATASETS = {
+    "catalog_global_hardgate_final_20260824",
+    "large_expansion_20260824_944_official",
+}
+
+
 def build_case_matrix(args, datasets, reducer=None, trace_bundle=None, snippet_reducer=None, test_name_vocab=None, fatal_reducer=None):
     """Build (n_cases, feature_dim) per-case matrix + integer bug labels.
 
@@ -63,6 +95,7 @@ def build_case_matrix(args, datasets, reducer=None, trace_bundle=None, snippet_r
     all_snippets: list[str] = []
     all_test_names: list[str] = []
     all_fatal: list[str] = []
+    all_fatal_msgs: list[str] = []
     all_domains: list[int] = []
     official_names = {"benchmark_set_1", "benchmark_set_2"}
     for dataset in datasets:
@@ -74,10 +107,17 @@ def build_case_matrix(args, datasets, reducer=None, trace_bundle=None, snippet_r
         if not (len(ep) == len(gold) == len(sig)):
             raise RuntimeError(f"mismatch for {dataset.name}")
         # Bug labels collide across datasets ('bug_037' in dataset A != dataset B).
-        # Prefix with the dataset name so each bug is globally unique.
+        # Prefix with the dataset name so each bug is globally unique — EXCEPT the two
+        # official-Ibex-bug-id datasets (catalog + v4 expansion) which share the SAME
+        # bug ids (bug_128 = "bne decoded as beq" in both): those must share ONE label
+        # so the same RTL bug's cases cluster together across the two datasets.
         is_official = dataset.name in official_names
+        if dataset.name in SHARED_BUG_ID_DATASETS:
+            prefix = "ibex::"
+        else:
+            prefix = f"{dataset.name}::"
         all_features.extend(ep)
-        all_labels.extend([f"{dataset.name}::{b}" for b in gold])
+        all_labels.extend([f"{prefix}{b}" for b in gold])
         all_signatures.extend(sig)
         all_test_names.extend(extract_test_names(dataset))
         all_domains.extend([1 if is_official else 0] * len(gold))
@@ -85,6 +125,8 @@ def build_case_matrix(args, datasets, reducer=None, trace_bundle=None, snippet_r
             all_snippets.extend(extract_mismatch_snippets(dataset))
         if args.use_fatal_llm:
             all_fatal.extend(extract_sim_failure_messages(dataset))
+        # deterministic sim.log UVM failure-message feature (always on, cheap)
+        all_fatal_msgs.extend(extract_sim_failure_messages(dataset))
         if args.use_trace:
             tr, _ = ttf.build_hierarchical_trace_features(
                 dataset / "input.csv", cache_dir=args.trace_cache_dir,
@@ -157,7 +199,18 @@ def build_case_matrix(args, datasets, reducer=None, trace_bundle=None, snippet_r
     else:
         residual = np.zeros((len(all_features), 0), dtype=np.float32)
 
-    case_matrix = np.nan_to_num(np.hstack([llm_mat, sig_mat, test_mat, snippet_reduced, fatal_reduced, residual]), nan=0.0, posinf=0.0, neginf=0.0).astype(np.float32)
+    # deterministic char n-gram of the sim.log UVM failure message (fatal-type discriminator)
+    fatal_char_mat = _fatal_char_ngram(all_fatal_msgs)
+
+    # divergence-window (anchor) distribution, kept as explicit columns (NOT inside the
+    # SVD-reduced trace residual, which drowns it): the failure's local context is a
+    # stronger, lower-noise signal than the whole-trace global sketch.
+    if args.use_trace and all_trace:
+        anchor_mat = np.stack([f.anchor_struct for f in all_trace]).astype(np.float32)
+    else:
+        anchor_mat = np.zeros((len(all_features), 0), dtype=np.float32)
+
+    case_matrix = np.nan_to_num(np.hstack([llm_mat, sig_mat, test_mat, fatal_char_mat, anchor_mat, snippet_reduced, fatal_reduced, residual]), nan=0.0, posinf=0.0, neginf=0.0).astype(np.float32)
 
     # ordered instruction-family sequence around the divergence (for the 1D-CNN)
     case_seq = ttf.build_trace_sequence(all_trace) if (args.use_trace and all_trace and not getattr(args, "no_seq", False)) else None
