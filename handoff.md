@@ -1,6 +1,18 @@
 # ICCAD 竞赛交接文档（写给零上下文的新会话）
 
-> 最后更新：2026-08-13
+> 最后更新：2026-08-28
+
+## 0. 当前状态速览（TL;DR）
+
+**最终提交**：`submission_files/final/final_submission_v7/`（GLIBC 2.28 达标、冒烟通过）。
+
+- **模型**：siamese 编码器（SupCon + 原型损失）→ 5-seed Procrustes 对齐平均 → k-means。
+- **训练集**：all fake 加权（current_merged 1220 + large_expansion×2 + catalog + b5/b8/k32）+ 2 官方 dev（train-on-dev，5464 例 / 191 bug）。
+- **特征（364 维）**：LLM 嵌入 + 失败签名 + 测试名类别 + sim.log UVM fatal 行 char n-gram + 分歧点窗口 + trace 残差（**trace 截断到尾段 5000 条**）。
+- **分数**：官方 dev 有 LLM set1=1.0 / set2=1.0（train-on-dev）；无 LLM 兜底 set2=0.728。
+- **运行时**：set1=3.5s、set2=7.4s、N=3000 ≈ 79s（< 100s），已解决超时（截断 + 多进程，坑 #37）。
+
+**四条贯穿结论**：① 数据分布（1 bug = 多测试）是决定性的；② 测试名是真信号非泄漏；③ LLM 当聚类/根因判别器走不通（只能当 embedding）；④ trace 解析是超时瓶颈必须截断+多进程。
 
 ## 1. 我们在做什么
 
