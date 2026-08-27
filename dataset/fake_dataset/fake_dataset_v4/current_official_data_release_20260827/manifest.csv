@@ -1,0 +1,36 @@
+archive,role,cases,bugs,notes
+coverage64_release_20260827_v5.tar.gz,primary,931,64,authoritative current candidate
+register_pipeline_supplement_20260827_v2.tar.gz,supplement,26,4,register-file and pipeline
+mdu_supplement_20260827.tar.gz,supplement,18,2,MDU
+branch_supplement_20260827.tar.gz,supplement,16,2,branch/jump
+decode_branch_supplement_20260827.tar.gz,supplement,11,2,decode/branch
+alu_decode_supplement_20260827.tar.gz,supplement,16,3,ALU/decode
+mdu_decode_supplement_20260827.tar.gz,supplement,10,2,MDU/decode
+branch_decode_supplement_20260827.tar.gz,supplement,16,3,branch/decode
+lsu_supplement_20260827.tar.gz,supplement,7,2,LSU
+interrupt_state_supplement_20260827.tar.gz,supplement,20,2,interrupt state
+alu_decode_supplement_20260827_v2.tar.gz,supplement,46,3,ALU/decode
+mdu_supplement_20260827_v3.tar.gz,supplement,16,3,MDU
+rvc_supplement_20260827.tar.gz,supplement,10,3,RV32C
+pipeline_supplement_20260827.tar.gz,supplement,10,2,pipeline/control
+debug_supplement_20260827.tar.gz,supplement,6,2,Debug
+decode_supplement_20260827_v2.tar.gz,supplement,6,2,decode
+mdu_supplement_20260827_v4.tar.gz,supplement,6,2,MDU divide/remainder
+alu_supplement_20260827.tar.gz,supplement,6,2,ALU
+interrupt_csr_supplement_20260827_v2.tar.gz,supplement,6,2,interrupt/CSR
+branch_supplement_20260827_v1.tar.gz,supplement,6,2,branch/jump
+register_file_supplement_20260827_v1.tar.gz,supplement,6,2,register file
+lsu_supplement_20260827_v1.tar.gz,supplement,4,2,LSU
+lsu_supplement_20260827_v2.tar.gz,supplement,4,2,LSU
+mdu_zero_supplement_20260827_v1.tar.gz,supplement,6,2,MDU divide by zero
+rvc_supplement_20260827_v1.tar.gz,supplement,4,2,RV32C
+jump_target_supplement_20260827_v1.tar.gz,supplement,4,2,branch/jump target
+alu_supplement_20260827_v3.tar.gz,supplement,7,2,ALU
+mdu_supplement_20260827_v6.tar.gz,supplement,7,2,MDU
+p0_lsu_balance_supplement_20260827_v2.tar.gz,supplement,9,2,LSU balance
+p0_alu_branch_balance_supplement_20260827.tar.gz,supplement,6,2,ALU/branch balance
+p0_alu_balance_048_049_20260827.tar.gz,supplement,8,2,ALU balance
+p0_alu_decode_balance_20260827.tar.gz,supplement,6,2,ALU/decode balance
+p0_regfile_balance_late_20260827.tar.gz,supplement,9,2,register-file balance
+p0_debug_balance_273_276_20260827.tar.gz,supplement,12,2,Debug balance
+p0_alu_balance_280_281_20260827.tar.gz,supplement,11,2,ALU balance
