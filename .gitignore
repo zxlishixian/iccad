@@ -31,3 +31,4 @@ final_submission/inference.log
 # 大体积生成物 / 本地备份（不进远程）
 final_submission_pair_old/
 dataset/_removed_20260813/
+dataset/fake_dataset/fake_dataset_v4/current_official_data_release_20260827_merged/
