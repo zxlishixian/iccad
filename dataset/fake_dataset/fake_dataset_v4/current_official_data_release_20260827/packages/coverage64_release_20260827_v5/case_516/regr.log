@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[63] : pc[8000016e] and	x24,x24,x3: s8:fd3e5afe 
+spike[63] : pc[8000016e] and     s8, s8, gp: s8:1002002e 
+Mismatch[1850]:
+[2204] ibex : pc[80007fae] sra	x22,x19,x13: s6:5d7e00bd 
+[FAILED]: 105 matched, 1850 mismatch
+
+0 PASSED, 1 FAILED

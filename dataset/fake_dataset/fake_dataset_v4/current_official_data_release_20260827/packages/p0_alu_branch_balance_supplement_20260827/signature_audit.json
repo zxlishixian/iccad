@@ -1,0 +1,26 @@
+{
+  "dataset_root": "/home/yian/iccad/dataset/p0_alu_branch_balance_supplement_20260827",
+  "failure_cases": 6,
+  "bug_tests": {
+    "bug_045": [
+      "riscv_machine_mode_rand_test",
+      "riscv_rand_instr_test"
+    ],
+    "bug_047": [
+      "riscv_machine_mode_rand_test",
+      "riscv_rand_instr_test"
+    ]
+  },
+  "test_bugs": {
+    "riscv_machine_mode_rand_test": [
+      "bug_045",
+      "bug_047"
+    ],
+    "riscv_rand_instr_test": [
+      "bug_045",
+      "bug_047"
+    ]
+  },
+  "cross_bug_signature_collisions": [],
+  "num_collisions": 0
+}

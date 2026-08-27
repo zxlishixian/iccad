@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[292] : pc[80000762] divu	x14,x20,x13: a4:00000000 
+spike[292] : pc[80000722] add     gp, t1, a6: gp:00000004 
+Mismatch[1250]:
+[1815] ibex : pc[80001080] mulhu	x22,x19,x16: s6:00000000 
+[FAILED]: 218 matched, 1250 mismatch
+
+0 PASSED, 1 FAILED

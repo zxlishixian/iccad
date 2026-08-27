@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[195] : pc[80000454] csrrwi	x28,mscratch,7: t3:80000148 
+spike[195] : pc[80000454] csrrwi  t3, mscratch, 7: t3:f925ff48 
+[FAILED]: 196 matched, 405 mismatch
+
+0 PASSED, 1 FAILED

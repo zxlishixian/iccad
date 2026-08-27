@@ -1,0 +1,8 @@
+Case,case_id,bug_id,group,family,test,seed,source_run_dir
+1,case_1,bug_317,alu,pc_region_conditional_xor_operand,riscv_machine_mode_rand_test,994001,/workspace/ibex/dv/uvm/out
+2,case_2,bug_317,alu,pc_region_conditional_xor_operand,riscv_rand_instr_test,994002,/workspace/ibex/dv/uvm/out
+3,case_3,bug_317,alu,pc_region_conditional_xor_operand,riscv_rand_instr_test,994003,/workspace/ibex/dv/uvm/out
+4,case_4,bug_317,alu,pc_region_conditional_xor_operand,riscv_rv32im_instr_test,994001,/workspace/ibex/dv/uvm/out
+5,case_5,bug_318,alu,pc_region_conditional_or_operand,riscv_machine_mode_rand_test,994001,/workspace/ibex/dv/uvm/out
+6,case_6,bug_318,alu,pc_region_conditional_or_operand,riscv_rand_instr_test,994001,/workspace/ibex/dv/uvm/out
+7,case_7,bug_318,alu,pc_region_conditional_or_operand,riscv_rv32im_instr_test,994001,/workspace/ibex/dv/uvm/out

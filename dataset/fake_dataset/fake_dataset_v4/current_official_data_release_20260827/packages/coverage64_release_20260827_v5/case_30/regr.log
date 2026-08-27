@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1427] : pc[80002670] srai	x8,x15,0x7: s0:01ffffff 
+spike[1427] : pc[80002670] srai    s0, a5, 7: s0:ffffffff 
+[FAILED]: 1415 matched, 1 mismatch
+
+0 PASSED, 1 FAILED

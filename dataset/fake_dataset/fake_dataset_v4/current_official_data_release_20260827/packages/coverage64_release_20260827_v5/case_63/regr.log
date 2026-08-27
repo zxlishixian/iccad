@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[476] : pc[80004e70] addi	x3,x13,-967: gp:fffffc49 
+spike[476] : pc[80004e6c] sra     s10, s7, s7: s10:ffffffff 
+Mismatch[3154]:
+[4141] ibex : pc[80001e48] rem	x3,x2,x1: gp:00000000 
+[FAILED]: 435 matched, 3154 mismatch
+
+0 PASSED, 1 FAILED

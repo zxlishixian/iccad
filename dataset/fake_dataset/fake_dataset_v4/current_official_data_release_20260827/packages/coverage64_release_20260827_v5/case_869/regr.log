@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[93] : pc[8000026e] c.addi16sp	x2,160: sp:0000043e 
+spike[93] : pc[8000026a] mulhu   s8, ra, t6: s8:0078f09f 
+[FAILED]: 110 matched, 3727 mismatch
+
+0 PASSED, 1 FAILED

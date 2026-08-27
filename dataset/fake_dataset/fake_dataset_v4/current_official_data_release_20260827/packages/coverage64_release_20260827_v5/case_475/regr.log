@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[60] : pc[80000164] c.addi	x26,-1: s10:0000002b 
+spike[60] : pc[80000164] c.addi  s10, -1: s10:0000000b 
+Mismatch[6713]:
+[9426] ibex : pc[80008300] csrrw	x26,mscratch,x15: s10:00000003 
+[FAILED]: 1305 matched, 6713 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[39] : pc[80000106] addi	x31,x31,568: t6:0000023e 
+spike[39] : pc[80000106] addi    t6, t6, 568: t6:fce6d238 
+Mismatch[2633]:
+[3346] ibex : pc[80002ff0] sltiu	x3,x15,164: gp:00000001 
+[FAILED]: 256 matched, 2633 mismatch
+
+0 PASSED, 1 FAILED

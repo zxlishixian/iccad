@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[249] : pc[80003448] div	x5,x26,x24: t0:00000009 
+spike[249] : pc[80003444] remu    s9, s2, ra: s9:00000000 
+[FAILED]: 250 matched, 9352 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[206] : pc[80010356] mulhu	x30,x8,x16: t5:00000000 
+spike[206] : pc[8001035a] c.addi  a3, -24: a3:80023c80 
+[FAILED]: 327 matched, 68318 mismatch
+
+0 PASSED, 1 FAILED

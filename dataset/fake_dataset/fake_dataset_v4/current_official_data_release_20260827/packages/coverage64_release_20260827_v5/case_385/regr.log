@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[65] : pc[800001ea] srl	x20,x6,x8: s4:00000000 
+spike[65] : pc[800001ae] andi    t0, zero, 1019: t0:00000000 
+[FAILED]: 65 matched, 3866 mismatch
+
+0 PASSED, 1 FAILED

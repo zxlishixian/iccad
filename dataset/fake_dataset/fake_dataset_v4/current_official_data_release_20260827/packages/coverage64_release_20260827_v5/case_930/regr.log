@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2103] : pc[8000154a] rem	x18,x17,x19: s2:ffffffff 
+spike[2103] : pc[8000154a] rem     s2, a7, s3: s2:00000000 
+[FAILED]: 1805 matched, 435 mismatch
+
+0 PASSED, 1 FAILED

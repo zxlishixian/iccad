@@ -1,0 +1,32 @@
+{
+  "dataset_root": "/home/yian/iccad/dataset/p0_regfile_balance_late_20260827",
+  "failure_cases": 9,
+  "bug_tests": {
+    "bug_223": [
+      "riscv_machine_mode_rand_test",
+      "riscv_rand_instr_test",
+      "riscv_rv32im_instr_test"
+    ],
+    "bug_224": [
+      "riscv_machine_mode_rand_test",
+      "riscv_rand_instr_test",
+      "riscv_rv32im_instr_test"
+    ]
+  },
+  "test_bugs": {
+    "riscv_machine_mode_rand_test": [
+      "bug_223",
+      "bug_224"
+    ],
+    "riscv_rand_instr_test": [
+      "bug_223",
+      "bug_224"
+    ],
+    "riscv_rv32im_instr_test": [
+      "bug_223",
+      "bug_224"
+    ]
+  },
+  "cross_bug_signature_collisions": [],
+  "num_collisions": 0
+}

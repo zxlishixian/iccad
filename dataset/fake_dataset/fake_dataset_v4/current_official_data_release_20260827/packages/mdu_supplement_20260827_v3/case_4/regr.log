@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[116] : pc[80001eee] auipc	x12,0xa97a9: a2:297aaeee 
+spike[116] : pc[80001ee6] mulh    a3, t3, s0: a3:ffffffff 
+[FAILED]: 110 matched, 8147 mismatch
+
+0 PASSED, 1 FAILED

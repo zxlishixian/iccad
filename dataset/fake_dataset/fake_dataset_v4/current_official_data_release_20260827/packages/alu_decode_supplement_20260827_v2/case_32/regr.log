@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[939] : pc[80001ade] slli	x5,x25,0x4: t0:0374ea9e 
+spike[939] : pc[80001ade] slli    t0, s9, 4: t0:74ea9ee0 
+Mismatch[2287]:
+[10961] ibex : pc[8000086c] divu	x21,x11,x7: s5:00000001 
+[FAILED]: 7482 matched, 2287 mismatch
+
+0 PASSED, 1 FAILED

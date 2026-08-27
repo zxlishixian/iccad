@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[96] : pc[800002dc] c.or	x13,x15: a3:fffffd78 
+spike[96] : pc[800002dc] c.or    a3, a5: a3:fffffd79 
+[FAILED]: 193 matched, 439 mismatch
+
+0 PASSED, 1 FAILED

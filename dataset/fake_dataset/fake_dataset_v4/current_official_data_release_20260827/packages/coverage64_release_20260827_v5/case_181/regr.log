@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[130] : pc[800005f6] xor	x8,x2,x10: s0:ffff6b12 
+spike[130] : pc[800005f6] xor     s0, sp, a0: s0:c6206202 
+Mismatch[2023]:
+[2550] ibex : pc[800001f8] lui	x16,0xc5b09: a6:c5b09000 
+[FAILED]: 211 matched, 2023 mismatch
+
+0 PASSED, 1 FAILED

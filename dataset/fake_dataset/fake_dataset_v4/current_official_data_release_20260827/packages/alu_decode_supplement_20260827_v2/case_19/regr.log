@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[412] : pc[80000d9e] slli	x8,x24,0x11: s0:00004000 
+spike[412] : pc[80000d9e] slli    s0, s8, 17: s0:5be00000 
+Mismatch[2910]:
+[5058] ibex : pc[80000486] slt	x29,x29,x6: t4:00000000 
+[FAILED]: 1406 matched, 2910 mismatch
+
+0 PASSED, 1 FAILED

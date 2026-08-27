@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[882] : pc[8000d842] c.li	x3,-1: gp:ffffffff 
+spike[882] : pc[8000d85a] srai    a2, s11, 6: a2:00000004 
+[FAILED]: 670 matched, 4193 mismatch
+
+0 PASSED, 1 FAILED

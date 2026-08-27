@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2147] : pc[80007b2e] sra	x15,x11,x26: a5:0100035b 
+spike[2147] : pc[80007b2e] sra     a5, a1, s10: a5:ff00035b 
+[FAILED]: 1876 matched, 4867 mismatch
+
+0 PASSED, 1 FAILED

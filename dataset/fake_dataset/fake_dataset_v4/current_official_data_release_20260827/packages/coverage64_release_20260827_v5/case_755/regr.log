@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[68] : pc[800001ac] c.add	x28,x30: t3:0b006478 
+spike[68] : pc[800001ae] csrrw   a4, mscratch, t6: a4:0000001e 
+[FAILED]: 213 matched, 11367 mismatch
+
+0 PASSED, 1 FAILED

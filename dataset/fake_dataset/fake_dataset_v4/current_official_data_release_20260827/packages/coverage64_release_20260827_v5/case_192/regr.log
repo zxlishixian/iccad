@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[71] : pc[80000184] and	x18,x31,x2: s2:ffffffff 
+spike[71] : pc[80000184] and     s2, t6, sp: s2:80015bcd 
+Mismatch[7918]:
+[9189] ibex : pc[80008100] srai	x9,x15,0x15: s1:fffffc00 
+[FAILED]: 109 matched, 7918 mismatch
+
+0 PASSED, 1 FAILED

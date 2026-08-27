@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[378] : pc[80000864] xori	x18,x2,-126: s2:7ffbea37 
+spike[378] : pc[80000840] lbu     s7, -1187(t0): s7:00000001 
+[FAILED]: 255 matched, 2235 mismatch
+
+0 PASSED, 1 FAILED

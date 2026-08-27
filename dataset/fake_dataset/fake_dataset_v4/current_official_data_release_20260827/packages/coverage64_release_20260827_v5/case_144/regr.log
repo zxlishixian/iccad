@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[106] : pc[80000416] mulhsu	x4,x3,x29: tp:fffffff3 
+spike[106] : pc[80000416] mulhsu  tp, gp, t4: tp:0000000c 
+Mismatch[3383]:
+[4646] ibex : pc[8000035e] remu	x6,x5,x28: t1:00000002 
+[FAILED]: 629 matched, 3383 mismatch
+
+0 PASSED, 1 FAILED

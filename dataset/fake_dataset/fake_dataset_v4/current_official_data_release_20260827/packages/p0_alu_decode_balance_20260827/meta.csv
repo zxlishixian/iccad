@@ -1,0 +1,7 @@
+Case,case_id,bug_id,group,family,test,seed,source_run_dir
+1,case_1,bug_053,alu_decode,late_opimm_operand_bitflip,riscv_rand_instr_test,983001,/workspace/ibex/dv/uvm/out
+2,case_2,bug_053,alu_decode,late_opimm_operand_bitflip,riscv_rv32im_instr_test,983006,/workspace/ibex/dv/uvm/out
+3,case_3,bug_128,decode_branch,bne_decoded_as_beq,riscv_rand_instr_test,983003,/workspace/ibex/dv/uvm/out
+4,case_4,bug_128,decode_branch,bne_decoded_as_beq,riscv_rand_instr_test,983004,/workspace/ibex/dv/uvm/out
+5,case_5,bug_128,decode_branch,bne_decoded_as_beq,riscv_rv32im_instr_test,983007,/workspace/ibex/dv/uvm/out
+6,case_6,bug_128,decode_branch,bne_decoded_as_beq,riscv_rv32im_instr_test,983008,/workspace/ibex/dv/uvm/out

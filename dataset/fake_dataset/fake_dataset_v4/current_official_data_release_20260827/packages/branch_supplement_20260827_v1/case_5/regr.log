@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[643] : pc[80006c60] srli	x13,x14,0x0: a3:00000000 
+spike[643] : pc[80006c0e] csrrc   t4, mscratch, a1: t4:00000000 
+[FAILED]: 562 matched, 2097 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[98] : pc[800132a2] lh	x21,93(x24): s5:00001f18 
+spike[98] : pc[8001c080] addi    sp, sp, -124: sp:8002cd68 
+Mismatch[18]:
+[117] ibex : pc[800132f2] c.srli	x15,0x15: a5:00000400 
+[FAILED]: 83 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

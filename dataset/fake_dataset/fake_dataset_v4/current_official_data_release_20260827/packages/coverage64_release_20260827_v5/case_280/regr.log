@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[468] : pc[8000f178] srl	x3,x20,x8: gp:00000000 
+spike[468] : pc[8000f142] sub     t5, s7, a6: t5:000006c0 
+Mismatch[8307]:
+[10031] ibex : pc[800071d2] sltiu	x28,x14,156: t3:00000001 
+[FAILED]: 432 matched, 8307 mismatch
+
+0 PASSED, 1 FAILED

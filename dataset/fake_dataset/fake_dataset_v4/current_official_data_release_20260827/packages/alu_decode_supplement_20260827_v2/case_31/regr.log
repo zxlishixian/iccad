@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[5774] : pc[80004452] csrrwi	x21,mscratch,23: s5:0000001c 
+spike[5774] : pc[8000444a] slli    s11, s9, 15: s11:00090000 
+[FAILED]: 3995 matched, 2830 mismatch
+
+0 PASSED, 1 FAILED

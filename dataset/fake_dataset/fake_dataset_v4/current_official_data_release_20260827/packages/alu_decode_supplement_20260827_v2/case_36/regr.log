@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[549] : pc[800077f2] sltiu	x18,x26,610: s2:00000001 
+spike[549] : pc[800077f2] sltiu   s2, s10, 610: s2:00000000 
+[FAILED]: 504 matched, 5128 mismatch
+
+0 PASSED, 1 FAILED

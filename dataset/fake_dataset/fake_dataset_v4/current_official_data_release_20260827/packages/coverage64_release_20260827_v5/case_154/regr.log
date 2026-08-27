@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[84] : pc[800001b6] div	x12,x14,x9: a2:00003000 
+spike[84] : pc[800001b6] div     a2, a4, s1: a2:00000000 
+Mismatch[7493]:
+[9462] ibex : pc[8000838c] sll	x3,x5,x25: gp:02a00000 
+[FAILED]: 479 matched, 7493 mismatch
+
+0 PASSED, 1 FAILED

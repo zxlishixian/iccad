@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[118] : pc[80000222] slli	x18,x1,0x1d: s2:10000000 
+spike[118] : pc[80000222] slli    s2, ra, 29: s2:20000000 
+[FAILED]: 209 matched, 7554 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[213] : pc[80000434] xor	x9,x4,x26: s1:88090bdf 
+spike[213] : pc[80000434] xor     s1, tp, s10: s1:880909d7 
+Mismatch[19934]:
+[22684] ibex : pc[80007838] lb	x19,-7(x26): s3:ffffffca 
+[FAILED]: 796 matched, 19934 mismatch
+
+0 PASSED, 1 FAILED

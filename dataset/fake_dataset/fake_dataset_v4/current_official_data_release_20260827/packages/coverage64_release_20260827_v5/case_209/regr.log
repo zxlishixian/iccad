@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[225] : pc[800004c8] mul	x1,x16,x18: ra:00000000 
+spike[225] : pc[800004c8] mul     ra, a6, s2: ra:00001110 
+[FAILED]: 225 matched, 6004 mismatch
+
+0 PASSED, 1 FAILED

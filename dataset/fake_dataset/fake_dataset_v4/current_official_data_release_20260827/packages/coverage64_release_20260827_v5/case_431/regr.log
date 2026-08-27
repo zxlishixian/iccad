@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[401] : pc[800061e6] divu	x22,x4,x11: s6:ff92f61a 
+spike[401] : pc[800061e6] divu    s6, tp, a1: s6:064f97c8 
+Mismatch[1581]:
+[2409] ibex : pc[800063fa] divu	x11,x15,x2: a1:00000000 
+[FAILED]: 366 matched, 1581 mismatch
+
+0 PASSED, 1 FAILED

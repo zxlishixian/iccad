@@ -1,0 +1,7 @@
+Case,case_id,bug_id,group,family,test,seed,source_run_dir
+1,case_1,bug_273,debug,conditional_dcsr_cause_haltreq,riscv_debug_csr_entry_test,991002,/workspace/ibex/dv/uvm/out
+2,case_2,bug_273,debug,conditional_dcsr_cause_haltreq,riscv_debug_ebreak_test,991002,/workspace/ibex/dv/uvm/out
+3,case_3,bug_273,debug,conditional_dcsr_cause_haltreq,riscv_debug_ebreakmu_test,991002,/workspace/ibex/dv/uvm/out
+4,case_4,bug_276,debug,conditional_dcsr_prv_wrong,riscv_debug_csr_entry_test,991002,/workspace/ibex/dv/uvm/out
+5,case_5,bug_276,debug,conditional_dcsr_prv_wrong,riscv_debug_ebreak_test,991002,/workspace/ibex/dv/uvm/out
+6,case_6,bug_276,debug,conditional_dcsr_prv_wrong,riscv_debug_ebreakmu_test,991002,/workspace/ibex/dv/uvm/out

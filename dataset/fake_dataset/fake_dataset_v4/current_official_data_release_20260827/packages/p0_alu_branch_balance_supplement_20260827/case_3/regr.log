@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[173] : pc[80004f94] slti	x27,x8,-364: s11:00000001 
+spike[173] : pc[80004f7c] rem     s10, t5, t0: s10:25930d05 
+[FAILED]: 164 matched, 4309 mismatch
+
+0 PASSED, 1 FAILED

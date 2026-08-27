@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[104] : pc[80003c52] slti	x11,x6,-219: a1:00000001 
+spike[104] : pc[80003c52] slti    a1, t1, -219: a1:00000000 
+Mismatch[3081]:
+[3732] ibex : pc[80003a50] add	x29,x9,x21: t4:80023e1c 
+[FAILED]: 387 matched, 3081 mismatch
+
+0 PASSED, 1 FAILED

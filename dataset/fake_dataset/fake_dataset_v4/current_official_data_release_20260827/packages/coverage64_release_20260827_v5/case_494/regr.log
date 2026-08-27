@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[101] : pc[80000244] c.addi	x4,-1: tp:fca30d28 
+spike[101] : pc[80000244] c.addi  tp, -1: tp:fca30d08 
+Mismatch[1196]:
+[2694] ibex : pc[80004458] csrrc	x17,mscratch,x10: a7:00000000 
+[FAILED]: 1114 matched, 1196 mismatch
+
+0 PASSED, 1 FAILED

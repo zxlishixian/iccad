@@ -1,0 +1,9 @@
+Case,case_id,bug_id,group,family,test,seed,source_run_dir
+1,case_1,bug_048,alu,conditional_add_result_bitflip,riscv_machine_mode_rand_test,982002,/workspace/ibex/dv/uvm/out
+2,case_2,bug_048,alu,conditional_add_result_bitflip,riscv_machine_mode_rand_test,982003,/workspace/ibex/dv/uvm/out
+3,case_3,bug_048,alu,conditional_add_result_bitflip,riscv_rand_instr_test,982002,/workspace/ibex/dv/uvm/out
+4,case_4,bug_049,alu,conditional_sra_shift_amount_31,riscv_machine_mode_rand_test,982004,/workspace/ibex/dv/uvm/out
+5,case_5,bug_049,alu,conditional_sra_shift_amount_31,riscv_machine_mode_rand_test,982005,/workspace/ibex/dv/uvm/out
+6,case_6,bug_049,alu,conditional_sra_shift_amount_31,riscv_machine_mode_rand_test,982006,/workspace/ibex/dv/uvm/out
+7,case_7,bug_049,alu,conditional_sra_shift_amount_31,riscv_rand_instr_test,982004,/workspace/ibex/dv/uvm/out
+8,case_8,bug_049,alu,conditional_sra_shift_amount_31,riscv_rand_instr_test,982005,/workspace/ibex/dv/uvm/out

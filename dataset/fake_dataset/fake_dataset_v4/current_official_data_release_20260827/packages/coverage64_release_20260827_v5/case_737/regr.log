@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[102] : pc[80000248] lb	x21,-85(x2): s5:0000008f 
+spike[102] : pc[80000248] lb      s5, -85(sp): s5:ffffff8f 
+Mismatch[21670]:
+[32496] ibex : pc[800057b8] slti	x24,x8,913: s8:00000001 
+[FAILED]: 734 matched, 21670 mismatch
+
+0 PASSED, 1 FAILED

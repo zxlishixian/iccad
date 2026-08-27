@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[279] : pc[8000059c] rem	x10,x9,x29: a0:00000000 
+spike[279] : pc[800005c8] andi    t5, a7, -491: t5:00000015 
+Mismatch[629]:
+[1007] ibex : pc[80000b4e] sra	x10,x11,x25: a0:00000012 
+[FAILED]: 250 matched, 629 mismatch
+
+0 PASSED, 1 FAILED

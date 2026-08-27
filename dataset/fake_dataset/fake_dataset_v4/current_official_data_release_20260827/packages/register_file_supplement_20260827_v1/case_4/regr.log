@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[823] : pc[80005d1e] mulhsu	x11,x31,x17: a1:00000001 
+spike[823] : pc[80005d26] sra     t4, s0, a7: t4:8001adcc 
+[FAILED]: 732 matched, 4699 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[591] : pc[80000a60] ori	x23,x21,980: s7:8001bffc 
+spike[591] : pc[80000a64] remu    t4, gp, ra: t4:8000088a 
+Mismatch[1944]:
+[2874] ibex : pc[80004630] c.jal	80004640: ra:80004632 
+[FAILED]: 614 matched, 1944 mismatch
+
+0 PASSED, 1 FAILED

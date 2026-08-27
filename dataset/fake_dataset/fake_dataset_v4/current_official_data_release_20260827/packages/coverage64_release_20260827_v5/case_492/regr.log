@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[70] : pc[800001b8] remu	x28,x21,x29: t3:00000006 
+spike[70] : pc[800001b8] remu    t3, s5, t4: t3:016ba016 
+[FAILED]: 101 matched, 3961 mismatch
+
+0 PASSED, 1 FAILED

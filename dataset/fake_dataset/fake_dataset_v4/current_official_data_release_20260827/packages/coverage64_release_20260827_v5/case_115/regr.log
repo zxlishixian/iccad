@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[213] : pc[8000047a] slti	x25,x12,-190: s9:00000001 
+spike[213] : pc[8000047a] slti    s9, a2, -190: s9:00000000 
+Mismatch[1294]:
+[1739] ibex : pc[80000f80] mulhsu	x10,x22,x3: a0:00000000 
+[FAILED]: 246 matched, 1294 mismatch
+
+0 PASSED, 1 FAILED

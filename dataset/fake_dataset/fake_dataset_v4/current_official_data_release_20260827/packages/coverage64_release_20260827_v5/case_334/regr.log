@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[73] : pc[800001ac] lhu	x23,15(x11): s7:00008f5b 
+spike[73] : pc[800001ac] lhu     s7, 15(a1): s7:00000b5b 
+[FAILED]: 151 matched, 36747 mismatch
+
+0 PASSED, 1 FAILED

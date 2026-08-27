@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[526] : pc[8000541a] mul	x11,x25,x15: a1:ecf8cf2c 
+spike[526] : pc[8000540e] slti    s5, s4, 31: s5:00000001 
+Mismatch[5592]:
+[6746] ibex : pc[800007ca] slli	x11,x1,0x0: a1:fffea410 
+[FAILED]: 502 matched, 5592 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[89] : pc[80000300] mul	x17,x14,x11: a7:000001a4 
+spike[89] : pc[80000300] mul     a7, a4, a1: a7:520c6159 
+Mismatch[4307]:
+[5439] ibex : pc[80000dae] csrrc	x22,mscratch,x17: s6:00000000 
+[FAILED]: 382 matched, 4307 mismatch
+
+0 PASSED, 1 FAILED

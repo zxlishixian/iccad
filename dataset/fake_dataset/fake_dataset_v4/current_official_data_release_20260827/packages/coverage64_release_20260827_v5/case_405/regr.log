@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[459] : pc[8000ad6c] mulh	x1,x20,x31: ra:00000000 
+spike[459] : pc[8000ad5c] sltiu   t5, s2, 805: t5:00000001 
+Mismatch[2268]:
+[3709] ibex : pc[8000537a] ori	x28,x30,-38: t3:ffffffda 
+[FAILED]: 351 matched, 2268 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[84] : pc[800001ca] c.or	x11,x9: a1:5a62f30f 
+spike[84] : pc[800001c2] slti    t0, s11, -576: t0:00000001 
+Mismatch[6140]:
+[7356] ibex : pc[80002842] sub	x22,x5,x24: s6:fffff000 
+[FAILED]: 98 matched, 6140 mismatch
+
+0 PASSED, 1 FAILED

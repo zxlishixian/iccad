@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[118] : pc[80000248] c.addi16sp	x2,80: sp:00000053 
+spike[118] : pc[80000248] c.addi16sp sp, 80: sp:00000052 
+Mismatch[7849]:
+[9398] ibex : pc[80008366] remu	x21,x2,x24: s5:031b55e7 
+[FAILED]: 202 matched, 7849 mismatch
+
+0 PASSED, 1 FAILED

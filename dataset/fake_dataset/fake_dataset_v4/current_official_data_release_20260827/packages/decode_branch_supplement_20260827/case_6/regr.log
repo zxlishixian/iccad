@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[154] : pc[80001ef4] mulhsu	x27,x8,x10: s11:00000378 
+spike[154] : pc[80001f2a] mulhsu  a1, a4, s4: a1:00000000 
+Mismatch[751]:
+[1024] ibex : pc[8000117e] sll	x4,x8,x12: tp:00000000 
+[FAILED]: 126 matched, 751 mismatch
+
+0 PASSED, 1 FAILED

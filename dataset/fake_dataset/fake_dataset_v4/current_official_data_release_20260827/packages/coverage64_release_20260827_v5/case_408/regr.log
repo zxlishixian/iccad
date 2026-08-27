@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[120] : pc[8000034a] mulhsu	x4,x21,x14: tp:00000000 
+spike[120] : pc[80000318] slti    s0, sp, 553: s0:00000001 
+[FAILED]: 88 matched, 71 mismatch
+
+0 PASSED, 1 FAILED

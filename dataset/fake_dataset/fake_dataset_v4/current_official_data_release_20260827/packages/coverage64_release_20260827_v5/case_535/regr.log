@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[116] : pc[80002b80] div	x27,x4,x4: s11:00000000 
+spike[116] : pc[80002b80] div     s11, tp, tp: s11:00000001 
+Mismatch[5178]:
+[6340] ibex : pc[80002984] c.mv	x25,x23: s9:00000001 
+[FAILED]: 132 matched, 5178 mismatch
+
+0 PASSED, 1 FAILED

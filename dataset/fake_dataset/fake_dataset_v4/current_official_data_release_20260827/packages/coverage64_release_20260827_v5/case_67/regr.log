@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[205] : pc[800004d0] sra	x5,x9,x19: t0:00000001 
+spike[205] : pc[800004d0] sra     t0, s1, s3: t0:ffffffff 
+[FAILED]: 2050 matched, 1 mismatch
+
+0 PASSED, 1 FAILED

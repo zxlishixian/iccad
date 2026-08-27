@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[617] : pc[800081da] rem	x2,x27,x23: sp:00000000 
+spike[617] : pc[800081ca] xori    s5, a1, -708: s5:0001293c 
+Mismatch[19102]:
+[22343] ibex : pc[80010036] c.add	x9,x23: s1:00000373 
+[FAILED]: 539 matched, 19102 mismatch
+
+0 PASSED, 1 FAILED

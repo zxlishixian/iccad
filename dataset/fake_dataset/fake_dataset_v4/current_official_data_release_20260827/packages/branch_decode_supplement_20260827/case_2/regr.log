@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[164] : pc[80000352] csrrci	x13,mscratch,21: a3:00000026 
+spike[164] : pc[8000037a] c.srai  a1, 21: a1:ffffffff 
+[FAILED]: 155 matched, 4348 mismatch
+
+0 PASSED, 1 FAILED

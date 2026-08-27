@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[233] : pc[80000746] sltiu	x6,x26,-838: t1:00000000 
+spike[233] : pc[80000746] sltiu   t1, s10, -838: t1:00000001 
+[FAILED]: 204 matched, 3887 mismatch
+
+0 PASSED, 1 FAILED

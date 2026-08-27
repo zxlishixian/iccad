@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[324] : pc[8000afce] c.addi	x14,-9: a4:fffffff7 
+spike[324] : pc[8000afd8] slt     t5, zero, s9: t5:00000000 
+[FAILED]: 313 matched, 7978 mismatch
+
+0 PASSED, 1 FAILED

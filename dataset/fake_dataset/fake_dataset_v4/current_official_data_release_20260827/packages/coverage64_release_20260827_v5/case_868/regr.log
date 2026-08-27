@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[191] : pc[8000052e] auipc	x26,0xd32bc: s10:532bc52e 
+spike[191] : pc[80000528] mulhu   a7, tp, s1: a7:605cee9f 
+Mismatch[3710]:
+[4418] ibex : pc[80005566] sltiu	x25,x29,-784: s9:00000001 
+[FAILED]: 178 matched, 3710 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[177] : pc[800002f0] xor	x19,x7,x30: s3:4a018cb4 
+spike[177] : pc[800002f0] xor     s3, t2, t5: s3:510079e2 
+Mismatch[7367]:
+[9456] ibex : pc[80008430] lui	x11,0x9d36a: a1:9d36a000 
+[FAILED]: 825 matched, 7367 mismatch
+
+0 PASSED, 1 FAILED

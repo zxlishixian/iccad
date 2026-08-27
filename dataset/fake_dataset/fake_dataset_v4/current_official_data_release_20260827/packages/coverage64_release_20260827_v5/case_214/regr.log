@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[314] : pc[800021dc] c.srai	x13,0x18: a3:00000000 
+spike[314] : pc[800021b8] slti    s2, s3, 728: s2:00000001 
+[FAILED]: 281 matched, 7081 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,3 @@
+bug_id,domain,rtl_files,patch,root_cause
+bug_045,ALU,rtl/ibex_alu.sv,/home/yian/iccad/bug_patches/bug_045.patch,"For SRA, arithmetic shifting is disabled when the shift amount equals 7, causing a logical shift result."
+bug_047,Branch/Jump,rtl/ibex_alu.sv,/home/yian/iccad/bug_patches/bug_047.patch,"Equality comparison is inverted when operand A low bits equal 01, changing the branch decision for the selected pattern."

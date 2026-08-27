@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[185] : pc[800003d0] divu	x27,x3,x5: s11:fff2492e 
+spike[185] : pc[800003d0] divu    s11, gp, t0: s11:123b6dc0 
+Mismatch[8823]:
+[10827] ibex : pc[8000824e] mul	x27,x8,x17: s11:7ff88489 
+[FAILED]: 1131 matched, 8823 mismatch
+
+0 PASSED, 1 FAILED

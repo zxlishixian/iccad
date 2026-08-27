@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[1656] : pc[80006e1c] and	x18,x8,x16: s2:00008000 
+spike[1656] : pc[80006e0c] addi    s6, t5, 680: s6:cd45ceca 
+Mismatch[14973]:
+[19248] ibex : pc[8000312e] c.xor	x14,x8: a4:7ffdd081 
+[FAILED]: 1744 matched, 14973 mismatch
+
+0 PASSED, 1 FAILED

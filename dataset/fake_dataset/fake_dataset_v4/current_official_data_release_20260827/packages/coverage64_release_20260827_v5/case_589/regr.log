@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[112] : pc[80000216] srl	x25,x31,x9: s9:00000009 
+spike[112] : pc[80000216] srl     s9, t6, s1: s9:00000000 
+[FAILED]: 502 matched, 7504 mismatch
+
+0 PASSED, 1 FAILED

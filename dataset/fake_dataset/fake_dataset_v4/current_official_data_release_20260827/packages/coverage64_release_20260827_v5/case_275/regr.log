@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[791] : pc[8000a13a] slti	x4,x11,745: tp:00000001 
+spike[791] : pc[8000a128] c.xor   a4, s0: a4:3ffef08c 
+Mismatch[17761]:
+[21570] ibex : pc[80009376] auipc	x25,0xfb491: s9:7b49a376 
+[FAILED]: 1329 matched, 17761 mismatch
+
+0 PASSED, 1 FAILED

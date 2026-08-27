@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[240] : pc[80000436] csrrs	x2,mscratch,x16: sp:80000148 
+spike[240] : pc[80000436] csrrs   sp, mscratch, a6: sp:00000016 
+[FAILED]: 257 matched, 910 mismatch
+
+0 PASSED, 1 FAILED

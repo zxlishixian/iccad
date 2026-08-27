@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1036] : pc[800011f8] rem	x7,x21,x13: t2:ffffffff 
+spike[1036] : pc[800011f8] rem     t2, s5, a3: t2:00000001 
+[FAILED]: 2394 matched, 7218 mismatch
+
+0 PASSED, 1 FAILED

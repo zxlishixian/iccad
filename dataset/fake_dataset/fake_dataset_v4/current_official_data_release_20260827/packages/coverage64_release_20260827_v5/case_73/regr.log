@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[122] : pc[8000023a] slli	x5,x1,0x9: t0:8a454600 
+spike[122] : pc[8000023a] slli    t0, ra, 9: t0:148a8c00 
+Mismatch[7740]:
+[9390] ibex : pc[800083fa] c.add	x5,x24: t0:00000016 
+[FAILED]: 217 matched, 7740 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[447] : pc[800016b0] sra	x12,x23,x29: a2:00000001 
+spike[447] : pc[800016b0] sra     a2, s7, t4: a2:ffffffff 
+[FAILED]: 1278 matched, 2855 mismatch
+
+0 PASSED, 1 FAILED

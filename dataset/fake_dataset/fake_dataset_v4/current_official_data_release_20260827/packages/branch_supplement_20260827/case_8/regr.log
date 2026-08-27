@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[866] : pc[8000103e] sub	x11,x9,x10: a1:7ffdc4df 
+spike[866] : pc[8000102a] sll     t6, t2, sp: t6:00000007 
+Mismatch[303]:
+[1224] ibex : pc[8000216a] xor	x5,x14,x16: t0:00000007 
+[FAILED]: 527 matched, 303 mismatch
+
+0 PASSED, 1 FAILED

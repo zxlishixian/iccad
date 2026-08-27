@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[97] : pc[800006a0] div	x16,x5,x6: a6:fdb76523 
+spike[97] : pc[800006a0] div     a6, t0, t1: a6:00000004 
+Mismatch[6987]:
+[8500] ibex : pc[80005b42] div	x21,x20,x23: s5:00000000 
+[FAILED]: 299 matched, 6987 mismatch
+
+0 PASSED, 1 FAILED

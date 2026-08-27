@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[61] : pc[80000164] xor	x23,x16,x12: s7:e740e56a 
+spike[61] : pc[80000176] sll     s1, tp, tp: s1:00000000 
+[FAILED]: 52 matched, 6150 mismatch
+
+0 PASSED, 1 FAILED

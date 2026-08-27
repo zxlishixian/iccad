@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[553] : pc[80001196] lui	x26,0x3bcaa: s10:3bcaa000 
+spike[553] : pc[80001156] mulhu   t1, a1, t4: t1:800010ed 
+[FAILED]: 545 matched, 2942 mismatch
+
+0 PASSED, 1 FAILED

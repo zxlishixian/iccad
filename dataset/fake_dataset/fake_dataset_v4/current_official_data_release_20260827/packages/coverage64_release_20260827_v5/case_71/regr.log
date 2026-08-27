@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[120] : pc[80000228] c.addi4spn	x8,x2,864: s0:00000361 
+spike[120] : pc[80000228] c.addi4spn s0, sp, 864: s0:00000360 
+Mismatch[7867]:
+[9405] ibex : pc[80008358] mulhu	x27,x2,x26: s11:00000000 
+[FAILED]: 297 matched, 7867 mismatch
+
+0 PASSED, 1 FAILED

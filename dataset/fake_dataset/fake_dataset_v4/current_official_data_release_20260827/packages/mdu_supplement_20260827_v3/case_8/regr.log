@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1948] : pc[8000507a] slli	x10,x19,0x16: a0:00000000 
+spike[1948] : pc[8000506c] div     t1, t6, a1: t1:0018410f 
+[FAILED]: 1635 matched, 2361 mismatch
+
+0 PASSED, 1 FAILED

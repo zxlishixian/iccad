@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[405] : pc[80000418] rem	x7,x23,x12: t2:000003fe 
+spike[405] : pc[80000418] rem     t2, s7, a2: t2:fffffc02 
+Mismatch[42]:
+[1139] ibex : pc[80001178] c.li	x3,1: gp:00000001 
+[FAILED]: 953 matched, 42 mismatch
+
+0 PASSED, 1 FAILED

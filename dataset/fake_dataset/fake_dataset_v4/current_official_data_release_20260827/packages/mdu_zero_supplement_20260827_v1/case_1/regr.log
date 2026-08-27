@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[61] : pc[8000016a] sltiu	x29,x14,910: t4:00000000 
+spike[61] : pc[80000164] divu    t3, s9, tp: t3:ffffffff 
+[FAILED]: 56 matched, 2493 mismatch
+
+0 PASSED, 1 FAILED

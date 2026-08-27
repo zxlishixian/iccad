@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[105] : pc[80000296] csrrsi	x31,mscratch,16: t6:80016536 
+spike[105] : pc[8000029e] csrrwi  s6, mscratch, 2: s6:80016536 
+Mismatch[9]:
+[116] ibex : pc[800002b4] c.addi16sp	x2,464: sp:000001b1 
+[FAILED]: 89 matched, 9 mismatch
+
+0 PASSED, 1 FAILED

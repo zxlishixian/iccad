@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[729] : pc[80006a5a] auipc	x21,0xbda67: s5:3da6da5b 
+spike[729] : pc[80006a5a] auipc   s5, 0xbda67: s5:3da6da5a 
+[FAILED]: 4140 matched, 461 mismatch
+
+0 PASSED, 1 FAILED

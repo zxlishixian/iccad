@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[57] : pc[8000015c] remu	x26,x3,x20: s10:fe3b3930 
+spike[57] : pc[8000015c] remu    s10, gp, s4: s10:7e394ab4 
+[FAILED]: 221 matched, 5806 mismatch
+
+0 PASSED, 1 FAILED

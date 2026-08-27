@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[3961] : pc[8000430c] sra	x26,x29,x8: s10:00000001 
+spike[3961] : pc[8000430c] sra     s10, t4, s0: s10:ffffffff 
+[FAILED]: 3871 matched, 2 mismatch
+
+0 PASSED, 1 FAILED

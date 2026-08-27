@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[5169] : pc[8000a000] lw	x3,-11(x31): gp:0160f000 
+spike[5169] : pc[8000a000] lw      gp, -11(t6): gp:00b07800 
+[FAILED]: 22671 matched, 23 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,32 @@
+{
+  "dataset_root": "/home/yian/iccad/dataset/p0_debug_balance_273_276_20260827",
+  "failure_cases": 12,
+  "bug_tests": {
+    "bug_273": [
+      "riscv_debug_csr_entry_test",
+      "riscv_debug_ebreak_test",
+      "riscv_debug_ebreakmu_test"
+    ],
+    "bug_276": [
+      "riscv_debug_csr_entry_test",
+      "riscv_debug_ebreak_test",
+      "riscv_debug_ebreakmu_test"
+    ]
+  },
+  "test_bugs": {
+    "riscv_debug_csr_entry_test": [
+      "bug_273",
+      "bug_276"
+    ],
+    "riscv_debug_ebreak_test": [
+      "bug_273",
+      "bug_276"
+    ],
+    "riscv_debug_ebreakmu_test": [
+      "bug_273",
+      "bug_276"
+    ]
+  },
+  "cross_bug_signature_collisions": [],
+  "num_collisions": 0
+}

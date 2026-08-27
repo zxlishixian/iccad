@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[60] : pc[8000015c] xori	x6,x11,-694: t1:fffffd4a 
+spike[60] : pc[8000015c] xori    t1, a1, -694: t1:7ffffd4a 
+[FAILED]: 136 matched, 5083 mismatch
+
+0 PASSED, 1 FAILED

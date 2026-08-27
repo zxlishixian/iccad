@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[452] : pc[80000c58] c.mv	x19,x29: s3:00000000 
+spike[452] : pc[80000c98] slti    s3, s1, 636: s3:00000001 
+Mismatch[1666]:
+[2390] ibex : pc[8000290e] rem	x23,x7,x24: s7:0000000d 
+[FAILED]: 387 matched, 1666 mismatch
+
+0 PASSED, 1 FAILED

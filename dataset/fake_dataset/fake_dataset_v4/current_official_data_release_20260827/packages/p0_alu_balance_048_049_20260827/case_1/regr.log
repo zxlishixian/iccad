@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[838] : pc[80003982] c.addi16sp	x2,-16: sp:0001534b 
+spike[838] : pc[80003982] c.addi16sp sp, -16: sp:0001534a 
+[FAILED]: 3506 matched, 2 mismatch
+
+0 PASSED, 1 FAILED

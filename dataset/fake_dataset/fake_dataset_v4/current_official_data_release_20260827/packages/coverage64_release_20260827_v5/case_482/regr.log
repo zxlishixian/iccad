@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[117] : pc[80000226] c.addi	x12,-1: a2:0000801f 
+spike[117] : pc[80000226] c.addi  a2, -1: a2:00007fff 
+Mismatch[6902]:
+[9479] ibex : pc[800083c0] c.li	x3,1: gp:00000001 
+[FAILED]: 1342 matched, 6902 mismatch
+
+0 PASSED, 1 FAILED

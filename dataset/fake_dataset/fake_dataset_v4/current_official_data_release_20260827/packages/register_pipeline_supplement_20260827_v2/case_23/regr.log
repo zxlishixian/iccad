@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[48] : pc[8000013a] addi	x21,x21,-698: s5:8001ee7d 
+spike[48] : pc[8000013a] addi    s5, s5, -698: s5:8001ee7c 
+[FAILED]: 111 matched, 1 mismatch
+
+0 PASSED, 1 FAILED

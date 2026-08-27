@@ -1,0 +1,11 @@
+Case,case_id,bug_id,group,family,test,seed,source_run_dir
+1,case_1,bug_264,rv32c,conditional_c_addi_sign_extension,riscv_machine_mode_rand_test,970001,/workspace/ibex/dv/uvm/out
+2,case_2,bug_264,rv32c,conditional_c_addi_sign_extension,riscv_rand_instr_test,970001,/workspace/ibex/dv/uvm/out
+3,case_3,bug_265,rv32c,conditional_c_andi_decode,riscv_machine_mode_rand_test,970001,/workspace/ibex/dv/uvm/out
+4,case_4,bug_265,rv32c,conditional_c_andi_decode,riscv_machine_mode_rand_test,970002,/workspace/ibex/dv/uvm/out
+5,case_5,bug_265,rv32c,conditional_c_andi_decode,riscv_rand_instr_test,970001,/workspace/ibex/dv/uvm/out
+6,case_6,bug_265,rv32c,conditional_c_andi_decode,riscv_rand_instr_test,970002,/workspace/ibex/dv/uvm/out
+7,case_7,bug_266,rv32c,conditional_c_and_decode,riscv_machine_mode_rand_test,970001,/workspace/ibex/dv/uvm/out
+8,case_8,bug_266,rv32c,conditional_c_and_decode,riscv_machine_mode_rand_test,970002,/workspace/ibex/dv/uvm/out
+9,case_9,bug_266,rv32c,conditional_c_and_decode,riscv_rand_instr_test,970001,/workspace/ibex/dv/uvm/out
+10,case_10,bug_266,rv32c,conditional_c_and_decode,riscv_rand_instr_test,970002,/workspace/ibex/dv/uvm/out

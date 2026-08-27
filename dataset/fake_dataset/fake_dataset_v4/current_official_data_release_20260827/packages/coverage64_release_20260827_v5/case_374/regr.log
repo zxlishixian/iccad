@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[77] : pc[80011406] mulhsu	x14,x3,x25: a4:fffffffc 
+spike[77] : pc[80011406] mulhsu  a4, gp, s9: a4:00000003 
+Mismatch[6894]:
+[9976] ibex : pc[80007468] add	x26,x12,x23: s10:00000010 
+[FAILED]: 2111 matched, 6894 mismatch
+
+0 PASSED, 1 FAILED

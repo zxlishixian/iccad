@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[59] : pc[8000015a] c.li	x1,-1: ra:0000001f 
+spike[59] : pc[8000015a] c.li    ra, -1: ra:ffffffff 
+[FAILED]: 792 matched, 2880 mismatch
+
+0 PASSED, 1 FAILED

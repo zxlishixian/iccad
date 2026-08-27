@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[60] : pc[80000168] sltu	x14,x11,x1: a4:00000000 
+spike[60] : pc[80000168] sltu    a4, a1, ra: a4:00000001 
+[FAILED]: 607 matched, 7515 mismatch
+
+0 PASSED, 1 FAILED

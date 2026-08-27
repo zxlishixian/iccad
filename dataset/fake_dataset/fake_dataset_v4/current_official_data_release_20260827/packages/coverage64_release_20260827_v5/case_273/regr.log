@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[288] : pc[80001e7e] c.addi16sp	x2,-16: sp:8001ac03 
+spike[288] : pc[80001e52] c.slli  t0, 21: t0:03000000 
+Mismatch[9199]:
+[10899] ibex : pc[80001218] and	x22,x4,x26: s6:00000000 
+[FAILED]: 547 matched, 9199 mismatch
+
+0 PASSED, 1 FAILED

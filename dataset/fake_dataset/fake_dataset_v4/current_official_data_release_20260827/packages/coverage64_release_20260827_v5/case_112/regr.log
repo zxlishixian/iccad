@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[71] : pc[800007be] sltiu	x17,x5,-710: a7:00000000 
+spike[71] : pc[800007be] sltiu   a7, t0, -710: a7:00000001 
+[FAILED]: 89 matched, 4442 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[67] : pc[80000176] div	x17,x12,x9: a7:0000000a 
+spike[67] : pc[8000017a] c.li    s0, 19: s0:00000013 
+Mismatch[2047]:
+[2479] ibex : pc[80000348] addi	x22,x24,-845: s6:fffffb5e 
+[FAILED]: 136 matched, 2047 mismatch
+
+0 PASSED, 1 FAILED

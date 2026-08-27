@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[71] : pc[80000186] ori	x16,x4,269: a6:fd9b833f 
+spike[71] : pc[80000182] xor     a0, s5, t5: a0:fbcb9df6 
+[FAILED]: 541 matched, 7499 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,5 @@
+Case,case_id,bug_id,group,family,test,seed,source_run_dir
+1,case_1,bug_308,load_store,byte_sign_offset0_wrong_sign_bit,riscv_mmu_stress_test,997801,/workspace/ibex/dv/uvm/out
+2,case_2,bug_308,load_store,byte_sign_offset0_wrong_sign_bit,riscv_unaligned_load_store_test,997801,/workspace/ibex/dv/uvm/out
+3,case_3,bug_309,load_store,byte_sign_offset3_wrong_sign_bit,riscv_mmu_stress_test,997801,/workspace/ibex/dv/uvm/out
+4,case_4,bug_309,load_store,byte_sign_offset3_wrong_sign_bit,riscv_unaligned_load_store_test,997801,/workspace/ibex/dv/uvm/out

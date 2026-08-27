@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[240] : pc[8000053c] and	x25,x16,x6: s9:8001efee 
+spike[240] : pc[8000053c] and     s9, a6, t1: s9:80014106 
+Mismatch[10388]:
+[11877] ibex : pc[80006d2e] slli	x9,x2,0x1d: s1:a0000000 
+[FAILED]: 338 matched, 10388 mismatch
+
+0 PASSED, 1 FAILED

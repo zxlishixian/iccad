@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[244] : pc[800005da] xori	x8,x10,714: s0:bfffdd19 
+spike[244] : pc[800005d8] c.and   a0, a5: a0:00000000 
+[FAILED]: 225 matched, 213 mismatch
+
+0 PASSED, 1 FAILED

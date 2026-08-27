@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[280] : pc[800004ec] addi	x29,x18,251: t4:000200fb 
+spike[280] : pc[800004b2] lui     s5, 0xdf98d: s5:df98d000 
+Mismatch[719]:
+[1089] ibex : pc[80001082] csrrs	x31,mscratch,x30: t6:00000009 
+[FAILED]: 272 matched, 719 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1267] : pc[80004010] srai	x13,x10,0x1e: a3:00000000 
+spike[1267] : pc[80004028] sll     gp, a4, a2: gp:8001fe7c 
+[FAILED]: 1095 matched, 3132 mismatch
+
+0 PASSED, 1 FAILED

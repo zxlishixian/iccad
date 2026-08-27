@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[450] : pc[800006b2] c.and	x14,x15: a4:00000000 
+spike[450] : pc[800006ae] divu    s7, s10, a3: s7:00505050 
+Mismatch[7717]:
+[9424] ibex : pc[800082e6] slli	x1,x2,0x3: ra:00000e00 
+[FAILED]: 424 matched, 7717 mismatch
+
+0 PASSED, 1 FAILED

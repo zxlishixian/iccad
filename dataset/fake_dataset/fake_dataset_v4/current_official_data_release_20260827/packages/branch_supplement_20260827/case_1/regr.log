@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[710] : pc[800079b6] addi	x11,x27,-85: a1:ffffffaa 
+spike[710] : pc[800079fc] c.li    s7, 6: s7:00000006 
+Mismatch[1336]:
+[2350] ibex : pc[80000334] mulhu	x11,x31,x8: a1:0000003f 
+[FAILED]: 629 matched, 1336 mismatch
+
+0 PASSED, 1 FAILED

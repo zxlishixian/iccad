@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[614] : pc[8000092e] c.srai	x11,0x1f: a1:00000001 
+spike[614] : pc[80000930] div     gp, s4, s0: gp:00000000 
+Mismatch[7653]:
+[9489] ibex : pc[800083f0] xori	x19,x23,941: s3:000003ac 
+[FAILED]: 544 matched, 7653 mismatch
+
+0 PASSED, 1 FAILED

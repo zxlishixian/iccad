@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[68] : pc[80000192] slti	x24,x26,-474: s8:00000001 
+spike[68] : pc[8001c080] addi    s6, s6, -124: s6:8002cda0 
+Mismatch[18]:
+[87] ibex : pc[800001da] c.li	x31,1: t6:00000001 
+[FAILED]: 65 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

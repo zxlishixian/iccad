@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[4312] : pc[80012136] csrrs	x11,mcause,x0: a1:00000000 
+spike[4312] : pc[8001110a] csrrc   t0, mscratch, tp: t0:00000420 
+[FAILED]: 3910 matched, 22091 mismatch
+
+0 PASSED, 1 FAILED

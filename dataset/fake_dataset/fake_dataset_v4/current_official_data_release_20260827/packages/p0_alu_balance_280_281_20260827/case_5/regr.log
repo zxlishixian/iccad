@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2727] : pc[8000c424] sra	x5,x13,x14: t0:ffffff71 
+spike[2727] : pc[8000c424] sra     t0, a3, a4: t0:fffffee3 
+[FAILED]: 16193 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

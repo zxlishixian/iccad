@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[152] : pc[80000382] lb	x26,259(x4): s10:000000cc 
+spike[152] : pc[80000382] lb      s10, 259(tp): s10:ffffffcc 
+[FAILED]: 1795 matched, 21445 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[154] : pc[800063a0] c.sub	x12,x11: a2:fffffd5b 
+spike[154] : pc[800063a2] csrrw   s9, mscratch, s10: s9:73dffe5d 
+Mismatch[3738]:
+[4580] ibex : pc[800009e2] sra	x23,x30,x17: s7:00000000 
+[FAILED]: 145 matched, 3738 mismatch
+
+0 PASSED, 1 FAILED

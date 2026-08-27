@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[243] : pc[80002d2c] mulh	x14,x23,x6: a4:00000000 
+spike[243] : pc[80002d28] c.xor   a5, a1: a5:f844e027 
+[FAILED]: 217 matched, 4971 mismatch
+
+0 PASSED, 1 FAILED

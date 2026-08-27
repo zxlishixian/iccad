@@ -1,0 +1,23 @@
+{
+  "input_cases": 12,
+  "golden_cases": 12,
+  "meta_cases": 12,
+  "distinct_bugs": 2,
+  "bug_counts": {"bug_273": 6, "bug_276": 6},
+  "bugs_with_less_than_2_tests": [],
+  "tests_with_less_than_2_bugs": [],
+  "regr_mismatch_marker_counts": {"0": 12},
+  "cases_without_failure_marker": [],
+  "bad_cases": [],
+  "leak_cases": [],
+  "max_log_lines": 152,
+  "first_mismatch": {
+    "cases": 0,
+    "min": null,
+    "median": null,
+    "max": null,
+    "at_or_before_32": 0
+  },
+  "duplicate_triplet_groups": [],
+  "signature_collisions": 0
+}

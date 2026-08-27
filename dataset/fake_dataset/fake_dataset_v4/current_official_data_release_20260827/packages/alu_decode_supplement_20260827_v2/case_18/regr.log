@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[927] : pc[80001f64] c.slli	x24,0xa: s8:00000000 
+spike[927] : pc[80001f64] c.slli  s8, 10: s8:000bbc00 
+Mismatch[1216]:
+[5214] ibex : pc[80000610] sra	x5,x0,x20: t0:00000000 
+[FAILED]: 3198 matched, 1216 mismatch
+
+0 PASSED, 1 FAILED

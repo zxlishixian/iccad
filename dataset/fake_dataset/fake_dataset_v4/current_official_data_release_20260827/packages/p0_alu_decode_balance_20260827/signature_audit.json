@@ -1,0 +1,26 @@
+{
+  "dataset_root": "/home/yian/iccad/dataset/p0_alu_decode_balance_20260827",
+  "failure_cases": 6,
+  "bug_tests": {
+    "bug_053": [
+      "riscv_rand_instr_test",
+      "riscv_rv32im_instr_test"
+    ],
+    "bug_128": [
+      "riscv_rand_instr_test",
+      "riscv_rv32im_instr_test"
+    ]
+  },
+  "test_bugs": {
+    "riscv_rand_instr_test": [
+      "bug_053",
+      "bug_128"
+    ],
+    "riscv_rv32im_instr_test": [
+      "bug_053",
+      "bug_128"
+    ]
+  },
+  "cross_bug_signature_collisions": [],
+  "num_collisions": 0
+}

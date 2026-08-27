@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[76] : pc[800001b4] remu	x31,x28,x14: t6:8d250dac 
+spike[76] : pc[800001b4] remu    t6, t3, a4: t6:0d250da9 
+[FAILED]: 152 matched, 19241 mismatch
+
+0 PASSED, 1 FAILED

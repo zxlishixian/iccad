@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[250] : pc[80000472] c.li	x18,-1: s2:0000001f 
+spike[250] : pc[80000472] c.li    s2, -1: s2:ffffffff 
+Mismatch[166]:
+[730] ibex : pc[80000a16] c.li	x3,1: gp:00000001 
+[FAILED]: 470 matched, 166 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[140] : pc[800010fa] srai	x12,x1,0x1e: a2:00000000 
+spike[140] : pc[800010f6] div     ra, tp, a2: ra:00000000 
+Mismatch[1075]:
+[1546] ibex : pc[80000d10] c.slli	x8,0x7: s0:995d6200 
+[FAILED]: 270 matched, 1075 mismatch
+
+0 PASSED, 1 FAILED

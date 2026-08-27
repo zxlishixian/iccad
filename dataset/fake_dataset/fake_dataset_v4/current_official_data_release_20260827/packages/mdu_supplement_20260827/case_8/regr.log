@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[247] : pc[8000052e] rem	x14,x27,x19: a4:0000005f 
+spike[247] : pc[8000052e] rem     a4, s11, s3: a4:0000005e 
+[FAILED]: 441 matched, 10069 mismatch
+
+0 PASSED, 1 FAILED

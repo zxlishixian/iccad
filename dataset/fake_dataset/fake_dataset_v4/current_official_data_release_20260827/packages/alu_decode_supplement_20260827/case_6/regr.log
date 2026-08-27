@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[625] : pc[8000110a] ori	x22,x4,500: s6:2db5811e 
+spike[625] : pc[8000110a] ori     s6, tp, 500: s6:2db581fe 
+[FAILED]: 1305 matched, 3 mismatch
+
+0 PASSED, 1 FAILED

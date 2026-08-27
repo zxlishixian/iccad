@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[4398] : pc[80003d5a] auipc	x29,0x66df9: t4:e6dfcd5b 
+spike[4398] : pc[80003d5a] auipc   t4, 0x66df9: t4:e6dfcd5a 
+[FAILED]: 8067 matched, 5 mismatch
+
+0 PASSED, 1 FAILED

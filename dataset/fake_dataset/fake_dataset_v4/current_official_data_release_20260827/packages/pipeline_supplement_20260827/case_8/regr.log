@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[206] : pc[800004e2] c.addi	x6,8: t1:00000007 
+spike[206] : pc[800004de] mul     a1, s0, s2: a1:7d7b2fe9 
+[FAILED]: 178 matched, 2194 mismatch
+
+0 PASSED, 1 FAILED

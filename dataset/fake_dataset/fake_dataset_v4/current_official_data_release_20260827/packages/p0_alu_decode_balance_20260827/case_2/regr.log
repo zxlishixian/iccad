@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[112] : pc[80000264] addi	x4,x4,-593: tp:8001b00e 
+spike[112] : pc[80000264] addi    tp, tp, -593: tp:8001b00f 
+[FAILED]: 336 matched, 1943 mismatch
+
+0 PASSED, 1 FAILED

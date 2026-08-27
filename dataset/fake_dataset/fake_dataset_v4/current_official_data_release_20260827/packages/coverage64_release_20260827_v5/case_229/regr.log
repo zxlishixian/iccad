@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[362] : pc[80000840] rem	x8,x20,x22: s0:07876e1c 
+spike[362] : pc[80000840] rem     s0, s4, s6: s0:ffffffff 
+Mismatch[27]:
+[448] ibex : pc[80000b2a] c.li	x3,1: gp:00000001 
+[FAILED]: 345 matched, 27 mismatch
+
+0 PASSED, 1 FAILED

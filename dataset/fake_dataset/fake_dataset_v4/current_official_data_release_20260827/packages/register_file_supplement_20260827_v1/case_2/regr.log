@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[114] : pc[80004dcc] c.addi4spn	x15,x2,720: a5:d2795473 
+spike[114] : pc[80004dcc] c.addi4spn a5, sp, 720: a5:d2795472 
+[FAILED]: 1600 matched, 3845 mismatch
+
+0 PASSED, 1 FAILED

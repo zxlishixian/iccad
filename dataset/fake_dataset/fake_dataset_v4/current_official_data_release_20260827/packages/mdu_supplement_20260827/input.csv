@@ -1,0 +1,19 @@
+Case,Regr Log,Sim Log,Trace Log
+1,case_1/regr.log,case_1/sim.log.gz,case_1/trace.log.gz
+2,case_2/regr.log,case_2/sim.log.gz,case_2/trace.log.gz
+3,case_3/regr.log,case_3/sim.log.gz,case_3/trace.log.gz
+4,case_4/regr.log,case_4/sim.log.gz,case_4/trace.log.gz
+5,case_5/regr.log,case_5/sim.log.gz,case_5/trace.log.gz
+6,case_6/regr.log,case_6/sim.log.gz,case_6/trace.log.gz
+7,case_7/regr.log,case_7/sim.log.gz,case_7/trace.log.gz
+8,case_8/regr.log,case_8/sim.log.gz,case_8/trace.log.gz
+9,case_9/regr.log,case_9/sim.log.gz,case_9/trace.log.gz
+10,case_10/regr.log,case_10/sim.log.gz,case_10/trace.log.gz
+11,case_11/regr.log,case_11/sim.log.gz,case_11/trace.log.gz
+12,case_12/regr.log,case_12/sim.log.gz,case_12/trace.log.gz
+13,case_13/regr.log,case_13/sim.log.gz,case_13/trace.log.gz
+14,case_14/regr.log,case_14/sim.log.gz,case_14/trace.log.gz
+15,case_15/regr.log,case_15/sim.log.gz,case_15/trace.log.gz
+16,case_16/regr.log,case_16/sim.log.gz,case_16/trace.log.gz
+17,case_17/regr.log,case_17/sim.log.gz,case_17/trace.log.gz
+18,case_18/regr.log,case_18/sim.log.gz,case_18/trace.log.gz

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2293] : pc[80010160] ori	x23,x23,-402: s7:fffffe64 
+spike[2293] : pc[80010160] ori     s7, s7, -402: s7:fffffe6e 
+[FAILED]: 5539 matched, 2928 mismatch
+
+0 PASSED, 1 FAILED

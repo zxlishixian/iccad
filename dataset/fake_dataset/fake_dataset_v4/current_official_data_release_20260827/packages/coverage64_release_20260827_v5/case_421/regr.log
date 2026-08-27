@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[196] : pc[80007ed0] slli	x24,x23,0x19: s8:ea000000 
+spike[196] : pc[80007f06] csrrwi  a0, mscratch, 12: a0:00000013 
+[FAILED]: 185 matched, 5152 mismatch
+
+0 PASSED, 1 FAILED

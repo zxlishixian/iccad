@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[137] : pc[8000076e] rem	x10,x6,x25: a0:6831d000 
+spike[137] : pc[8000076e] rem     a0, t1, s9: a0:00000000 
+[FAILED]: 156 matched, 4635 mismatch
+
+0 PASSED, 1 FAILED

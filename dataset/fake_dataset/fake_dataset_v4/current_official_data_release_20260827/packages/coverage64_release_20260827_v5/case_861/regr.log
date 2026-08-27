@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[114] : pc[80001268] csrrsi	x5,mscratch,2: t0:2394f000 
+spike[114] : pc[8000121e] slt     tp, s8, t0: tp:00000001 
+[FAILED]: 123 matched, 4230 mismatch
+
+0 PASSED, 1 FAILED

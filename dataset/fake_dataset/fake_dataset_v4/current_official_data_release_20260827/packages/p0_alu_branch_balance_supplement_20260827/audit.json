@@ -1,0 +1,28 @@
+{
+  "dataset_root": "/home/yian/iccad/dataset/p0_alu_branch_balance_supplement_20260827",
+  "input_cases": 6,
+  "golden_cases": 6,
+  "meta_cases": 6,
+  "distinct_bugs": 2,
+  "bug_counts": {
+    "bug_045": 2,
+    "bug_047": 4
+  },
+  "bugs_with_less_than_2_tests": [],
+  "tests_with_less_than_2_bugs": [],
+  "regr_mismatch_marker_counts": {
+    "1": 6
+  },
+  "cases_without_failure_marker": [],
+  "bad_cases": [],
+  "leak_cases": [],
+  "max_log_lines": 26541,
+  "first_mismatch": {
+    "cases": 6,
+    "min": 173,
+    "median": 422,
+    "max": 3073,
+    "at_or_before_32": 0
+  },
+  "duplicate_triplet_groups": []
+}

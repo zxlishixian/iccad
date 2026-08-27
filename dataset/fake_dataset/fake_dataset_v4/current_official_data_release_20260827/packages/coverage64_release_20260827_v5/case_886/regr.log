@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[81] : pc[800001d2] c.mv	x12,x20: a2:0000000f 
+spike[81] : pc[800001d2] c.mv    a2, s4: a2:0000000e 
+Mismatch[3416]:
+[4574] ibex : pc[80000fa0] c.mv	x4,x12: tp:00000001 
+[FAILED]: 359 matched, 3416 mismatch
+
+0 PASSED, 1 FAILED

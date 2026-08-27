@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[61] : pc[8000015e] srl	x24,x12,x22: s8:08000000 
+spike[61] : pc[8000015a] remu    s8, ra, t4: s8:00000006 
+[FAILED]: 107 matched, 7971 mismatch
+
+0 PASSED, 1 FAILED

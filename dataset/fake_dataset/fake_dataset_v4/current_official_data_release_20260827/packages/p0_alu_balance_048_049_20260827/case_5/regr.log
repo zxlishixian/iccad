@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[316] : pc[80000a5e] sra	x14,x3,x16: a4:00000001 
+spike[316] : pc[80000a5e] sra     a4, gp, a6: a4:ffffffff 
+[FAILED]: 1178 matched, 3 mismatch
+
+0 PASSED, 1 FAILED

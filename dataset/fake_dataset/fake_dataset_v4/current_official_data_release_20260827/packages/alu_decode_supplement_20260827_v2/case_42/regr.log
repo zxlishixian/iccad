@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2792] : pc[800029a4] sltiu	x30,x26,347: t5:00000001 
+spike[2792] : pc[800029a4] sltiu   t5, s10, 347: t5:00000000 
+[FAILED]: 3044 matched, 3536 mismatch
+
+0 PASSED, 1 FAILED

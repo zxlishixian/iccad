@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[560] : pc[80000b52] andi	x30,x23,-92: t5:fffffff4 
+spike[560] : pc[80000b52] andi    t5, s7, -92: t5:8001dba4 
+[FAILED]: 6565 matched, 14 mismatch
+
+0 PASSED, 1 FAILED

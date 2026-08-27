@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[125] : pc[8000034c] mulhsu	x24,x21,x4: s8:f9492b54 
+spike[125] : pc[8000034c] mulhsu  s8, s5, tp: s8:06b7088c 
+[FAILED]: 613 matched, 3308 mismatch
+
+0 PASSED, 1 FAILED

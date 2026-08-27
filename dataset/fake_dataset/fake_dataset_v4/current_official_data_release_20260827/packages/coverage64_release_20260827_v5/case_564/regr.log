@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[520] : pc[80000ace] lb	x2,279(x5): sp:00000000 
+spike[520] : pc[80000ace] lb      sp, 279(t0): sp:0000005a 
+[FAILED]: 709 matched, 19225 mismatch
+
+0 PASSED, 1 FAILED

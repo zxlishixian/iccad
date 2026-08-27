@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[237] : pc[800004e0] auipc	x12,0x2ebea: a2:aebea4e0 
+spike[237] : pc[800004da] c.addi  s8, -5: s8:fffffff8 
+[FAILED]: 229 matched, 67 mismatch
+
+0 PASSED, 1 FAILED

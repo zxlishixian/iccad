@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[51] : pc[80008388] addi	x17,x17,-2048: a7:00001801 
+spike[51] : pc[80008388] addi    a7, a7, -2048: a7:00001800 
+Mismatch[7886]:
+[9441] ibex : pc[8000836a] c.xor	x9,x10: s1:00000015 
+[FAILED]: 225 matched, 7886 mismatch
+
+0 PASSED, 1 FAILED

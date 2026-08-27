@@ -1,0 +1,17 @@
+Case,case_id,bug_id,group,family,test,seed,source_run_dir
+1,case_1,bug_244,branch_jump,conditional_beq_ne_decode,riscv_machine_mode_rand_test,948001,/workspace/ibex/dv/uvm/out
+2,case_2,bug_244,branch_jump,conditional_beq_ne_decode,riscv_machine_mode_rand_test,948002,/workspace/ibex/dv/uvm/out
+3,case_3,bug_244,branch_jump,conditional_beq_ne_decode,riscv_rand_instr_test,948001,/workspace/ibex/dv/uvm/out
+4,case_4,bug_244,branch_jump,conditional_beq_ne_decode,riscv_rand_instr_test,948002,/workspace/ibex/dv/uvm/out
+5,case_5,bug_244,branch_jump,conditional_beq_ne_decode,riscv_rv32im_instr_test,948002,/workspace/ibex/dv/uvm/out
+6,case_6,bug_245,branch_jump,conditional_bne_eq_decode,riscv_machine_mode_rand_test,949001,/workspace/ibex/dv/uvm/out
+7,case_7,bug_245,branch_jump,conditional_bne_eq_decode,riscv_machine_mode_rand_test,949002,/workspace/ibex/dv/uvm/out
+8,case_8,bug_245,branch_jump,conditional_bne_eq_decode,riscv_rand_instr_test,949001,/workspace/ibex/dv/uvm/out
+9,case_9,bug_245,branch_jump,conditional_bne_eq_decode,riscv_rand_instr_test,949002,/workspace/ibex/dv/uvm/out
+10,case_10,bug_245,branch_jump,conditional_bne_eq_decode,riscv_rv32im_instr_test,949001,/workspace/ibex/dv/uvm/out
+11,case_11,bug_245,branch_jump,conditional_bne_eq_decode,riscv_rv32im_instr_test,949002,/workspace/ibex/dv/uvm/out
+12,case_12,bug_246,branch_jump,conditional_blt_bge_decode,riscv_machine_mode_rand_test,950001,/workspace/ibex/dv/uvm/out
+13,case_13,bug_246,branch_jump,conditional_blt_bge_decode,riscv_machine_mode_rand_test,950002,/workspace/ibex/dv/uvm/out
+14,case_14,bug_246,branch_jump,conditional_blt_bge_decode,riscv_rand_instr_test,950001,/workspace/ibex/dv/uvm/out
+15,case_15,bug_246,branch_jump,conditional_blt_bge_decode,riscv_rand_instr_test,950002,/workspace/ibex/dv/uvm/out
+16,case_16,bug_246,branch_jump,conditional_blt_bge_decode,riscv_rv32im_instr_test,950002,/workspace/ibex/dv/uvm/out

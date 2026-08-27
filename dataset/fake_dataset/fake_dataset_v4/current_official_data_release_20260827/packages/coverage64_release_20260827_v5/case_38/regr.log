@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[6820] : pc[80006022] c.addi	x3,-1: gp:fffffe58 
+spike[6820] : pc[80006022] c.addi  gp, -1: gp:fffffe59 
+[FAILED]: 7885 matched, 1 mismatch
+
+0 PASSED, 1 FAILED

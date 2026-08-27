@@ -1,0 +1,5 @@
+Case,case_id,bug_id,group,family,test,seed,source_run_dir
+1,case_1,bug_312,compressed_decode,c_slli_x5_shamt_bit0,riscv_machine_mode_rand_test,998001,/workspace/ibex/dv/uvm/out
+2,case_2,bug_312,compressed_decode,c_slli_x5_shamt_bit0,riscv_rand_instr_test,998001,/workspace/ibex/dv/uvm/out
+3,case_3,bug_313,compressed_decode,c_srli_x15_shamt_bit0,riscv_machine_mode_rand_test,998001,/workspace/ibex/dv/uvm/out
+4,case_4,bug_313,compressed_decode,c_srli_x15_shamt_bit0,riscv_rand_instr_test,998001,/workspace/ibex/dv/uvm/out

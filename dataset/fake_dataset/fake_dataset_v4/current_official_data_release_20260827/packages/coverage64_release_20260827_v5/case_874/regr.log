@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[159] : pc[80000348] slt	x14,x24,x13: a4:00000001 
+spike[159] : pc[80000344] mul     a5, t5, a6: a5:3e4a6c72 
+Mismatch[123]:
+[387] ibex : pc[80000a6a] sub	x8,x16,x5: s0:ffffffe0 
+[FAILED]: 187 matched, 123 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[96] : pc[80000296] c.addi	x19,-1: s3:00000026 
+spike[96] : pc[80000296] c.addi  s3, -1: s3:00000006 
+[FAILED]: 168 matched, 1 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[103] : pc[80000202] sub	x21,x31,x5: s5:7ffffe81 
+spike[103] : pc[80000202] sub     s5, t6, t0: s5:7ffffe8c 
+Mismatch[7846]:
+[9384] ibex : pc[80008310] c.slli	x31,0xe: t6:00000000 
+[FAILED]: 268 matched, 7846 mismatch
+
+0 PASSED, 1 FAILED

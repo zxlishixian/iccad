@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[405] : pc[8000056a] c.li	x8,-1: s0:0000001f 
+spike[405] : pc[8000056a] c.li    s0, -1: s0:ffffffff 
+[FAILED]: 349 matched, 2 mismatch
+
+0 PASSED, 1 FAILED

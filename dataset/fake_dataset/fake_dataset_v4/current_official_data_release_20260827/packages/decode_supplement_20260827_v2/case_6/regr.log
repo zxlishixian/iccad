@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[4068] : pc[800047bc] ori	x2,x12,852: sp:0000426e 
+spike[4068] : pc[800047bc] ori     sp, a2, 852: sp:0000437e 
+[FAILED]: 7712 matched, 2408 mismatch
+
+0 PASSED, 1 FAILED

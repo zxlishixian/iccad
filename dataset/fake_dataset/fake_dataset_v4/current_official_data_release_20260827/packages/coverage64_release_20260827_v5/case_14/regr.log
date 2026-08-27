@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[80] : pc[80002394] sra	x26,x30,x6: s10:00200000 
+spike[80] : pc[80002394] sra     s10, t5, t1: s10:ffe00000 
+Mismatch[3511]:
+[4140] ibex : pc[800001e6] mulhsu	x31,x2,x14: t6:ffffffff 
+[FAILED]: 107 matched, 3511 mismatch
+
+0 PASSED, 1 FAILED

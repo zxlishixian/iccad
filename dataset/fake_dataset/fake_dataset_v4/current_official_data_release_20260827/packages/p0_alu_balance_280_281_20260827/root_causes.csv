@@ -1,0 +1,3 @@
+bug_id,domain,family,root_cause
+bug_280,ALU,pc_region_conditional_sra_operand,"In the selected PC region, the SRA operand-B value is XORed with 1 before execution."
+bug_281,ALU,pc_region_conditional_sltu_operand,"In the selected PC region, the SLTU operand-B value is XORed with 1 before execution."

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[77] : pc[80004306] lhu	x11,44(x30): a1:00000000 
+spike[77] : pc[80004306] lhu     a1, 44(t5): a1:000097d4 
+Mismatch[20]:
+[111] ibex : pc[800043ac] c.lui	x12,0x9: a2:00009000 
+[FAILED]: 74 matched, 20 mismatch
+
+0 PASSED, 1 FAILED

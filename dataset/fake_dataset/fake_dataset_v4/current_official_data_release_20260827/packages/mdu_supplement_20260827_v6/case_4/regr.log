@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2719] : pc[800047ec] mulhu	x17,x11,x23: a7:ffffffff 
+spike[2719] : pc[800047ec] mulhu   a7, a1, s7: a7:7efe134c 
+[FAILED]: 2818 matched, 1245 mismatch
+
+0 PASSED, 1 FAILED

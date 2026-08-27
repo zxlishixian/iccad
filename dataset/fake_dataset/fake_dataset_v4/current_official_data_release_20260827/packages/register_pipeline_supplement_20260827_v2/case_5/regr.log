@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[116] : pc[80000338] or	x24,x4,x29: s8:8001ee7c 
+spike[116] : pc[80000334] mulhsu  s5, t5, s0: s5:fc05d25d 
+Mismatch[681]:
+[921] ibex : pc[80001e84] c.add	x8,x27: s0:f08cec3a 
+[FAILED]: 108 matched, 681 mismatch
+
+0 PASSED, 1 FAILED

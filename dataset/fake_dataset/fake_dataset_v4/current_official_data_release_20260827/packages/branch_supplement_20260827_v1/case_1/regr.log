@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1088] : pc[80001aae] c.xor	x13,x9: a3:d226c000 
+spike[1088] : pc[80001a82] lui     a2, 0xf0d97: a2:f0d97000 
+[FAILED]: 981 matched, 806 mismatch
+
+0 PASSED, 1 FAILED

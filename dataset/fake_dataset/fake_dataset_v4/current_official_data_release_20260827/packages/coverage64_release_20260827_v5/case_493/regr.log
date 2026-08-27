@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[126] : pc[800042c0] c.andi	x9,-1: s1:00000010 
+spike[126] : pc[800042c8] lui     t4, 0x11d67: t4:11d67000 
+Mismatch[11344]:
+[13378] ibex : pc[80005832] csrrsi	x16,mscratch,0: a6:0000001f 
+[FAILED]: 126 matched, 11344 mismatch
+
+0 PASSED, 1 FAILED

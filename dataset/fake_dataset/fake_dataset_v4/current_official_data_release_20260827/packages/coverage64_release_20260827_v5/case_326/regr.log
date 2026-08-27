@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[77] : pc[800001d0] lbu	x31,-7(x10): t6:00000000 
+spike[77] : pc[800001d0] lbu     t6, -7(a0): t6:000000aa 
+[FAILED]: 78 matched, 7526 mismatch
+
+0 PASSED, 1 FAILED

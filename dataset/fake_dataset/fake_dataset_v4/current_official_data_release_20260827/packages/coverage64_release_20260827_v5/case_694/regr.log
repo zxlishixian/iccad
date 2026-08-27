@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[132] : pc[80001882] srai	x7,x2,0x15: t2:fffffc00 
+spike[132] : pc[800018a2] sra     a4, a3, a3: a4:ffffffe0 
+[FAILED]: 146 matched, 9764 mismatch
+
+0 PASSED, 1 FAILED

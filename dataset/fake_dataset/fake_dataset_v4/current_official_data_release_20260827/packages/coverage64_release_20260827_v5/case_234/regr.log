@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[125] : pc[80003b6c] rem	x27,x28,x23: s11:00000000 
+spike[125] : pc[80003b6c] rem     s11, t3, s7: s11:0000000d 
+[FAILED]: 195 matched, 4557 mismatch
+
+0 PASSED, 1 FAILED

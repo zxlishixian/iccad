@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[270] : pc[800032aa] sra	x5,x6,x25: t0:ffffffff 
+spike[270] : pc[800032c4] c.srai  a2, 18: a2:ffffffff 
+Mismatch[1792]:
+[2297] ibex : pc[800005b8] c.jalr	x20: ra:800005ba 
+[FAILED]: 267 matched, 1792 mismatch
+
+0 PASSED, 1 FAILED

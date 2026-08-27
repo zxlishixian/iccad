@@ -1,0 +1,26 @@
+{
+  "dataset_root": "_p0_lsu_balance_unpack\\p0_lsu_balance_supplement_20260827",
+  "failure_cases": 9,
+  "bug_tests": {
+    "bug_051": [
+      "riscv_mmu_stress_test",
+      "riscv_unaligned_load_store_test"
+    ],
+    "bug_052": [
+      "riscv_mmu_stress_test",
+      "riscv_unaligned_load_store_test"
+    ]
+  },
+  "test_bugs": {
+    "riscv_mmu_stress_test": [
+      "bug_051",
+      "bug_052"
+    ],
+    "riscv_unaligned_load_store_test": [
+      "bug_051",
+      "bug_052"
+    ]
+  },
+  "cross_bug_signature_collisions": [],
+  "num_collisions": 0
+}

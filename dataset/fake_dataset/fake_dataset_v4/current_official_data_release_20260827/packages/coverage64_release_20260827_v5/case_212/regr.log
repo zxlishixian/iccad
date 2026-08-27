@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[75] : pc[80000256] sltu	x15,x22,x7: a5:00000000 
+spike[75] : pc[80000256] sltu    a5, s6, t2: a5:00000001 
+Mismatch[2360]:
+[3372] ibex : pc[80001688] c.addi4spn	x15,x2,880: a5:00000370 
+[FAILED]: 521 matched, 2360 mismatch
+
+0 PASSED, 1 FAILED

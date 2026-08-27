@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2584] : pc[8000245a] auipc	x8,0xdff0d: s0:5ff0f45b 
+spike[2584] : pc[8000245a] auipc   s0, 0xdff0d: s0:5ff0f45a 
+[FAILED]: 8060 matched, 3 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[65] : pc[80000222] mulhsu	x7,x6,x11: t2:0000000c 
+spike[65] : pc[8000021e] add     t2, t6, s0: t2:80000000 
+Mismatch[3412]:
+[4260] ibex : pc[80002c64] c.andi	x8,16: s0:00000010 
+[FAILED]: 126 matched, 3412 mismatch
+
+0 PASSED, 1 FAILED

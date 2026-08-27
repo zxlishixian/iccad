@@ -1,0 +1,3 @@
+bug_id,domain,family,root_cause
+bug_273,debug,conditional_dcsr_cause_haltreq,"When saving debug CSRs, a halt-request cause is incorrectly recorded as STEP."
+bug_276,debug,conditional_dcsr_prv_wrong,"When saving debug CSRs, the saved privilege level is replaced with the opposite privilege level."

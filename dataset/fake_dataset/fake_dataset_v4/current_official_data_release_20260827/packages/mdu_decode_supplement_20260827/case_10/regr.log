@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[647] : pc[80004ee0] remu	x19,x11,x30: s3:00000001 
+spike[647] : pc[80004ee0] remu    s3, a1, t5: s3:0004fba3 
+Mismatch[7952]:
+[12032] ibex : pc[80000592] slt	x10,x4,x20: a0:00000001 
+[FAILED]: 842 matched, 7952 mismatch
+
+0 PASSED, 1 FAILED

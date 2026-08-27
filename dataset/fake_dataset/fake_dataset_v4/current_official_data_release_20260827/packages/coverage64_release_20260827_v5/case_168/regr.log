@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[78] : pc[800034ea] div	x2,x9,x30: sp:dd87c285 
+spike[78] : pc[800034ea] div     sp, s1, t5: sp:ffffffff 
+[FAILED]: 226 matched, 4296 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[78] : pc[80002c70] slt	x23,x16,x25: s7:00000001 
+spike[78] : pc[80002c70] slt     s7, a6, s9: s7:00000000 
+Mismatch[935]:
+[1398] ibex : pc[800032f0] c.addi4spn	x12,x2,640: a2:00000281 
+[FAILED]: 263 matched, 935 mismatch
+
+0 PASSED, 1 FAILED

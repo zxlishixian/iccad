@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[54] : pc[80008426] addi	x11,x11,-2048: a1:00001801 
+spike[54] : pc[80008426] addi    a1, a1, -2048: a1:00001800 
+Mismatch[6831]:
+[9364] ibex : pc[800083c4] c.addi4spn	x11,x2,624: a1:d3407665 
+[FAILED]: 1248 matched, 6831 mismatch
+
+0 PASSED, 1 FAILED

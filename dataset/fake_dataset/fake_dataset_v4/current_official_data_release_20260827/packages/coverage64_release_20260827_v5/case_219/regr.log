@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[86] : pc[80000206] rem	x26,x26,x18: s10:00000000 
+spike[86] : pc[8000020a] c.xor   a3, a0: a3:00000005 
+Mismatch[2680]:
+[3314] ibex : pc[8000569e] c.xor	x11,x9: a1:0000001d 
+[FAILED]: 161 matched, 2680 mismatch
+
+0 PASSED, 1 FAILED

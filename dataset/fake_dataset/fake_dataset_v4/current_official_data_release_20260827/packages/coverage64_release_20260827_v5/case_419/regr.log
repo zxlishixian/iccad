@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[333] : pc[80000878] auipc	x14,0xe84ba: a4:684ba878 
+spike[333] : pc[8000088e] c.addi  tp, 19: tp:0000001a 
+[FAILED]: 312 matched, 30338 mismatch
+
+0 PASSED, 1 FAILED

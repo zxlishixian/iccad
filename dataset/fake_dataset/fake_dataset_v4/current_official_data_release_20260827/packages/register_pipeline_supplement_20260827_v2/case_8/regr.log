@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[233] : pc[8000303a] addi	x6,x6,166: t1:80011090 
+spike[233] : pc[80003036] mul     a7, t5, t0: a7:00000000 
+[FAILED]: 234 matched, 5395 mismatch
+
+0 PASSED, 1 FAILED

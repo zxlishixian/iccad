@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1161] : pc[80003614] ori	x20,x4,-882: s4:7fffc824 
+spike[1161] : pc[80003614] ori     s4, tp, -882: s4:fffffcae 
+[FAILED]: 8041 matched, 1 mismatch
+
+0 PASSED, 1 FAILED

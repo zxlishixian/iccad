@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[108] : pc[8000049a] auipc	x23,0xb7a42: s7:37a4249a 
+spike[108] : pc[80000496] mulh    t0, s2, s5: t0:00000000 
+[FAILED]: 187 matched, 4915 mismatch
+
+0 PASSED, 1 FAILED

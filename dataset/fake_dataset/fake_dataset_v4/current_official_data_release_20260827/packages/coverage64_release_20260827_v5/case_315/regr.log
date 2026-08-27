@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[76] : pc[8001cade] lb	x20,97(x19): s4:00000000 
+spike[76] : pc[8001cade] lb      s4, 97(s3): s4:00000045 
+[FAILED]: 143 matched, 33748 mismatch
+
+0 PASSED, 1 FAILED

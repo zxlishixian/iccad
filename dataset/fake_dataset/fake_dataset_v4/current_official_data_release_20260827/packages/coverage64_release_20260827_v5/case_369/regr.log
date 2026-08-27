@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[141] : pc[80000286] c.srai	x11,0xc: a1:000a8ae9 
+spike[141] : pc[80000286] c.srai  a1, 12: a1:fffa8ae9 
+Mismatch[7160]:
+[9359] ibex : pc[800082e4] sub	x15,x18,x17: a5:ffffffff 
+[FAILED]: 753 matched, 7160 mismatch
+
+0 PASSED, 1 FAILED

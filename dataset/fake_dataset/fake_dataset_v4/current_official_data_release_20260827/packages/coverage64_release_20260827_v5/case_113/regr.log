@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[82] : pc[800001ee] slti	x25,x0,-208: s9:00000001 
+spike[82] : pc[800001ee] slti    s9, zero, -208: s9:00000000 
+[FAILED]: 132 matched, 4299 mismatch
+
+0 PASSED, 1 FAILED

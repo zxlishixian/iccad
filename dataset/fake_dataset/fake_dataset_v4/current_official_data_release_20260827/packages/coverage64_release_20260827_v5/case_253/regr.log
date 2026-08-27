@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[110] : pc[80004ab8] slt	x16,x3,x5: a6:00000001 
+spike[110] : pc[80004ab8] slt     a6, gp, t0: a6:00000000 
+Mismatch[2426]:
+[2984] ibex : pc[800011e8] and	x24,x9,x23: s8:86440000 
+[FAILED]: 128 matched, 2426 mismatch
+
+0 PASSED, 1 FAILED

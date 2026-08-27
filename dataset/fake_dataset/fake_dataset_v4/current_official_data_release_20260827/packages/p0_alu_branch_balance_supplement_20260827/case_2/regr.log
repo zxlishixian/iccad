@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[3073] : pc[8000666e] srai	x4,x17,0x7: tp:01ffffff 
+spike[3073] : pc[8000666e] srai    tp, a7, 7: tp:ffffffff 
+[FAILED]: 4761 matched, 13028 mismatch
+
+0 PASSED, 1 FAILED

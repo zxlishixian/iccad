@@ -1,0 +1,5 @@
+Case,Regr Log,Sim Log,Trace Log
+1,case_1/regr.log,case_1/sim.log.gz,case_1/trace.log.gz
+2,case_2/regr.log,case_2/sim.log.gz,case_2/trace.log.gz
+3,case_3/regr.log,case_3/sim.log.gz,case_3/trace.log.gz
+4,case_4/regr.log,case_4/sim.log.gz,case_4/trace.log.gz

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[63] : pc[8000016a] lw	x3,41(x23): gp:5d5e5f58 
+spike[63] : pc[8001c080] addi    a5, a5, -124: a5:8002cda0 
+Mismatch[18]:
+[81] ibex : pc[800001c8] rem	x3,x31,x17: gp:ffffb3ac 
+[FAILED]: 57 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

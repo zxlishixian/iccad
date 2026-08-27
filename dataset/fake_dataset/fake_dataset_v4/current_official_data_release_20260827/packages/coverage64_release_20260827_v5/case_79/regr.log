@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[112] : pc[800059f2] c.addi16sp	x2,464: sp:80000321 
+spike[112] : pc[800059f2] c.addi16sp sp, 464: sp:80000320 
+[FAILED]: 233 matched, 3887 mismatch
+
+0 PASSED, 1 FAILED

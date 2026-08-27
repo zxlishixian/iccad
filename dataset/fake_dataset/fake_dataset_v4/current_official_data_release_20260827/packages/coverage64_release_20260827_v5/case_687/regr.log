@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[203] : pc[80007a0e] add	x31,x12,x7: t6:80002637 
+spike[203] : pc[800079d0] c.lui   s6, 0x1d: s6:0001d000 
+[FAILED]: 190 matched, 301 mismatch
+
+0 PASSED, 1 FAILED

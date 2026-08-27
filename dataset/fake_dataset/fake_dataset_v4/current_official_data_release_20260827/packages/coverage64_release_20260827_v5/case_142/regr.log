@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[142] : pc[800003b0] mulhsu	x25,x31,x17: s9:03a50b33 
+spike[142] : pc[800003b0] mulhsu  s9, t6, a7: s9:f91eb99b 
+[FAILED]: 338 matched, 4091 mismatch
+
+0 PASSED, 1 FAILED

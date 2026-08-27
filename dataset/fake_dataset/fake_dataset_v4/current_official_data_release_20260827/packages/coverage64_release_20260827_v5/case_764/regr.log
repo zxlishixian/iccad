@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[210] : pc[800079e4] add	x9,x31,x30: s1:0c6271d6 
+spike[210] : pc[800079e4] add     s1, t6, t5: s1:4aec9860 
+Mismatch[3362]:
+[4382] ibex : pc[80005612] csrrs	x25,mscratch,x26: s9:00000020 
+[FAILED]: 347 matched, 3362 mismatch
+
+0 PASSED, 1 FAILED

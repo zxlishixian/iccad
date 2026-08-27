@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[563] : pc[80000b40] mul	x29,x1,x2: t4:34db5000 
+spike[563] : pc[80000b9e] rem     s7, a7, gp: s7:00000000 
+Mismatch[3624]:
+[4656] ibex : pc[800019b6] lui	x22,0x3bdbe: s6:3bdbe000 
+[FAILED]: 538 matched, 3624 mismatch
+
+0 PASSED, 1 FAILED

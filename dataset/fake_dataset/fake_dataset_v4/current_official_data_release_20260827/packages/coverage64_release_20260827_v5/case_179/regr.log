@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[132] : pc[800073e0] c.xor	x10,x13: a0:ffffffea 
+spike[132] : pc[800073e0] c.xor   a0, a3: a0:7ffffce8 
+[FAILED]: 149 matched, 8299 mismatch
+
+0 PASSED, 1 FAILED

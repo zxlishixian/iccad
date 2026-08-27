@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[52] : pc[800086bc] addi	x26,x26,-2048: s10:00001801 
+spike[52] : pc[800086bc] addi    s10, s10, -2048: s10:00001800 
+Mismatch[3711]:
+[4436] ibex : pc[80003114] srl	x17,x15,x15: a7:00000008 
+[FAILED]: 91 matched, 3711 mismatch
+
+0 PASSED, 1 FAILED

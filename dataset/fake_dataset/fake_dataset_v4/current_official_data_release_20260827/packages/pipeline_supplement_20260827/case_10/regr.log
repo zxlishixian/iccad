@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1094] : pc[8000147a] slt	x30,x5,x0: t5:00000000 
+spike[1094] : pc[80001472] mulhu   a6, gp, t1: a6:00000000 
+[FAILED]: 1045 matched, 2606 mismatch
+
+0 PASSED, 1 FAILED

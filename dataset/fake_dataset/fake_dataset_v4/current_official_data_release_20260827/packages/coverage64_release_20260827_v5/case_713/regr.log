@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[98] : pc[80008582] auipc	x8,0x39916: s0:b991e582 
+spike[98] : pc[8000856a] mulhu   a4, a1, a5: a4:37ccc9f0 
+[FAILED]: 113 matched, 4993 mismatch
+
+0 PASSED, 1 FAILED

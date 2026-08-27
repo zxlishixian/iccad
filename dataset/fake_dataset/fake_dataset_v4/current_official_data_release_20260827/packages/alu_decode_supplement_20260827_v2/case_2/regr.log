@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1165] : pc[80002522] andi	x2,x22,-923: sp:ffffffff 
+spike[1165] : pc[80002522] andi    sp, s6, -923: sp:fffffc65 
+[FAILED]: 998 matched, 3416 mismatch
+
+0 PASSED, 1 FAILED

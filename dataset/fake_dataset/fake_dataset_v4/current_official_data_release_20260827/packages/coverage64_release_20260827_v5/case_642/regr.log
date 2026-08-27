@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[102] : pc[800002a4] or	x23,x4,x30: s7:063e84ff 
+spike[102] : pc[800002a4] or      s7, tp, t5: s7:ffffb6ff 
+Mismatch[3252]:
+[4470] ibex : pc[80000ab6] xor	x28,x2,x18: t3:8001aef3 
+[FAILED]: 466 matched, 3252 mismatch
+
+0 PASSED, 1 FAILED

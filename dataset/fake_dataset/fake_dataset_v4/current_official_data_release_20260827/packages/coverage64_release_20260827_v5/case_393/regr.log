@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[122] : pc[80006da6] mulhsu	x18,x25,x20: s2:ffffffeb 
+spike[122] : pc[80006de4] c.srli  s0, 16: s0:00000001 
+Mismatch[92]:
+[226] ibex : pc[80000298] slli	x20,x1,0x13: s4:91b00000 
+[FAILED]: 108 matched, 92 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[208] : pc[8000045a] lbu	x14,350(x10): a4:00000019 
+spike[208] : pc[8000045a] lbu     a4, 350(a0): a4:00000064 
+[FAILED]: 247 matched, 4393 mismatch
+
+0 PASSED, 1 FAILED

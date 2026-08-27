@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[92] : pc[80006dec] c.srli	x9,0xc: s1:0002ff78 
+spike[92] : pc[80006e18] sub     t6, t3, a4: t6:39966887 
+[FAILED]: 115 matched, 4979 mismatch
+
+0 PASSED, 1 FAILED

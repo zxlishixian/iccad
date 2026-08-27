@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1250] : pc[8000244c] srai	x29,x18,0xe: t4:ffff0000 
+spike[1250] : pc[8000244c] srai    t4, s2, 14: t4:fffe0000 
+[FAILED]: 1010 matched, 1181 mismatch
+
+0 PASSED, 1 FAILED

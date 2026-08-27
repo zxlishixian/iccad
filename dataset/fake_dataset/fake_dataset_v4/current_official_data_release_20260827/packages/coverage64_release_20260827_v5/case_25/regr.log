@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[4216] : pc[80003c98] sra	x27,x15,x3: s11:0160c220 
+spike[4216] : pc[80003c98] sra     s11, a5, gp: s11:ff60c220 
+[FAILED]: 5716 matched, 2214 mismatch
+
+0 PASSED, 1 FAILED

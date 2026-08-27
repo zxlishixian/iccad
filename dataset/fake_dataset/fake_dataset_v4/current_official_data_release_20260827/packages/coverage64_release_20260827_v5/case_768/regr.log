@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[120] : pc[800045e4] mulhsu	x30,x4,x25: t5:00000025 
+spike[120] : pc[800045c2] slti    a6, a6, 970: a6:00000000 
+Mismatch[4814]:
+[5866] ibex : pc[80008026] slt	x26,x6,x24: s10:00000000 
+[FAILED]: 163 matched, 4814 mismatch
+
+0 PASSED, 1 FAILED

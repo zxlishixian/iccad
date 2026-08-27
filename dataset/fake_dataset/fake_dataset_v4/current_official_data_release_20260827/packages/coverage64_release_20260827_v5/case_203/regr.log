@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[115] : pc[80007520] mul	x17,x21,x8: a7:00000000 
+spike[115] : pc[80007502] sltu    s10, a5, t0: s10:00000001 
+[FAILED]: 95 matched, 409 mismatch
+
+0 PASSED, 1 FAILED

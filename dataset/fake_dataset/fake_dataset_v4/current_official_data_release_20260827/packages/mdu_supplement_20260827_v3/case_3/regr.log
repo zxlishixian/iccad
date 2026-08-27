@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[776] : pc[80000520] mulh	x17,x28,x15: a7:8001ee7c 
+spike[776] : pc[80000520] mulh    a7, t3, a5: a7:00000000 
+[FAILED]: 653 matched, 3151 mismatch
+
+0 PASSED, 1 FAILED

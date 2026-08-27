@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[272] : pc[80004262] c.andi	x15,-1: a5:0000001f 
+spike[272] : pc[80004268] sub     s5, sp, a7: s5:00007fbe 
+Mismatch[957]:
+[1376] ibex : pc[80001948] xori	x15,x10,853: a5:fffffeca 
+[FAILED]: 216 matched, 957 mismatch
+
+0 PASSED, 1 FAILED

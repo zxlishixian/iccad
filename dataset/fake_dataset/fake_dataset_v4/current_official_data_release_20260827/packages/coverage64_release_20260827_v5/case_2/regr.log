@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[118] : pc[80000216] srai	x28,x6,0x10: t3:0000f766 
+spike[118] : pc[80000216] srai    t3, t1, 16: t3:fffff766 
+[FAILED]: 131 matched, 7858 mismatch
+
+0 PASSED, 1 FAILED

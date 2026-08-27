@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[81] : pc[800001b2] c.li	x23,-1: s7:0000001f 
+spike[81] : pc[800001b2] c.li    s7, -1: s7:ffffffff 
+Mismatch[6548]:
+[9421] ibex : pc[80008344] lui	x31,0x83eb2: t6:83eb2000 
+[FAILED]: 1452 matched, 6548 mismatch
+
+0 PASSED, 1 FAILED

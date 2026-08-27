@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[96] : pc[800070c2] mulhu	x14,x29,x14: a4:00000000 
+spike[96] : pc[800070c6] c.addi  a0, -8: a0:80022df0 
+[FAILED]: 946 matched, 26633 mismatch
+
+0 PASSED, 1 FAILED

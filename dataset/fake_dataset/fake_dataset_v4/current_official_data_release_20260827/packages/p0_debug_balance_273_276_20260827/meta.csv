@@ -1,0 +1,13 @@
+Case,case_id,bug_id,group,family,test,seed,source_run_dir
+1,case_1,bug_273,debug,conditional_dcsr_cause_haltreq,riscv_debug_csr_entry_test,995001,/workspace/ibex/dv/uvm/out
+2,case_2,bug_273,debug,conditional_dcsr_cause_haltreq,riscv_debug_csr_entry_test,995002,/workspace/ibex/dv/uvm/out
+3,case_3,bug_273,debug,conditional_dcsr_cause_haltreq,riscv_debug_ebreak_test,995001,/workspace/ibex/dv/uvm/out
+4,case_4,bug_273,debug,conditional_dcsr_cause_haltreq,riscv_debug_ebreak_test,995002,/workspace/ibex/dv/uvm/out
+5,case_5,bug_273,debug,conditional_dcsr_cause_haltreq,riscv_debug_ebreakmu_test,995001,/workspace/ibex/dv/uvm/out
+6,case_6,bug_273,debug,conditional_dcsr_cause_haltreq,riscv_debug_ebreakmu_test,995002,/workspace/ibex/dv/uvm/out
+7,case_7,bug_276,debug,conditional_dcsr_prv_wrong,riscv_debug_csr_entry_test,995003,/workspace/ibex/dv/uvm/out
+8,case_8,bug_276,debug,conditional_dcsr_prv_wrong,riscv_debug_csr_entry_test,995004,/workspace/ibex/dv/uvm/out
+9,case_9,bug_276,debug,conditional_dcsr_prv_wrong,riscv_debug_ebreak_test,995003,/workspace/ibex/dv/uvm/out
+10,case_10,bug_276,debug,conditional_dcsr_prv_wrong,riscv_debug_ebreak_test,995004,/workspace/ibex/dv/uvm/out
+11,case_11,bug_276,debug,conditional_dcsr_prv_wrong,riscv_debug_ebreakmu_test,995003,/workspace/ibex/dv/uvm/out
+12,case_12,bug_276,debug,conditional_dcsr_prv_wrong,riscv_debug_ebreakmu_test,995004,/workspace/ibex/dv/uvm/out

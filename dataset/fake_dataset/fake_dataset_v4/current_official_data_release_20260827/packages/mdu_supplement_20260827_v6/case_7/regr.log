@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[4967] : pc[80007716] rem	x1,x18,x18: ra:00000000 
+spike[4967] : pc[80007712] mulhu   s5, s5, s2: s5:fffffd89 
+[FAILED]: 3194 matched, 4640 mismatch
+
+0 PASSED, 1 FAILED

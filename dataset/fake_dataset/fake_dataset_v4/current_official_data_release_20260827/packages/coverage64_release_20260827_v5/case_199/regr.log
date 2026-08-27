@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[74] : pc[80001162] c.and	x14,x12: a4:0fc9b945 
+spike[74] : pc[80001164] c.sub   a3, s1: a3:7d18ca82 
+Mismatch[424]:
+[609] ibex : pc[80000f40] mulhsu	x7,x5,x6: t2:00000000 
+[FAILED]: 67 matched, 424 mismatch
+
+0 PASSED, 1 FAILED

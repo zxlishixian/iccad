@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[406] : pc[800051b4] c.srai	x15,0x18: a5:000000ff 
+spike[406] : pc[800051b4] c.srai  a5, 24: a5:ffffffff 
+Mismatch[4736]:
+[5996] ibex : pc[80000abe] c.slli	x22,0x11: s6:03ea0000 
+[FAILED]: 431 matched, 4736 mismatch
+
+0 PASSED, 1 FAILED

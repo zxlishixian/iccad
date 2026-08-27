@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[76] : pc[800001d4] or	x29,x14,x3: t4:0001ae1c 
+spike[76] : pc[800001d4] or      t4, a4, gp: t4:8001ae1c 
+[FAILED]: 197 matched, 9 mismatch
+
+0 PASSED, 1 FAILED

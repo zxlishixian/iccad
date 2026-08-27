@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[97] : pc[80000232] auipc	x30,0x1d: t5:8001d232 
+spike[97] : pc[8000022e] slti    s1, s9, 633: s1:00000001 
+[FAILED]: 434 matched, 428 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[111] : pc[80001ea8] div	x31,x7,x5: t6:ef8b0fe0 
+spike[111] : pc[80001ea8] div     t6, t2, t0: t6:00000004 
+Mismatch[1912]:
+[2530] ibex : pc[80000560] or	x16,x0,x12: a6:00000000 
+[FAILED]: 328 matched, 1912 mismatch
+
+0 PASSED, 1 FAILED

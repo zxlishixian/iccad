@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[1875] : pc[8000239e] mul	x17,x17,x17: a7:fffffffe 
+spike[1875] : pc[8000239e] mul     a7, a7, a7: a7:00000001 
+Mismatch[11997]:
+[17919] ibex : pc[80005b60] csrrw	x25,mscratch,x26: s9:fffffff1 
+[FAILED]: 1673 matched, 11997 mismatch
+
+0 PASSED, 1 FAILED

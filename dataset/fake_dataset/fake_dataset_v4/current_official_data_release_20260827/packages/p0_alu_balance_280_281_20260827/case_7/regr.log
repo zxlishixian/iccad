@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[104] : pc[8000440a] csrrci	x15,mscratch,0: a5:8000014e 
+spike[104] : pc[8000440a] csrrci  a5, mscratch, 0: a5:0000000c 
+[FAILED]: 1348 matched, 1473 mismatch
+
+0 PASSED, 1 FAILED

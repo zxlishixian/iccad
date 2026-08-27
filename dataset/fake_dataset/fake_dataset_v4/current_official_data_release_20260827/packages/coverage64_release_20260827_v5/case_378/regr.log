@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1342] : pc[800019ca] csrrwi	x30,mscratch,1: t5:00000016 
+spike[1342] : pc[800019bc] slli    sp, s11, 23: sp:ba000000 
+[FAILED]: 1306 matched, 3376 mismatch
+
+0 PASSED, 1 FAILED

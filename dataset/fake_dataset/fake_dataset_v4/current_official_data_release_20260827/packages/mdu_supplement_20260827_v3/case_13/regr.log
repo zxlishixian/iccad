@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1750] : pc[80004c62] rem	x26,x19,x14: s10:1ff0793c 
+spike[1750] : pc[80004c62] rem     s10, s3, a4: s10:004382fe 
+[FAILED]: 8252 matched, 4 mismatch
+
+0 PASSED, 1 FAILED

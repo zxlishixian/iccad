@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[504] : pc[80000c74] mul	x28,x9,x30: t3:00000804 
+spike[504] : pc[80000c7c] csrrs   a3, mscratch, a6: a3:00000010 
+[FAILED]: 445 matched, 3412 mismatch
+
+0 PASSED, 1 FAILED

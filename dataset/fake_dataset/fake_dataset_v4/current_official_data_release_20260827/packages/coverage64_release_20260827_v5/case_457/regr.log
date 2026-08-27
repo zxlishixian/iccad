@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[61] : pc[80000174] csrrw	x22,mscratch,x28: s6:00000000 
+spike[61] : pc[8001b080] addi    s5, s5, -124: s5:8002bda0 
+Mismatch[18]:
+[80] ibex : pc[800001ce] addi	x16,x16,-878: a6:80025e5c 
+[FAILED]: 54 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

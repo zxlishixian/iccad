@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[75] : pc[800001a8] c.mv	x6,x20: t1:00000000 
+spike[75] : pc[800001a4] div     a0, a1, t6: a0:ffffffff 
+Mismatch[2065]:
+[2540] ibex : pc[80001798] sra	x28,x7,x13: t3:ffe53000 
+[FAILED]: 71 matched, 2065 mismatch
+
+0 PASSED, 1 FAILED

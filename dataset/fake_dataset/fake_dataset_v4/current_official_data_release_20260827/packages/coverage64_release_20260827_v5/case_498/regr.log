@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[150] : pc[80000408] c.andi	x10,-1: a0:00000014 
+spike[150] : pc[8000040a] c.andi  a3, 15: a3:00000000 
+Mismatch[3674]:
+[4614] ibex : pc[80003ef2] sltiu	x22,x22,89: s6:00000001 
+[FAILED]: 224 matched, 3674 mismatch
+
+0 PASSED, 1 FAILED

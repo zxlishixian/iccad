@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[295] : pc[80010d9a] c.addi	x18,-8: s2:fffffffa 
+spike[295] : pc[80010da0] sll     t2, t2, t0: t2:c10b0000 
+[FAILED]: 298 matched, 8124 mismatch
+
+0 PASSED, 1 FAILED

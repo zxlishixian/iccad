@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[106] : pc[800002c4] mulh	x12,x20,x18: a2:3fffffff 
+spike[106] : pc[800002c4] mulh    a2, s4, s2: a2:40000000 
+[FAILED]: 219 matched, 29 mismatch
+
+0 PASSED, 1 FAILED

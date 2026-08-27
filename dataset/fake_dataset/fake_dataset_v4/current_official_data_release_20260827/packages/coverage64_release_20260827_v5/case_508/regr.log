@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[129] : pc[80000266] c.andi	x12,-1: a2:00000001 
+spike[129] : pc[8000026c] xori    s10, s10, 558: s10:f25c6313 
+Mismatch[7794]:
+[9406] ibex : pc[80008306] slti	x2,x3,896: sp:00000001 
+[FAILED]: 125 matched, 7794 mismatch
+
+0 PASSED, 1 FAILED

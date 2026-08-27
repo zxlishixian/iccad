@@ -1,0 +1,3 @@
+bug_id,domain,family,root_cause
+bug_223,register_file,x20_write_lsb_flipped,"The writeback value for architectural register x20 has bit 0 flipped."
+bug_224,register_file,x21_write_lsb_flipped,"The writeback value for architectural register x21 has bit 0 flipped."

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[168] : pc[8001f910] lb	x30,2(x27): t5:000000e0 
+spike[168] : pc[8001f910] lb      t5, 2(s11): t5:ffffffe0 
+[FAILED]: 2441 matched, 25541 mismatch
+
+0 PASSED, 1 FAILED

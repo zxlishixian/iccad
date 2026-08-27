@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[930] : pc[80007c36] c.srai	x10,0x7: a0:01820e80 
+spike[930] : pc[80007c36] c.srai  a0, 7: a0:ff820e80 
+[FAILED]: 2382 matched, 1593 mismatch
+
+0 PASSED, 1 FAILED

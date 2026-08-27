@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[65] : pc[80000180] lbu	x10,183(x27): a0:00000000 
+spike[65] : pc[8001c080] addi    s5, s5, -124: s5:8002cda0 
+Mismatch[18]:
+[91] ibex : pc[800001f8] auipc	x5,0x26: t0:800261f8 
+[FAILED]: 61 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

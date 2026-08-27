@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[310] : pc[800009d4] add	x28,x30,x25: t3:13480000 
+spike[310] : pc[800009d0] sltiu   a6, s11, -423: a6:00000001 
+[FAILED]: 1781 matched, 239 mismatch
+
+0 PASSED, 1 FAILED

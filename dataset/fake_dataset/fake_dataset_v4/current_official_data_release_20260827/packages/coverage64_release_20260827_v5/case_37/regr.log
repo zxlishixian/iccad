@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[1169] : pc[80005172] c.srai	x14,0x7: a4:01ffffff 
+spike[1169] : pc[80005174] divu    s10, tp, t5: s10:00000000 
+Mismatch[1824]:
+[3342] ibex : pc[80000f78] sll	x2,x6,x2: sp:00000000 
+[FAILED]: 988 matched, 1824 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[713] : pc[80004ccc] sltiu	x24,x10,1006: s8:00000001 
+spike[713] : pc[80004c9a] slti    s1, a6, -950: s1:00000001 
+Mismatch[4554]:
+[6151] ibex : pc[80001aa0] lui	x26,0xa6355: s10:a6355000 
+[FAILED]: 703 matched, 4554 mismatch
+
+0 PASSED, 1 FAILED

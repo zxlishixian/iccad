@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[204] : pc[800004fa] rem	x29,x28,x23: t4:db76a1e4 
+spike[204] : pc[800004fa] rem     t4, t3, s7: t4:24895e1c 
+Mismatch[14587]:
+[17359] ibex : pc[80007bb6] c.xor	x8,x10: s0:e6d2235c 
+[FAILED]: 272 matched, 14587 mismatch
+
+0 PASSED, 1 FAILED

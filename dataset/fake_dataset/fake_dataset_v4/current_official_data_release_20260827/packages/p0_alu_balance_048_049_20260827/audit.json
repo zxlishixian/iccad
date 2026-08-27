@@ -1,0 +1,28 @@
+{
+  "dataset_root": "/home/yian/iccad/dataset/p0_alu_balance_048_049_20260827",
+  "input_cases": 8,
+  "golden_cases": 8,
+  "meta_cases": 8,
+  "distinct_bugs": 2,
+  "bug_counts": {
+    "bug_048": 3,
+    "bug_049": 5
+  },
+  "bugs_with_less_than_2_tests": [],
+  "tests_with_less_than_2_bugs": [],
+  "regr_mismatch_marker_counts": {
+    "1": 8
+  },
+  "cases_without_failure_marker": [],
+  "bad_cases": [],
+  "leak_cases": [],
+  "max_log_lines": 5431,
+  "first_mismatch": {
+    "cases": 8,
+    "min": 208,
+    "median": 838,
+    "max": 1786,
+    "at_or_before_32": 0
+  },
+  "duplicate_triplet_groups": []
+}

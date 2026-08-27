@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[196] : pc[80005d02] c.addi16sp	x2,-16: sp:4000f72e 
+spike[196] : pc[80005ce2] rem     s5, s7, a1: s5:fffe1184 
+[FAILED]: 195 matched, 5896 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,28 @@
+{
+  "dataset_root": "/home/yian/iccad/dataset/p0_lsu_balance_supplement_20260827",
+  "input_cases": 9,
+  "golden_cases": 9,
+  "meta_cases": 9,
+  "distinct_bugs": 2,
+  "bug_counts": {
+    "bug_051": 6,
+    "bug_052": 3
+  },
+  "bugs_with_less_than_2_tests": [],
+  "tests_with_less_than_2_bugs": [],
+  "regr_mismatch_marker_counts": {
+    "1": 9
+  },
+  "cases_without_failure_marker": [],
+  "bad_cases": [],
+  "leak_cases": [],
+  "max_log_lines": 53751,
+  "first_mismatch": {
+    "cases": 9,
+    "min": 66,
+    "median": 117,
+    "max": 610,
+    "at_or_before_32": 0
+  },
+  "duplicate_triplet_groups": []
+}

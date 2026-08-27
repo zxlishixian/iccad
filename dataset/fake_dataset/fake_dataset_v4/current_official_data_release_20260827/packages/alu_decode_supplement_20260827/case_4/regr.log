@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2354] : pc[80007026] xori	x15,x3,-731: a5:fffffdbf 
+spike[2354] : pc[80007026] xori    a5, gp, -731: a5:fffffdbb 
+[FAILED]: 26111 matched, 74 mismatch
+
+0 PASSED, 1 FAILED

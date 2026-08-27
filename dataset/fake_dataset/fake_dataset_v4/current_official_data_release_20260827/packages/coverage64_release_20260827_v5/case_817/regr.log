@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[106] : pc[800002b0] div	x18,x17,x22: s2:0000000e 
+spike[106] : pc[800002b4] srai    s11, t4, 19: s11:ffffff59 
+[FAILED]: 101 matched, 4926 mismatch
+
+0 PASSED, 1 FAILED

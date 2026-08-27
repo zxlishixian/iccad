@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[309] : pc[800009e8] andi	x13,x22,-610: a3:fffffd9e 
+spike[309] : pc[800009e8] andi    a3, s6, -610: a3:0017e41c 
+[FAILED]: 1800 matched, 9 mismatch
+
+0 PASSED, 1 FAILED

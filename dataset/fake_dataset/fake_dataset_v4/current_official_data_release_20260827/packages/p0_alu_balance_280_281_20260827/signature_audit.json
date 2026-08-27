@@ -1,0 +1,32 @@
+{
+  "dataset_root": "/home/yian/iccad/dataset/p0_alu_balance_280_281_20260827",
+  "failure_cases": 11,
+  "bug_tests": {
+    "bug_280": [
+      "riscv_machine_mode_rand_test",
+      "riscv_rand_instr_test",
+      "riscv_rv32im_instr_test"
+    ],
+    "bug_281": [
+      "riscv_machine_mode_rand_test",
+      "riscv_rand_instr_test",
+      "riscv_rv32im_instr_test"
+    ]
+  },
+  "test_bugs": {
+    "riscv_machine_mode_rand_test": [
+      "bug_280",
+      "bug_281"
+    ],
+    "riscv_rand_instr_test": [
+      "bug_280",
+      "bug_281"
+    ],
+    "riscv_rv32im_instr_test": [
+      "bug_280",
+      "bug_281"
+    ]
+  },
+  "cross_bug_signature_collisions": [],
+  "num_collisions": 0
+}

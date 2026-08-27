@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[96] : pc[80000246] or	x9,x22,x16: s1:00000001 
+spike[96] : pc[80000264] auipc   t1, 0x4f951: t1:cf951264 
+Mismatch[2959]:
+[3569] ibex : pc[80006846] c.mv	x17,x13: a7:00000000 
+[FAILED]: 91 matched, 2959 mismatch
+
+0 PASSED, 1 FAILED

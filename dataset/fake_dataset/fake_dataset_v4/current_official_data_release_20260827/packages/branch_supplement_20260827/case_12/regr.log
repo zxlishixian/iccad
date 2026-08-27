@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[334] : pc[80003628] c.sub	x9,x9: s1:00000000 
+spike[334] : pc[8000362a] remu    s7, s10, t6: s7:00000001 
+[FAILED]: 295 matched, 7238 mismatch
+
+0 PASSED, 1 FAILED

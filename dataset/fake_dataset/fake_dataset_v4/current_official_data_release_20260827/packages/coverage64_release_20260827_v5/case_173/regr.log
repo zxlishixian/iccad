@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[85] : pc[8000236c] rem	x19,x15,x11: s3:ffffffff 
+spike[85] : pc[8000236c] rem     s3, a5, a1: s3:0000000e 
+Mismatch[7498]:
+[9515] ibex : pc[80000494] csrrsi	x8,mscratch,11: s0:00000017 
+[FAILED]: 675 matched, 7498 mismatch
+
+0 PASSED, 1 FAILED

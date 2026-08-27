@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[250] : pc[800006a2] c.addi16sp	x2,-16: sp:7ffe1207 
+spike[250] : pc[8000069c] c.addi  a3, -1: a3:7f81ae5a 
+[FAILED]: 355 matched, 3909 mismatch
+
+0 PASSED, 1 FAILED

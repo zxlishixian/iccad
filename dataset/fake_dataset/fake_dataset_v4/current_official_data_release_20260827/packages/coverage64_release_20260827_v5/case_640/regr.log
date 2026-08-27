@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[355] : pc[80000584] mul	x20,x29,x30: s4:fffffffe 
+spike[355] : pc[80000584] mul     s4, t4, t5: s4:00000001 
+[FAILED]: 426 matched, 7549 mismatch
+
+0 PASSED, 1 FAILED

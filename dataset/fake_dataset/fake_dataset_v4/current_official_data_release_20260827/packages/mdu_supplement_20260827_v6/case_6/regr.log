@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[671] : pc[800027ca] mulhu	x22,x2,x14: s6:fffffffb 
+spike[671] : pc[800027ca] mulhu   s6, sp, a4: s6:8001ee77 
+[FAILED]: 669 matched, 6029 mismatch
+
+0 PASSED, 1 FAILED

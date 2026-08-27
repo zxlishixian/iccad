@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[124] : pc[80004dec] c.or	x11,x11: a1:00000001 
+spike[124] : pc[80004dee] add     t6, s9, t5: t6:fd381ed7 
+[FAILED]: 131 matched, 5314 mismatch
+
+0 PASSED, 1 FAILED

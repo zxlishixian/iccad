@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[40] : pc[8000010a] addi	x31,x31,-1631: t6:f9c23218 
+spike[40] : pc[8000010a] addi    t6, t6, -1631: t6:fae8f9a1 
+Mismatch[6264]:
+[9410] ibex : pc[8000830c] auipc	x24,0x6cfee: s8:ecff630c 
+[FAILED]: 1621 matched, 6264 mismatch
+
+0 PASSED, 1 FAILED

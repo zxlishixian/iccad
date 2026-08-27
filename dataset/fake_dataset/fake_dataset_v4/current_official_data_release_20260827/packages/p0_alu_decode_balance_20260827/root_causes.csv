@@ -1,0 +1,3 @@
+bug_id,domain,family,root_cause
+bug_053,ALU/decode,late_opimm_operand_bitflip,"After the instruction counter threshold, OP-IMM operand B bit 0 is inverted in the ID stage."
+bug_128,Decode/branch,"bne_decoded_as_beq","BNE funct3 decoding selects equality ALU operation, causing a not-equal branch to behave as equal."

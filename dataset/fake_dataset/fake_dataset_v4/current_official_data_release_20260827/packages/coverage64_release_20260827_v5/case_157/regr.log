@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[124] : pc[8000024c] srai	x17,x29,0x8: a7:ff80011e 
+spike[124] : pc[80000248] div     s3, s3, ra: s3:ffffffff 
+[FAILED]: 250 matched, 7934 mismatch
+
+0 PASSED, 1 FAILED

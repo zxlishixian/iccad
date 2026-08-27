@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[96] : pc[80007caa] addi	x15,x28,-65: a5:80000137 
+spike[96] : pc[80007ce0] ori     gp, a3, -333: gp:ffffffbf 
+Mismatch[616]:
+[789] ibex : pc[80001eb8] auipc	x12,0x28d5f: a2:a8d60eb8 
+[FAILED]: 85 matched, 616 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[262] : pc[80003ba8] div	x6,x13,x15: t1:ffff1807 
+spike[262] : pc[80003ba8] div     t1, a3, a5: t1:00000001 
+Mismatch[7726]:
+[9373] ibex : pc[80008682] rem	x10,x7,x12: a0:00000001 
+[FAILED]: 255 matched, 7726 mismatch
+
+0 PASSED, 1 FAILED

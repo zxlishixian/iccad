@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[88] : pc[8001e900] andi	x26,x28,-160: s10:fb085e00 
+spike[88] : pc[8001e8fc] lb      tp, 73(t6): tp:ffffff84 
+[FAILED]: 141 matched, 25815 mismatch
+
+0 PASSED, 1 FAILED

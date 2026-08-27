@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[4378] : pc[8000540e] or	x3,x10,x18: gp:00000004 
+spike[4378] : pc[8000540e] or      gp, a0, s2: gp:00000000 
+[FAILED]: 3624 matched, 6493 mismatch
+
+0 PASSED, 1 FAILED

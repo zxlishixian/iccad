@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[115] : pc[8000030e] divu	x20,x18,x22: s4:ffffffff 
+spike[115] : pc[8000030e] divu    s4, s2, s6: s4:00000001 
+Mismatch[8262]:
+[11243] ibex : pc[8000415e] c.add	x29,x10: t4:8001b030 
+[FAILED]: 1473 matched, 8262 mismatch
+
+0 PASSED, 1 FAILED

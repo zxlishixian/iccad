@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[1138] : pc[80004ca2] xori	x20,x29,704: s4:000002c0 
+spike[1138] : pc[80004c9e] divu    t4, s4, a0: t4:00000001 
+Mismatch[2802]:
+[4531] ibex : pc[80002d14] sra	x6,x24,x9: t1:00000009 
+[FAILED]: 984 matched, 2802 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[307] : pc[80000688] or	x22,x12,x19: s6:4d4f3cab 
+spike[307] : pc[80000688] or      s6, a2, s3: s6:cd5fbcab 
+[FAILED]: 510 matched, 9020 mismatch
+
+0 PASSED, 1 FAILED

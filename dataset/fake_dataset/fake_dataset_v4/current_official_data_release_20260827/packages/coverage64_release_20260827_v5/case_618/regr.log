@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[56] : pc[80000158] auipc	x4,0xffcd6: tp:7fcd6158 
+spike[56] : pc[8001c080] addi    s8, s8, -124: s8:8002cda0 
+Mismatch[18]:
+[81] ibex : pc[800001b6] lw	x8,39(x16): s0:00000000 
+[FAILED]: 47 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

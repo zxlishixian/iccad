@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[320] : pc[8000050c] c.srai	x13,0x7: a3:01fffffe 
+spike[320] : pc[8000050c] c.srai  a3, 7: a3:fffffffe 
+Mismatch[2318]:
+[9444] ibex : pc[800083fa] c.li	x3,1: gp:00000001 
+[FAILED]: 5517 matched, 2318 mismatch
+
+0 PASSED, 1 FAILED

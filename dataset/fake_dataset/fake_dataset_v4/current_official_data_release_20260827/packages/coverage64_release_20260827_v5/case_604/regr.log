@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[62] : pc[800001a8] c.li	x28,-1: t3:0000001f 
+spike[62] : pc[800001a8] c.li    t3, -1: t3:ffffffff 
+Mismatch[2513]:
+[3034] ibex : pc[800059ca] xori	x24,x7,360: s8:00000168 
+[FAILED]: 123 matched, 2513 mismatch
+
+0 PASSED, 1 FAILED

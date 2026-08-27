@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[60] : pc[8000015e] sltiu	x28,x2,324: t3:00000001 
+spike[60] : pc[80000162] and     s6, s5, a7: s6:80001438 
+Mismatch[8032]:
+[9405] ibex : pc[80008414] c.add	x18,x12: s2:ffffffc9 
+[FAILED]: 130 matched, 8032 mismatch
+
+0 PASSED, 1 FAILED

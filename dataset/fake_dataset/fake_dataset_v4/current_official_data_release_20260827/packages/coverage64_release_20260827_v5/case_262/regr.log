@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1060] : pc[800010a2] divu	x15,x28,x6: a5:00000000 
+spike[1060] : pc[800010ca] c.sub   a4, s1: a4:001ffffd 
+[FAILED]: 1038 matched, 5451 mismatch
+
+0 PASSED, 1 FAILED

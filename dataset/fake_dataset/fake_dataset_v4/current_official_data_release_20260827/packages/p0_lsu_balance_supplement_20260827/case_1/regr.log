@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[117] : pc[800002bc] lb	x29,18(x4): t4:00000097 
+spike[117] : pc[800002bc] lb      t4, 18(tp): t4:ffffff97 
+[FAILED]: 719 matched, 36272 mismatch
+
+0 PASSED, 1 FAILED

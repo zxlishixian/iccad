@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[68] : pc[800001a0] xor	x19,x19,x20: s3:ffff79df 
+spike[68] : pc[800001a0] xor     s3, s3, s4: s3:d029795b 
+[FAILED]: 131 matched, 5094 mismatch
+
+0 PASSED, 1 FAILED

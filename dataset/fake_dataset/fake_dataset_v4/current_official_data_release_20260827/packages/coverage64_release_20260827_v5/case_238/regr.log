@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[126] : pc[80002de4] sltu	x16,x14,x30: a6:00000001 
+spike[126] : pc[80002de4] sltu    a6, a4, t5: a6:00000000 
+Mismatch[1988]:
+[2530] ibex : pc[800017f6] div	x29,x30,x6: t4:ffd78c3a 
+[FAILED]: 200 matched, 1988 mismatch
+
+0 PASSED, 1 FAILED

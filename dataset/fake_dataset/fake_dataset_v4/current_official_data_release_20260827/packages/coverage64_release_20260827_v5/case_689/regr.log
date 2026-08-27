@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[65] : pc[80000182] csrrw	x3,mscratch,x12: gp:00000000 
+spike[65] : pc[800001a6] c.mv    t5, a3: t5:00000000 
+Mismatch[253]:
+[351] ibex : pc[80000dc8] slli	x15,x8,0x19: a5:08000000 
+[FAILED]: 56 matched, 253 mismatch
+
+0 PASSED, 1 FAILED

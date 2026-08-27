@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[80] : pc[800040e6] addi	x10,x0,416: a0:000001a0 
+spike[80] : pc[8001b080] addi    t5, t5, -124: t5:8002bd98 
+Mismatch[18]:
+[98] ibex : pc[8000413a] addi	x4,x4,-89: tp:8001f0dd 
+[FAILED]: 72 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[87] : pc[800001ca] csrrc	x15,mscratch,x20: a5:00000001 
+spike[87] : pc[800001dc] or      a5, s2, sp: a5:fffffe75 
+Mismatch[6432]:
+[7726] ibex : pc[80004596] slti	x31,x30,1015: t6:00000001 
+[FAILED]: 206 matched, 6432 mismatch
+
+0 PASSED, 1 FAILED

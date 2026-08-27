@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[604] : pc[8000ec72] csrrwi	x6,mscratch,25: t1:00000017 
+spike[604] : pc[8000ecb0] c.slli  ra, 7: ra:00000080 
+Mismatch[6657]:
+[8022] ibex : pc[80010322] mulh	x15,x3,x10: a5:fb16b135 
+[FAILED]: 578 matched, 6657 mismatch
+
+0 PASSED, 1 FAILED

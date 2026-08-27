@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[61] : pc[8000015c] c.or	x9,x9: s1:00000000 
+spike[61] : pc[8000015e] div     t0, s0, s1: t0:00000000 
+Mismatch[7007]:
+[9428] ibex : pc[800083e6] c.andi	x8,13: s0:0000000d 
+[FAILED]: 1144 matched, 7007 mismatch
+
+0 PASSED, 1 FAILED

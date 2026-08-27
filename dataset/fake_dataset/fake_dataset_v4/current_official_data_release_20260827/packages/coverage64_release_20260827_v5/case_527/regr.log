@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[101] : pc[800001f2] c.or	x12,x11: a2:08001ea0 
+spike[101] : pc[800001f2] c.or    a2, a1: a2:08001fe7 
+Mismatch[7863]:
+[9405] ibex : pc[8000837a] lui	x31,0x60ea9: t6:60ea9000 
+[FAILED]: 142 matched, 7863 mismatch
+
+0 PASSED, 1 FAILED

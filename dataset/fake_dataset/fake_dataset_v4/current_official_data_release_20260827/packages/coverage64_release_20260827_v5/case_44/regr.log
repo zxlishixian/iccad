@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1478] : pc[8000155a] auipc	x20,0x56d46: s4:d6d4755b 
+spike[1478] : pc[8000155a] auipc   s4, 0x56d46: s4:d6d4755a 
+[FAILED]: 7826 matched, 6 mismatch
+
+0 PASSED, 1 FAILED

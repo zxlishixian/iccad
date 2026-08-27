@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[180] : pc[80000cee] c.add	x7,x20: t2:00000015 
+spike[180] : pc[80000cf0] csrrc   gp, mscratch, s10: gp:00000013 
+Mismatch[4003]:
+[4897] ibex : pc[80008544] c.addi4spn	x14,x2,80: a4:00000051 
+[FAILED]: 258 matched, 4003 mismatch
+
+0 PASSED, 1 FAILED

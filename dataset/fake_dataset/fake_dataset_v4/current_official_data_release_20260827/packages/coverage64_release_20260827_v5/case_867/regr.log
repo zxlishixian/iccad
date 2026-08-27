@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[59] : pc[8000015e] lw	x19,7(x7): s3:57e2550d 
+spike[59] : pc[8001c080] addi    a3, a3, -124: a3:8002cda0 
+Mismatch[18]:
+[77] ibex : pc[800001ac] c.lui	x21,0xa: s5:0000a000 
+[FAILED]: 52 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

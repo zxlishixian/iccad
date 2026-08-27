@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[3282] : pc[80002e72] c.srai	x8,0x7: s0:01bdfa62 
+spike[3282] : pc[80002e72] c.srai  s0, 7: s0:ffbdfa62 
+[FAILED]: 2822 matched, 5224 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[1224] : pc[80004b82] sra	x6,x22,x14: t1:00000001 
+spike[1224] : pc[80004b82] sra     t1, s6, a4: t1:ffffffff 
+Mismatch[4467]:
+[7170] ibex : pc[80001722] andi	x7,x8,342: t2:00000056 
+[FAILED]: 1479 matched, 4467 mismatch
+
+0 PASSED, 1 FAILED

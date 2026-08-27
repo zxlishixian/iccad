@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[188] : pc[800004e8] c.or	x8,x10: s0:fffffe34 
+spike[188] : pc[800004e8] c.or    s0, a0: s0:fffffff4 
+Mismatch[6126]:
+[7730] ibex : pc[800039c8] c.sub	x14,x12: a4:0059492e 
+[FAILED]: 440 matched, 6126 mismatch
+
+0 PASSED, 1 FAILED

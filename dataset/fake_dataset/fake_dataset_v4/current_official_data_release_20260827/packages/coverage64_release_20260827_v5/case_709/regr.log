@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[137] : pc[800014f0] div	x19,x22,x8: s3:00000000 
+spike[137] : pc[8000150c] c.addi16sp sp, 384: sp:8001c52b 
+Mismatch[15833]:
+[18216] ibex : pc[800038bc] xori	x21,x7,-805: s5:3d29acdb 
+[FAILED]: 159 matched, 15833 mismatch
+
+0 PASSED, 1 FAILED

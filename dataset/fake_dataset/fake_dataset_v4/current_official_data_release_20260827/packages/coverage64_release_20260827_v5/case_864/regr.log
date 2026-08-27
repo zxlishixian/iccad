@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[425] : pc[8001b74e] lb	x2,208(x16): sp:000000e7 
+spike[425] : pc[8001b74e] lb      sp, 208(a6): sp:ffffffe7 
+[FAILED]: 728 matched, 35446 mismatch
+
+0 PASSED, 1 FAILED

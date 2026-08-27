@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[695] : pc[80007c9c] andi	x8,x23,-34: s0:ffffffff 
+spike[695] : pc[80007c9c] andi    s0, s7, -34: s0:f6edb55e 
+Mismatch[3009]:
+[6519] ibex : pc[8000040c] c.add	x26,x13: s10:f6ec256a 
+[FAILED]: 2623 matched, 3009 mismatch
+
+0 PASSED, 1 FAILED

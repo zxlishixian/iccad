@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[76] : pc[800060ee] jalr	x17,-351(x30): a7:800060f2 
+spike[76] : pc[800060de] c.xor   a3, a3: a3:00000000 
+[FAILED]: 84 matched, 7139 mismatch
+
+0 PASSED, 1 FAILED

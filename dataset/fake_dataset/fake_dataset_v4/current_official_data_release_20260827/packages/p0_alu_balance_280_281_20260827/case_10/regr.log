@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[414] : pc[80011404] csrrsi	x11,mscratch,26: a1:8000014e 
+spike[414] : pc[80011408] rem     s4, a3, a0: s4:ffffffa3 
+[FAILED]: 332 matched, 5921 mismatch
+
+0 PASSED, 1 FAILED

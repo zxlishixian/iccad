@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[313] : pc[80000736] add	x10,x30,x4: a0:00010000 
+spike[313] : pc[80000736] add     a0, t5, tp: a0:0000ffff 
+[FAILED]: 321 matched, 3200 mismatch
+
+0 PASSED, 1 FAILED

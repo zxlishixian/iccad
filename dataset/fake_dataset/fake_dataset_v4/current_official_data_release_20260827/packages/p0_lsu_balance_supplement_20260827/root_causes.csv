@@ -1,0 +1,3 @@
+bug_id,domain,rtl_files,patch,root_cause
+bug_051,LSU,rtl/ibex_load_store_unit.sv,/home/yian/iccad/bug_patches/bug_051.patch,"After more than 32 completed load responses, signed byte-lane extension is incorrectly replaced with zero extension."
+bug_052,LSU,rtl/ibex_load_store_unit.sv,/home/yian/iccad/bug_patches/bug_052.patch,"After more than 128 completed load responses, signed byte-lane extension is incorrectly replaced with zero extension."

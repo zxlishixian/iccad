@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[331] : pc[800005da] auipc	x18,0x1df0c: s2:9df0c5da 
+spike[331] : pc[800005aa] remu    a3, s4, s4: a3:00000000 
+[FAILED]: 336 matched, 5091 mismatch
+
+0 PASSED, 1 FAILED

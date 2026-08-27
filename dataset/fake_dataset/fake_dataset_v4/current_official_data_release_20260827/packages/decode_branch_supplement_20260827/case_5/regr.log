@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[1418] : pc[80001912] mul	x15,x20,x30: a5:6ec00000 
+spike[1418] : pc[800018f4] add     t0, s9, s1: t0:8001ae38 
+Mismatch[2891]:
+[4923] ibex : pc[80000682] c.mv	x4,x21: tp:00000000 
+[FAILED]: 1127 matched, 2891 mismatch
+
+0 PASSED, 1 FAILED

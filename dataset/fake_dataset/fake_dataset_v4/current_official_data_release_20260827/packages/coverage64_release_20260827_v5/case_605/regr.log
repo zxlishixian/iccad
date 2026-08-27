@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[48] : pc[80000136] addi	x31,x31,808: t6:fe9e86e5 
+spike[48] : pc[80000136] addi    t6, t6, 808: t6:73099328 
+[FAILED]: 106 matched, 4458 mismatch
+
+0 PASSED, 1 FAILED

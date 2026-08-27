@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[125] : pc[800075d2] or	x2,x22,x30: sp:fffffc25 
+spike[125] : pc[800075d2] or      sp, s6, t5: sp:80000001 
+[FAILED]: 192 matched, 4158 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[87] : pc[800001f6] c.srai	x11,0x19: a1:0000006f 
+spike[87] : pc[800001f6] c.srai  a1, 25: a1:ffffffef 
+Mismatch[3614]:
+[4378] ibex : pc[80002140] slti	x1,x5,191: ra:00000000 
+[FAILED]: 99 matched, 3614 mismatch
+
+0 PASSED, 1 FAILED

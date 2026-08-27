@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[72] : pc[800001b0] lb	x4,5(x13): tp:000000f2 
+spike[72] : pc[800001b0] lb      tp, 5(a3): tp:fffffff2 
+Mismatch[11209]:
+[12424] ibex : pc[8003195c] rem	x13,x18,x2: a3:00000000 
+[FAILED]: 630 matched, 11209 mismatch
+
+0 PASSED, 1 FAILED

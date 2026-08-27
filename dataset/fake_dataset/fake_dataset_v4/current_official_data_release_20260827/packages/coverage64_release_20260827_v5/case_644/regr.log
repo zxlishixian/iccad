@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[158] : pc[80000334] divu	x3,x15,x3: gp:00000003 
+spike[158] : pc[80000334] divu    gp, a5, gp: gp:00000000 
+Mismatch[8632]:
+[11434] ibex : pc[800088b4] div	x14,x17,x29: a4:00000000 
+[FAILED]: 1782 matched, 8632 mismatch
+
+0 PASSED, 1 FAILED

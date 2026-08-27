@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[979] : pc[80002204] sra	x2,x23,x25: sp:00000001 
+spike[979] : pc[80002204] sra     sp, s7, s9: sp:ffffffff 
+Mismatch[14076]:
+[18238] ibex : pc[80001648] c.addi	x22,-1: s6:ffffff7b 
+[FAILED]: 1198 matched, 14076 mismatch
+
+0 PASSED, 1 FAILED

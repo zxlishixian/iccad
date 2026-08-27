@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[59] : pc[800001a8] csrrci	x23,mscratch,0: s7:00000010 
+spike[59] : pc[80000152] lui     s4, 0x1384c: s4:1384c000 
+[FAILED]: 73 matched, 5136 mismatch
+
+0 PASSED, 1 FAILED

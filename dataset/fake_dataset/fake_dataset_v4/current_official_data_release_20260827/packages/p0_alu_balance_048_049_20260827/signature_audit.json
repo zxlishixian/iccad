@@ -1,0 +1,26 @@
+{
+  "dataset_root": "/home/yian/iccad/dataset/p0_alu_balance_048_049_20260827",
+  "failure_cases": 8,
+  "bug_tests": {
+    "bug_048": [
+      "riscv_machine_mode_rand_test",
+      "riscv_rand_instr_test"
+    ],
+    "bug_049": [
+      "riscv_machine_mode_rand_test",
+      "riscv_rand_instr_test"
+    ]
+  },
+  "test_bugs": {
+    "riscv_machine_mode_rand_test": [
+      "bug_048",
+      "bug_049"
+    ],
+    "riscv_rand_instr_test": [
+      "bug_048",
+      "bug_049"
+    ]
+  },
+  "cross_bug_signature_collisions": [],
+  "num_collisions": 0
+}

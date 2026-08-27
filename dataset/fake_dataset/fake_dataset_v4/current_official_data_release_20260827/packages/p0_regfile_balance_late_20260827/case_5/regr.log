@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[108] : pc[80000ce6] addi	x20,x20,-1751: s4:8001c60c 
+spike[108] : pc[80000ce6] addi    s4, s4, -1751: s4:8001c60b 
+[FAILED]: 1934 matched, 8183 mismatch
+
+0 PASSED, 1 FAILED

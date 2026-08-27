@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[682] : pc[800039f4] lbu	x2,-1287(x19): sp:00000016 
+spike[682] : pc[800039f0] div     tp, t6, sp: tp:ffffff21 
+[FAILED]: 664 matched, 8489 mismatch
+
+0 PASSED, 1 FAILED

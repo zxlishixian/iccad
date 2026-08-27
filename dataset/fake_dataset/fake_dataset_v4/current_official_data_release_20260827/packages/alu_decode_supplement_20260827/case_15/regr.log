@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[4589] : pc[8000f6d4] xori	x21,x28,171: s5:7a91e4bf 
+spike[4589] : pc[8000f6d4] xori    s5, t3, 171: s5:7a91e4bd 
+[FAILED]: 7304 matched, 5 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1210] : pc[8000115a] auipc	x24,0x1614a: s8:9614b15b 
+spike[1210] : pc[8000115a] auipc   s8, 0x1614a: s8:9614b15a 
+[FAILED]: 7975 matched, 20 mismatch
+
+0 PASSED, 1 FAILED

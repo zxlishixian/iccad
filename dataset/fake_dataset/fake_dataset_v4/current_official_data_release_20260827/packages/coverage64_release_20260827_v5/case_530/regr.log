@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[101] : pc[800001f6] or	x16,x20,x13: a6:80015e77 
+spike[101] : pc[800001f6] or      a6, s4, a3: a6:80015e7f 
+Mismatch[7772]:
+[9364] ibex : pc[80008504] slti	x31,x2,-474: t6:00000000 
+[FAILED]: 143 matched, 7772 mismatch
+
+0 PASSED, 1 FAILED

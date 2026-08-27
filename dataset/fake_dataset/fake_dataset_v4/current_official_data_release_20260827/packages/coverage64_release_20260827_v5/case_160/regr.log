@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[157] : pc[80000652] div	x31,x10,x9: t6:00000004 
+spike[157] : pc[80000652] div     t6, a0, s1: t6:00000000 
+Mismatch[2273]:
+[2881] ibex : pc[80005588] c.add	x15,x14: a5:90620569 
+[FAILED]: 273 matched, 2273 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[524] : pc[80001016] slli	x9,x25,0x8: s1:00f0756e 
+spike[524] : pc[80001016] slli    s1, s9, 8: s1:756e7f00 
+[FAILED]: 1799 matched, 10 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[258] : pc[80000904] andi	x12,x22,205: a2:000184dd 
+spike[258] : pc[80000904] andi    a2, s6, 205: a2:00000089 
+Mismatch[1143]:
+[2431] ibex : pc[800004a6] auipc	x30,0x6bff5: t5:ebff54a6 
+[FAILED]: 878 matched, 1143 mismatch
+
+0 PASSED, 1 FAILED

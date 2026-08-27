@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[748] : pc[80001356] c.li	x29,-1: t4:0000001f 
+spike[748] : pc[80001356] c.li    t4, -1: t4:ffffffff 
+Mismatch[5268]:
+[7508] ibex : pc[80007e76] divu	x21,x10,x21: s5:00000000 
+[FAILED]: 967 matched, 5268 mismatch
+
+0 PASSED, 1 FAILED

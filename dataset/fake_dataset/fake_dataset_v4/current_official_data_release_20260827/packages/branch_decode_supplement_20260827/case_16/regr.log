@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[6077] : pc[8000e0b6] c.slli	x26,0x17: s10:01800000 
+spike[6077] : pc[8000e09e] mulh    a3, t6, a1: a3:00000000 
+Mismatch[12584]:
+[19953] ibex : pc[800109f4] lbu	x21,132(x26): s5:00000038 
+[FAILED]: 5585 matched, 12584 mismatch
+
+0 PASSED, 1 FAILED

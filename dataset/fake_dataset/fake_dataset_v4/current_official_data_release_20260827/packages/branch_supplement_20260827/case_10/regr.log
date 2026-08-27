@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[659] : pc[800055dc] mulhu	x3,x18,x25: gp:00000000 
+spike[659] : pc[800055f0] xor     a5, t0, t6: a5:1541ee7b 
+Mismatch[2460]:
+[3597] ibex : pc[80004720] and	x9,x18,x14: s1:00000000 
+[FAILED]: 549 matched, 2460 mismatch
+
+0 PASSED, 1 FAILED

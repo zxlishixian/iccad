@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[869] : pc[800008b8] srai	x4,x11,0x7: tp:01fffe00 
+spike[869] : pc[800008b8] srai    tp, a1, 7: tp:fffffe00 
+[FAILED]: 1398 matched, 4 mismatch
+
+0 PASSED, 1 FAILED

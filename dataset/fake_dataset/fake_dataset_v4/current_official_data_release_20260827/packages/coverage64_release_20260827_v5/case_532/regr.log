@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[104] : pc[80000204] or	x19,x9,x8: s3:b30af656 
+spike[104] : pc[80000204] or      s3, s1, s0: s3:b30bfe5f 
+[FAILED]: 943 matched, 6924 mismatch
+
+0 PASSED, 1 FAILED

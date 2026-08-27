@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[403] : pc[80000a68] sra	x26,x7,x13: s10:00000001 
+spike[403] : pc[80000a68] sra     s10, t2, a3: s10:ffffffff 
+Mismatch[4054]:
+[7840] ibex : pc[8000338e] c.srai	x10,0xe: a0:00000000 
+[FAILED]: 2368 matched, 4054 mismatch
+
+0 PASSED, 1 FAILED

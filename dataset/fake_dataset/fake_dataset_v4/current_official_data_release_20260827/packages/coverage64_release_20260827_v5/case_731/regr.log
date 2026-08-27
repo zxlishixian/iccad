@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[64] : pc[80000174] lbu	x30,47(x17): t5:ffffff97 
+spike[64] : pc[80000174] lbu     t5, 47(a7): t5:00000097 
+[FAILED]: 643 matched, 8390 mismatch
+
+0 PASSED, 1 FAILED

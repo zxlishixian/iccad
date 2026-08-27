@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[187] : pc[80000800] rem	x14,x3,x23: a4:ffffffe9 
+spike[187] : pc[80000800] rem     a4, gp, s7: a4:00000017 
+Mismatch[8716]:
+[11546] ibex : pc[8000eaee] srli	x27,x25,0x19: s11:0000002e 
+[FAILED]: 1717 matched, 8716 mismatch
+
+0 PASSED, 1 FAILED

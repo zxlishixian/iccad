@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[106] : pc[800067f4] slli	x3,x22,0x1: gp:00000000 
+spike[106] : pc[800067d4] c.addi  t5, 11: t5:01000367 
+[FAILED]: 148 matched, 4065 mismatch
+
+0 PASSED, 1 FAILED

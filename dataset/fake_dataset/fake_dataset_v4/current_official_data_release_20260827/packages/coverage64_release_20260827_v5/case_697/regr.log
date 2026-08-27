@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[63] : pc[80000186] xor	x9,x29,x12: s1:fb49f2e2 
+spike[63] : pc[80000178] srl     gp, s4, a5: gp:00000000 
+Mismatch[4986]:
+[5925] ibex : pc[80003ed4] mulhsu	x26,x8,x15: s10:27a08536 
+[FAILED]: 69 matched, 4986 mismatch
+
+0 PASSED, 1 FAILED

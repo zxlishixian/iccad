@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[58] : pc[80000168] c.lwsp	x24,108(x2): s8:c7c0c1c2 
+spike[58] : pc[8001c080] addi    t3, t3, -124: t3:8002cda0 
+Mismatch[18]:
+[78] ibex : pc[800001be] auipc	x1,0x26: ra:800261be 
+[FAILED]: 49 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

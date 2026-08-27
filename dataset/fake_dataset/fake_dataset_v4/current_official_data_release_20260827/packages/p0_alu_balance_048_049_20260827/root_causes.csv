@@ -1,0 +1,3 @@
+bug_id,domain,rtl_files,patch,root_cause
+bug_048,ALU,rtl/ibex_alu.sv,/home/yian/iccad/bug_patches/bug_048.patch,"For ADD/SUB when operand A low byte equals 5a, the result is incorrectly XORed with one."
+bug_049,ALU,rtl/ibex_alu.sv,/home/yian/iccad/bug_patches/bug_049.patch,"For SRA with shift amount 31, arithmetic shifting is disabled and the result becomes a logical shift."

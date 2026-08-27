@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[75] : pc[80000f04] lb	x5,-556(x11): t0:000000bc 
+spike[75] : pc[80000f04] lb      t0, -556(a1): t0:ffffffbc 
+Mismatch[36438]:
+[39437] ibex : pc[80000dba] c.slli	x14,0x12: a4:36e80000 
+[FAILED]: 830 matched, 36438 mismatch
+
+0 PASSED, 1 FAILED

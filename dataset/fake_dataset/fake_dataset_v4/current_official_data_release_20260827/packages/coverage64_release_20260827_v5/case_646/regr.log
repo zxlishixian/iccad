@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[66] : pc[8000016e] mul	x3,x23,x4: gp:00000000 
+spike[66] : pc[8000016e] mul     gp, s7, tp: gp:00000062 
+[FAILED]: 835 matched, 7192 mismatch
+
+0 PASSED, 1 FAILED

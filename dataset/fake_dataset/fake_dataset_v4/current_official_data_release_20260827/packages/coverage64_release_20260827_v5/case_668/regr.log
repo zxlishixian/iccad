@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[190] : pc[80000314] sltu	x13,x8,x17: a3:00000001 
+spike[190] : pc[8000031e] csrrs   s1, mscratch, a3: s1:ffffffff 
+Mismatch[7736]:
+[9370] ibex : pc[80008388] lui	x13,0xdcccf: a3:dcccf000 
+[FAILED]: 250 matched, 7736 mismatch
+
+0 PASSED, 1 FAILED

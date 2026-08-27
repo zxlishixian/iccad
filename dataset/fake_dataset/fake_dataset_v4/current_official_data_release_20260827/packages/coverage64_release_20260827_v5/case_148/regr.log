@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[94] : pc[80000248] mulhsu	x28,x17,x31: t3:eb5667a2 
+spike[94] : pc[80000248] mulhsu  t3, a7, t6: t3:14aa232d 
+Mismatch[11307]:
+[14138] ibex : pc[80002946] c.mv	x12,x26: a2:e0000000 
+[FAILED]: 472 matched, 11307 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[422] : pc[800078c8] sltu	x30,x27,x19: t5:00000000 
+spike[422] : pc[8000789c] csrrwi  s4, mscratch, 5: s4:0000000c 
+[FAILED]: 363 matched, 4826 mismatch
+
+0 PASSED, 1 FAILED

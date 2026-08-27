@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[65] : pc[80000182] c.lui	x15,0x15: a5:00015000 
+spike[65] : pc[8000017e] slti    t2, ra, -803: t2:00000000 
+[FAILED]: 94 matched, 105 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[168] : pc[8000048e] c.xor	x15,x11: a5:ffffffff 
+spike[168] : pc[8000048e] c.xor   a5, a1: a5:fffffffa 
+Mismatch[787]:
+[1179] ibex : pc[80004798] srli	x2,x11,0x18: sp:00000000 
+[FAILED]: 206 matched, 787 mismatch
+
+0 PASSED, 1 FAILED
