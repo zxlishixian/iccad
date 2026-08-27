@@ -13,7 +13,7 @@ import hashlib
 import math
 import pickle
 import re
-from collections import Counter
+from collections import Counter, deque
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
@@ -27,7 +27,7 @@ import trace_anchor as ta
 import trace_sequence as ts
 
 
-CACHE_VERSION = 1
+CACHE_VERSION = 2
 TRACE_CLASSES = (
     "CLASS_LOAD",
     "CLASS_STORE",
@@ -367,6 +367,7 @@ def parse_hierarchical_trace(
     segment_count: int = 16,
     chunk_size: int = 512,
     anchor_sizes: Sequence[int] = (32, 64, 128),
+    max_instructions: int = 50000,
 ) -> HierarchicalTraceFeature:
     if not trace_path.exists():
         return _empty_feature(case_id, str(trace_path), "missing", segment_count)
@@ -394,68 +395,75 @@ def parse_hierarchical_trace(
     }
     instruction_count = 0
 
+    # 截断优化：只保留尾段 max_instructions 条指令原始文本（轻量判断），
+    # 跳过前部的完整正则解析（fatal 类型 bug 的 trace 会冲到几十万行）。
+    tail_lines = deque(maxlen=max_instructions)
     try:
         with _open_text(trace_path) as handle:
             for line in handle:
-                item = _parse_instruction(line)
-                if item is None:
-                    continue
-                idx = instruction_count
-                instruction_count += 1
-                opcode = str(item["opcode"])
-                cls = str(item["class"])
-                pc = str(item.get("pc", "")).lower().removeprefix("0x")
-                pc_region = str(item.get("pc_region", ""))
-                regs = [str(value) for value in item.get("regs", ())]
-                opcode_counts[opcode] += 1
-                class_counts[cls] += 1
-                if pc_region:
-                    pc_region_counts[pc_region] += 1
-                register_counts.update(regs)
-                memory_counts.update(item.get("memory_regions", ()))
-                if previous_opcode:
-                    transition_counts[f"{previous_opcode}>{opcode}"] += 1
-                if previous_pc and pc and previous_pc != pc:
-                    pc_change_count += 1
-                    chunk_pc_changes += 1
-                previous_opcode, previous_pc = opcode, pc
-                destination_count += int(bool(item.get("rd")))
-                memory_count += len(item.get("memory_regions", ()))
-
-                chunk_n += 1
-                chunk_classes[cls] += 1
-                if pc_region:
-                    chunk_pcs[pc_region] += 1
-                chunk_destinations += int(bool(item.get("rd")))
-                chunk_memory += len(item.get("memory_regions", ()))
-                if chunk_n >= chunk_size:
-                    chunks.append(_chunk_vector(chunk_classes, chunk_pcs, chunk_n, chunk_pc_changes, chunk_destinations, chunk_memory))
-                    chunk_classes = Counter()
-                    chunk_pcs = Counter()
-                    chunk_n = chunk_pc_changes = chunk_destinations = chunk_memory = 0
-
-                time_value = item.get("time")
-                cycle_value = item.get("cycle")
-                if time_value is not None:
-                    first_time = time_value if first_time is None else first_time
-                    last_time = time_value
-                if cycle_value is not None:
-                    first_cycle = cycle_value if first_cycle is None else first_cycle
-                    last_cycle = cycle_value
-                if candidates["pc"] is None and pc and pc in target_pcs:
-                    candidates["pc"] = idx
-                if anchor.instr_index is not None and cycle_value is not None:
-                    delta = abs(float(cycle_value) - float(anchor.instr_index))
-                    if candidates["index"] is None or delta < float(candidates["index"][0]):
-                        candidates["index"] = (delta, idx)
-                if anchor.sim_time is not None and time_value is not None:
-                    delta = abs(float(time_value) - float(anchor.sim_time))
-                    if candidates["time"] is None or delta < float(candidates["time"][0]):
-                        candidates["time"] = (delta, idx)
-                if candidates["opcode"] is None and opcode in target_opcodes:
-                    candidates["opcode"] = idx
+                if "\t" in line:
+                    tail_lines.append(line)
     except OSError:
         return _empty_feature(case_id, str(trace_path), "read_error", segment_count)
+
+    for line in tail_lines:
+        item = _parse_instruction(line)
+        if item is None:
+            continue
+        idx = instruction_count
+        instruction_count += 1
+        opcode = str(item["opcode"])
+        cls = str(item["class"])
+        pc = str(item.get("pc", "")).lower().removeprefix("0x")
+        pc_region = str(item.get("pc_region", ""))
+        regs = [str(value) for value in item.get("regs", ())]
+        opcode_counts[opcode] += 1
+        class_counts[cls] += 1
+        if pc_region:
+            pc_region_counts[pc_region] += 1
+        register_counts.update(regs)
+        memory_counts.update(item.get("memory_regions", ()))
+        if previous_opcode:
+            transition_counts[f"{previous_opcode}>{opcode}"] += 1
+        if previous_pc and pc and previous_pc != pc:
+            pc_change_count += 1
+            chunk_pc_changes += 1
+        previous_opcode, previous_pc = opcode, pc
+        destination_count += int(bool(item.get("rd")))
+        memory_count += len(item.get("memory_regions", ()))
+
+        chunk_n += 1
+        chunk_classes[cls] += 1
+        if pc_region:
+            chunk_pcs[pc_region] += 1
+        chunk_destinations += int(bool(item.get("rd")))
+        chunk_memory += len(item.get("memory_regions", ()))
+        if chunk_n >= chunk_size:
+            chunks.append(_chunk_vector(chunk_classes, chunk_pcs, chunk_n, chunk_pc_changes, chunk_destinations, chunk_memory))
+            chunk_classes = Counter()
+            chunk_pcs = Counter()
+            chunk_n = chunk_pc_changes = chunk_destinations = chunk_memory = 0
+
+        time_value = item.get("time")
+        cycle_value = item.get("cycle")
+        if time_value is not None:
+            first_time = time_value if first_time is None else first_time
+            last_time = time_value
+        if cycle_value is not None:
+            first_cycle = cycle_value if first_cycle is None else first_cycle
+            last_cycle = cycle_value
+        if candidates["pc"] is None and pc and pc in target_pcs:
+            candidates["pc"] = idx
+        if anchor.instr_index is not None and cycle_value is not None:
+            delta = abs(float(cycle_value) - float(anchor.instr_index))
+            if candidates["index"] is None or delta < float(candidates["index"][0]):
+                candidates["index"] = (delta, idx)
+        if anchor.sim_time is not None and time_value is not None:
+            delta = abs(float(time_value) - float(anchor.sim_time))
+            if candidates["time"] is None or delta < float(candidates["time"][0]):
+                candidates["time"] = (delta, idx)
+        if candidates["opcode"] is None and opcode in target_opcodes:
+            candidates["opcode"] = idx
 
     if chunk_n:
         chunks.append(_chunk_vector(chunk_classes, chunk_pcs, chunk_n, chunk_pc_changes, chunk_destinations, chunk_memory))
@@ -590,6 +598,48 @@ def parse_hierarchical_trace(
     )
 
 
+def _process_one_case(task: tuple) -> tuple[str, HierarchicalTraceFeature, bool]:
+    """Parse (or load from cache) a single case's hierarchical trace feature.
+
+    Module-level so it can be pickled for multiprocessing.  Returns
+    (case_id, feature, cache_hit).
+    """
+    (input_csv, case_id, sim_path, regr_path, trace_path, config, cache_dir,
+     segment_count, chunk_size, anchor_sizes, max_instructions, force_rebuild) = task
+    key = _cache_key((sim_path, regr_path, trace_path), config)
+    cache_path = cache_dir / f"{input_csv.parent.name}_{case_id}_{key[:20]}.pkl"
+    feature: HierarchicalTraceFeature | None = None
+    cache_hit = False
+    if cache_path.exists() and not force_rebuild:
+        try:
+            with cache_path.open("rb") as handle:
+                payload = pickle.load(handle)
+            if payload.get("version") == CACHE_VERSION:
+                feature = payload["feature"]
+                cache_hit = True
+        except Exception:
+            feature = None
+    if feature is None:
+        sim_text, _ = rfb.read_log_sample(sim_path)
+        regr_text, _ = rfb.read_log_sample(regr_path)
+        anchor = ta.extract_trace_anchor(case_id, sim_text.splitlines(), regr_text.splitlines())
+        if trace_path is None:
+            feature = _empty_feature(case_id, "", "missing", segment_count)
+        else:
+            feature = parse_hierarchical_trace(
+                case_id,
+                trace_path,
+                anchor,
+                segment_count=segment_count,
+                chunk_size=chunk_size,
+                anchor_sizes=anchor_sizes,
+                max_instructions=max_instructions,
+            )
+        with cache_path.open("wb") as handle:
+            pickle.dump({"version": CACHE_VERSION, "feature": feature}, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    return case_id, feature, cache_hit
+
+
 def build_hierarchical_trace_features(
     input_csv: str | Path,
     cache_dir: str | Path = "/tmp/theta_trilog_trace_cache",
@@ -597,6 +647,7 @@ def build_hierarchical_trace_features(
     chunk_size: int = 512,
     anchor_sizes: Sequence[int] = (32, 64, 128),
     force_rebuild: bool = False,
+    max_instructions: int = 5000,
 ) -> tuple[list[HierarchicalTraceFeature], list[dict[str, Any]]]:
     input_csv = Path(input_csv).resolve()
     cache_dir = Path(cache_dir)
@@ -607,43 +658,29 @@ def build_hierarchical_trace_features(
     trace_col = rfb.pick_column(fields, "trace")
     output: list[HierarchicalTraceFeature] = []
     debug: list[dict[str, Any]] = []
-    config = f"segments={segment_count};chunk={chunk_size};anchors={','.join(map(str, anchor_sizes))}"
+    config = f"segments={segment_count};chunk={chunk_size};anchors={','.join(map(str, anchor_sizes))};max_inst={max_instructions}"
 
+    tasks: list[tuple] = []
     for idx, row in enumerate(rows):
         case_id = osf.infer_case_id(input_csv, row, fields, idx)
         sim_path = rfb.resolve_log_path(input_csv, row.get(sim_col) if sim_col else None)
         regr_path = rfb.resolve_log_path(input_csv, row.get(regr_col) if regr_col else None)
         trace_path = rfb.resolve_log_path(input_csv, row.get(trace_col) if trace_col else None)
-        key = _cache_key((sim_path, regr_path, trace_path), config)
-        cache_path = cache_dir / f"{input_csv.parent.name}_{case_id}_{key[:20]}.pkl"
-        feature: HierarchicalTraceFeature | None = None
-        cache_hit = False
-        if cache_path.exists() and not force_rebuild:
-            try:
-                with cache_path.open("rb") as handle:
-                    payload = pickle.load(handle)
-                if payload.get("version") == CACHE_VERSION:
-                    feature = payload["feature"]
-                    cache_hit = True
-            except Exception:
-                feature = None
-        if feature is None:
-            sim_text, _ = rfb.read_log_sample(sim_path)
-            regr_text, _ = rfb.read_log_sample(regr_path)
-            anchor = ta.extract_trace_anchor(case_id, sim_text.splitlines(), regr_text.splitlines())
-            if trace_path is None:
-                feature = _empty_feature(case_id, "", "missing", segment_count)
-            else:
-                feature = parse_hierarchical_trace(
-                    case_id,
-                    trace_path,
-                    anchor,
-                    segment_count=segment_count,
-                    chunk_size=chunk_size,
-                    anchor_sizes=anchor_sizes,
-                )
-            with cache_path.open("wb") as handle:
-                pickle.dump({"version": CACHE_VERSION, "feature": feature}, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        tasks.append((input_csv, case_id, sim_path, regr_path, trace_path, config,
+                      cache_dir, segment_count, chunk_size, anchor_sizes, max_instructions, force_rebuild))
+
+    # 多进程并行解析（trace 解析是 CPU 密集，32 核并行能 ~30x 加速）。
+    # 每个 case 写独立的 cache 文件，多进程间不冲突。
+    import os as _os
+    n_proc = min(32, _os.cpu_count() or 1)
+    if n_proc > 1 and len(tasks) > 8:
+        from multiprocessing import Pool
+        with Pool(processes=n_proc) as pool:
+            results = pool.map(_process_one_case, tasks)
+    else:
+        results = [_process_one_case(t) for t in tasks]
+
+    for case_id, feature, cache_hit in results:
         output.append(feature)
         debug.append({
             "input_csv": str(input_csv),
