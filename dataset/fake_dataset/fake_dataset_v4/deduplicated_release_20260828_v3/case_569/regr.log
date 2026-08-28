@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[69] : pc[8000b42a] divu	x7,x13,x1: t2:00000000 
+spike[69] : pc[8000b42a] divu    t2, a3, ra: t2:00000001 
+Mismatch[11059]:
+[13184] ibex : pc[80002962] csrrc	x27,mscratch,x21: s11:00000010 
+[FAILED]: 1179 matched, 11059 mismatch
+
+0 PASSED, 1 FAILED

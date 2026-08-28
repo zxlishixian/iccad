@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[172] : pc[800003a2] andi	x1,x18,-774: ra:ffff9cc0 
+spike[172] : pc[800003aa] and     s3, a0, t3: s3:00000240 
+[FAILED]: 201 matched, 26444 mismatch
+
+0 PASSED, 1 FAILED

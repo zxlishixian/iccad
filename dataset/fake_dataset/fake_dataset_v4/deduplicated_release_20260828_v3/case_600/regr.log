@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[729] : pc[800079ae] and	x8,x7,x14: s0:fffffe04 
+spike[729] : pc[80007984] c.addi4spn a5, sp, 816: a5:8001df34 
+[FAILED]: 695 matched, 245938 mismatch
+
+0 PASSED, 1 FAILED

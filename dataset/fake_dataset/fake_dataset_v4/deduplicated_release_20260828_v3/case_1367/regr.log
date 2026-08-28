@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[176] : pc[800004ba] c.xor	x15,x13: a5:0000000a 
+spike[176] : pc[800004ba] c.xor   a5, a3: a5:00000008 
+[FAILED]: 160 matched, 1433 mismatch
+
+0 PASSED, 1 FAILED

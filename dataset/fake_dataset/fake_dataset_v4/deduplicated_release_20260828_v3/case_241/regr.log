@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[69] : pc[8000017c] remu	x9,x16,x15: s1:f09332dc 
+spike[69] : pc[8000017c] remu    s1, a6, a5: s1:2aef954c 
+[FAILED]: 84 matched, 669 mismatch
+
+0 PASSED, 1 FAILED

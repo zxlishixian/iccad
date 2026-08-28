@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[887] : pc[800019e6] xori	x11,x7,234: a1:ff1b1efb 
+spike[887] : pc[800019e6] xori    a1, t2, 234: a1:ff1b1e93 
+[FAILED]: 6522 matched, 15 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[448] : pc[800006e4] srai	x19,x5,0x7: s3:01a40005 
+spike[448] : pc[800006e4] srai    s3, t0, 7: s3:ffa40005 
+Mismatch[7475]:
+[9403] ibex : pc[80008388] sra	x7,x3,x21: t2:002bcf80 
+[FAILED]: 381 matched, 7475 mismatch
+
+0 PASSED, 1 FAILED

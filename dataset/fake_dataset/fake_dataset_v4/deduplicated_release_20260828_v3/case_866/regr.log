@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[72] : pc[80000186] div	x10,x31,x19: a0:80000000 
+spike[72] : pc[80000186] div     a0, t6, s3: a0:ffffffff 
+Mismatch[7854]:
+[9396] ibex : pc[800082c4] mulhsu	x10,x22,x6: a0:00000000 
+[FAILED]: 258 matched, 7854 mismatch
+
+0 PASSED, 1 FAILED

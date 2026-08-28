@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[235] : pc[800004f6] mulhsu	x1,x17,x26: ra:0180efbc 
+spike[235] : pc[800004f6] mulhsu  ra, a7, s10: ra:fe7f0142 
+Mismatch[6506]:
+[12513] ibex : pc[8000b95c] jalr	x16,0(x16): a6:8000b960 
+[FAILED]: 2725 matched, 6506 mismatch
+
+0 PASSED, 1 FAILED

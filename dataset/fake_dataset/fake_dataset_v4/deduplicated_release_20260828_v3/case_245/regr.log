@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[64] : pc[800001fa] rem	x2,x4,x27: sp:0001f000 
+spike[64] : pc[8000020e] csrrw   s4, mscratch, a0: s4:0000001e 
+Mismatch[2779]:
+[3343] ibex : pc[80007f64] mul	x3,x27,x3: gp:0bf2f2a5 
+[FAILED]: 68 matched, 2779 mismatch
+
+0 PASSED, 1 FAILED

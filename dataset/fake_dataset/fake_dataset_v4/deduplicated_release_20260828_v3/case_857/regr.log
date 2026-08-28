@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[90] : pc[8000160c] div	x15,x25,x3: a5:ebf00013 
+spike[90] : pc[8000160c] div     a5, s9, gp: a5:00000002 
+[FAILED]: 112 matched, 4096 mismatch
+
+0 PASSED, 1 FAILED

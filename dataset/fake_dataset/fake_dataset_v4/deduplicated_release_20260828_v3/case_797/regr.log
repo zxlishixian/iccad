@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[3233] : pc[80002da8] srai	x31,x3,0x7: t6:0148687a 
+spike[3233] : pc[80002da8] srai    t6, gp, 7: t6:ff48687a 
+[FAILED]: 8070 matched, 6 mismatch
+
+0 PASSED, 1 FAILED

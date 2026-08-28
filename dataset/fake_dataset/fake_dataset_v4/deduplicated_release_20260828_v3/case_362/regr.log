@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[256] : pc[80005884] c.li	x22,-1: s6:0000001f 
+spike[256] : pc[80005884] c.li    s6, -1: s6:ffffffff 
+Mismatch[3398]:
+[4553] ibex : pc[8000523e] mulh	x26,x8,x14: s10:00009322 
+[FAILED]: 484 matched, 3398 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[65] : pc[80000174] and	x14,x20,x22: a4:335a7c73 
+spike[65] : pc[80000174] and     a4, s4, s6: a4:00000000 
+[FAILED]: 208 matched, 7793 mismatch
+
+0 PASSED, 1 FAILED

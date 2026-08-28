@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[108] : pc[800002c8] or	x29,x7,x6: t4:aef0de00 
+spike[108] : pc[800002c8] or      t4, t2, t1: t4:aef0de1c 
+Mismatch[3889]:
+[5198] ibex : pc[800071d0] slti	x10,x21,288: a0:00000001 
+[FAILED]: 594 matched, 3889 mismatch
+
+0 PASSED, 1 FAILED

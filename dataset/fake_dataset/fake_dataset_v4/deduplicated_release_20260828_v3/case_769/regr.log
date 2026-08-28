@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[127] : pc[80000312] slt	x30,x13,x27: t5:00000001 
+spike[127] : pc[80000316] mulhu   s8, s4, gp: s8:00000000 
+Mismatch[541]:
+[762] ibex : pc[8000141a] slti	x24,x0,-307: s8:00000000 
+[FAILED]: 107 matched, 541 mismatch
+
+0 PASSED, 1 FAILED

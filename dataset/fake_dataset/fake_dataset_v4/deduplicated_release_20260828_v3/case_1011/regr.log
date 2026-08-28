@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[5255] : pc[80006c0e] lh	x10,20(x15): a0:0000f7fb 
+spike[5255] : pc[80006c0e] lh      a0, 20(a5): a0:fffff7fb 
+[FAILED]: 38364 matched, 5 mismatch
+
+0 PASSED, 1 FAILED

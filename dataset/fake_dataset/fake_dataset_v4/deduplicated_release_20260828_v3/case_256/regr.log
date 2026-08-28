@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[96] : pc[80004c5a] mulhu	x8,x18,x2: s0:00000000 
+spike[96] : pc[80004c90] c.srli  s0, 29: s0:00000007 
+Mismatch[4374]:
+[5187] ibex : pc[80007ba6] csrrci	x29,mscratch,23: t4:00004800 
+[FAILED]: 101 matched, 4374 mismatch
+
+0 PASSED, 1 FAILED

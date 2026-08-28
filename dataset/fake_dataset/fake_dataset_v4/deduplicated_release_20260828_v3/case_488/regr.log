@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[688] : pc[80001b0c] c.andi	x10,-1: a0:00000000 
+spike[688] : pc[80001b0e] xor     s10, t0, a0: s10:19993020 
+Mismatch[6309]:
+[8050] ibex : pc[80000d44] c.xor	x8,x9: s0:0000307f 
+[FAILED]: 640 matched, 6309 mismatch
+
+0 PASSED, 1 FAILED

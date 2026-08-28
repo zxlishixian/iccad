@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[181] : pc[800004ce] slt	x7,x17,x22: t2:00000001 
+spike[181] : pc[800004ca] mul     sp, s9, s10: sp:06930018 
+Mismatch[1569]:
+[2104] ibex : pc[80001f9e] slli	x22,x5,0x4: s6:0001e8b0 
+[FAILED]: 174 matched, 1569 mismatch
+
+0 PASSED, 1 FAILED

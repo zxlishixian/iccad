@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[234] : pc[80003480] sltu	x30,x12,x13: t5:00000000 
+spike[234] : pc[8000343a] c.andi  a1, 1: a1:00000000 
+Mismatch[2676]:
+[3355] ibex : pc[80000228] mulh	x8,x21,x23: s0:1feef515 
+[FAILED]: 200 matched, 2676 mismatch
+
+0 PASSED, 1 FAILED

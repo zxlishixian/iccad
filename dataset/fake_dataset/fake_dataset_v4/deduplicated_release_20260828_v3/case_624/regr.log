@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[90] : pc[8000029e] c.slli	x21,0xd: s5:ae124000 
+spike[90] : pc[80000240] c.addi  a7, -1: a7:00000000 
+[FAILED]: 88 matched, 3472 mismatch
+
+0 PASSED, 1 FAILED

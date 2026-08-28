@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[352] : pc[80006178] or	x29,x4,x28: t4:8001ee76 
+spike[352] : pc[80006178] or      t4, tp, t3: t4:8001ee7e 
+Mismatch[2239]:
+[4418] ibex : pc[80000e0e] c.li	x3,1: gp:00000001 
+[FAILED]: 1523 matched, 2239 mismatch
+
+0 PASSED, 1 FAILED

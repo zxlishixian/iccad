@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[252] : pc[800005fc] rem	x25,x24,x22: s9:ffffffff 
+spike[252] : pc[800005fc] rem     s9, s8, s6: s9:8001b748 
+[FAILED]: 235 matched, 591 mismatch
+
+0 PASSED, 1 FAILED

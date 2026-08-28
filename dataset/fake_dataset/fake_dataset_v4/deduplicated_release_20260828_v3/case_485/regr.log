@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[326] : pc[8000151e] c.andi	x8,-1: s0:0000001e 
+spike[326] : pc[80001520] sll     tp, a5, t0: tp:00000000 
+Mismatch[3409]:
+[4341] ibex : pc[800001be] add	x4,x12,x10: tp:00000002 
+[FAILED]: 349 matched, 3409 mismatch
+
+0 PASSED, 1 FAILED

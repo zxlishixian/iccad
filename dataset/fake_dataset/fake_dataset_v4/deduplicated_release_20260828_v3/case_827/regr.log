@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[63] : pc[8000016e] and	x5,x26,x24: t0:f60485d6 
+spike[63] : pc[8000016e] and     t0, s10, s8: t0:00000000 
+Mismatch[7794]:
+[9185] ibex : pc[80008080] c.add	x10,x7: a0:d4a6a1d1 
+[FAILED]: 108 matched, 7794 mismatch
+
+0 PASSED, 1 FAILED

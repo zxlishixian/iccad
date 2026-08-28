@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[73] : pc[80000258] c.srai	x15,0x8: a5:00ff7c2b 
+spike[73] : pc[80000258] c.srai  a5, 8: a5:ffff7c2b 
+Mismatch[1828]:
+[4299] ibex : pc[80005410] add	x28,x5,x2: t3:1a937003 
+[FAILED]: 1800 matched, 1828 mismatch
+
+0 PASSED, 1 FAILED

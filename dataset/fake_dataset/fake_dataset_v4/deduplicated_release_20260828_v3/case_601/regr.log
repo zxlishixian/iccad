@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[65] : pc[800001aa] c.add	x11,x20: a1:f03b4336 
+spike[65] : pc[80000184] mulhsu  ra, t5, s4: ra:87e25e65 
+[FAILED]: 183 matched, 6651 mismatch
+
+0 PASSED, 1 FAILED

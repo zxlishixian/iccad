@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[130] : pc[800072fa] c.li	x29,-1: t4:fffffffe 
+spike[130] : pc[800072fa] c.li    t4, -1: t4:ffffffff 
+[FAILED]: 142 matched, 4529 mismatch
+
+0 PASSED, 1 FAILED

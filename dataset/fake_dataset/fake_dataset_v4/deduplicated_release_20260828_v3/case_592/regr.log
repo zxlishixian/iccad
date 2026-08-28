@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[122] : pc[800003b6] ori	x24,x23,-912: s8:ffffff7e 
+spike[122] : pc[800003e6] c.li    s4, -1: s4:ffffffff 
+Mismatch[1910]:
+[2340] ibex : pc[800047c8] addi	x20,x11,733: s4:ffffffe9 
+[FAILED]: 99 matched, 1910 mismatch
+
+0 PASSED, 1 FAILED

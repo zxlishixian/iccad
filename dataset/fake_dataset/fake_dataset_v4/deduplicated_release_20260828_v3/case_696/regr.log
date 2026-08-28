@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[132] : pc[8000025e] c.addi	x18,19: s2:00000013 
+spike[132] : pc[8000025c] c.add   t5, t4: t5:dd25f3a1 
+[FAILED]: 121 matched, 7852 mismatch
+
+0 PASSED, 1 FAILED

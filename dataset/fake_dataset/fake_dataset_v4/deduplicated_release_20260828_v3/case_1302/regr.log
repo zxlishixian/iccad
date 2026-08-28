@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[138] : pc[800002b8] c.addi	x25,-8: s9:fffffffa 
+spike[138] : pc[800002c2] ori     t5, s6, 471: t5:74dd93df 
+[FAILED]: 133 matched, 2954 mismatch
+
+0 PASSED, 1 FAILED

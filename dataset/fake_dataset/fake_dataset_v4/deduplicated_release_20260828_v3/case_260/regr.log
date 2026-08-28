@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[427] : pc[800007a2] mulh	x25,x14,x29: s9:fffffffd 
+spike[427] : pc[800007c2] c.slli  t1, 22: t1:af800000 
+Mismatch[2558]:
+[3205] ibex : pc[80002880] remu	x13,x25,x26: a3:7fffd81f 
+[FAILED]: 415 matched, 2558 mismatch
+
+0 PASSED, 1 FAILED

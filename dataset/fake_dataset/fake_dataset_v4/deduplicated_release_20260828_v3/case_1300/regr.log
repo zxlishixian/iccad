@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[169] : pc[80000590] xori	x12,x3,528: a2:00000211 
+spike[169] : pc[80000574] c.li    s0, 27: s0:0000001b 
+[FAILED]: 164 matched, 3116 mismatch
+
+0 PASSED, 1 FAILED

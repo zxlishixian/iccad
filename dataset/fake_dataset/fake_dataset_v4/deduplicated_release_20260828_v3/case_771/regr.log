@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[137] : pc[80000280] mulhsu	x23,x11,x1: s7:000000d6 
+spike[137] : pc[80000280] mulhsu  s7, a1, ra: s7:fffffee8 
+Mismatch[5465]:
+[9447] ibex : pc[8000844e] lui	x14,0xd737: a4:0d737000 
+[FAILED]: 2501 matched, 5465 mismatch
+
+0 PASSED, 1 FAILED

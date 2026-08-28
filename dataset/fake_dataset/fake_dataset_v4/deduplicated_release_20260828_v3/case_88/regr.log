@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[122] : pc[8000039a] ori	x1,x18,378: ra:0000017a 
+spike[122] : pc[80000352] auipc   s2, 0x0: s2:80000352 
+[FAILED]: 105 matched, 3835 mismatch
+
+0 PASSED, 1 FAILED

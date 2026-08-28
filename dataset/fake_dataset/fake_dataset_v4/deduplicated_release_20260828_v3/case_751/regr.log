@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[198] : pc[8000041e] lb	x18,609(x30): s2:00000000 
+spike[198] : pc[8000040a] slt     s4, s10, a1: s4:00000001 
+Mismatch[3645]:
+[6206] ibex : pc[80004ce2] jal	x1,80004d26: ra:80004ce6 
+[FAILED]: 547 matched, 3645 mismatch
+
+0 PASSED, 1 FAILED

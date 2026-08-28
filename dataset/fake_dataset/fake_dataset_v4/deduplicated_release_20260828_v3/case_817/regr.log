@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[89] : pc[80000224] and	x31,x30,x8: t6:f795ec4c 
+spike[89] : pc[80000224] and     t6, t5, s0: t6:00000000 
+Mismatch[1802]:
+[2214] ibex : pc[80000338] c.slli	x12,0x1e: a2:00000000 
+[FAILED]: 103 matched, 1802 mismatch
+
+0 PASSED, 1 FAILED

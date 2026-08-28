@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[209] : pc[80003d24] c.or	x11,x14: a1:00000043 
+spike[209] : pc[80003d24] c.or    a1, a4: a1:ffffffc3 
+Mismatch[5602]:
+[6766] ibex : pc[8000046e] c.li	x3,-1: gp:ffffffff 
+[FAILED]: 295 matched, 5602 mismatch
+
+0 PASSED, 1 FAILED

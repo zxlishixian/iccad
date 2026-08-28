@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[92] : pc[80000a70] lh	x13,779(x2): a3:ffffff1a 
+spike[92] : pc[8001b080] addi    a4, a4, -124: a4:8002bd44 
+Mismatch[18]:
+[110] ibex : pc[80000adc] mul	x19,x22,x16: s3:00000000 
+[FAILED]: 83 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

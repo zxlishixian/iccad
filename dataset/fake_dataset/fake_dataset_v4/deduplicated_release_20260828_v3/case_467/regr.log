@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[364] : pc[800006ee] and	x14,x23,x15: a4:8000063c 
+spike[364] : pc[800006f2] or      s0, s1, a4: s0:8000065c 
+Mismatch[6925]:
+[9715] ibex : pc[800026b4] ori	x17,x14,-654: a7:fffffd72 
+[FAILED]: 285 matched, 6925 mismatch
+
+0 PASSED, 1 FAILED

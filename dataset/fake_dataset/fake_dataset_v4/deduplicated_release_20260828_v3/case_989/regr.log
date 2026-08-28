@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[875] : pc[80001874] remu	x20,x11,x20: s4:ffffffff 
+spike[875] : pc[80001874] remu    s4, a1, s4: s4:8001ade0 
+Mismatch[965]:
+[4350] ibex : pc[8000310a] and	x22,x29,x29: s6:00000001 
+[FAILED]: 2785 matched, 965 mismatch
+
+0 PASSED, 1 FAILED

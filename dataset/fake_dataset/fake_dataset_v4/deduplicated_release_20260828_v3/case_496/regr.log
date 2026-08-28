@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[253] : pc[80001678] c.andi	x9,-1: s1:00000008 
+spike[253] : pc[8000167a] srli    s6, s6, 14: s6:0001a150 
+Mismatch[3096]:
+[3829] ibex : pc[8000109a] rem	x5,x0,x19: t0:00000000 
+[FAILED]: 230 matched, 3096 mismatch
+
+0 PASSED, 1 FAILED

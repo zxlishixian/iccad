@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[322] : pc[80000590] divu	x17,x18,x25: a7:00000001 
+spike[322] : pc[800005d4] csrrsi  sp, mscratch, 4: sp:e03fa56b 
+Mismatch[2284]:
+[2825] ibex : pc[80001290] xori	x17,x3,544: a7:0000022e 
+[FAILED]: 318 matched, 2284 mismatch
+
+0 PASSED, 1 FAILED

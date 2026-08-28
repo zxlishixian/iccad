@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[90] : pc[800062b6] rem	x16,x7,x6: a6:00000001 
+spike[90] : pc[800062b6] rem     a6, t2, t1: a6:cdb8fdc6 
+Mismatch[7275]:
+[9053] ibex : pc[80001038] srai	x14,x11,0x1c: a4:00000000 
+[FAILED]: 293 matched, 7275 mismatch
+
+0 PASSED, 1 FAILED

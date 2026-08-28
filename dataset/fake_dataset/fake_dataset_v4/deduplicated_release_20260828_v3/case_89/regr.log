@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[896] : pc[8000125e] c.addi	x11,-1: a1:ffffffff 
+spike[896] : pc[8000123a] sltu    s2, s7, s10: s2:00000001 
+[FAILED]: 836 matched, 319 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[65] : pc[80000186] lhu	x5,1402(x2): t0:00002ee4 
+spike[65] : pc[80000186] lhu     t0, 1402(sp): t0:0000e4fc 
+[FAILED]: 341 matched, 32497 mismatch
+
+0 PASSED, 1 FAILED

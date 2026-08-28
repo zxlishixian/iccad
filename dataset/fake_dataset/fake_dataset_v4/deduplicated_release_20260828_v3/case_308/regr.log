@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[69] : pc[80000188] rem	x21,x31,x30: s5:fffffff8 
+spike[69] : pc[80000188] rem     s5, t6, t5: s5:fed26994 
+Mismatch[7362]:
+[9407] ibex : pc[8000836e] addi	x15,x13,-410: a5:80015ce2 
+[FAILED]: 645 matched, 7362 mismatch
+
+0 PASSED, 1 FAILED

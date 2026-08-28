@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[618] : pc[8000d96a] c.sub	x13,x10: a3:ffffff01 
+spike[618] : pc[8000d99e] remu    t0, s7, a2: t0:00000000 
+[FAILED]: 514 matched, 25067 mismatch
+
+0 PASSED, 1 FAILED

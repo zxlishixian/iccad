@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[70] : pc[80000180] c.or	x10,x10: a0:00000000 
+spike[70] : pc[80000182] sltu    t1, a7, a4: t1:00000000 
+Mismatch[2817]:
+[3345] ibex : pc[8000026a] and	x5,x14,x7: t0:00000000 
+[FAILED]: 85 matched, 2817 mismatch
+
+0 PASSED, 1 FAILED

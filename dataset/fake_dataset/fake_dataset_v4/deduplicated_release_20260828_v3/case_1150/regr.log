@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[182] : pc[80000446] c.or	x13,x14: a3:10000002 
+spike[182] : pc[80000446] c.or    a3, a4: a3:10000006 
+[FAILED]: 246 matched, 2 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[64] : pc[80000174] sra	x1,x1,x29: ra:f660391c 
+spike[64] : pc[80000174] sra     ra, ra, t4: ra:ffb301c8 
+[FAILED]: 198 matched, 7717 mismatch
+
+0 PASSED, 1 FAILED

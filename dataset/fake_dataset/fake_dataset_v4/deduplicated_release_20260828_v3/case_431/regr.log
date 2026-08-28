@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[346] : pc[8000055c] sra	x4,x24,x6: tp:00000001 
+spike[346] : pc[8000055c] sra     tp, s8, t1: tp:ffffffff 
+Mismatch[7092]:
+[9435] ibex : pc[800085b6] div	x1,x27,x23: ra:0000001e 
+[FAILED]: 890 matched, 7092 mismatch
+
+0 PASSED, 1 FAILED

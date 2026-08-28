@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[184] : pc[800006c0] srli	x17,x25,0x9: a7:00400000 
+spike[184] : pc[80000692] c.add   t4, t1: t4:1af00001 
+[FAILED]: 1089 matched, 1676 mismatch
+
+0 PASSED, 1 FAILED

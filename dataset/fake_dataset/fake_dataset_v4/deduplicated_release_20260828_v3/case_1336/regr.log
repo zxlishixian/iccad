@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[659] : pc[80000d5e] srai	x30,x4,0xc: t5:00000000 
+spike[659] : pc[80000d22] mulhsu  t1, t2, a4: t1:800162fd 
+[FAILED]: 470 matched, 2547 mismatch
+
+0 PASSED, 1 FAILED

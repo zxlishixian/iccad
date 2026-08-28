@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[673] : pc[8000db60] srli	x31,x18,0x5: t6:05d2b855 
+spike[673] : pc[8000db34] auipc   s5, 0xc63f: s5:8c64cb34 
+Mismatch[8042]:
+[11172] ibex : pc[80006d00] c.addi	x3,-1: gp:ffffffff 
+[FAILED]: 418 matched, 8042 mismatch
+
+0 PASSED, 1 FAILED

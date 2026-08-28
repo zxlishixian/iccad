@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[331] : pc[800114e6] sltu	x23,x0,x4: s7:00000001 
+spike[331] : pc[800114ea] mulhu   t5, s11, s8: t5:00000000 
+[FAILED]: 265 matched, 3885 mismatch
+
+0 PASSED, 1 FAILED

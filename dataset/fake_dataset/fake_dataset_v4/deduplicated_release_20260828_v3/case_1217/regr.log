@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[176] : pc[8000042e] c.srai	x15,0xc: a5:fffc0000 
+spike[176] : pc[8000042c] c.srai  a1, 1: a1:f3412e66 
+[FAILED]: 152 matched, 2921 mismatch
+
+0 PASSED, 1 FAILED

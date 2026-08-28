@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[64] : pc[80000180] lbu	x28,7(x14): t3:0000002a 
+spike[64] : pc[8000017c] lhu     s5, 14(a4): s5:00007e17 
+[FAILED]: 62 matched, 10894 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[266] : pc[80000588] sltu	x18,x30,x13: s2:00000001 
+spike[266] : pc[8000059a] remu    s5, a0, a6: s5:80000032 
+Mismatch[277]:
+[561] ibex : pc[80000da8] c.lui	x9,0x15: s1:00015000 
+[FAILED]: 259 matched, 277 mismatch
+
+0 PASSED, 1 FAILED

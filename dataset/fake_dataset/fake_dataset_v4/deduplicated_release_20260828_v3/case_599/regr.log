@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[90] : pc[80005a4e] ori	x24,x23,-123: s8:fffffffd 
+spike[90] : pc[80005a70] srl     s9, s4, s9: s9:00000000 
+Mismatch[3779]:
+[4760] ibex : pc[80005e38] c.addi4spn	x12,x2,832: a2:00000500 
+[FAILED]: 94 matched, 3779 mismatch
+
+0 PASSED, 1 FAILED

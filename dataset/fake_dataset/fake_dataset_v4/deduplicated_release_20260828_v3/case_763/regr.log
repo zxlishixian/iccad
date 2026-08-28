@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[267] : pc[8000043e] c.xor	x13,x11: a3:80011e27 
+spike[267] : pc[8000043e] c.xor   a3, a1: a3:80011e24 
+[FAILED]: 380 matched, 7753 mismatch
+
+0 PASSED, 1 FAILED

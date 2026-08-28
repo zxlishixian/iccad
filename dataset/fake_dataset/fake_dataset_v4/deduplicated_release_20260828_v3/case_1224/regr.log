@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2710] : pc[8000344e] div	x31,x22,x12: t6:00000006 
+spike[2710] : pc[8000344e] div     t6, s6, a2: t6:00000012 
+[FAILED]: 6283 matched, 8644 mismatch
+
+0 PASSED, 1 FAILED

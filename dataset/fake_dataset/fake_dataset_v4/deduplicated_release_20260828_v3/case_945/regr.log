@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[826] : pc[800063e8] rem	x16,x18,x24: a6:fffffb24 
+spike[826] : pc[800063e8] rem     a6, s2, s8: a6:000004dc 
+Mismatch[1481]:
+[3464] ibex : pc[80003f32] xor	x28,x4,x4: t3:00000000 
+[FAILED]: 1423 matched, 1481 mismatch
+
+0 PASSED, 1 FAILED

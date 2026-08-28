@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[639] : pc[80000c92] divu	x8,x21,x5: s0:fffeb404 
+spike[639] : pc[80000c92] divu    s0, s5, t0: s0:00014c03 
+Mismatch[68]:
+[4424] ibex : pc[80006e16] or	x29,x6,x18: t4:fcffff7f 
+[FAILED]: 3852 matched, 68 mismatch
+
+0 PASSED, 1 FAILED

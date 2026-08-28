@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[176] : pc[800003de] div	x23,x27,x31: s7:ffffffff 
+spike[176] : pc[800003de] div     s7, s11, t6: s7:00000000 
+Mismatch[3830]:
+[4993] ibex : pc[8000401e] c.slli	x8,0x1c: s0:d0000000 
+[FAILED]: 208 matched, 3830 mismatch
+
+0 PASSED, 1 FAILED

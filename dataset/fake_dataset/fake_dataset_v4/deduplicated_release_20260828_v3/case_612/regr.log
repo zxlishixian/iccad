@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[84] : pc[80010526] mul	x4,x5,x17: tp:00000000 
+spike[84] : pc[8001051e] csrrsi  a1, mscratch, 7: a1:f4195b58 
+[FAILED]: 123 matched, 24677 mismatch
+
+0 PASSED, 1 FAILED

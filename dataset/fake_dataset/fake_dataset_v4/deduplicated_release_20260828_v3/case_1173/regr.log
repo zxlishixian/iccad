@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[243] : pc[80000fb4] c.addi	x13,-1: a3:00000001 
+spike[243] : pc[80000fac] divu    t2, s1, a3: t2:00000008 
+[FAILED]: 209 matched, 2984 mismatch
+
+0 PASSED, 1 FAILED

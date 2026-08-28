@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[149] : pc[800003b6] or	x15,x31,x30: a5:00653019 
+spike[149] : pc[800003b6] or      a5, t6, t5: a5:70fd7b79 
+[FAILED]: 216 matched, 4392 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[83] : pc[8000646c] xor	x14,x28,x16: a4:9301be3c 
+spike[83] : pc[8000646c] xor     a4, t3, a6: a4:93013a28 
+Mismatch[3134]:
+[3888] ibex : pc[80000492] c.add	x10,x9: a0:000000a1 
+[FAILED]: 92 matched, 3134 mismatch
+
+0 PASSED, 1 FAILED

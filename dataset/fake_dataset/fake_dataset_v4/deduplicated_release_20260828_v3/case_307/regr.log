@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[473] : pc[80001a74] divu	x24,x8,x31: s8:00000000 
+spike[473] : pc[80001a74] divu    s8, s0, t6: s8:00000001 
+Mismatch[2313]:
+[3398] ibex : pc[80000ec0] mul	x17,x16,x2: a7:adae51e4 
+[FAILED]: 387 matched, 2313 mismatch
+
+0 PASSED, 1 FAILED

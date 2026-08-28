@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[115] : pc[800003cc] divu	x20,x6,x18: s4:00000008 
+spike[115] : pc[800003d0] addi    a1, s7, 688: a1:000002b0 
+Mismatch[245]:
+[387] ibex : pc[80000ade] c.li	x3,1: gp:00000001 
+[FAILED]: 100 matched, 245 mismatch
+
+0 PASSED, 1 FAILED

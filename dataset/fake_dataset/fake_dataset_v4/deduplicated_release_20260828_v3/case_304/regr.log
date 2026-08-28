@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[154] : pc[80000406] divu	x19,x4,x17: s3:ffff8e39 
+spike[154] : pc[80000406] divu    s3, tp, a7: s3:000071c7 
+Mismatch[3396]:
+[4846] ibex : pc[800018c4] sltu	x6,x14,x9: t1:00000000 
+[FAILED]: 857 matched, 3396 mismatch
+
+0 PASSED, 1 FAILED

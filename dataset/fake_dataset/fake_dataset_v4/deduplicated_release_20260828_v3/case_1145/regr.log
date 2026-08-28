@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1201] : pc[80001d50] c.li	x6,-1: t1:ffffffff 
+spike[1201] : pc[80001d1a] xor     s3, s0, s6: s3:00000000 
+[FAILED]: 988 matched, 624 mismatch
+
+0 PASSED, 1 FAILED

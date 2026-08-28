@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[51] : pc[80008714] addi	x26,x26,-2048: s10:00001801 
+spike[51] : pc[80008714] addi    s10, s10, -2048: s10:00001800 
+[FAILED]: 284 matched, 2 mismatch
+
+0 PASSED, 1 FAILED

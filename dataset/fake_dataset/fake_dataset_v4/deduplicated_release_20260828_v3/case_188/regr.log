@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[81] : pc[8000046e] srl	x24,x20,x30: s8:00000005 
+spike[81] : pc[80000472] sub     t6, s8, a0: t6:00000000 
+Mismatch[2910]:
+[3650] ibex : pc[80003e1e] c.sub	x13,x10: a3:00000004 
+[FAILED]: 104 matched, 2910 mismatch
+
+0 PASSED, 1 FAILED

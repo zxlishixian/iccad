@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[164] : pc[800003ba] mulhsu	x19,x23,x30: s3:23b353ae 
+spike[164] : pc[800003ba] mulhsu  s3, s7, t5: s3:cd259c46 
+Mismatch[1354]:
+[2263] ibex : pc[800037dc] divu	x19,x11,x11: s3:00000001 
+[FAILED]: 591 matched, 1354 mismatch
+
+0 PASSED, 1 FAILED

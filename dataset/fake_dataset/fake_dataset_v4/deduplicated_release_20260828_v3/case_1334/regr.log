@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[107] : pc[8000034a] sll	x21,x0,x8: s5:00000000 
+spike[107] : pc[80000336] c.addi  s11, 13: s11:0000000d 
+[FAILED]: 102 matched, 6566 mismatch
+
+0 PASSED, 1 FAILED

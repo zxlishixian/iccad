@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[2119] : pc[80004dfe] divu	x14,x21,x30: a4:00000000 
+spike[2119] : pc[80004dfe] divu    a4, s5, t5: a4:0076b981 
+Mismatch[1017]:
+[3353] ibex : pc[80003296] addi	x5,x30,80: t0:c001ec5e 
+[FAILED]: 1727 matched, 1017 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[152] : pc[80000448] sra	x27,x11,x19: s11:00000000 
+spike[152] : pc[80000440] sltiu   s5, s3, -282: s5:00000001 
+Mismatch[271]:
+[473] ibex : pc[80000dfc] sra	x3,x1,x10: gp:00000000 
+[FAILED]: 143 matched, 271 mismatch
+
+0 PASSED, 1 FAILED

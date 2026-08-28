@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[177] : pc[800001b4] xori	x11,x25,-140: a1:00000311 
+spike[177] : pc[800001b8] jalr    a1, a5, -759: a1:800001bc 
+[FAILED]: 252 matched, 9359 mismatch
+
+0 PASSED, 1 FAILED

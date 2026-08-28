@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[247] : pc[800004da] sra	x29,x1,x6: t4:3ada1000 
+spike[247] : pc[800004da] sra     t4, ra, t1: t4:75b42000 
+[FAILED]: 3995 matched, 7354 mismatch
+
+0 PASSED, 1 FAILED

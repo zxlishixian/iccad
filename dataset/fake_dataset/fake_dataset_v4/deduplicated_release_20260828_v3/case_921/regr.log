@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[137] : pc[80000346] div	x29,x30,x25: t4:00000000 
+spike[137] : pc[80000342] sltiu   t2, t2, -362: t2:00000001 
+[FAILED]: 214 matched, 4409 mismatch
+
+0 PASSED, 1 FAILED

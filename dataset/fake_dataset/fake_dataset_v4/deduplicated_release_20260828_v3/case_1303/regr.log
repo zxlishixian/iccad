@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[186] : pc[8000049e] ori	x10,x13,-143: a0:fffffff1 
+spike[186] : pc[8000046e] c.xor   a5, a2: a5:163122c6 
+[FAILED]: 187 matched, 3963 mismatch
+
+0 PASSED, 1 FAILED

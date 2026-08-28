@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[39] : pc[8000010c] addi	x27,x27,-165: s11:f2493f5c 
+spike[39] : pc[8000010c] addi    s11, s11, -165: s11:f2493f5b 
+Mismatch[1611]:
+[2592] ibex : pc[8000461a] andi	x2,x5,-56: sp:ffffffc8 
+[FAILED]: 636 matched, 1611 mismatch
+
+0 PASSED, 1 FAILED

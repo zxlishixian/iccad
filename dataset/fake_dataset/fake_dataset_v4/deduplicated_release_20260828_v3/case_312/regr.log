@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[93] : pc[800001e4] rem	x5,x24,x7: t0:ffffffff 
+spike[93] : pc[800001e4] rem     t0, s8, t2: t0:0389e8ac 
+Mismatch[7288]:
+[9411] ibex : pc[80008640] mulhsu	x31,x7,x20: t6:00000000 
+[FAILED]: 392 matched, 7288 mismatch
+
+0 PASSED, 1 FAILED

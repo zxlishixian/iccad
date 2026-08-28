@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1521] : pc[8000e7d0] sra	x27,x13,x8: s11:00000000 
+spike[1521] : pc[8000e7be] slti    s5, s9, 999: s5:00000001 
+[FAILED]: 1127 matched, 3728 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[72] : pc[80000186] sltiu	x12,x26,60: a2:00000001 
+spike[72] : pc[8000018a] divu    a0, s9, a0: a0:1109eb8c 
+[FAILED]: 219 matched, 7830 mismatch
+
+0 PASSED, 1 FAILED

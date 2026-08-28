@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[98] : pc[80000224] lb	x15,-2043(x2): a5:00000000 
+spike[98] : pc[80000224] lb      a5, -2043(sp): a5:00000038 
+[FAILED]: 219 matched, 22744 mismatch
+
+0 PASSED, 1 FAILED

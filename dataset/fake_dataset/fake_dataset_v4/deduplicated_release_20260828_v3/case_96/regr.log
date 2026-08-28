@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[222] : pc[8000534e] lb	x7,16(x8): t2:00000094 
+spike[222] : pc[8000534e] lb      t2, 16(s0): t2:ffffff94 
+[FAILED]: 2410 matched, 34531 mismatch
+
+0 PASSED, 1 FAILED

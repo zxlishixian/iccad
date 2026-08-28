@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[66] : pc[80000176] c.srai	x15,0x18: a5:000000ff 
+spike[66] : pc[80000178] sub     t0, s0, gp: t0:80000000 
+Mismatch[8017]:
+[9424] ibex : pc[800083d2] and	x27,x26,x22: s11:06121131 
+[FAILED]: 63 matched, 8017 mismatch
+
+0 PASSED, 1 FAILED

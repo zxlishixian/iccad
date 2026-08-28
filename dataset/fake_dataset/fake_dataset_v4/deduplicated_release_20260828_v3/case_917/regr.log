@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[128] : pc[800002f8] sltiu	x29,x16,-1009: t4:00000000 
+spike[128] : pc[800002f8] sltiu   t4, a6, -1009: t4:00000001 
+[FAILED]: 184 matched, 2462 mismatch
+
+0 PASSED, 1 FAILED

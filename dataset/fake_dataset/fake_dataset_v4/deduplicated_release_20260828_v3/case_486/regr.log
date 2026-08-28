@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[3624] : pc[8000865a] auipc	x18,0x3325a: s2:b326265b 
+spike[3624] : pc[8000865a] auipc   s2, 0x3325a: s2:b326265a 
+[FAILED]: 5036 matched, 2 mismatch
+
+0 PASSED, 1 FAILED

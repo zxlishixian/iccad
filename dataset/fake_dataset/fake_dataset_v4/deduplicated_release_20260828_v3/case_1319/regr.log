@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2710] : pc[80002eb8] xori	x15,x29,-853: a5:fffffcbf 
+spike[2710] : pc[80002eb8] xori    a5, t4, -853: a5:fffffc94 
+[FAILED]: 10106 matched, 10 mismatch
+
+0 PASSED, 1 FAILED

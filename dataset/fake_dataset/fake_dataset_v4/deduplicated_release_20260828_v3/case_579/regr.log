@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[106] : pc[80009abc] c.addi	x17,-24: a7:80023d78 
+spike[106] : pc[80009ab8] sll     t0, a3, t3: t0:00080000 
+Mismatch[13821]:
+[18891] ibex : pc[800011d4] c.sub	x8,x9: s0:000000f1 
+[FAILED]: 126 matched, 13821 mismatch
+
+0 PASSED, 1 FAILED

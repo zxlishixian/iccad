@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[169] : pc[8000f904] rem	x28,x8,x28: t3:00000000 
+spike[169] : pc[8000f904] rem     t3, s0, t3: t3:00006462 
+Mismatch[6681]:
+[9895] ibex : pc[80000522] mul	x19,x15,x29: s3:00000000 
+[FAILED]: 1961 matched, 6681 mismatch
+
+0 PASSED, 1 FAILED

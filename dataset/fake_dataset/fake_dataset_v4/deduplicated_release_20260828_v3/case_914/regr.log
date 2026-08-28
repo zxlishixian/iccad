@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[68] : pc[800001fc] sltiu	x13,x14,-866: a3:00000000 
+spike[68] : pc[800001fc] sltiu   a3, a4, -866: a3:00000001 
+[FAILED]: 136 matched, 2675 mismatch
+
+0 PASSED, 1 FAILED

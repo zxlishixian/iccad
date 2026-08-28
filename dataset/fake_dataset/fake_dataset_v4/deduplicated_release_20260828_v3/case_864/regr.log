@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[350] : pc[8000095c] srai	x27,x23,0x12: s11:00003fff 
+spike[350] : pc[8000095c] srai    s11, s7, 18: s11:ffffffff 
+[FAILED]: 417 matched, 746 mismatch
+
+0 PASSED, 1 FAILED

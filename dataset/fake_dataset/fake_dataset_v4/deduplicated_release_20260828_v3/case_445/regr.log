@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[90] : pc[800087ca] div	x18,x26,x3: s2:ff7f7c00 
+spike[90] : pc[800087ca] div     s2, s10, gp: s2:00000000 
+Mismatch[8707]:
+[10361] ibex : pc[8000864c] add	x2,x27,x31: sp:8001ee7c 
+[FAILED]: 162 matched, 8707 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[71] : pc[80000184] auipc	x26,0x32ff: s10:832ff184 
+spike[71] : pc[80000172] c.addi  s4, -10: s4:fffffff3 
+[FAILED]: 65 matched, 6374 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[168] : pc[80002f50] ori	x14,x22,551: a4:80001e3f 
+spike[168] : pc[80002f4c] sltiu   s9, a1, -155: s9:00000001 
+Mismatch[6881]:
+[8320] ibex : pc[80001b22] auipc	x5,0x319b0: t0:b19b1b22 
+[FAILED]: 170 matched, 6881 mismatch
+
+0 PASSED, 1 FAILED

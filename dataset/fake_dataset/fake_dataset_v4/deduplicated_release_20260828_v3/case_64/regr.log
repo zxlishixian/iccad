@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[40] : pc[80000116] addi	x27,x27,359: s11:0bd0b168 
+spike[40] : pc[80000116] addi    s11, s11, 359: s11:0bd0b167 
+[FAILED]: 680 matched, 160 mismatch
+
+0 PASSED, 1 FAILED

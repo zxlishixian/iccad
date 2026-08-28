@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[6077] : pc[8000e0b6] c.slli	x26,0x17: s10:01800000 
+spike[6077] : pc[8000e09e] mulh    a3, t6, a1: a3:00000000 
+[FAILED]: 5585 matched, 12584 mismatch
+
+0 PASSED, 1 FAILED

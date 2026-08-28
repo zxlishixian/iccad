@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[566] : pc[80001520] andi	x27,x22,-567: s11:fffffdc9 
+spike[566] : pc[80001520] andi    s11, s6, -567: s11:00000000 
+[FAILED]: 1074 matched, 1 mismatch
+
+0 PASSED, 1 FAILED

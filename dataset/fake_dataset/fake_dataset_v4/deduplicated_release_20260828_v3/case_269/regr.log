@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[496] : pc[80002d1c] c.xor	x13,x12: a3:000b0680 
+spike[496] : pc[80002cfc] sltu    ra, s8, a5: ra:00000001 
+Mismatch[2398]:
+[3289] ibex : pc[80002426] add	x22,x8,x29: s6:fffffe3c 
+[FAILED]: 524 matched, 2398 mismatch
+
+0 PASSED, 1 FAILED

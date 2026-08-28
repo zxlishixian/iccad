@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[308] : pc[800004d0] sra	x16,x19,x30: a6:00000000 
+spike[308] : pc[800004d0] sra     a6, s3, t5: a6:0000002a 
+Mismatch[7143]:
+[9411] ibex : pc[80008374] c.addi16sp	x2,-16: sp:0f5e0cbe 
+[FAILED]: 909 matched, 7143 mismatch
+
+0 PASSED, 1 FAILED

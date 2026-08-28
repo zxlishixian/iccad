@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[308] : pc[80001bbc] sll	x30,x14,x13: t5:50000000 
+spike[308] : pc[80001b88] srl     s1, tp, t5: s1:8001ee7c 
+[FAILED]: 306 matched, 30313 mismatch
+
+0 PASSED, 1 FAILED

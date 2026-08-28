@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[206] : pc[8000044a] or	x25,x2,x24: s9:67d1fb02 
+spike[206] : pc[8000044a] or      s9, sp, s8: s9:e7d1fb02 
+Mismatch[1543]:
+[3114] ibex : pc[8000527c] c.mv	x31,x16: t6:80027e7c 
+[FAILED]: 555 matched, 1543 mismatch
+
+0 PASSED, 1 FAILED

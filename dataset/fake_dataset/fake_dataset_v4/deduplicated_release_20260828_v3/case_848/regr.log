@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[105] : pc[8000024c] rem	x2,x27,x27: sp:00000001 
+spike[105] : pc[8000024c] rem     sp, s11, s11: sp:00000000 
+Mismatch[2754]:
+[3434] ibex : pc[800011e0] csrrc	x3,mscratch,x4: gp:00017010 
+[FAILED]: 196 matched, 2754 mismatch
+
+0 PASSED, 1 FAILED

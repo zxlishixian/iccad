@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[70] : pc[8000669e] div	x2,x16,x14: sp:fffe1184 
+spike[70] : pc[8000669e] div     sp, a6, a4: sp:00000001 
+Mismatch[1653]:
+[2079] ibex : pc[80002b76] lui	x9,0x94498: s1:94498000 
+[FAILED]: 136 matched, 1653 mismatch
+
+0 PASSED, 1 FAILED

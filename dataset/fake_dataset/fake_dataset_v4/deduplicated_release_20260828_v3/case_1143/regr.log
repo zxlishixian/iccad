@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1571] : pc[8000ed3c] andi	x11,x22,-239: a1:80027e10 
+spike[1571] : pc[8000ed48] c.and   s0, a2: s0:30205801 
+[FAILED]: 1394 matched, 4804 mismatch
+
+0 PASSED, 1 FAILED

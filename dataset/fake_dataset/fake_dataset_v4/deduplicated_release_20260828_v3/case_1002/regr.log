@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[116] : pc[80008322] c.add	x12,x28: a2:8001ee7c 
+spike[116] : pc[8000835c] div     a7, t6, s7: a7:00000000 
+[FAILED]: 99 matched, 1173 mismatch
+
+0 PASSED, 1 FAILED

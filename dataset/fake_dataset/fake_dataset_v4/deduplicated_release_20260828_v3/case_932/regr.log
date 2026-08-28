@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[87] : pc[800001de] remu	x30,x26,x22: t5:b90c6948 
+spike[87] : pc[800001de] remu    t5, s10, s6: t5:b90c6949 
+Mismatch[4255]:
+[5419] ibex : pc[80004414] sltiu	x28,x1,-808: t3:00000001 
+[FAILED]: 445 matched, 4255 mismatch
+
+0 PASSED, 1 FAILED

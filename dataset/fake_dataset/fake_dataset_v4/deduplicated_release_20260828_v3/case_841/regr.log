@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[80] : pc[8000020a] c.xor	x14,x10: a4:ff63bdef 
+spike[80] : pc[8000020a] c.xor   a4, a0: a4:074385e7 
+Mismatch[2822]:
+[3614] ibex : pc[80002702] c.andi	x12,20: a2:00000000 
+[FAILED]: 134 matched, 2822 mismatch
+
+0 PASSED, 1 FAILED

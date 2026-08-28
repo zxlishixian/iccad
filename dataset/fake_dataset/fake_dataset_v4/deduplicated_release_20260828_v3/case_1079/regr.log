@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[4130] : pc[80007a42] rem	x15,x19,x19: a5:ffffff56 
+spike[4130] : pc[80007a46] lb      s7, 12(sp): s7:ffffffef 
+[FAILED]: 3961 matched, 5192 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2049] : pc[800006d6] xori	x2,x18,-731: sp:ffffffaf 
+spike[2049] : pc[800006d6] xori    sp, s2, -731: sp:8000078a 
+[FAILED]: 2238 matched, 1 mismatch
+
+0 PASSED, 1 FAILED

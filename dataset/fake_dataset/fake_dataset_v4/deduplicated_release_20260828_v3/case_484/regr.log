@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[45] : pc[80000122] addi	x30,x30,-674: t5:fffffd5e 
+spike[45] : pc[80000122] addi    t5, t5, -674: t5:8001ee7c 
+Mismatch[7710]:
+[9369] ibex : pc[8000190a] csrrsi	x4,mscratch,18: tp:ffffff16 
+[FAILED]: 109 matched, 7710 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[115] : pc[80000288] lh	x11,-1814(x4): a1:ffffffff 
+spike[115] : pc[80000288] lh      a1, -1814(tp): a1:ffffff86 
+[FAILED]: 780 matched, 38506 mismatch
+
+0 PASSED, 1 FAILED

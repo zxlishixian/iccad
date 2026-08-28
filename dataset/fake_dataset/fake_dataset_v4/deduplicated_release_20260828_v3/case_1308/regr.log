@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[113] : pc[80007e20] ori	x27,x3,-414: s11:fffffe78 
+spike[113] : pc[80007e20] ori     s11, gp, -414: s11:fffffe7a 
+[FAILED]: 3917 matched, 4686 mismatch
+
+0 PASSED, 1 FAILED

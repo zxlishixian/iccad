@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[124] : pc[800001fe] lb	x3,15(x28): gp:00000000 
+spike[124] : pc[800001fa] slti    a7, a4, 11: a7:00000001 
+[FAILED]: 234 matched, 8266 mismatch
+
+0 PASSED, 1 FAILED

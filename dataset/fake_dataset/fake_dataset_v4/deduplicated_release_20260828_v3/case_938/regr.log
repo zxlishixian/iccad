@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[188] : pc[80000404] rem	x4,x8,x31: tp:00000049 
+spike[188] : pc[80000404] rem     tp, s0, t6: tp:00000048 
+Mismatch[6246]:
+[8623] ibex : pc[80008b80] sll	x25,x8,x3: s9:00000000 
+[FAILED]: 1609 matched, 6246 mismatch
+
+0 PASSED, 1 FAILED

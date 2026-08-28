@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[55] : pc[80008466] addi	x30,x30,-2048: t5:00001801 
+spike[55] : pc[80008466] addi    t5, t5, -2048: t5:00001800 
+Mismatch[7050]:
+[9450] ibex : pc[8000840e] sub	x2,x12,x3: sp:4d058c8c 
+[FAILED]: 1142 matched, 7050 mismatch
+
+0 PASSED, 1 FAILED

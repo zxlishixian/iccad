@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[152] : pc[8000029e] c.mv	x21,x30: s5:00027c98 
+spike[152] : pc[800002a0] sltiu   s7, s11, -987: s7:00000001 
+Mismatch[7998]:
+[9437] ibex : pc[800083b2] or	x11,x25,x0: a1:80015e7c 
+[FAILED]: 138 matched, 7998 mismatch
+
+0 PASSED, 1 FAILED

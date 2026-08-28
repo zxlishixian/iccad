@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[239] : pc[80000518] rem	x21,x11,x19: s5:00000000 
+spike[239] : pc[80000518] rem     s5, a1, s3: s5:80018797 
+Mismatch[10184]:
+[11472] ibex : pc[80000656] auipc	x19,0x3f4b2: s3:bf4b2656 
+[FAILED]: 257 matched, 10184 mismatch
+
+0 PASSED, 1 FAILED

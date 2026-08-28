@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[51] : pc[8000839e] addi	x11,x11,-2048: a1:00001801 
+spike[51] : pc[8000839e] addi    a1, a1, -2048: a1:00001800 
+Mismatch[6930]:
+[9405] ibex : pc[8000834c] srai	x1,x15,0x17: ra:00000000 
+[FAILED]: 1063 matched, 6930 mismatch
+
+0 PASSED, 1 FAILED

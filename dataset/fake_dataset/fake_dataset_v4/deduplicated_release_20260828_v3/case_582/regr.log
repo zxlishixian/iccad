@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[73] : pc[800071ae] xor	x3,x13,x19: gp:0001ee70 
+spike[73] : pc[800071d4] c.add   s11, sp: s11:00000010 
+Mismatch[3839]:
+[4706] ibex : pc[80003be0] lw	x4,4(x11): tp:8000020a 
+[FAILED]: 86 matched, 3839 mismatch
+
+0 PASSED, 1 FAILED

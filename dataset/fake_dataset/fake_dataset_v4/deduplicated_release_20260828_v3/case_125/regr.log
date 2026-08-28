@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[196] : pc[8000060c] div	x26,x31,x6: s10:f8019e90 
+spike[196] : pc[8000060c] div     s10, t6, t1: s10:0000000f 
+Mismatch[9059]:
+[11184] ibex : pc[80007888] mul	x14,x7,x20: a4:001a1d8d 
+[FAILED]: 569 matched, 9059 mismatch
+
+0 PASSED, 1 FAILED

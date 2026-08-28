@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[109] : pc[8000020c] addi	x1,x1,642: ra:8001648b 
+spike[109] : pc[8000020c] addi    ra, ra, 642: ra:8001648a 
+[FAILED]: 177 matched, 173 mismatch
+
+0 PASSED, 1 FAILED

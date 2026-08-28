@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1338] : pc[80005fb2] xori	x27,x13,42: s11:ffffffff 
+spike[1338] : pc[80005fb2] xori    s11, a3, 42: s11:ffffffd5 
+[FAILED]: 4043 matched, 7 mismatch
+
+0 PASSED, 1 FAILED

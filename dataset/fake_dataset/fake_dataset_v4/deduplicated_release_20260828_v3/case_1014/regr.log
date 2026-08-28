@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[155] : pc[80000334] lw	x29,1636(x2): t4:c7ece000 
+spike[155] : pc[80000334] lw      t4, 1636(sp): t4:e3f67000 
+[FAILED]: 1058 matched, 29077 mismatch
+
+0 PASSED, 1 FAILED

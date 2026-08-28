@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[365] : pc[80006470] divu	x25,x20,x20: s9:00000000 
+spike[365] : pc[80006470] divu    s9, s4, s4: s9:00000001 
+[FAILED]: 323 matched, 2317 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,433 @@
+{
+  "dataset": "deduplicated_release_20260828_v3",
+  "dedup_signature": "SHA256 of decompressed regr.log, sim.log.gz, and trace.log.gz",
+  "source_packages": 53,
+  "source_case_copies": 1452,
+  "output_cases": 1376,
+  "duplicate_groups_removed": 76,
+  "duplicate_case_copies_removed": 76,
+  "distinct_bugs": 118,
+  "empty_bug_labels": 0,
+  "cases_by_bug": {
+    "bug_041": 20,
+    "bug_045": 19,
+    "bug_047": 10,
+    "bug_048": 17,
+    "bug_049": 22,
+    "bug_051": 15,
+    "bug_052": 7,
+    "bug_053": 20,
+    "bug_054": 20,
+    "bug_071": 20,
+    "bug_072": 14,
+    "bug_073": 20,
+    "bug_074": 20,
+    "bug_075": 20,
+    "bug_076": 20,
+    "bug_077": 20,
+    "bug_078": 20,
+    "bug_079": 20,
+    "bug_080": 19,
+    "bug_081": 20,
+    "bug_103": 34,
+    "bug_128": 22,
+    "bug_129": 20,
+    "bug_130": 20,
+    "bug_132": 20,
+    "bug_133": 7,
+    "bug_134": 13,
+    "bug_136": 13,
+    "bug_141": 20,
+    "bug_143": 19,
+    "bug_145": 20,
+    "bug_146": 20,
+    "bug_147": 20,
+    "bug_152": 20,
+    "bug_153": 14,
+    "bug_156": 8,
+    "bug_160": 12,
+    "bug_161": 20,
+    "bug_162": 13,
+    "bug_169": 20,
+    "bug_170": 20,
+    "bug_173": 20,
+    "bug_176": 20,
+    "bug_178": 13,
+    "bug_179": 16,
+    "bug_181": 10,
+    "bug_182": 20,
+    "bug_185": 14,
+    "bug_186": 18,
+    "bug_193": 6,
+    "bug_194": 2,
+    "bug_195": 21,
+    "bug_196": 17,
+    "bug_197": 8,
+    "bug_198": 8,
+    "bug_205": 4,
+    "bug_206": 4,
+    "bug_211": 13,
+    "bug_218": 9,
+    "bug_222": 8,
+    "bug_223": 9,
+    "bug_224": 9,
+    "bug_225": 9,
+    "bug_226": 9,
+    "bug_228": 14,
+    "bug_229": 14,
+    "bug_234": 3,
+    "bug_239": 8,
+    "bug_240": 12,
+    "bug_241": 13,
+    "bug_242": 8,
+    "bug_243": 12,
+    "bug_244": 12,
+    "bug_245": 12,
+    "bug_246": 10,
+    "bug_247": 3,
+    "bug_249": 4,
+    "bug_253": 16,
+    "bug_254": 12,
+    "bug_255": 16,
+    "bug_256": 16,
+    "bug_257": 14,
+    "bug_261": 5,
+    "bug_262": 6,
+    "bug_263": 5,
+    "bug_264": 2,
+    "bug_265": 4,
+    "bug_266": 4,
+    "bug_268": 4,
+    "bug_269": 6,
+    "bug_273": 9,
+    "bug_276": 9,
+    "bug_280": 9,
+    "bug_281": 8,
+    "bug_282": 9,
+    "bug_283": 9,
+    "bug_284": 3,
+    "bug_285": 3,
+    "bug_289": 3,
+    "bug_290": 3,
+    "bug_291": 3,
+    "bug_292": 3,
+    "bug_304": 3,
+    "bug_305": 3,
+    "bug_306": 4,
+    "bug_307": 4,
+    "bug_308": 2,
+    "bug_309": 2,
+    "bug_310": 6,
+    "bug_311": 6,
+    "bug_312": 4,
+    "bug_313": 4,
+    "bug_315": 2,
+    "bug_316": 4,
+    "bug_317": 8,
+    "bug_318": 6,
+    "bug_319": 3,
+    "bug_320": 4
+  },
+  "duplicate_package_pairs": [
+    {
+      "count": 8,
+      "kept_package": "branch_supplement_20260827.tar.gz",
+      "removed_package": "decode_branch_supplement_20260827.tar.gz"
+    },
+    {
+      "count": 6,
+      "kept_package": "coverage64_release_20260827_v5.tar.gz",
+      "removed_package": "alu_supplement_20260827.tar.gz"
+    },
+    {
+      "count": 6,
+      "kept_package": "coverage64_release_20260827_v5.tar.gz",
+      "removed_package": "debug_supplement_20260827.tar.gz"
+    },
+    {
+      "count": 20,
+      "kept_package": "coverage64_release_20260827_v5.tar.gz",
+      "removed_package": "interrupt_state_supplement_20260827.tar.gz"
+    },
+    {
+      "count": 6,
+      "kept_package": "coverage64_release_20260827_v5.tar.gz",
+      "removed_package": "mdu_supplement_20260827_v4.tar.gz"
+    },
+    {
+      "count": 26,
+      "kept_package": "coverage64_release_20260827_v5.tar.gz",
+      "removed_package": "register_pipeline_supplement_20260827_v2.tar.gz"
+    },
+    {
+      "count": 4,
+      "kept_package": "p0_alu_balance_239_240_20260828.tar.gz",
+      "removed_package": "p0_alu_decode_balance_239_241_20260828.tar.gz"
+    }
+  ],
+  "duplicate_examples": [
+    {
+      "kept": {
+        "package": "coverage64_release_20260827_v5.tar.gz",
+        "case": "case_78",
+        "source_case": "case_868",
+        "bug_id": "bug_218"
+      },
+      "removed": {
+        "package": "register_pipeline_supplement_20260827_v2.tar.gz",
+        "case": "case_1",
+        "bug_id": "bug_218"
+      }
+    },
+    {
+      "kept": {
+        "package": "coverage64_release_20260827_v5.tar.gz",
+        "case": "case_77",
+        "source_case": "case_869",
+        "bug_id": "bug_218"
+      },
+      "removed": {
+        "package": "register_pipeline_supplement_20260827_v2.tar.gz",
+        "case": "case_2",
+        "bug_id": "bug_218"
+      }
+    },
+    {
+      "kept": {
+        "package": "coverage64_release_20260827_v5.tar.gz",
+        "case": "case_75",
+        "source_case": "case_870",
+        "bug_id": "bug_218"
+      },
+      "removed": {
+        "package": "register_pipeline_supplement_20260827_v2.tar.gz",
+        "case": "case_3",
+        "bug_id": "bug_218"
+      }
+    },
+    {
+      "kept": {
+        "package": "coverage64_release_20260827_v5.tar.gz",
+        "case": "case_74",
+        "source_case": "case_871",
+        "bug_id": "bug_218"
+      },
+      "removed": {
+        "package": "register_pipeline_supplement_20260827_v2.tar.gz",
+        "case": "case_4",
+        "bug_id": "bug_218"
+      }
+    },
+    {
+      "kept": {
+        "package": "coverage64_release_20260827_v5.tar.gz",
+        "case": "case_73",
+        "source_case": "case_872",
+        "bug_id": "bug_218"
+      },
+      "removed": {
+        "package": "register_pipeline_supplement_20260827_v2.tar.gz",
+        "case": "case_5",
+        "bug_id": "bug_218"
+      }
+    },
+    {
+      "kept": {
+        "package": "coverage64_release_20260827_v5.tar.gz",
+        "case": "case_72",
+        "source_case": "case_873",
+        "bug_id": "bug_218"
+      },
+      "removed": {
+        "package": "register_pipeline_supplement_20260827_v2.tar.gz",
+        "case": "case_6",
+        "bug_id": "bug_218"
+      }
+    },
+    {
+      "kept": {
+        "package": "coverage64_release_20260827_v5.tar.gz",
+        "case": "case_71",
+        "source_case": "case_874",
+        "bug_id": "bug_218"
+      },
+      "removed": {
+        "package": "register_pipeline_supplement_20260827_v2.tar.gz",
+        "case": "case_7",
+        "bug_id": "bug_218"
+      }
+    },
+    {
+      "kept": {
+        "package": "coverage64_release_20260827_v5.tar.gz",
+        "case": "case_70",
+        "source_case": "case_875",
+        "bug_id": "bug_218"
+      },
+      "removed": {
+        "package": "register_pipeline_supplement_20260827_v2.tar.gz",
+        "case": "case_8",
+        "bug_id": "bug_218"
+      }
+    },
+    {
+      "kept": {
+        "package": "coverage64_release_20260827_v5.tar.gz",
+        "case": "case_69",
+        "source_case": "case_876",
+        "bug_id": "bug_218"
+      },
+      "removed": {
+        "package": "register_pipeline_supplement_20260827_v2.tar.gz",
+        "case": "case_9",
+        "bug_id": "bug_218"
+      }
+    },
+    {
+      "kept": {
+        "package": "coverage64_release_20260827_v5.tar.gz",
+        "case": "case_68",
+        "source_case": "case_877",
+        "bug_id": "bug_222"
+      },
+      "removed": {
+        "package": "register_pipeline_supplement_20260827_v2.tar.gz",
+        "case": "case_10",
+        "bug_id": "bug_222"
+      }
+    },
+    {
+      "kept": {
+        "package": "coverage64_release_20260827_v5.tar.gz",
+        "case": "case_67",
+        "source_case": "case_878",
+        "bug_id": "bug_222"
+      },
+      "removed": {
+        "package": "register_pipeline_supplement_20260827_v2.tar.gz",
+        "case": "case_11",
+        "bug_id": "bug_222"
+      }
+    },
+    {
+      "kept": {
+        "package": "coverage64_release_20260827_v5.tar.gz",
+        "case": "case_66",
+        "source_case": "case_879",
+        "bug_id": "bug_222"
+      },
+      "removed": {
+        "package": "register_pipeline_supplement_20260827_v2.tar.gz",
+        "case": "case_12",
+        "bug_id": "bug_222"
+      }
+    },
+    {
+      "kept": {
+        "package": "coverage64_release_20260827_v5.tar.gz",
+        "case": "case_64",
+        "source_case": "case_880",
+        "bug_id": "bug_222"
+      },
+      "removed": {
+        "package": "register_pipeline_supplement_20260827_v2.tar.gz",
+        "case": "case_13",
+        "bug_id": "bug_222"
+      }
+    },
+    {
+      "kept": {
+        "package": "coverage64_release_20260827_v5.tar.gz",
+        "case": "case_63",
+        "source_case": "case_881",
+        "bug_id": "bug_222"
+      },
+      "removed": {
+        "package": "register_pipeline_supplement_20260827_v2.tar.gz",
+        "case": "case_14",
+        "bug_id": "bug_222"
+      }
+    },
+    {
+      "kept": {
+        "package": "coverage64_release_20260827_v5.tar.gz",
+        "case": "case_62",
+        "source_case": "case_882",
+        "bug_id": "bug_222"
+      },
+      "removed": {
+        "package": "register_pipeline_supplement_20260827_v2.tar.gz",
+        "case": "case_15",
+        "bug_id": "bug_222"
+      }
+    },
+    {
+      "kept": {
+        "package": "coverage64_release_20260827_v5.tar.gz",
+        "case": "case_61",
+        "source_case": "case_883",
+        "bug_id": "bug_222"
+      },
+      "removed": {
+        "package": "register_pipeline_supplement_20260827_v2.tar.gz",
+        "case": "case_16",
+        "bug_id": "bug_222"
+      }
+    },
+    {
+      "kept": {
+        "package": "coverage64_release_20260827_v5.tar.gz",
+        "case": "case_60",
+        "source_case": "case_884",
+        "bug_id": "bug_222"
+      },
+      "removed": {
+        "package": "register_pipeline_supplement_20260827_v2.tar.gz",
+        "case": "case_17",
+        "bug_id": "bug_222"
+      }
+    },
+    {
+      "kept": {
+        "package": "coverage64_release_20260827_v5.tar.gz",
+        "case": "case_59",
+        "source_case": "case_885",
+        "bug_id": "bug_223"
+      },
+      "removed": {
+        "package": "register_pipeline_supplement_20260827_v2.tar.gz",
+        "case": "case_18",
+        "bug_id": "bug_223"
+      }
+    },
+    {
+      "kept": {
+        "package": "coverage64_release_20260827_v5.tar.gz",
+        "case": "case_58",
+        "source_case": "case_886",
+        "bug_id": "bug_223"
+      },
+      "removed": {
+        "package": "register_pipeline_supplement_20260827_v2.tar.gz",
+        "case": "case_19",
+        "bug_id": "bug_223"
+      }
+    },
+    {
+      "kept": {
+        "package": "coverage64_release_20260827_v5.tar.gz",
+        "case": "case_57",
+        "source_case": "case_887",
+        "bug_id": "bug_223"
+      },
+      "removed": {
+        "package": "register_pipeline_supplement_20260827_v2.tar.gz",
+        "case": "case_20",
+        "bug_id": "bug_223"
+      }
+    }
+  ],
+  "cross_bug_duplicate_groups": 0,
+  "within_package_duplicate_groups": 0,
+  "policy": "Primary package has precedence; supplements follow manifest order. Original packages remain unchanged."
+}

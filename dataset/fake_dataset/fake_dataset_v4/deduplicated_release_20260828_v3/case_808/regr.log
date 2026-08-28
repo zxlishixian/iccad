@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[3188] : pc[80002cf4] c.srai	x8,0x7: s0:01f0002b 
+spike[3188] : pc[80002cf4] c.srai  s0, 7: s0:fff0002b 
+[FAILED]: 8038 matched, 3 mismatch
+
+0 PASSED, 1 FAILED

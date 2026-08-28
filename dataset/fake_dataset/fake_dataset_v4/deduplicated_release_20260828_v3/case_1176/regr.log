@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1530] : pc[80006424] addi	x27,x27,-375: s11:3fffffe2 
+spike[1530] : pc[80006424] addi    s11, s11, -375: s11:3fffffe3 
+[FAILED]: 3557 matched, 7 mismatch
+
+0 PASSED, 1 FAILED

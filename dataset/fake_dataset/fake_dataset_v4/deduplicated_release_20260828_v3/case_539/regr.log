@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[78] : pc[800001c8] lhu	x8,36(x26): s0:00000000 
+spike[78] : pc[800001c8] lhu     s0, 36(s10): s0:0000aa81 
+[FAILED]: 110 matched, 36310 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[520] : pc[8000a516] rem	x10,x10,x23: a0:ffffffff 
+spike[520] : pc[8000a51e] sll     s2, s0, s6: s2:000002ec 
+[FAILED]: 413 matched, 15480 mismatch
+
+0 PASSED, 1 FAILED

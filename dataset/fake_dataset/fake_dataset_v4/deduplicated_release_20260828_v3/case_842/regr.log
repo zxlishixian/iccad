@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[80] : pc[800001ee] srai	x20,x16,0x17: s4:00000125 
+spike[80] : pc[800001ee] srai    s4, a6, 23: s4:ffffff25 
+Mismatch[4011]:
+[4992] ibex : pc[80005a26] lui	x27,0x71993: s11:71993000 
+[FAILED]: 301 matched, 4011 mismatch
+
+0 PASSED, 1 FAILED

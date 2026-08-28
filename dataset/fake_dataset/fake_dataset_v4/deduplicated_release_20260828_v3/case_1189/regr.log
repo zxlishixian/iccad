@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[176] : pc[800003bc] sub	x27,x21,x18: s11:00000001 
+spike[176] : pc[800003bc] sub     s11, s5, s2: s11:00000000 
+[FAILED]: 228 matched, 5010 mismatch
+
+0 PASSED, 1 FAILED

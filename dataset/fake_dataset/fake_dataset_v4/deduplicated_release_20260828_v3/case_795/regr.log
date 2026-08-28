@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[405] : pc[80000c84] mul	x19,x21,x8: s3:80017539 
+spike[405] : pc[80000c84] mul     s3, s5, s0: s3:7ff2e0d2 
+[FAILED]: 1169 matched, 1823 mismatch
+
+0 PASSED, 1 FAILED

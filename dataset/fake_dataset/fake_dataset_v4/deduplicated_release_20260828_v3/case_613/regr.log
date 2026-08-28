@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[246] : pc[800004c8] mul	x31,x25,x8: t6:fffff664 
+spike[246] : pc[800004f6] c.addi4spn a2, sp, 640: a2:c0000457 
+Mismatch[6095]:
+[6957] ibex : pc[8000202a] add	x16,x24,x14: a6:00005292 
+[FAILED]: 259 matched, 6095 mismatch
+
+0 PASSED, 1 FAILED

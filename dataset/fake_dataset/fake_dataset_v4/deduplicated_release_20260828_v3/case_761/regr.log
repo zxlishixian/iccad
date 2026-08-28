@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[133] : pc[800002aa] sltu	x17,x0,x11: a7:00000000 
+spike[133] : pc[800002aa] snez    a7, a1: a7:00000001 
+[FAILED]: 846 matched, 11219 mismatch
+
+0 PASSED, 1 FAILED

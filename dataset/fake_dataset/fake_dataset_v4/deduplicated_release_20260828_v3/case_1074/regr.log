@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[7006] : pc[8000933c] div	x19,x31,x19: s3:00000000 
+spike[7006] : pc[8000933c] div     s3, t6, s3: s3:ffffffff 
+[FAILED]: 6073 matched, 3961 mismatch
+
+0 PASSED, 1 FAILED

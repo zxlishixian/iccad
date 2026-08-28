@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[118] : pc[8000023a] c.xor	x9,x13: s1:7b82e17f 
+spike[118] : pc[8000023a] c.xor   s1, a3: s1:7b82e13d 
+[FAILED]: 826 matched, 7202 mismatch
+
+0 PASSED, 1 FAILED

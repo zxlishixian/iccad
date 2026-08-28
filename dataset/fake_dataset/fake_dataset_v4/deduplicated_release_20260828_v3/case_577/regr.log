@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[91] : pc[8000031c] slli	x18,x19,0x8: s2:01ae1c00 
+spike[91] : pc[80000354] c.and   s0, a4: s0:00000000 
+[FAILED]: 89 matched, 8224 mismatch
+
+0 PASSED, 1 FAILED

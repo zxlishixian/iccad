@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[2040] : pc[80001cc0] sra	x17,x24,x25: a7:00000001 
+spike[2040] : pc[80001cc0] sra     a7, s8, s9: a7:ffffffff 
+Mismatch[5851]:
+[9417] ibex : pc[80008432] c.srli	x11,0xf: a1:00012bdb 
+[FAILED]: 2272 matched, 5851 mismatch
+
+0 PASSED, 1 FAILED

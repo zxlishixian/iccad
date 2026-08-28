@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[105] : pc[80000206] c.addi	x11,-1: a1:0024fefb 
+spike[105] : pc[80000206] c.addi  a1, -1: a1:0024fedb 
+[FAILED]: 1940 matched, 5906 mismatch
+
+0 PASSED, 1 FAILED

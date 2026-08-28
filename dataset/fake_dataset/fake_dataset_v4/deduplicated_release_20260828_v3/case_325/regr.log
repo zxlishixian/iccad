@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[63] : pc[8000016a] or	x3,x19,x16: gp:63435ee9 
+spike[63] : pc[8000016a] or      gp, s3, a6: gp:63435eeb 
+[FAILED]: 147 matched, 168 mismatch
+
+0 PASSED, 1 FAILED

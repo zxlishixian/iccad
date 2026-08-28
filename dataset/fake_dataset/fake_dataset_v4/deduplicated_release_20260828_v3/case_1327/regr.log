@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[3972] : pc[8000cd9a] divu	x3,x21,x12: gp:007f7fb2 
+spike[3972] : pc[8000cd9a] divu    gp, s5, a2: gp:00000000 
+[FAILED]: 7973 matched, 1054 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[123] : pc[80000242] c.srai	x15,0x5: a5:04000b13 
+spike[123] : pc[80000242] c.srai  a5, 5: a5:fc000b13 
+Mismatch[7623]:
+[9443] ibex : pc[80008344] c.mv	x12,x13: a2:00000021 
+[FAILED]: 291 matched, 7623 mismatch
+
+0 PASSED, 1 FAILED

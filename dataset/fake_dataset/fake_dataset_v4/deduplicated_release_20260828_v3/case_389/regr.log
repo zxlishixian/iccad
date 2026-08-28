@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[62] : pc[80000172] c.mv	x5,x26: t0:81520820 
+spike[62] : pc[8001c080] addi    t4, t4, -124: t4:8002cda0 
+Mismatch[18]:
+[82] ibex : pc[800001ce] sra	x27,x6,x19: s11:ffffffe0 
+[FAILED]: 53 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

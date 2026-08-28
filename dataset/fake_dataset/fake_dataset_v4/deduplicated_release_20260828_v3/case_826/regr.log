@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[71] : pc[800001bc] and	x29,x24,x19: t4:feb97f5f 
+spike[71] : pc[800001bc] and     t4, s8, s3: t4:b4881154 
+Mismatch[4301]:
+[5143] ibex : pc[800040c8] c.addi16sp	x2,96: sp:ffe0000c 
+[FAILED]: 211 matched, 4301 mismatch
+
+0 PASSED, 1 FAILED

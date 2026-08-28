@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[103] : pc[8000021e] andi	x22,x23,672: s6:000002a0 
+spike[103] : pc[8000021e] andi    s6, s7, 672: s6:00000000 
+Mismatch[4503]:
+[5958] ibex : pc[80002730] addi	x26,x15,-1000: s10:fffffc18 
+[FAILED]: 886 matched, 4503 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[74] : pc[800004e6] divu	x14,x29,x3: a4:00000007 
+spike[74] : pc[800004e6] divu    a4, t4, gp: a4:00000000 
+[FAILED]: 65 matched, 2600 mismatch
+
+0 PASSED, 1 FAILED

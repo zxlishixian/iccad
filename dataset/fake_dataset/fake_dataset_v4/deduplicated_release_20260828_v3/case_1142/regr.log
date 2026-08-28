@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1329] : pc[8000a080] addi	x20,x20,-124: s4:8001ad3c 
+spike[1329] : pc[80003d38] xor     s2, t2, s7: s2:80000004 
+[FAILED]: 1130 matched, 1718 mismatch
+
+0 PASSED, 1 FAILED

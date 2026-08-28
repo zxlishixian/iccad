@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[164] : pc[800003e8] c.andi	x10,-1: a0:ffffffff 
+spike[164] : pc[800003ee] slti    t4, a3, -1013: t4:00000000 
+[FAILED]: 130 matched, 1189 mismatch
+
+0 PASSED, 1 FAILED

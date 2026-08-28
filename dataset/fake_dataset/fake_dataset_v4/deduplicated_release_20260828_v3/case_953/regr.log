@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[227] : pc[8000054e] sub	x11,x6,x9: a1:7feaa1a3 
+spike[227] : pc[80000522] mul     s7, t4, a6: s7:0000066c 
+Mismatch[1631]:
+[2206] ibex : pc[80000348] mulhsu	x31,x13,x6: t6:00000000 
+[FAILED]: 207 matched, 1631 mismatch
+
+0 PASSED, 1 FAILED

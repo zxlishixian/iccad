@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[124] : pc[80000246] addi	x19,x31,-849: s3:7ffffcae 
+spike[124] : pc[80000246] addi    s3, t6, -849: s3:7ffffcaf 
+Mismatch[7903]:
+[9391] ibex : pc[8000831e] c.addi16sp	x2,-16: sp:0000028e 
+[FAILED]: 145 matched, 7903 mismatch
+
+0 PASSED, 1 FAILED

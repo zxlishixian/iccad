@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[671] : pc[80000cda] xor	x24,x4,x7: s8:af68f000 
+spike[671] : pc[80000cd2] divu    t2, s2, a5: t2:00000001 
+Mismatch[7661]:
+[10850] ibex : pc[80001f70] srl	x11,x0,x22: a1:00000000 
+[FAILED]: 490 matched, 7661 mismatch
+
+0 PASSED, 1 FAILED

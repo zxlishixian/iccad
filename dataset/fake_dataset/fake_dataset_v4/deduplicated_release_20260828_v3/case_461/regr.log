@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[560] : pc[80003180] and	x6,x0,x25: t1:80028e7c 
+spike[560] : pc[80003180] and     t1, zero, s9: t1:00000000 
+[FAILED]: 3589 matched, 6029 mismatch
+
+0 PASSED, 1 FAILED

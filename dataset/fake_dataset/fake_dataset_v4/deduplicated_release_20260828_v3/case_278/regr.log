@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[738] : pc[80001c9e] c.addi	x28,-1: t3:ffffffff 
+spike[738] : pc[80001c92] c.xor   s0, a2: s0:000002cc 
+Mismatch[5188]:
+[6549] ibex : pc[80000f42] c.jal	80000f4e: ra:80000f44 
+[FAILED]: 778 matched, 5188 mismatch
+
+0 PASSED, 1 FAILED

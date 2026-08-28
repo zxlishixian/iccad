@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1540] : pc[80001d72] remu	x26,x10,x8: s10:ffffffff 
+spike[1540] : pc[80001d76] csrrsi  t4, mscratch, 18: t4:00000006 
+[FAILED]: 968 matched, 7555 mismatch
+
+0 PASSED, 1 FAILED

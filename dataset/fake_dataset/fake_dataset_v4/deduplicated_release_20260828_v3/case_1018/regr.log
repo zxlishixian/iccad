@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[823] : pc[8000167a] andi	x9,x23,-1021: s1:fffffe4f 
+spike[823] : pc[8000167a] andi    s1, s7, -1021: s1:098a9400 
+[FAILED]: 1171 matched, 812 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[1067] : pc[80000ff4] andi	x18,x23,212: s2:80000ed6 
+spike[1067] : pc[80000ff4] andi    s2, s7, 212: s2:00000080 
+Mismatch[2711]:
+[9245] ibex : pc[80006d1e] or	x2,x28,x18: sp:0000000b 
+[FAILED]: 4113 matched, 2711 mismatch
+
+0 PASSED, 1 FAILED

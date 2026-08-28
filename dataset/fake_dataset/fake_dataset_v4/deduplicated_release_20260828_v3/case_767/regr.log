@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[177] : pc[8000041a] mulh	x22,x5,x19: s6:00000000 
+spike[177] : pc[800003ea] c.slli  a2, 5: a2:ffe1fa40 
+[FAILED]: 165 matched, 798 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[69] : pc[80000194] or	x20,x22,x26: s4:7a1f58ba 
+spike[69] : pc[80000194] or      s4, s6, s10: s4:fa1f58ba 
+[FAILED]: 3103 matched, 309 mismatch
+
+0 PASSED, 1 FAILED

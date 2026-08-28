@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[176] : pc[800020b0] c.li	x11,-1: a1:ffffffff 
+spike[176] : pc[800020c8] csrrs   a3, mscratch, s3: a3:00000012 
+[FAILED]: 155 matched, 1206 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[1168] : pc[800019ce] srai	x21,x8,0x9: s5:ffffffff 
+spike[1168] : pc[800019b6] c.xor   a1, a2: a1:0000000b 
+Mismatch[3188]:
+[5094] ibex : pc[80008286] c.jalr	x1: ra:80008288 
+[FAILED]: 983 matched, 3188 mismatch
+
+0 PASSED, 1 FAILED

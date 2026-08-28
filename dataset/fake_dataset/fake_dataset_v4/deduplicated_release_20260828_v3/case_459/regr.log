@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[86] : pc[800001ca] and	x31,x0,x3: t6:f5131ce6 
+spike[86] : pc[800001ca] and     t6, zero, gp: t6:00000000 
+Mismatch[5855]:
+[8265] ibex : pc[8000d1ce] mulh	x9,x22,x8: s1:ffffff6d 
+[FAILED]: 91 matched, 5855 mismatch
+
+0 PASSED, 1 FAILED

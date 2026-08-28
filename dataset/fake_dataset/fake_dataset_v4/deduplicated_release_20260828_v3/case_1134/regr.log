@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[117] : pc[8000028c] sub	x18,x29,x17: s2:ffffff5f 
+spike[117] : pc[80000288] divu    s3, s0, tp: s3:ffffffff 
+[FAILED]: 122 matched, 5713 mismatch
+
+0 PASSED, 1 FAILED

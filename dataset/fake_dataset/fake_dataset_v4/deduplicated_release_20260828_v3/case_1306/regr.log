@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1700] : pc[80000b84] ori	x19,x20,956: s3:000003a6 
+spike[1700] : pc[80000b84] ori     s3, s4, 956: s3:000003be 
+[FAILED]: 1522 matched, 10759 mismatch
+
+0 PASSED, 1 FAILED

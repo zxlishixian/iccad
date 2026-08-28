@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[184] : pc[8000041a] divu	x29,x7,x31: t4:fe158df5 
+spike[184] : pc[8000041a] divu    t4, t2, t6: t4:22a7d719 
+Mismatch[8464]:
+[10081] ibex : pc[8000110e] csrrc	x9,mscratch,x28: s1:00000000 
+[FAILED]: 219 matched, 8464 mismatch
+
+0 PASSED, 1 FAILED

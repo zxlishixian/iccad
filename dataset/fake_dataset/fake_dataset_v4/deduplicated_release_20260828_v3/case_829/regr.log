@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[108] : pc[80000206] c.sub	x9,x15: s1:ffffbfa0 
+spike[108] : pc[80000204] c.and   a3, a0: a3:00000000 
+Mismatch[7822]:
+[9245] ibex : pc[80008118] divu	x11,x11,x23: a1:00000000 
+[FAILED]: 108 matched, 7822 mismatch
+
+0 PASSED, 1 FAILED

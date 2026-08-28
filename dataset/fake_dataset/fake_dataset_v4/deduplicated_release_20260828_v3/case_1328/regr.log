@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[5291] : pc[80007da4] c.li	x30,4: t5:00000004 
+spike[5291] : pc[80007da0] divu    tp, s5, s9: tp:00000001 
+[FAILED]: 3398 matched, 4436 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[50] : pc[800112cc] addi	x11,x11,-2048: a1:00001801 
+spike[50] : pc[800112cc] addi    a1, a1, -2048: a1:00001800 
+Mismatch[3717]:
+[5773] ibex : pc[8000867c] mulh	x11,x20,x26: a1:ffffffff 
+[FAILED]: 1312 matched, 3717 mismatch
+
+0 PASSED, 1 FAILED

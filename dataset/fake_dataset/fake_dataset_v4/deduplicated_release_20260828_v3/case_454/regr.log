@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[74] : pc[8000019a] or	x12,x27,x12: a2:0655bd4f 
+spike[74] : pc[8000019a] or      a2, s11, a2: a2:f7d5ff5f 
+[FAILED]: 794 matched, 7260 mismatch
+
+0 PASSED, 1 FAILED

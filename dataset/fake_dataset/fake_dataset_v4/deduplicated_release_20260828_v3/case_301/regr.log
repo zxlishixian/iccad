@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[191] : pc[800007aa] or	x23,x27,x30: s7:800156d7 
+spike[191] : pc[800007aa] or      s7, s11, t5: s7:8001f6d7 
+[FAILED]: 2139 matched, 5983 mismatch
+
+0 PASSED, 1 FAILED

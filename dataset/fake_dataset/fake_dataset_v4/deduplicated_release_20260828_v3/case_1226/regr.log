@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[137] : pc[8000049e] divu	x7,x17,x4: t2:00000007 
+spike[137] : pc[800004a2] mulhsu  s0, s8, a6: s0:00000000 
+[FAILED]: 125 matched, 5613 mismatch
+
+0 PASSED, 1 FAILED

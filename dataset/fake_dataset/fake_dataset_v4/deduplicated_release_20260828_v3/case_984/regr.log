@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[884] : pc[8000105c] xori	x2,x16,74: sp:fffffffb 
+spike[884] : pc[8000105c] xori    sp, a6, 74: sp:ffffffb3 
+[FAILED]: 2575 matched, 3 mismatch
+
+0 PASSED, 1 FAILED

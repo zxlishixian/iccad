@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[364] : pc[8000073e] lb	x12,1257(x19): a2:0000008f 
+spike[364] : pc[8000073e] lb      a2, 1257(s3): a2:ffffff8f 
+[FAILED]: 772 matched, 48752 mismatch
+
+0 PASSED, 1 FAILED

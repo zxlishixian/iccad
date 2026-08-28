@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[70] : pc[8000017a] div	x25,x31,x18: s9:2bff89c6 
+spike[70] : pc[80000182] c.lui   s11, 0x1e: s11:0001e000 
+Mismatch[705]:
+[1149] ibex : pc[8000170a] c.slli	x17,0xd: a7:00024000 
+[FAILED]: 251 matched, 705 mismatch
+
+0 PASSED, 1 FAILED

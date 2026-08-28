@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1316] : pc[8000e20a] xor	x3,x9,x20: gp:c8ff91df 
+spike[1316] : pc[8000e20a] xor     gp, s1, s4: gp:c8ff90db 
+[FAILED]: 5704 matched, 2823 mismatch
+
+0 PASSED, 1 FAILED

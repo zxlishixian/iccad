@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[614] : pc[800015c6] srl	x5,x1,x2: t0:00000000 
+spike[614] : pc[800015c2] sltiu   s5, s11, -485: s5:00000001 
+[FAILED]: 507 matched, 3907 mismatch
+
+0 PASSED, 1 FAILED

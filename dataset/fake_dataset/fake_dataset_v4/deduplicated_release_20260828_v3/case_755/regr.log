@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[527] : pc[800070b6] xori	x7,x28,447: t2:000001bf 
+spike[527] : pc[800070ae] sltu    a4, t2, s4: a4:00000001 
+Mismatch[13002]:
+[18733] ibex : pc[800065d2] ori	x31,x2,775: t6:00000307 
+[FAILED]: 481 matched, 13002 mismatch
+
+0 PASSED, 1 FAILED

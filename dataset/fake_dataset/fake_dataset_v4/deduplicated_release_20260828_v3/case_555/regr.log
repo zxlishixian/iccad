@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[134] : pc[800002ea] divu	x19,x21,x31: s3:00000000 
+spike[134] : pc[800002ea] divu    s3, s5, t6: s3:00000001 
+Mismatch[832]:
+[1157] ibex : pc[80001f78] mul	x8,x16,x8: s0:00000000 
+[FAILED]: 221 matched, 832 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[908] : pc[8000141e] sltiu	x1,x4,-631: ra:00000001 
+spike[908] : pc[8000141a] mul     sp, s3, t0: sp:f0000000 
+[FAILED]: 875 matched, 6867 mismatch
+
+0 PASSED, 1 FAILED

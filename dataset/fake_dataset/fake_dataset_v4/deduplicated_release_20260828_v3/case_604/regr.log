@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[85] : pc[80007d98] c.srli	x14,0x4: a4:08000000 
+spike[85] : pc[80007dae] c.sub   a4, s0: a4:641b92f9 
+[FAILED]: 88 matched, 6583 mismatch
+
+0 PASSED, 1 FAILED

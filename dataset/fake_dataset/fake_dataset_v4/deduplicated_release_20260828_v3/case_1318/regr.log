@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[5950] : pc[8000d33e] xori	x18,x22,555: s2:0000022b 
+spike[5950] : pc[8000d33e] xori    s2, s6, 555: s2:0000022a 
+[FAILED]: 11933 matched, 34 mismatch
+
+0 PASSED, 1 FAILED

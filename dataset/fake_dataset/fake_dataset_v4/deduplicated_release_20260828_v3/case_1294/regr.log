@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[952] : pc[80007a6a] c.addi16sp	x2,-16: sp:8001aecd 
+spike[952] : pc[80007a26] and     sp, gp, s4: sp:00000000 
+[FAILED]: 826 matched, 404 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[301] : pc[80000656] slli	x9,x24,0x12: s1:00000000 
+spike[301] : pc[80000656] slli    s1, s8, 18: s1:cbf80000 
+[FAILED]: 425 matched, 6155 mismatch
+
+0 PASSED, 1 FAILED

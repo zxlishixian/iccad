@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[104] : pc[800002a2] rem	x20,x22,x28: s4:ffffffff 
+spike[104] : pc[800002a2] rem     s4, s6, t3: s4:00000000 
+Mismatch[2804]:
+[3871] ibex : pc[800022c6] sra	x12,x30,x23: a2:8001ee7c 
+[FAILED]: 371 matched, 2804 mismatch
+
+0 PASSED, 1 FAILED

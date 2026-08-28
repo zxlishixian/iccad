@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[5063] : pc[80004750] c.addi4spn	x15,x2,336: a5:000001ab 
+spike[5063] : pc[80004750] c.addi4spn a5, sp, 336: a5:000001aa 
+[FAILED]: 4566 matched, 3643 mismatch
+
+0 PASSED, 1 FAILED

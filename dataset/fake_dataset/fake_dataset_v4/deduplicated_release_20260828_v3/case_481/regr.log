@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[148] : pc[80000294] c.andi	x9,-1: s1:00000000 
+spike[148] : pc[80000296] c.addi16sp sp, 400: sp:0000033c 
+Mismatch[7919]:
+[9366] ibex : pc[8000824a] sltiu	x19,x21,-963: s3:00000001 
+[FAILED]: 173 matched, 7919 mismatch
+
+0 PASSED, 1 FAILED

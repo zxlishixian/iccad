@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2009] : pc[8000520c] and	x23,x6,x19: s7:404c0000 
+spike[2009] : pc[80005208] div     t0, t6, a3: t0:fe23bdd2 
+[FAILED]: 1697 matched, 2807 mismatch
+
+0 PASSED, 1 FAILED

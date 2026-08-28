@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[77] : pc[8000458e] and	x30,x11,x0: t5:ba5e69f8 
+spike[77] : pc[8000458e] and     t5, a1, zero: t5:00000000 
+Mismatch[3312]:
+[3887] ibex : pc[8000436e] mulh	x9,x10,x15: s1:c2eb4426 
+[FAILED]: 87 matched, 3312 mismatch
+
+0 PASSED, 1 FAILED

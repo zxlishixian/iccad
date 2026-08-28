@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[276] : pc[80000c7a] c.li	x21,-1: s5:0000001f 
+spike[276] : pc[80000c7a] c.li    s5, -1: s5:ffffffff 
+Mismatch[4002]:
+[5214] ibex : pc[80000892] addi	x11,x18,283: a1:451ea8a9 
+[FAILED]: 456 matched, 4002 mismatch
+
+0 PASSED, 1 FAILED

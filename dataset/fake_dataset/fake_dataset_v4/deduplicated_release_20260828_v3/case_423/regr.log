@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[164] : pc[80000374] lhu	x20,29(x4): s4:0000f6f7 
+spike[164] : pc[80000370] div     t2, s1, a1: t2:00000000 
+[FAILED]: 239 matched, 8948 mismatch
+
+0 PASSED, 1 FAILED

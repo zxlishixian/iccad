@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[906] : pc[80001eae] c.slli	x24,0xc: s8:00000003 
+spike[906] : pc[80001eae] c.slli  s8, 12: s8:03000000 
+[FAILED]: 1074 matched, 1 mismatch
+
+0 PASSED, 1 FAILED

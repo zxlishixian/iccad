@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[103] : pc[80000740] xori	x8,x12,-351: s0:ccb51e69 
+spike[103] : pc[80000722] addi    a4, s4, 383: a4:d87d8211 
+[FAILED]: 114 matched, 3288 mismatch
+
+0 PASSED, 1 FAILED

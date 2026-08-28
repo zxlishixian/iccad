@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[59] : pc[8000015a] sltiu	x1,x11,560: ra:00000001 
+spike[59] : pc[8000015a] sltiu   ra, a1, 560: ra:00000000 
+[FAILED]: 227 matched, 7871 mismatch
+
+0 PASSED, 1 FAILED

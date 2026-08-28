@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[445] : pc[80000c96] divu	x9,x31,x27: s1:0000000c 
+spike[445] : pc[80000c96] divu    s1, t6, s11: s1:00000000 
+Mismatch[2080]:
+[3450] ibex : pc[800022d0] srli	x20,x4,0x7: s4:01000000 
+[FAILED]: 805 matched, 2080 mismatch
+
+0 PASSED, 1 FAILED

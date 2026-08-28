@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[82] : pc[80000556] remu	x21,x16,x14: s5:fb0ffd34 
+spike[82] : pc[80000556] remu    s5, a6, a4: s5:80028e7c 
+Mismatch[7725]:
+[8827] ibex : pc[8000040e] lb	x21,30(x2): s5:00000016 
+[FAILED]: 103 matched, 7725 mismatch
+
+0 PASSED, 1 FAILED

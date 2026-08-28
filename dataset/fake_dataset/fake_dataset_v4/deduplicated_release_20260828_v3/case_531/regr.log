@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[2410] : pc[8000592a] c.sub	x9,x12: s1:0000005b 
+spike[2410] : pc[8000592c] csrrwi  s7, mscratch, 28: s7:0000001e 
+Mismatch[2102]:
+[4883] ibex : pc[800023c4] c.li	x3,1: gp:00000001 
+[FAILED]: 2089 matched, 2102 mismatch
+
+0 PASSED, 1 FAILED

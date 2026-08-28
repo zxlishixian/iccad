@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[58] : pc[80000156] ori	x21,x9,-903: s5:fffffc79 
+spike[58] : pc[8001c080] addi    sp, sp, -124: sp:8002cda0 
+Mismatch[18]:
+[80] ibex : pc[800001a4] lui	x24,0x5e690: s8:5e690000 
+[FAILED]: 52 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

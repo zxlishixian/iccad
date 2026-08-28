@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[81] : pc[80010ef0] jal	x11,80002580: a1:80000004 
+spike[81] : pc[80010ef0] jal     a1, -0xe970: a1:80010ef4 
+[FAILED]: 134 matched, 14565 mismatch
+
+0 PASSED, 1 FAILED

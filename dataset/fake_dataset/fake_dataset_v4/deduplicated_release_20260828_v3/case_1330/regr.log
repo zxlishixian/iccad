@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[6006] : pc[8001026a] remu	x3,x10,x7: gp:00000004 
+spike[6006] : pc[8001026a] remu    gp, a0, t2: gp:00000065 
+[FAILED]: 4007 matched, 572 mismatch
+
+0 PASSED, 1 FAILED

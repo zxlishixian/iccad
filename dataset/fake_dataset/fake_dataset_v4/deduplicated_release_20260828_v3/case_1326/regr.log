@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[351] : pc[800008ca] remu	x22,x10,x14: s6:ffffffff 
+spike[351] : pc[800008ce] srli    t0, a0, 6: t0:00000000 
+[FAILED]: 1084 matched, 483 mismatch
+
+0 PASSED, 1 FAILED

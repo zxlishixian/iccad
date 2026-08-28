@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[950] : pc[80005c24] divu	x16,x21,x3: a6:00000293 
+spike[950] : pc[80005c24] divu    a6, s5, gp: a6:00000000 
+[FAILED]: 5838 matched, 2 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[70] : pc[800331ee] lbu	x12,-122(x15): a2:ffffffdc 
+spike[70] : pc[800331ee] lbu     a2, -122(a5): a2:000000dc 
+Mismatch[3599]:
+[4409] ibex : pc[800021e2] ori	x4,x31,-55: tp:ffffffc9 
+[FAILED]: 579 matched, 3599 mismatch
+
+0 PASSED, 1 FAILED

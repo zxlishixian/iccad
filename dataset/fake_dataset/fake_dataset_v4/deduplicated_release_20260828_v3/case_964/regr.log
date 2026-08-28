@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2809] : pc[8000355a] addi	x27,x24,542: s11:00000598 
+spike[2809] : pc[80003574] mulhu   s5, s11, s2: s5:40018280 
+[FAILED]: 2687 matched, 7964 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[366] : pc[80000218] addi	x18,x20,822: s2:8c01f1b2 
+spike[366] : pc[80000224] c.or    a5, a2: a5:d739ae1e 
+[FAILED]: 482 matched, 3247 mismatch
+
+0 PASSED, 1 FAILED

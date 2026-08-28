@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1359] : pc[8000f41a] srli	x9,x0,0x1: s1:00000000 
+spike[1359] : pc[8000f412] sra     a6, t3, s6: a6:00000001 
+[FAILED]: 990 matched, 1893 mismatch
+
+0 PASSED, 1 FAILED

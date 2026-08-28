@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[101] : pc[80000230] c.li	x3,1: gp:00000001 
+spike[101] : pc[800104aa] c.addi  a1, -8: a1:80023e14 
+[FAILED]: 85 matched, 11879 mismatch
+
+0 PASSED, 1 FAILED

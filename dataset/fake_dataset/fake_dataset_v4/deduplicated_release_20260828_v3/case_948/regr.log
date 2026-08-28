@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[85] : pc[800001e4] rem	x20,x22,x27: s4:fffffffd 
+spike[85] : pc[800001e4] rem     s4, s6, s11: s4:00000003 
+[FAILED]: 2389 matched, 3214 mismatch
+
+0 PASSED, 1 FAILED

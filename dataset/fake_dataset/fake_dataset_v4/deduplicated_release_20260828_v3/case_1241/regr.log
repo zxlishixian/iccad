@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[3611] : pc[80008b90] c.jalr	x27: ra:80008b94 
+spike[3611] : pc[80008b90] c.jalr  s11: ra:80008b92 
+[FAILED]: 10963 matched, 38 mismatch
+
+0 PASSED, 1 FAILED

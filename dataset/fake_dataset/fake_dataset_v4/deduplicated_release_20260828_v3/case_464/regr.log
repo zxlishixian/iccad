@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[438] : pc[800006b0] sra	x20,x22,x9: s4:00000001 
+spike[438] : pc[800006b0] sra     s4, s6, s1: s4:ffffffff 
+Mismatch[7052]:
+[9435] ibex : pc[80008464] c.li	x3,1: gp:00000001 
+[FAILED]: 1010 matched, 7052 mismatch
+
+0 PASSED, 1 FAILED

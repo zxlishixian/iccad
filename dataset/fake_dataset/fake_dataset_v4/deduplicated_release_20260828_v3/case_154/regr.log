@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[102] : pc[80000250] c.srai	x11,0x11: a1:000069f0 
+spike[102] : pc[80000250] c.srai  a1, 17: a1:ffffe9f0 
+Mismatch[3607]:
+[5213] ibex : pc[800032d8] or	x20,x11,x30: s4:ffffffff 
+[FAILED]: 815 matched, 3607 mismatch
+
+0 PASSED, 1 FAILED

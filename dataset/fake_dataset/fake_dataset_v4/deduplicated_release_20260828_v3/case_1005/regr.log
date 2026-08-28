@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[4709] : pc[8000c3d2] csrrwi	x8,mscratch,2: s0:00000017 
+spike[4709] : pc[8000c442] mulhu   a5, a0, s1: a5:7f2681ff 
+Mismatch[13028]:
+[19110] ibex : pc[800045ca] sltiu	x13,x12,-129: a3:00000001 
+[FAILED]: 4378 matched, 13028 mismatch
+
+0 PASSED, 1 FAILED

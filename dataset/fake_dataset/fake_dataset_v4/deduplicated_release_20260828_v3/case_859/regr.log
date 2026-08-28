@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[88] : pc[8000024a] div	x4,x26,x31: tp:00000011 
+spike[88] : pc[8000024a] div     tp, s10, t6: tp:ffffffff 
+Mismatch[1270]:
+[1792] ibex : pc[80000cf4] c.li	x3,1: gp:00000001 
+[FAILED]: 281 matched, 1270 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[79] : pc[80006c20] slt	x16,x2,x22: a6:00000001 
+spike[79] : pc[80006c20] slt     a6, sp, s6: a6:00000000 
+[FAILED]: 90 matched, 4631 mismatch
+
+0 PASSED, 1 FAILED

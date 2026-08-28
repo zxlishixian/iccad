@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[62] : pc[80000164] divu	x25,x12,x2: s9:00000000 
+spike[62] : pc[80000164] divu    s9, a2, sp: s9:00000001 
+Mismatch[7793]:
+[9432] ibex : pc[800083d2] c.xor	x8,x8: s0:00000000 
+[FAILED]: 166 matched, 7793 mismatch
+
+0 PASSED, 1 FAILED

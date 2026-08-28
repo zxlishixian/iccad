@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[85] : pc[800001fa] remu	x4,x20,x29: tp:ffffff67 
+spike[85] : pc[800001fa] remu    tp, s4, t4: tp:000001d8 
+[FAILED]: 84 matched, 2882 mismatch
+
+0 PASSED, 1 FAILED

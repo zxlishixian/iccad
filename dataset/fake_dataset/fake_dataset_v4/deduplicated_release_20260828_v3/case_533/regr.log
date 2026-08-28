@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[555] : pc[80003874] divu	x28,x3,x24: t3:0000012c 
+spike[555] : pc[80003874] divu    t3, gp, s8: t3:00000000 
+[FAILED]: 600 matched, 6568 mismatch
+
+0 PASSED, 1 FAILED

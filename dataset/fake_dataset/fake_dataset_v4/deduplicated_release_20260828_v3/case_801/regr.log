@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[305] : pc[800019ba] csrrs	x19,mscratch,x27: s3:00000006 
+spike[305] : pc[800019b6] mul     s9, a3, t3: s9:00e26800 
+[FAILED]: 295 matched, 6795 mismatch
+
+0 PASSED, 1 FAILED

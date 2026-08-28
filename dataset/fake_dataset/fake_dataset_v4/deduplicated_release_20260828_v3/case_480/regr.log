@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[65] : pc[800001c8] c.andi	x15,-1: a5:0000000a 
+spike[65] : pc[800001ca] slt     t3, t5, a0: t3:00000000 
+Mismatch[6430]:
+[7706] ibex : pc[80006a7e] c.sub	x12,x13: a2:e0004b83 
+[FAILED]: 69 matched, 6430 mismatch
+
+0 PASSED, 1 FAILED

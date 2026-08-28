@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[61] : pc[8000016c] remu	x15,x5,x12: a5:fb240f59 
+spike[61] : pc[8000016c] remu    a5, t0, a2: a5:0000000e 
+[FAILED]: 3116 matched, 114 mismatch
+
+0 PASSED, 1 FAILED

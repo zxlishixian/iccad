@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[59] : pc[8000015a] lhu	x24,-15(x12): s8:00005d5e 
+spike[59] : pc[8001b080] addi    a7, a7, -124: a7:8002bda0 
+Mismatch[17]:
+[76] ibex : pc[800001ae] div	x9,x2,x9: s1:ffffffff 
+[FAILED]: 51 matched, 17 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[73] : pc[800001ca] divu	x7,x23,x1: t2:00000000 
+spike[73] : pc[800001c6] mul     t4, a6, a5: t4:001bff90 
+[FAILED]: 66 matched, 285 mismatch
+
+0 PASSED, 1 FAILED

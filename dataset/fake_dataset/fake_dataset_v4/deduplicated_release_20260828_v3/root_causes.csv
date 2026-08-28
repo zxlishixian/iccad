@@ -1,0 +1,119 @@
+bug_id,domain,family,root_cause
+bug_041,ALU,,Inherited from audited coverage64 v4; see source map.
+bug_045,ALU,,Inherited from audited coverage64 v4; see source map.
+bug_047,Branch/Jump,,Inherited from audited coverage64 v4; see source map.
+bug_048,ALU,,Inherited from audited coverage64 v4; see source map.
+bug_049,ALU,,Inherited from audited coverage64 v4; see source map.
+bug_051,LSU,,Inherited from audited coverage64 v4; see source map.
+bug_052,LSU,,Inherited from audited coverage64 v4; see source map.
+bug_053,ALU,,Inherited from audited coverage64 v4; see source map.
+bug_054,ALU,,Inherited from audited coverage64 v4; see source map.
+bug_071,ALU,,Inherited from audited coverage64 v4; see source map.
+bug_072,ALU,,Inherited from audited coverage64 v4; see source map.
+bug_073,ALU,,Inherited from audited coverage64 v4; see source map.
+bug_074,MDU,,Inherited from audited coverage64 v4; see source map.
+bug_075,ALU,,Inherited from audited coverage64 v4; see source map.
+bug_076,MDU,,Inherited from audited coverage64 v4; see source map.
+bug_077,ALU,,Inherited from audited coverage64 v4; see source map.
+bug_078,ALU,,Inherited from audited coverage64 v4; see source map.
+bug_079,ALU,,Inherited from audited coverage64 v4; see source map.
+bug_080,ALU,,Inherited from audited coverage64 v4; see source map.
+bug_081,ALU,,Inherited from audited coverage64 v4; see source map.
+bug_103,ALU,,Inherited from audited coverage64 v4; see source map.
+bug_128,ALU,,Inherited from audited coverage64 v4; see source map.
+bug_129,ALU,,Inherited from audited coverage64 v4; see source map.
+bug_130,ALU,,Inherited from audited coverage64 v4; see source map.
+bug_132,RV32C/decode,,Inherited from audited coverage64 v4; see source map.
+bug_133,decode,,Inherited from audited coverage64 v4; see source map.
+bug_134,ALU,,Inherited from audited coverage64 v4; see source map.
+bug_136,decode,,Inherited from audited coverage64 v4; see source map.
+bug_141,ALU,,Inherited from audited coverage64 v4; see source map.
+bug_143,RV32C/decode,,Inherited from audited coverage64 v4; see source map.
+bug_145,ALU,,Inherited from audited coverage64 v4; see source map.
+bug_146,MDU,,Inherited from audited coverage64 v4; see source map.
+bug_147,decode,,Inherited from audited coverage64 v4; see source map.
+bug_152,MDU,,Inherited from audited coverage64 v4; see source map.
+bug_153,decode,,Inherited from audited coverage64 v4; see source map.
+bug_156,interrupt,,Inherited from audited coverage64 v4; see source map.
+bug_160,register-file/writeback,,Inherited from audited coverage64 v4; see source map.
+bug_161,register-file/writeback,,Inherited from audited coverage64 v4; see source map.
+bug_162,decode,,Inherited from audited coverage64 v4; see source map.
+bug_169,LSU,,Inherited from audited coverage64 v4; see source map.
+bug_170,LSU,,Inherited from audited coverage64 v4; see source map.
+bug_173,LSU,,Inherited from audited coverage64 v4; see source map.
+bug_176,LSU,,Inherited from audited coverage64 v4; see source map.
+bug_178,register-file/writeback,,Inherited from audited coverage64 v4; see source map.
+bug_179,register-file/writeback,,Inherited from audited coverage64 v4; see source map.
+bug_181,RV32C/decode,,Inherited from audited coverage64 v4; see source map.
+bug_182,RV32C/decode,,Inherited from audited coverage64 v4; see source map.
+bug_185,RV32C/decode,,Inherited from audited coverage64 v4; see source map.
+bug_186,RV32C/decode,,Inherited from audited coverage64 v4; see source map.
+bug_193,csr_mstatus_read,mstatus_mpie_read_uses_mie,The MSTATUS MPIE readback selects MIE instead of MPIE.
+bug_194,csr_mstatus_read,mstatus_mpp_read_forced_user,The MSTATUS MPP readback is forced to user mode instead of returning the stored MPP value.
+bug_195,CSR,,Inherited from audited coverage64 v4; see source map.
+bug_196,CSR,,Inherited from audited coverage64 v4; see source map.
+bug_197,csr_mip_read,mip_software_read_uses_timer,The MIP software-pending readback selects the timer-pending state instead of the software-pending state.
+bug_198,csr_mcause_read,mcause_interrupt_bit_cleared_on_read,The MCAUSE interrupt bit is cleared when the CSR is read back.
+bug_205,csr_data_mux,mtvec_read_returns_mepc,The MTVEC CSR readback selects MEPC instead of MTVEC.
+bug_206,csr_data_mux,mtval_read_returns_mepc,The MTVAL CSR readback selects MEPC instead of MTVAL.
+bug_211,CSR,,Inherited from audited coverage64 v4; see source map.
+bug_218,Pipeline/control,,"ID-stage multicycle stall is asserted only for DIV, so MUL execution is not held correctly"
+bug_222,Register-file/writeback,,Register x27 writeback flips bit 0 before the value is written
+bug_223,Register-file/writeback,,Register x20 writeback flips bit 0 before the value is written
+bug_224,Register-file/writeback,,Register x21 writeback flips bit 0 before the value is written
+bug_225,,,
+bug_226,,,
+bug_228,branch_jump,conditional_bge_comparator_inversion,"The signed BGE comparator condition is inverted, changing the taken/not-taken decision."
+bug_229,branch_jump,conditional_bgeu_comparator_inversion,"The unsigned BGEU comparator condition is inverted, changing the taken/not-taken decision."
+bug_234,,,
+bug_239,alu,conditional_xor_operand_low_nibble,"Under the low-nibble trigger condition, the XOR operand path selects the wrong operand value."
+bug_240,alu,conditional_or_operand_low_nibble,"Under the low-nibble trigger condition, the OR operand path selects the wrong operand value."
+bug_241,decode_alu,conditional_xori_or_decode_low_bits,"Under the low-bit trigger condition, XORI is decoded as an OR operation."
+bug_242,mdu,conditional_divu_signed_mode,"Under the trigger condition, the DIVU path uses the signed division mode."
+bug_243,mdu,conditional_remu_div_operator,"Under the trigger condition, the REMU path selects the DIV operator instead of the remainder operator."
+bug_244,branch_jump,conditional_beq_decode,"For a selected instruction-field trigger, BEQ is decoded as BNE instead of equality comparison."
+bug_245,branch_jump,conditional_bne_decode,"For a selected instruction-field trigger, BNE is decoded as BEQ instead of inequality comparison."
+bug_246,branch_jump,conditional_blt_decode,"For a selected instruction-field trigger, BLT is decoded as BGE instead of signed less-than comparison."
+bug_247,,,
+bug_249,,,
+bug_253,Interrupt/exception,,中断进入时将 mstatus.MPIE 的保存逻辑错误地与 mcause 条件绑定，导致 handler 入口的 MPIE 未置 1。
+bug_254,Interrupt/exception,,中断原因写回路径错误处理 mcause 的中断标志，导致标准 interrupt test 等待 mstatus CSR 写回时超时。
+bug_255,,,
+bug_256,,,
+bug_257,,,
+bug_261,,,
+bug_262,,,
+bug_263,,,
+bug_264,,,
+bug_265,,,
+bug_266,,,
+bug_268,,,
+bug_269,,,
+bug_273,Debug,,Debug entry records DBG_CAUSE_STEP instead of DBG_CAUSE_HALTREQ for an external debug request.
+bug_276,Debug,,Debug entry records U-mode in dcsr.prv when the core enters debug mode from M-mode.
+bug_280,ALU,,"In a selected PC region, the SRA shift operand is altered before ALU execution, producing an incorrect arithmetic-shift result."
+bug_281,ALU,,"In a selected PC region, the SLTU operand is altered before ALU execution, producing an incorrect unsigned-comparison result."
+bug_282,MDU,,"In a selected PC region, a DIV operation is decoded as REM, producing an incorrect quotient/result trace."
+bug_283,MDU,,"In a selected PC region, a REM operation is decoded as DIV, producing an incorrect remainder/result trace."
+bug_284,,,
+bug_285,,,
+bug_289,,,
+bug_290,,,
+bug_291,,,
+bug_292,,,
+bug_304,,,
+bug_305,,,
+bug_306,lsu,byte_sign_offset1_wrong_sign_bit,Signed byte-load extension uses data bit 14 instead of the sign bit at bit 15.
+bug_307,lsu,byte_sign_offset2_wrong_sign_bit,Signed byte-load extension uses data bit 22 instead of the sign bit at bit 23.
+bug_308,,,
+bug_309,,,
+bug_310,mdu,div_zero_quotient_zero,The divide-by-zero quotient path drives a zero remainder value instead of the specified all-ones quotient result.
+bug_311,mdu,rem_zero_result_zero,The remainder-by-zero path drives zero instead of preserving the dividend as the specified remainder result.
+bug_312,rv32c,c_slli_x10_shamt_bit0,"For compressed SLLI targeting x5, the expanded immediate shift bit is inverted."
+bug_313,rv32c,c_srli_x15_shamt_bit0,"For compressed SRLI targeting x15, the expanded immediate shift bit is inverted."
+bug_315,,,
+bug_316,branch_jump,late_jump_target_bit2_pattern10,"For a selected jump-target pattern, target bit 2 is inverted before control flow uses the target."
+bug_317,alu,pc_region_conditional_xor_operand,"In the selected PC region, the XOR operand path flips operand bit 1 before execution."
+bug_318,alu,pc_region_conditional_or_operand,"In the selected PC region, the OR operand path flips operand bit 2 before execution."
+bug_319,,,
+bug_320,,,

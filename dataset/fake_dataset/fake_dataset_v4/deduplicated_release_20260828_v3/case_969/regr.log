@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1491] : pc[800025dc] xori	x26,x3,-379: s10:fffffe85 
+spike[1491] : pc[800025dc] xori    s10, gp, -379: s10:00000001 
+[FAILED]: 4376 matched, 15 mismatch
+
+0 PASSED, 1 FAILED

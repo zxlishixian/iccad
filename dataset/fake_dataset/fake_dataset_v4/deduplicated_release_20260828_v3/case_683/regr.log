@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[69] : pc[80000188] lbu	x16,9(x29): a6:00000000 
+spike[69] : pc[80000188] lbu     a6, 9(t4): a6:0000002e 
+Mismatch[9851]:
+[11257] ibex : pc[80033cfc] c.li	x19,-1: s3:ffffffff 
+[FAILED]: 82 matched, 9851 mismatch
+
+0 PASSED, 1 FAILED

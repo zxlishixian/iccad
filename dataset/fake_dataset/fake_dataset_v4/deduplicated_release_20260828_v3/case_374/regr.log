@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[79] : pc[800077ee] lw	x10,304(x1): a0:7f78797a 
+spike[79] : pc[8001c080] addi    a5, a5, -124: a5:8002cd70 
+Mismatch[18]:
+[99] ibex : pc[8000785a] lh	x11,0(x26): a1:00007071 
+[FAILED]: 70 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

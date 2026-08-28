@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[73] : pc[800032ca] remu	x22,x17,x0: s6:43153b99 
+spike[73] : pc[800032ca] remu    s6, a7, zero: s6:43153b98 
+Mismatch[3265]:
+[4035] ibex : pc[80001e50] or	x29,x2,x26: t4:ffffffff 
+[FAILED]: 106 matched, 3265 mismatch
+
+0 PASSED, 1 FAILED

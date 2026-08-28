@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[1004] : pc[8000193a] remu	x1,x18,x16: ra:fffffffe 
+spike[1004] : pc[8000193a] remu    ra, s2, a6: ra:00000004 
+Mismatch[10442]:
+[18442] ibex : pc[800005ec] divu	x20,x20,x20: s4:00000001 
+[FAILED]: 2342 matched, 10442 mismatch
+
+0 PASSED, 1 FAILED

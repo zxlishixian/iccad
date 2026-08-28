@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[86] : pc[800001c0] mulhu	x1,x7,x30: ra:00000000 
+spike[86] : pc[800001c0] mulhu   ra, t2, t5: ra:581042e2 
+[FAILED]: 699 matched, 7447 mismatch
+
+0 PASSED, 1 FAILED

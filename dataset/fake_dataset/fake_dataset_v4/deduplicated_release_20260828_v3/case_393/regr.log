@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[214] : pc[800003a2] remu	x14,x25,x19: a4:80000366 
+spike[214] : pc[800003a2] remu    a4, s9, s3: a4:00000054 
+Mismatch[9451]:
+[12876] ibex : pc[800115fa] srli	x19,x14,0x12: s3:00000000 
+[FAILED]: 308 matched, 9451 mismatch
+
+0 PASSED, 1 FAILED

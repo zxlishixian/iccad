@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[406] : pc[80000ad8] c.andi	x14,-1: a4:00000011 
+spike[406] : pc[80000ada] c.addi4spn a3, sp, 880: a3:00000664 
+Mismatch[3725]:
+[4766] ibex : pc[800022b2] csrrs	x20,mscratch,x24: s4:0000018f 
+[FAILED]: 358 matched, 3725 mismatch
+
+0 PASSED, 1 FAILED

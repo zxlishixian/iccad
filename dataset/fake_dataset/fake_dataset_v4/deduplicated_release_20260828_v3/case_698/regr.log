@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[41] : pc[80000110] addi	x30,x30,-1627: t5:fffff9a5 
+spike[41] : pc[80000110] addi    t5, t5, -1627: t5:e170c9a5 
+[FAILED]: 173 matched, 7668 mismatch
+
+0 PASSED, 1 FAILED

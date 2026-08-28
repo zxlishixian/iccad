@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[296] : pc[80009a0e] remu	x22,x4,x10: s6:80027e7c 
+spike[296] : pc[80009a4a] c.xor   a5, a1: a5:11107fff 
+Mismatch[1373]:
+[2053] ibex : pc[800001bc] slli	x23,x10,0x14: s7:00000000 
+[FAILED]: 215 matched, 1373 mismatch
+
+0 PASSED, 1 FAILED

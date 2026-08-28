@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[865] : pc[80002a74] sra	x28,x6,x29: t3:ffffffff 
+spike[865] : pc[80002a7e] or      s2, a2, zero: s2:80000000 
+[FAILED]: 719 matched, 5435 mismatch
+
+0 PASSED, 1 FAILED

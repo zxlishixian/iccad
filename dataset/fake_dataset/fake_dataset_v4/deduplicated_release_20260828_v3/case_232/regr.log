@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[90] : pc[80000204] lbu	x12,391(x2): a2:fffffff1 
+spike[90] : pc[80000204] lbu     a2, 391(sp): a2:000000f1 
+Mismatch[38564]:
+[57258] ibex : pc[80004f62] c.sub	x14,x15: a4:000001ab 
+[FAILED]: 1425 matched, 38564 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[538] : pc[80000ed6] xori	x30,x25,-150: t5:ffffffea 
+spike[538] : pc[80000ed6] xori    t5, s9, -150: t5:7ffe5282 
+[FAILED]: 5720 matched, 20 mismatch
+
+0 PASSED, 1 FAILED

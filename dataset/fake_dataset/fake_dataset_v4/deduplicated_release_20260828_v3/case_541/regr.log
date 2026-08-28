@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[199] : pc[80001eda] divu	x4,x30,x3: tp:fa028647 
+spike[199] : pc[80001eda] divu    tp, t5, gp: tp:7a028647 
+Mismatch[2895]:
+[4940] ibex : pc[80000204] c.li	x3,1: gp:00000001 
+[FAILED]: 1334 matched, 2895 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[114] : pc[80000232] addi	x24,x7,618: s8:eec87a67 
+spike[114] : pc[80000232] addi    s8, t2, 618: s8:eec87a66 
+[FAILED]: 136 matched, 2306 mismatch
+
+0 PASSED, 1 FAILED

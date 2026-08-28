@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[56] : pc[8000014a] slt	x4,x21,x29: tp:00000001 
+spike[56] : pc[8000014a] slt     tp, s5, t4: tp:00000000 
+Mismatch[362]:
+[507] ibex : pc[80000d14] c.slli	x2,0x5: sp:003d8f00 
+[FAILED]: 83 matched, 362 mismatch
+
+0 PASSED, 1 FAILED

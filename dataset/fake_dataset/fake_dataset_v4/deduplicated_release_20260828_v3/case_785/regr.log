@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[69] : pc[800001fe] rem	x4,x10,x21: tp:ffffffff 
+spike[69] : pc[800001fe] rem     tp, a0, s5: tp:80000000 
+Mismatch[921]:
+[1225] ibex : pc[800020bc] sltu	x16,x29,x16: a6:00000001 
+[FAILED]: 90 matched, 921 mismatch
+
+0 PASSED, 1 FAILED

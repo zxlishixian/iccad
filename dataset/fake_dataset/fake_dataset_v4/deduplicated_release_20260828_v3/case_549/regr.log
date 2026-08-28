@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[239] : pc[80004082] divu	x4,x16,x24: tp:0000b0fa 
+spike[239] : pc[80004086] divu    ra, a7, a5: ra:00000015 
+Mismatch[1861]:
+[2403] ibex : pc[80001fe2] srai	x25,x4,0x17: s9:00000000 
+[FAILED]: 242 matched, 1861 mismatch
+
+0 PASSED, 1 FAILED

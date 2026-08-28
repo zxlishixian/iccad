@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[64] : pc[80000166] and	x23,x12,x26: s7:00000008 
+spike[64] : pc[8000016a] csrrw   t1, mscratch, gp: t1:00000000 
+Mismatch[8019]:
+[9214] ibex : pc[80008056] c.addi16sp	x2,176: sp:000046f0 
+[FAILED]: 61 matched, 8019 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[59] : pc[8000831e] addi	x15,x15,-2048: a5:00001801 
+spike[59] : pc[8000831e] addi    a5, a5, -2048: a5:00001800 
+Mismatch[7840]:
+[9373] ibex : pc[80008242] mulhsu	x2,x30,x12: sp:00000000 
+[FAILED]: 197 matched, 7840 mismatch
+
+0 PASSED, 1 FAILED

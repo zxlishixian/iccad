@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[171] : pc[80000e08] addi	x17,x27,628: a7:00000277 
+spike[171] : pc[80000e4a] div     s11, a5, t2: s11:ffffffff 
+[FAILED]: 188 matched, 4214 mismatch
+
+0 PASSED, 1 FAILED

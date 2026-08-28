@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[337] : pc[80000548] slt	x27,x29,x24: s11:00000000 
+spike[337] : pc[80000548] slt     s11, t4, s8: s11:00000001 
+Mismatch[7559]:
+[9421] ibex : pc[80008302] csrrc	x9,mscratch,x9: s1:fff1fff5 
+[FAILED]: 369 matched, 7559 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[992] : pc[80001652] csrrs	x3,mscratch,x16: gp:0000001d 
+spike[992] : pc[8000164e] mulh    s0, a6, gp: s0:00000000 
+[FAILED]: 800 matched, 812 mismatch
+
+0 PASSED, 1 FAILED

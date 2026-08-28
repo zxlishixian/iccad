@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[706] : pc[8000120c] mulhsu	x10,x23,x23: a0:3ffe51e6 
+spike[706] : pc[8000120c] mulhsu  a0, s7, s7: a0:c0000002 
+[FAILED]: 993 matched, 2931 mismatch
+
+0 PASSED, 1 FAILED

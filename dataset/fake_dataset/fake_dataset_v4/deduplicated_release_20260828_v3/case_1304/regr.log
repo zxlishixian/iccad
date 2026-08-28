@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[932] : pc[800034ac] rem	x11,x24,x12: a1:ffffffff 
+spike[932] : pc[800034c6] sll     s5, a3, gp: s5:7b9f0000 
+[FAILED]: 867 matched, 3625 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[706] : pc[8000148c] sltiu	x3,x27,484: gp:00000001 
+spike[706] : pc[8000148c] sltiu   gp, s11, 484: gp:00000000 
+[FAILED]: 1283 matched, 526 mismatch
+
+0 PASSED, 1 FAILED

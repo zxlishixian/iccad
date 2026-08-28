@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2293] : pc[80002680] xor	x11,x2,x18: a1:000066e7 
+spike[2293] : pc[80002680] xor     a1, sp, s2: a1:000044e1 
+[FAILED]: 4654 matched, 5467 mismatch
+
+0 PASSED, 1 FAILED

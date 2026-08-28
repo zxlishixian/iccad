@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[70] : pc[80000194] addi	x30,x14,154: t5:3f487b0b 
+spike[70] : pc[800001b8] xori    s2, s1, -703: s2:7ffffd41 
+Mismatch[4553]:
+[5560] ibex : pc[80006cba] addi	x27,x4,845: s11:00000317 
+[FAILED]: 73 matched, 4553 mismatch
+
+0 PASSED, 1 FAILED

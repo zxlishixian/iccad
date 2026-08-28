@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[229] : pc[8000048e] divu	x5,x24,x13: t0:00000001 
+spike[229] : pc[8000048e] divu    t0, s8, a3: t0:00000000 
+Mismatch[5684]:
+[6700] ibex : pc[800049c0] slt	x5,x4,x9: t0:00000001 
+[FAILED]: 287 matched, 5684 mismatch
+
+0 PASSED, 1 FAILED

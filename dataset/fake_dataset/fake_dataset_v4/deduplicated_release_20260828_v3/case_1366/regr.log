@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[731] : pc[80001484] c.xor	x12,x9: a2:00037880 
+spike[731] : pc[80001484] c.xor   a2, s1: a2:00037882 
+[FAILED]: 1027 matched, 4714 mismatch
+
+0 PASSED, 1 FAILED

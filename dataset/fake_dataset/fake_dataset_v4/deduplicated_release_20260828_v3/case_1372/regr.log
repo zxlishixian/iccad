@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[68] : pc[800001d6] csrrsi	x29,mscratch,13: t4:00000000 
+spike[68] : pc[80000180] auipc   s8, 0x7: s8:80007180 
+[FAILED]: 62 matched, 5777 mismatch
+
+0 PASSED, 1 FAILED

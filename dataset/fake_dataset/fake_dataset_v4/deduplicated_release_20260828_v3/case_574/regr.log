@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[85] : pc[8000775c] div	x24,x25,x17: s8:e82f1bc5 
+spike[85] : pc[8000775c] div     s8, s9, a7: s8:00000001 
+Mismatch[8387]:
+[10027] ibex : pc[800075b4] ori	x3,x13,39: gp:0000002f 
+[FAILED]: 183 matched, 8387 mismatch
+
+0 PASSED, 1 FAILED

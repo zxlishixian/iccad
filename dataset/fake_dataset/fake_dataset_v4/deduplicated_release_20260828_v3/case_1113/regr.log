@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[232] : pc[8000617c] remu	x14,x0,x19: a4:00000000 
+spike[232] : pc[8000616c] csrrc   gp, mscratch, s9: gp:0000016d 
+[FAILED]: 198 matched, 2442 mismatch
+
+0 PASSED, 1 FAILED

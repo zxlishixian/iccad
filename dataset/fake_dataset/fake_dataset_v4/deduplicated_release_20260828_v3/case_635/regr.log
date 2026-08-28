@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[1036] : pc[80000f02] c.srai	x13,0x1: a3:4000ae86 
+spike[1036] : pc[80000f02] c.srai  a3, 1: a3:c000ae86 
+Mismatch[7088]:
+[9451] ibex : pc[800083aa] mul	x15,x15,x17: a5:000003c6 
+[FAILED]: 916 matched, 7088 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[111] : pc[8000022e] slti	x31,x23,-530: t6:00000000 
+spike[111] : pc[80000226] div     a3, s6, s3: a3:ffffffff 
+Mismatch[7917]:
+[9416] ibex : pc[80008380] sltu	x1,x1,x22: ra:00000001 
+[FAILED]: 185 matched, 7917 mismatch
+
+0 PASSED, 1 FAILED

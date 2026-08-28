@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[52] : pc[80008798] addi	x13,x13,-2048: a3:00001801 
+spike[52] : pc[80008798] addi    a3, a3, -2048: a3:00001800 
+[FAILED]: 89 matched, 2504 mismatch
+
+0 PASSED, 1 FAILED

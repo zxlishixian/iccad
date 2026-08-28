@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[73] : pc[80000184] slt	x29,x16,x23: t4:00000000 
+spike[73] : pc[80000184] slt     t4, a6, s7: t4:00000001 
+[FAILED]: 87 matched, 7997 mismatch
+
+0 PASSED, 1 FAILED

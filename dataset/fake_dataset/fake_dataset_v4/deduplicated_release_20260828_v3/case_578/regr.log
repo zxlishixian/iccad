@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[67] : pc[800001c4] c.lui	x22,0x1a: s6:0001a000 
+spike[67] : pc[800001c0] div     s3, s3, s6: s3:00000000 
+[FAILED]: 59 matched, 135 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1374] : pc[80001d48] sra	x30,x6,x3: t5:ffffffff 
+spike[1374] : pc[80001d70] auipc   t2, 0x24a7e: t2:a4a7fd70 
+[FAILED]: 1315 matched, 3256 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2954] : pc[80003318] or	x29,x15,x15: t4:00000000 
+spike[2954] : pc[80003318] or      t4, a5, a5: t4:000002aa 
+[FAILED]: 2506 matched, 6726 mismatch
+
+0 PASSED, 1 FAILED

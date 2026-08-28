@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[72] : pc[8000018c] mulh	x7,x31,x7: t2:fffee109 
+spike[72] : pc[8000018c] mulh    t2, t6, t2: t2:00000000 
+[FAILED]: 156 matched, 7897 mismatch
+
+0 PASSED, 1 FAILED

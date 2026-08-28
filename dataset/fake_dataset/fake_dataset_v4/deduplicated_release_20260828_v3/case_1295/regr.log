@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[139] : pc[80004e1a] c.and	x8,x15: s0:0080c4c8 
+spike[139] : pc[80004e08] mulhsu  t5, tp, s4: t5:00000000 
+[FAILED]: 133 matched, 5681 mismatch
+
+0 PASSED, 1 FAILED

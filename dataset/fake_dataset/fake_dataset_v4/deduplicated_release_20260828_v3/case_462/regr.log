@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[436] : pc[800006ac] divu	x18,x15,x17: s2:fffffffe 
+spike[436] : pc[800006b0] add     a0, tp, tp: a0:0f69bb20 
+Mismatch[7719]:
+[9424] ibex : pc[8000838c] sra	x29,x14,x21: t4:00000000 
+[FAILED]: 376 matched, 7719 mismatch
+
+0 PASSED, 1 FAILED

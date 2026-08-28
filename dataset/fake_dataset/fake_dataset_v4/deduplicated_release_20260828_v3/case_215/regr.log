@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[203] : pc[800005c8] add	x5,x25,x30: t0:ffffbf9f 
+spike[203] : pc[800005c8] add     t0, s9, t5: t0:7fff959a 
+Mismatch[4082]:
+[5130] ibex : pc[80002ffe] mulhu	x24,x23,x21: s8:00000000 
+[FAILED]: 326 matched, 4082 mismatch
+
+0 PASSED, 1 FAILED

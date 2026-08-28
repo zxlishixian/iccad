@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1583] : pc[80005b66] or	x9,x2,x27: s1:4109a1a1 
+spike[1583] : pc[80005b66] or      s1, sp, s11: s1:c109e9bb 
+[FAILED]: 5027 matched, 2016 mismatch
+
+0 PASSED, 1 FAILED

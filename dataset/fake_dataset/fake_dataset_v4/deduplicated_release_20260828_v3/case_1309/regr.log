@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[3116] : pc[8000517e] ori	x25,x6,-539: s9:1f5bac8f 
+spike[3116] : pc[8000517e] ori     s9, t1, -539: s9:fffffdef 
+[FAILED]: 3508 matched, 11 mismatch
+
+0 PASSED, 1 FAILED

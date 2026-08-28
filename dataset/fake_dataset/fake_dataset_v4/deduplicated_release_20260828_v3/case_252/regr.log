@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[436] : pc[80003be4] sub	x22,x10,x7: s6:8001bd80 
+spike[436] : pc[80003baa] sltiu   tp, t3, -90: tp:00000001 
+Mismatch[1281]:
+[1871] ibex : pc[8000595c] srai	x4,x27,0x2: tp:07fffd48 
+[FAILED]: 416 matched, 1281 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[198] : pc[800004b6] c.addi	x20,-1: s4:0000001f 
+spike[198] : pc[800004b6] c.addi  s4, -1: s4:ffffffff 
+[FAILED]: 192 matched, 3985 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[547] : pc[80001ade] c.add	x11,x31: a1:00000000 
+spike[547] : pc[80001af2] slt     gp, zero, gp: gp:00000001 
+[FAILED]: 514 matched, 130 mismatch
+
+0 PASSED, 1 FAILED

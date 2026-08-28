@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[224] : pc[80000900] c.slli	x7,0x1c: t2:f0000000 
+spike[224] : pc[800008e6] add     a0, ra, t6: a0:0000000a 
+[FAILED]: 206 matched, 2317 mismatch
+
+0 PASSED, 1 FAILED

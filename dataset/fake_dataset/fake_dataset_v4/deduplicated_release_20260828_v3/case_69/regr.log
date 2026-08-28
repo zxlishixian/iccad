@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[66] : pc[80011a30] auipc	x21,0xfffef: s5:80000a30 
+spike[66] : pc[80011a2c] mul     s0, s2, a4: s0:00000000 
+[FAILED]: 90 matched, 20439 mismatch
+
+0 PASSED, 1 FAILED

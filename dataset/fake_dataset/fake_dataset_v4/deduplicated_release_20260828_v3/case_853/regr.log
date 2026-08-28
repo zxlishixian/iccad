@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[73] : pc[80005a42] c.srai	x9,0x18: s1:00000080 
+spike[73] : pc[80005a42] c.srai  s1, 24: s1:ffffff80 
+[FAILED]: 482 matched, 1746 mismatch
+
+0 PASSED, 1 FAILED

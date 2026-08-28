@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[96] : pc[8000022c] lhu	x28,-305(x30): t3:00000000 
+spike[96] : pc[8000022c] lhu     t3, -305(t5): t3:00006c6d 
+[FAILED]: 138 matched, 45326 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[66] : pc[8000017e] div	x2,x28,x29: sp:fe9e8cbc 
+spike[66] : pc[8000017e] div     sp, t3, t4: sp:00000054 
+[FAILED]: 801 matched, 10265 mismatch
+
+0 PASSED, 1 FAILED

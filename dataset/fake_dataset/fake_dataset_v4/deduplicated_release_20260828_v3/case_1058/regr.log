@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[2811] : pc[80006a3e] sltiu	x31,x27,166: t6:00000001 
+spike[2811] : pc[80006a3e] sltiu   t6, s11, 166: t6:00000000 
+Mismatch[752]:
+[3701] ibex : pc[8000041a] sltiu	x26,x19,-455: s10:00000001 
+[FAILED]: 2351 matched, 752 mismatch
+
+0 PASSED, 1 FAILED

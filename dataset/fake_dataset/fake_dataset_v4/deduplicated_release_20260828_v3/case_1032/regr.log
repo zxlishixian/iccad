@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[694] : pc[8000145a] andi	x1,x22,-181: ra:ffffff4b 
+spike[694] : pc[8000145a] andi    ra, s6, -181: ra:00000040 
+[FAILED]: 6654 matched, 3116 mismatch
+
+0 PASSED, 1 FAILED

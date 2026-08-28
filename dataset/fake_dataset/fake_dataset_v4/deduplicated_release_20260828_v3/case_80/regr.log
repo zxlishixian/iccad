@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[163] : pc[800011c6] lw	x16,-16(x27): a6:5a2b486f 
+spike[163] : pc[8001c080] addi    s8, s8, -124: s8:8002cd74 
+Mismatch[18]:
+[182] ibex : pc[80001218] lbu	x29,-1(x27): t4:00000038 
+[FAILED]: 140 matched, 18 mismatch
+
+0 PASSED, 1 FAILED

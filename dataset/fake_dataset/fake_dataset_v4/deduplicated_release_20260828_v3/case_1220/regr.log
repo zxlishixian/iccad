@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[426] : pc[8000441c] c.srai	x13,0x3: a3:e0007b99 
+spike[426] : pc[8000441c] c.srai  a3, 3: a3:f0003dcc 
+[FAILED]: 3315 matched, 913 mismatch
+
+0 PASSED, 1 FAILED

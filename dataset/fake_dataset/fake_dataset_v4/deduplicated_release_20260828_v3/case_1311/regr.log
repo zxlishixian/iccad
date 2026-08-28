@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1515] : pc[8000273e] xori	x7,x31,-651: t2:fffffdff 
+spike[1515] : pc[8000273e] xori    t2, t6, -651: t2:fffffc8a 
+[FAILED]: 1437 matched, 1 mismatch
+
+0 PASSED, 1 FAILED

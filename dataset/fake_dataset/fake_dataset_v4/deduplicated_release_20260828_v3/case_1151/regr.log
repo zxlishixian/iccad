@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[158] : pc[8000045a] or	x10,x13,x8: a0:00045860 
+spike[158] : pc[8000045a] or      a0, a3, s0: a0:00045864 
+[FAILED]: 211 matched, 16 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[53] : pc[80008788] addi	x22,x22,-2048: s6:00001801 
+spike[53] : pc[80008788] addi    s6, s6, -2048: s6:00001800 
+Mismatch[2062]:
+[3116] ibex : pc[80002b26] c.sub	x13,x15: a3:1441594d 
+[FAILED]: 544 matched, 2062 mismatch
+
+0 PASSED, 1 FAILED

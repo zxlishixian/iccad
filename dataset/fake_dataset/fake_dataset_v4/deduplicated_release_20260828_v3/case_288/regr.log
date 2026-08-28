@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[147] : pc[800110a6] srli	x9,x1,0x1b: s1:0000001f 
+spike[147] : pc[800110e2] c.mv    a6, t0: a6:0000001d 
+Mismatch[18469]:
+[20609] ibex : pc[80008d4a] srli	x25,x0,0x1e: s9:00000000 
+[FAILED]: 161 matched, 18469 mismatch
+
+0 PASSED, 1 FAILED

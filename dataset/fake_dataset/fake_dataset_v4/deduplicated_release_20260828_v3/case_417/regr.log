@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[140] : pc[80008962] div	x7,x10,x31: t2:00000017 
+spike[140] : pc[80008962] div     t2, a0, t6: t2:0000014b 
+Mismatch[9428]:
+[12292] ibex : pc[80006f46] sltu	x11,x22,x17: a1:00000001 
+[FAILED]: 1854 matched, 9428 mismatch
+
+0 PASSED, 1 FAILED

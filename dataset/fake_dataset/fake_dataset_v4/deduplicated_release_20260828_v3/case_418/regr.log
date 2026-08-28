@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[76] : pc[8001ed32] lb	x24,162(x17): s8:00000000 
+spike[76] : pc[8001ed32] lb      s8, 162(a7): s8:ffffffef 
+[FAILED]: 174 matched, 44140 mismatch
+
+0 PASSED, 1 FAILED

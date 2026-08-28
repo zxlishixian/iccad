@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[98] : pc[80000222] addi	x20,x20,-739: s4:8001cf3c 
+spike[98] : pc[80000222] addi    s4, s4, -739: s4:8001cf3b 
+[FAILED]: 2157 matched, 10396 mismatch
+
+0 PASSED, 1 FAILED

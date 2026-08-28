@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[129] : pc[80000256] c.and	x10,x12: a0:fcf87b9f 
+spike[129] : pc[80000256] c.and   a0, a2: a0:00006000 
+Mismatch[7910]:
+[9275] ibex : pc[80008168] c.and	x13,x8: a3:7d99f62b 
+[FAILED]: 140 matched, 7910 mismatch
+
+0 PASSED, 1 FAILED

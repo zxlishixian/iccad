@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[291] : pc[8000084e] c.addi	x5,19: t0:00000013 
+spike[291] : pc[80000880] sub     gp, a5, a1: gp:8001ae1c 
+[FAILED]: 261 matched, 3997 mismatch
+
+0 PASSED, 1 FAILED

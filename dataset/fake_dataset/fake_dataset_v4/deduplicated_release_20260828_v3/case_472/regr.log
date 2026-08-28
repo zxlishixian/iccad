@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[234] : pc[800003de] c.andi	x10,-1: a0:0000001c 
+spike[234] : pc[800003e8] slli    a6, s11, 9: a6:30d7dc00 
+Mismatch[7333]:
+[9396] ibex : pc[8000836e] srai	x4,x7,0x13: tp:fffff000 
+[FAILED]: 760 matched, 7333 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[74] : pc[800001ea] andi	x12,x6,-1023: a2:26949c00 
+spike[74] : pc[800001f8] c.add   s7, s7: s7:ea31a212 
+[FAILED]: 64 matched, 165 mismatch
+
+0 PASSED, 1 FAILED

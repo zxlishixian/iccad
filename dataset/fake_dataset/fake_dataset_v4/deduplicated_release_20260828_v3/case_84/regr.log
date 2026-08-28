@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[92] : pc[80000214] jalr	x25,1003(x10): s9:80000218 
+spike[92] : pc[80000212] c.add   a4, s1: a4:00000313 
+[FAILED]: 96 matched, 7304 mismatch
+
+0 PASSED, 1 FAILED

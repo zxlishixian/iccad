@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[58] : pc[80000166] c.and	x8,x14: s0:e5e905be 
+spike[58] : pc[80000166] c.and   s0, a4: s0:00000000 
+Mismatch[3796]:
+[4667] ibex : pc[8000431c] div	x13,x25,x10: a3:00000000 
+[FAILED]: 103 matched, 3796 mismatch
+
+0 PASSED, 1 FAILED

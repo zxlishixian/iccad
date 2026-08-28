@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[86] : pc[800001b6] mulhsu	x23,x23,x14: s7:df897f66 
+spike[86] : pc[800001b6] mulhsu  s7, s7, a4: s7:387b7df9 
+[FAILED]: 814 matched, 7161 mismatch
+
+0 PASSED, 1 FAILED

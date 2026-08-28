@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[62] : pc[80000170] xori	x9,x8,280: s1:fd158b2b 
+spike[62] : pc[800001b4] c.li    s2, 12: s2:0000000c 
+Mismatch[958]:
+[1175] ibex : pc[8000823a] sltu	x10,x29,x16: a0:00000001 
+[FAILED]: 62 matched, 958 mismatch
+
+0 PASSED, 1 FAILED

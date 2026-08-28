@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[262] : pc[800050d6] srli	x4,x1,0x1b: tp:00000010 
+spike[262] : pc[8000510c] c.sub   a4, s1: a4:75931482 
+Mismatch[4178]:
+[4795] ibex : pc[800024e0] c.jal	800024f8: ra:800024e2 
+[FAILED]: 260 matched, 4178 mismatch
+
+0 PASSED, 1 FAILED

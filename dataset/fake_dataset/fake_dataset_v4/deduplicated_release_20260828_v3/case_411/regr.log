@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[66] : pc[8000019c] lbu	x5,583(x22): t0:00000000 
+spike[66] : pc[8000019c] lbu     t0, 583(s6): t0:000000a3 
+[FAILED]: 78 matched, 29771 mismatch
+
+0 PASSED, 1 FAILED

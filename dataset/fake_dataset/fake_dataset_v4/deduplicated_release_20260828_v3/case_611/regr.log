@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[72] : pc[800001e4] slti	x8,x28,524: s0:00000001 
+spike[72] : pc[800001c2] mulhsu  a0, s2, t6: a0:00000000 
+Mismatch[7435]:
+[8751] ibex : pc[800043aa] remu	x19,x5,x13: s3:30aacc7e 
+[FAILED]: 85 matched, 7435 mismatch
+
+0 PASSED, 1 FAILED

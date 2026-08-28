@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[2462] : pc[80005f42] ori	x28,x24,557: t3:0000022f 
+spike[2462] : pc[80005f3e] rem     a7, s3, s6: a7:00000000 
+[FAILED]: 3794 matched, 9 mismatch
+
+0 PASSED, 1 FAILED

@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[145] : pc[8001f506] lw	x24,5(x27): s8:00000000 
+spike[145] : pc[8001f502] lh      a5, -72(t6): a5:000000c4 
+[FAILED]: 264 matched, 34436 mismatch
+
+0 PASSED, 1 FAILED

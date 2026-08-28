@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[58] : pc[8000015a] div	x14,x27,x7: a4:3d502674 
+spike[58] : pc[8000015a] div     a4, s11, t2: a4:00000000 
+[FAILED]: 234 matched, 4210 mismatch
+
+0 PASSED, 1 FAILED

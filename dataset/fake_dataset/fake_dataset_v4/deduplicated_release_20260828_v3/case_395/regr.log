@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[218] : pc[8000037e] c.addi	x31,-1: t6:ffffffff 
+spike[218] : pc[8000037e] c.addi  t6, -1: t6:80015e7b 
+Mismatch[7500]:
+[9413] ibex : pc[800085a8] mulh	x27,x29,x0: s11:00000000 
+[FAILED]: 222 matched, 7500 mismatch
+
+0 PASSED, 1 FAILED

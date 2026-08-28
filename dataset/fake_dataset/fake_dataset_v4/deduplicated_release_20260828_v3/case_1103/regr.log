@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[1290] : pc[8000271e] ori	x4,x13,941: tp:3f78e06a 
+spike[1290] : pc[8000271e] ori     tp, a3, 941: tp:3f78e3ef 
+[FAILED]: 1092 matched, 501 mismatch
+
+0 PASSED, 1 FAILED

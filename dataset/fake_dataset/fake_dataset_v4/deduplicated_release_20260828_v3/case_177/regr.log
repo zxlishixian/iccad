@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[511] : pc[80026560] lh	x9,1412(x7): s1:000003fc 
+spike[511] : pc[80026560] lh      s1, 1412(t2): s1:fffffc6f 
+[FAILED]: 923 matched, 27954 mismatch
+
+0 PASSED, 1 FAILED

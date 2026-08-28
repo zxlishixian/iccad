@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[107] : pc[800002a2] c.li	x20,-1: s4:0000001f 
+spike[107] : pc[800002a2] c.li    s4, -1: s4:ffffffff 
+[FAILED]: 613 matched, 1192 mismatch
+
+0 PASSED, 1 FAILED

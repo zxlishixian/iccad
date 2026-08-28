@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[186] : pc[800031ec] c.li	x30,-1: t5:0000001f 
+spike[186] : pc[800031ec] c.li    t5, -1: t5:ffffffff 
+Mismatch[3006]:
+[3727] ibex : pc[80007b38] addi	x21,x22,353: s5:00000168 
+[FAILED]: 169 matched, 3006 mismatch
+
+0 PASSED, 1 FAILED

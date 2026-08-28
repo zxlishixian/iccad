@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[1760] : pc[80004afa] andi	x9,x23,-673: s1:fffffd7f 
+spike[1760] : pc[80004afa] andi    s1, s7, -673: s1:f6edb55f 
+Mismatch[67]:
+[3717] ibex : pc[80000450] and	x20,x10,x19: s4:00000000 
+[FAILED]: 3036 matched, 67 mismatch
+
+0 PASSED, 1 FAILED

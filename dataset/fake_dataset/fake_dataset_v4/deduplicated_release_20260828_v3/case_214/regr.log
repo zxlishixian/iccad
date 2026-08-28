@@ -1,0 +1,6 @@
+Mismatch[1]:
+ibex[87] : pc[800002f4] mulh	x14,x19,x30: a4:ffffffff 
+spike[87] : pc[800002f4] mulh    a4, s3, t5: a4:3775b397 
+[FAILED]: 150 matched, 2 mismatch
+
+0 PASSED, 1 FAILED

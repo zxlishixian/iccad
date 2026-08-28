@@ -1,0 +1,8 @@
+Mismatch[1]:
+ibex[286] : pc[800005fa] divu	x6,x23,x26: t1:00000000 
+spike[286] : pc[800005fa] divu    t1, s7, s10: t1:55555555 
+Mismatch[107]:
+[402] ibex : pc[80000904] csrrci	x4,mscratch,6: tp:08743617 
+[FAILED]: 267 matched, 107 mismatch
+
+0 PASSED, 1 FAILED
