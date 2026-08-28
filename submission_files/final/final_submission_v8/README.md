@@ -15,7 +15,6 @@ final_submission_v8/
 ├── _internal/                # bundled runtime (Python interpreter, libs, model weights)
 │   └── models/               # encoder_seed{0..4}.npz + preprocess_seed{0..4}.pkl
 ├── regr_fail_bucketing.py    # source fallback (self-contained baseline, see "Recovery")
-├── models/                   # source-of-truth model weights (redundant copy, not needed at runtime)
 └── README.md
 ```
 
@@ -29,7 +28,7 @@ Always submit `regr_fail_bucketing` together with the `_internal/` directory.
 ./regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 ```
 
-- `input.csv` — three columns `Case,Regr Log,Sim Log,Trace Log` (log paths).
+- `input.csv` — a `Case` column plus three log-path columns `Regr Log,Sim Log,Trace Log`.
 - `--k` — number of buckets (= number of injected bugs).
 - Output is `Case,bucket` (one row per case; header is case-insensitive per the
   official Q&A).

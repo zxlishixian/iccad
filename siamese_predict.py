@@ -126,22 +126,22 @@ def _fatal_char_ngram(messages, dim: int = 128):
     return feats
 
 
-def _build_base(args, dataset):
+def _build_base(args, input_csv: Path):
     """Build seed-independent raw features (the expensive part: reads logs, LLM, trace)."""
     llm_args = gm.make_embedding_args(args)
     ep, _ = plf.build_llm_case_features_for_inputs(
-        [dataset / "input.csv"], parser="drain", svd_dim=64, llm_args=llm_args
+        [input_csv], parser="drain", svd_dim=64, llm_args=llm_args
     )
-    sig = fs.extract_rich_signatures(dataset)
-    names = fs.extract_test_names(dataset)
-    cases = osf.read_cases(dataset / "input.csv")
+    sig = fs.extract_rich_signatures(input_csv)
+    names = fs.extract_test_names(input_csv)
+    cases = osf.read_cases(input_csv)
     n = len(ep)
     llm_raw = np.stack([f.llm_vec for f in ep]).astype(np.float32)
     sig_mat = _signature_features(sig)
     test_mat = _test_categories(names)
-    fatal_char_mat = _fatal_char_ngram(fs.extract_sim_failure_messages(dataset))
+    fatal_char_mat = _fatal_char_ngram(fs.extract_sim_failure_messages(input_csv))
     tr, _ = ttf.build_hierarchical_trace_features(
-        dataset / "input.csv", cache_dir=Path("/tmp/theta_trilog_trace_cache"),
+        input_csv, cache_dir=Path("/tmp/theta_trilog_trace_cache"),
         segment_count=16, chunk_size=512, anchor_sizes=[32, 64, 128],
     )
     anchor_mat = np.stack([f.anchor_struct for f in tr]).astype(np.float32)
@@ -195,8 +195,7 @@ def run_siamese(args) -> int:
     models = _load_models(MODEL_DIR)
     if not models:
         raise RuntimeError("no encoder npz found")
-    dataset = args.input.parent
-    llm_raw, sig_mat, test_mat, fatal_char_mat, anchor_mat, tr, cases, n = _build_base(args, dataset)
+    llm_raw, sig_mat, test_mat, fatal_char_mat, anchor_mat, tr, cases, n = _build_base(args, args.input)
     emb_list = []
     for enc, pre in models:
         matrix = _reduce_matrix(llm_raw, sig_mat, test_mat, fatal_char_mat, anchor_mat, tr, pre, args.view_dim)

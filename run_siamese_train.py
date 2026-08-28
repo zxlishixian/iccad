@@ -136,9 +136,9 @@ def build_case_matrix(args, datasets, reducer=None, trace_bundle=None, snippet_r
         if args.use_mismatch_llm:
             all_snippets.extend(extract_mismatch_snippets(dataset))
         if args.use_fatal_llm:
-            all_fatal.extend(extract_sim_failure_messages(dataset))
+            all_fatal.extend(extract_sim_failure_messages(dataset / "input.csv"))
         # deterministic sim.log UVM failure-message feature (always on, cheap)
-        all_fatal_msgs.extend(extract_sim_failure_messages(dataset))
+        all_fatal_msgs.extend(extract_sim_failure_messages(dataset / "input.csv"))
         if args.use_trace:
             tr, _ = ttf.build_hierarchical_trace_features(
                 dataset / "input.csv", cache_dir=args.trace_cache_dir,

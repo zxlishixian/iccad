@@ -175,9 +175,10 @@ def extract_test_name(regr_text: str) -> str:
     return ""
 
 
-def extract_test_names(dataset: Path) -> list[str]:
+def extract_test_names(input_csv: Path) -> list[str]:
     """Return per-case failing test name strings in input.csv order."""
-    cases = osf.read_cases(dataset / "input.csv")
+    dataset = input_csv.parent
+    cases = osf.read_cases(input_csv)
     out = []
     for case_id in cases:
         r = _find_regr(dataset, case_id)
@@ -213,9 +214,10 @@ def extract_failure_signatures(dataset: Path) -> list[tuple[bool, str]]:
     return sigs
 
 
-def extract_rich_signatures(dataset: Path) -> list[tuple[str, str, str, int]]:
+def extract_rich_signatures(input_csv: Path) -> list[tuple[str, str, str, int]]:
     """Return per-case (divergence_type, opcode, register, pc_bucket) in input.csv order."""
-    cases = osf.read_cases(dataset / "input.csv")
+    dataset = input_csv.parent
+    cases = osf.read_cases(input_csv)
     sigs = []
     for case_id in cases:
         r = _find_regr(dataset, case_id)
@@ -252,10 +254,11 @@ def extract_sim_failure_message(sim_text: str) -> str:
     return lines[-1] if lines else ""
 
 
-def extract_sim_failure_messages(dataset: Path, max_chars: int = 400) -> list[str]:
+def extract_sim_failure_messages(input_csv: Path, max_chars: int = 400) -> list[str]:
     """Return per-case sim.log failure message strings (input.csv order)."""
     import gzip
-    cases = osf.read_cases(dataset / "input.csv")
+    dataset = input_csv.parent
+    cases = osf.read_cases(input_csv)
     out = []
     for case_id in cases:
         r = _find_regr(dataset, case_id)
