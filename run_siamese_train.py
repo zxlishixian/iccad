@@ -7,6 +7,18 @@ Trace features are planned as a follow-up addition.
 """
 from __future__ import annotations
 
+import os as _os
+
+# Single-thread the BLAS/LAPACK backends (OpenBLAS/MKL) BEFORE numpy/scipy import.
+# The trace feature builder forks a multiprocessing.Pool (per dataset); after that
+# fork, a multi-threaded OpenBLAS (scipy-openblas MAX_THREADS=64) deadlocks on the
+# very next BLAS call (TruncatedSVD -> scipy.linalg.lu -> futex_wait).  The SVD here
+# is small (TF-IDF -> 64 dims), so single-threaded BLAS costs nothing but removes the
+# fork/thread-pool corruption entirely.
+for _var in ("OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "OMP_NUM_THREADS",
+             "NUMEXPR_NUM_THREADS", "VECLIB_MAXIMUM_THREADS"):
+    _os.environ[_var] = "1"
+
 import argparse
 import csv
 import json

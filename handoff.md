@@ -4,13 +4,15 @@
 
 ## 0. 当前状态速览（TL;DR）
 
-**最终提交**：`submission_files/final/final_submission_v7/`（GLIBC 2.28 达标、冒烟通过）。
+**最终提交**：`submission_files/final/final_submission_v8/`（GLIBC 2.28 达标、冒烟通过）。
 
 - **模型**：siamese 编码器（SupCon + 原型损失）→ 5-seed Procrustes 对齐平均 → k-means。
-- **训练集**：all fake 加权（current_merged 1220 + large_expansion×2 + catalog + b5/b8/k32）+ 2 官方 dev（train-on-dev，5464 例 / 191 bug）。
+- **训练集**：all fake 加权（deduplicated_release_20260828_v3 1376 + large_expansion×2 + catalog + b5/b8/k32）+ 2 官方 dev（train-on-dev，5620 例 / 197 bug）。
 - **特征（364 维）**：LLM 嵌入 + 失败签名 + 测试名类别 + sim.log UVM fatal 行 char n-gram + 分歧点窗口 + trace 残差（**trace 截断到尾段 5000 条**）。
-- **分数**：官方 dev 有 LLM set1=1.0 / set2=1.0（train-on-dev）；无 LLM 兜底 set2=0.728。
+- **分数**：官方 dev 有 LLM set1=1.0 / set2=0.979（train-on-dev，**诚实分——已去掉 case_index 泄漏**）；无 LLM 兜底 set2=0.733。
 - **运行时**：set1=3.5s、set2=7.4s、N=3000 ≈ 79s（< 100s），已解决超时（截断 + 多进程，坑 #37）。
+
+**v8 相对 v7 的改动**：① 去掉 LLM 文档里的 `case_index` 行号（§3.7 合规，坑 #39 之前的泄漏）；② 用队友的 `deduplicated_release_20260828_v3`（去重 1376 例 / 118 bug）替换 `current_merged`；③ 修三个打包期 bug：numpy GELU tanh→精确 erf（坑 #39）、per-seed reducer 打包（坑 #40）、OpenBLAS fork 死锁（坑 #41）。
 
 **四条贯穿结论**：① 数据分布（1 bug = 多测试）是决定性的；② 测试名是真信号非泄漏；③ LLM 当聚类/根因判别器走不通（只能当 embedding）；④ trace 解析是超时瓶颈必须截断+多进程。
 
@@ -544,6 +546,12 @@ regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 36. **训练/推理特征必须逐维一致，否则打包出来的模型维度不匹配（2026-08-25，打包 theta 时踩到）**：`run_siamese_train.py` 的训练特征和 `siamese_predict.py` 的推理特征**是两套独立代码**，加 fatal-msg 特征时只改了训练侧、没同步推理侧 → 训练 feat_dim=316（llm 64 + sig 14 + test 14 + **fatal 128** + residual 96）、推理还是 188（缺 fatal、test_categories 拼在 sig 里）。打包后 numpy 推理会报 `StandardScaler expecting 391 features but X has 393`（trace bundle 维度对不上），或静默产出错误特征。**已修**：`siamese_predict.py` 的 `_build_matrix` 改成和训练完全一致（`_signature_features` 只返回 family+type、单独 `_test_categories`、加 `_fatal_char_ngram`）。**教训：任何特征改动必须同时改 `run_siamese_train.build_case_matrix` 和 `siamese_predict._build_matrix` 两处，改完用打包前的 numpy 冒烟验证 feat_dim 一致。**
 37. **trace 解析是超时的致命瓶颈，必须「截断 + 多进程」（2026-08-28）**：官方 hidden 的 benchmark 6（N=3000, 100s）和 10（N=3000, 300s）里，fatal 类型 bug 的 trace 会冲到几十万行（陷入循环跑到 timeout），trace 解析是单线程 O(总行数)。实测我们造的 benchmark6（2944 例，64 bug，对应官方 benchmark 6 规模）**完整解析要 295s**，远超 benchmark 6 的 100s。两个修复缺一不可：① **截断**（`parse_hierarchical_trace` 加 `max_instructions`，只解析尾段 N 行 + 用 deque 轻量判断跳过前部正则）——`max_instructions=5000` 后 set2 从 14.2s 降到 3.5s；② **多进程并行**（`build_hierarchical_trace_features` 抽出 `_process_one_case` + `multiprocessing.Pool`）——32 核并行把 benchmark6 的 trace 解析从 295s 降到 10s。两者叠加后 benchmark6 完整推理：无 LLM 56s、有 LLM 79s，**都在 100s 内**。**意外收获：截断去噪反而提升分数**——train-on-dev 的 set2 从 0.779 升到 0.981（官方均值 0.890→0.990），因为尾段才是 fatal 循环/mismatch 分歧的判别信号，前部的全局统计是噪声。**教训：N=3000 级别的日志解析必须并行 + 截断，否则必超时；`max_instructions` 要加进 cache key 的 config 字符串，否则改它不会失效 cache。**
 38. **drain parser 是第二个超时隐患（2026-08-28，暂未优化）**：多进程 + 截断解决 trace 特征后，benchmark6 的 `pf.build_case_features_for_inputs`（drain parser，读整个 trace 提取模板/token）成为次瓶颈，实测 23.6s（2944 case）。benchmark 6 有 LLM 79s（drain 23.6 + trace 10 + LLM fetch 23 + 推理 ~10），余量仅 ~21s。**若官方 LLM 端点慢或 CPU 慢，余量会被吃掉。** 已接受现状（79s < 100s 不超时），但下一步若要加余量，应给 drain parser 也加截断（trace 只读尾段 / 跳过 trace 只读 sim+regr）。**教训：trace 日志在多个地方被读（trace 特征 + drain parser），任何"读整个 trace"的地方都是 N=3000 超时的隐患，要逐个排查。**
+
+39. **numpy 推理的 GELU 必须用精确 erf，不能用 tanh 近似（2026-08-28）**：`siamese_predict.py` 的 `_gelu` 原来用 tanh 近似（`0.5x(1+tanh(√(2/π)(x+0.044715x³)))`），而 torch 训练用的是 `nn.GELU()`（默认 approximate='none'，精确 erf）。两者最大误差 ~4.7e-4。v7 有 case_index 泄漏时信号强、这个误差被掩盖；v8 去掉泄漏后诚实信号变弱，这个微小误差就把 Procrustes 集成从 0.979 拉到 0.733（set2）。**已修**：`_gelu` 改用 `scipy.special.erf` 精确形式，numpy 前向与 torch 前向逐元素差 1.4e-7。**教训：torch-free 推理的每个激活/归一化都必须和 torch 语义逐一对齐（GELU 的 tanh 近似 ≠ nn.GELU()，LayerNorm eps、F.normalize eps 也都要对）；改完用「numpy 前向 vs torch 前向逐元素对比」验证，别只跑端到端分数。**
+
+40. **LLM reducer / trace_bundle 是 seed 相关的，打包必须 per-seed（2026-08-28）**：`fit_llm_reducer` 用 `TruncatedSVD(random_state=seed)`、`fit_transform_trace_views` 用 `seed=seed` 拟合，所以 5 个 seed 的 reducer 各不相同（SVD 旋转不同）。但 `siamese_predict.py` 原来只打包 seed 0 的 `preprocess.pkl`，用 seed 0 的 reducer 给 seeds 1-4 建特征 → 特征子空间旋转错位 → 集成从 0.979 塌到 0.733。**已修**：打包 5 份 `preprocess_seed{0..4}.pkl`，`run_siamese` 改为「`_build_base` 建一次原始特征（LLM 768 + trace 原始 + 确定性特征）→ 每个 seed 用自己的 reducer `_reduce_matrix` + 自己的 encoder `_numpy_forward`」。关键优化：**原始特征只建一次**（drain parser + trace 解析是 N=3000 超时大头），per-seed 只做 reducer 变换（矩阵乘，便宜），否则 5× 特征构建会超时。**教训：任何在训练里 `random_state=seed` 拟合的变换器（SVD/PCA/reducer）都是 seed 相关的，推理侧必须 per-seed 配对，不能共用一个。**
+
+41. **OpenBLAS + multiprocessing.Pool fork 死锁（2026-08-28）**：训练 `build_case_matrix` 循环里，每个数据集的 trace 构建 fork 一次 `Pool(32)`，接着下一个数据集的 `TruncatedSVD`（`scipy.linalg.lu`）在父进程死锁（`wchan=futex_wait_queue`，2 线程）。根因是 scipy-openblas（`MAX_THREADS=64`）的多线程线程池在 fork 后被污染，下一次 BLAS 调用卡死。faulthandler 栈转储定位到 `TruncatedSVD.fit_transform → scipy.linalg.lu`（不是之前误判的 asyncio/LLM）。**已修**：在 `run_siamese_train.py` 和 `siamese_predict.py` 顶部（numpy import 前）强制 `OPENBLAS_NUM_THREADS=MKL_NUM_THREADS=OMP_NUM_THREADS=1`，BLAS 单线程（这里的 SVD 很小，零损失）。顺手把 LLM 抓取从 `asyncio.run(AsyncOpenAI)` 改成同步 `OpenAI` 客户端（重复 asyncio.run 会留 dangling `AsyncClient.aclose()` 任务）。**教训：`multiprocessing.Pool`（fork）+ 多线程 BLAS 是经典死锁组合，任何「fork 之后还做 numpy/scipy 矩阵运算」的代码都要 BLAS 单线程化；定位这种「卡住不动」用 `-X faulthandler` + SIGABRT dump 线程栈，别靠猜。**
 
 ## 8. 关键命令速查
 

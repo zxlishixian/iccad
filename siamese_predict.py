@@ -9,10 +9,22 @@ failure so a valid CSV is always produced.
 """
 from __future__ import annotations
 
+import os as _os
+
+# Single-thread BLAS/LAPACK (OpenBLAS/MKL) before numpy/scipy import, mirroring
+# run_siamese_train.py.  The trace builder forks a multiprocessing.Pool; a
+# multi-threaded OpenBLAS can deadlock on any BLAS call after that fork.  Inference
+# only does one SVD (before the Pool) so it is not currently hit, but this keeps the
+# packaged binary fork-safe for the N=3000 benchmarks.
+for _var in ("OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "OMP_NUM_THREADS",
+             "NUMEXPR_NUM_THREADS", "VECLIB_MAXIMUM_THREADS"):
+    _os.environ[_var] = "1"
+
 import argparse
 import csv
 import sys
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import joblib
@@ -29,7 +41,12 @@ MODEL_DIR = HERE / "models"
 
 # ---- NumPy siamese encoder (weights exported from PyTorch) ----
 def _gelu(x: np.ndarray) -> np.ndarray:
-    return 0.5 * x * (1.0 + np.tanh(np.sqrt(2.0 / np.pi) * (x + 0.044715 * x ** 3)))
+    # Exact GELU (erf) — must match torch.nn.GELU() (approximate='none', the default).
+    # The old tanh approximation (4.7e-4 max error) was masked by the case_index leak
+    # signal in v7, but after removing the leak it degrades the Procrustes ensemble
+    # (0.979 -> 0.733 on set2), so use the exact erf form.
+    from scipy.special import erf
+    return x * 0.5 * (1.0 + erf(x / np.sqrt(2.0)))
 
 
 def _layernorm(x: np.ndarray, w: np.ndarray, b: np.ndarray, eps: float = 1e-5) -> np.ndarray:
@@ -50,12 +67,24 @@ def _numpy_forward(x: np.ndarray, w: dict) -> np.ndarray:
     return x
 
 
-def _load_encoders(model_dir: Path) -> list[dict]:
-    encs = []
+def _load_models(model_dir: Path) -> list[tuple[dict, Any]]:
+    """Load (encoder_weights, preprocess) pairs, one per seed, ordered by seed.
+
+    The LLM reducer and trace bundle are fit with ``random_state=seed`` during
+    training, so each seed's encoder must be paired with its OWN reducer — using
+    seed 0's reducer for seeds 1..N silently rotates their features and collapses
+    the ensemble (set2 0.979 -> 0.733).  See handoff pitfall #39.
+    """
+    models = []
     for p in sorted(model_dir.glob("encoder_seed*.npz")):
         z = np.load(p)
-        encs.append({k: z[k] for k in z.files})
-    return encs
+        enc = {k: z[k] for k in z.files}
+        suffix = p.stem[len("encoder_seed"):]  # "0", "1", ...
+        prep_path = model_dir / f"preprocess_seed{suffix}.pkl"
+        if not prep_path.is_file():
+            prep_path = model_dir / "preprocess.pkl"  # legacy single-seed fallback
+        models.append((enc, joblib.load(prep_path)))
+    return models
 
 
 # ---- feature building (mirrors run_siamese_train.build_case_matrix) ----
@@ -97,7 +126,8 @@ def _fatal_char_ngram(messages, dim: int = 128):
     return feats
 
 
-def _build_matrix(args, dataset, pre):
+def _build_base(args, dataset):
+    """Build seed-independent raw features (the expensive part: reads logs, LLM, trace)."""
     llm_args = gm.make_embedding_args(args)
     ep, _ = plf.build_llm_case_features_for_inputs(
         [dataset / "input.csv"], parser="drain", svd_dim=64, llm_args=llm_args
@@ -106,8 +136,7 @@ def _build_matrix(args, dataset, pre):
     names = fs.extract_test_names(dataset)
     cases = osf.read_cases(dataset / "input.csv")
     n = len(ep)
-    plf.apply_llm_reducer(ep, pre["reducer"], args.view_dim)
-    llm_mat = np.stack([f.effective_llm_vec for f in ep]).astype(np.float32)
+    llm_raw = np.stack([f.llm_vec for f in ep]).astype(np.float32)
     sig_mat = _signature_features(sig)
     test_mat = _test_categories(names)
     fatal_char_mat = _fatal_char_ngram(fs.extract_sim_failure_messages(dataset))
@@ -115,11 +144,16 @@ def _build_matrix(args, dataset, pre):
         dataset / "input.csv", cache_dir=Path("/tmp/theta_trilog_trace_cache"),
         segment_count=16, chunk_size=512, anchor_sizes=[32, 64, 128],
     )
+    anchor_mat = np.stack([f.anchor_struct for f in tr]).astype(np.float32)
+    return llm_raw, sig_mat, test_mat, fatal_char_mat, anchor_mat, tr, cases, n
+
+
+def _reduce_matrix(llm_raw, sig_mat, test_mat, fatal_char_mat, anchor_mat, tr, pre, view_dim):
+    """Apply ONE seed's reducers to the raw base -> 364-dim matrix (cheap)."""
+    llm_mat = plf._apply_reducer_to_matrix(llm_raw, pre["reducer"], view_dim).astype(np.float32)
     tm = ttf.apply_trace_reducers(pre["trace_bundle"], tr)
     residual = np.hstack([tm["residual_struct"], tm["residual_text"]]).astype(np.float32)
-    anchor_mat = np.stack([f.anchor_struct for f in tr]).astype(np.float32)
-    matrix = np.nan_to_num(np.hstack([llm_mat, sig_mat, test_mat, fatal_char_mat, anchor_mat, residual]), nan=0.0).astype(np.float32)
-    return matrix, cases, n
+    return np.nan_to_num(np.hstack([llm_mat, sig_mat, test_mat, fatal_char_mat, anchor_mat, residual]), nan=0.0).astype(np.float32)
 
 
 def _cluster_kmeans(emb: np.ndarray, k: int, seed: int = 0) -> list[int]:
@@ -133,7 +167,7 @@ def _cluster_kmeans(emb: np.ndarray, k: int, seed: int = 0) -> list[int]:
     return [int(x) for x in KMeans(n_clusters=k, random_state=seed, n_init=10).fit_predict(emb)]
 
 
-def _procrustes_cluster(matrix: np.ndarray, encoders: list[dict], k: int) -> list[int]:
+def _procrustes_cluster(emb_list: list[np.ndarray], k: int) -> list[int]:
     """Procrustes-aligned embedding average -> k-means (handoff pitfall #15/#26).
 
     The per-seed encoders live in mutually-rotated embedding spaces, so neither the
@@ -142,16 +176,15 @@ def _procrustes_cluster(matrix: np.ndarray, encoders: list[dict], k: int) -> lis
     big on the official dev set set2 (0.727 -> 0.962) and batch4, at the cost of
     small regressions on some lui-cascade fake sets.
     """
-    n = matrix.shape[0]
+    n = emb_list[0].shape[0]
     k = max(1, min(int(k), n))
     if k == 1:
         return [0] * n
     if k == n:
         return list(range(n))
-    embs = [_numpy_forward(matrix, w) for w in encoders]
-    ref = embs[0]
+    ref = emb_list[0]
     aligned = [ref]
-    for emb in embs[1:]:
+    for emb in emb_list[1:]:
         u, _, vt = np.linalg.svd(emb.T @ ref)
         aligned.append(emb @ (u @ vt))
     avg = np.mean(np.stack(aligned), axis=0)
@@ -159,13 +192,16 @@ def _procrustes_cluster(matrix: np.ndarray, encoders: list[dict], k: int) -> lis
 
 
 def run_siamese(args) -> int:
-    pre = joblib.load(MODEL_DIR / "preprocess.pkl")
-    encoders = _load_encoders(MODEL_DIR)
-    if not encoders:
+    models = _load_models(MODEL_DIR)
+    if not models:
         raise RuntimeError("no encoder npz found")
     dataset = args.input.parent
-    matrix, cases, n = _build_matrix(args, dataset, pre)
-    labels = _procrustes_cluster(matrix, encoders, args.k)
+    llm_raw, sig_mat, test_mat, fatal_char_mat, anchor_mat, tr, cases, n = _build_base(args, dataset)
+    emb_list = []
+    for enc, pre in models:
+        matrix = _reduce_matrix(llm_raw, sig_mat, test_mat, fatal_char_mat, anchor_mat, tr, pre, args.view_dim)
+        emb_list.append(_numpy_forward(matrix, enc))
+    labels = _procrustes_cluster(emb_list, args.k)
     with open(args.output, "w", newline="") as f:
         w = csv.writer(f)
         w.writerow(["Case", "bucket"])
