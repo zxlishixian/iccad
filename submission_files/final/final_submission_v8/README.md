@@ -1,63 +1,81 @@
-# EDA Regression Failure Bucketing
+# Regression Failure Bucketing — final_submission_v8 (siamese, truncated-trace)
 
-ICCAD 2026 Problem B 提交方案：给定一批 Ibex RISC-V CPU 回归仿真的失败日志
-（`sim.log` / `regr.log` / `trace.log`），把由**同一根因 bug** 导致的 case 聚到
-同一个 bucket。打分是 pairwise Balanced Accuracy = (TPR + TNR) / 2。
+Buckets RTL regression failure cases by root cause using a siamese encoder +
+k-means. Trained on the deduplicated synthetic release plus the two public
+official dev sets. This version removes the `case_index` row number from the LLM
+document (Section 3.7 compliance — no metadata dependency), and truncates trace
+parsing to the last 5000 instructions to stay inside the runtime limits on large
+benchmarks.
 
-## 最终提交
+## Package layout
 
-| 项 | 值 |
-|---|---|
-| 提交包 | [`submission_files/final/final_submission_v8/`](submission_files/final/final_submission_v8/) |
-| 模型 | siamese 编码器（5-seed Procrustes 对齐平均）→ k-means |
-| 官方 dev 分（有 LLM，train-on-dev）| set1=1.000、set2=0.979（诚实分，已去 case_index 泄漏）|
-| 运行时（32 核）| set1=3.5s、set2=7.4s、N=3000 ≈ 79s（< 100s 限制）|
+```
+final_submission_v8/
+├── regr_fail_bucketing       # PyInstaller onedir executable (primary entry point)
+├── _internal/                # bundled runtime (Python interpreter, libs, model weights)
+│   └── models/               # encoder_seed{0..4}.npz + preprocess_seed{0..4}.pkl
+├── regr_fail_bucketing.py    # source fallback (self-contained baseline, see "Recovery")
+├── models/                   # source-of-truth model weights (redundant copy, not needed at runtime)
+└── README.md
+```
 
-接口：
+The executable is self-contained: it bundles its own Python runtime and
+libraries, so it runs without pip / network / GPU / numpy-sklearn on the host.
+Always submit `regr_fail_bucketing` together with the `_internal/` directory.
+
+## Usage
 
 ```bash
 ./regr_fail_bucketing --input <input.csv> --output <output.csv> --k <k>
 ```
 
-输出 `Case,bucket` 两列 CSV。
+- `input.csv` — three columns `Case,Regr Log,Sim Log,Trace Log` (log paths).
+- `--k` — number of buckets (= number of injected bugs).
+- Output is `Case,bucket` (one row per case; header is case-insensitive per the
+  official Q&A).
 
-## 模型
+Only the LLM **embedding** endpoint is called, and only if `LLM_MODEL_CONFIG`
+(YAML content) is present. On a missing config / API error / wrong dims, the
+LLM feature block is zero-filled and the model still runs deterministically.
 
-- **特征（364 维）**：LLM 嵌入（nomic，768→SVD 64）+ 失败签名（功能单元家族 + 分歧类型）
-  + 测试名语义类别 + sim.log 首条 UVM_FATAL/ERROR 行的 char n-gram（128）
-  + 分歧点窗口分布（48）+ trace 残差（96）。
-- **trace 截断**：只解析 trace 尾段 5000 条指令（fatal 类型 bug 的 trace 会冲到几十万行，
-  尾段才是判别信号，前部是噪声），`theta_trace_features.py` 的 `max_instructions`。
-- **多进程并行**：trace 特征构建用 `multiprocessing.Pool`（32 进程），解决 N=3000 超时。
-- **无 LLM 兜底**：`LLM_MODEL_CONFIG` 缺失/失败时 LLM 块零向量化，模型照常跑（set2 退到 0.733）。
+## Model
 
-## 核心结论（贯穿全程，详见 [handoff.md](handoff.md)）
+- Per-case features (364 dims): LLM embedding (768→SVD 64) + failure signature
+  (functional-unit family + divergence type) + test-name category flags +
+  sim.log first UVM_FATAL/ERROR line char n-gram (128) + divergence-window
+  distribution (48) + hierarchical trace residual (96).
+- **Trace parsing is truncated to the last 5000 instructions** (a fatal-type
+  bug's trace can grow to hundreds of thousands of lines by looping to timeout;
+  the tail is where the discriminative signal lives, and the head is noise).
+- 5-seed ensemble: each seed's LLM/trace reducers are paired with its own
+  encoder (the reducers are fit with `random_state=seed`, so they are not
+  shared across seeds); per-seed embeddings are Procrustes-aligned then averaged,
+  then k-means into exactly `k` clusters. The NumPy forward pass uses exact GELU
+  (erf), matching the PyTorch training semantics.
+- CPU-only; O(N) inference; well inside the 100s/300s limits even at N=3000.
 
-1. **数据分布（1 bug = 多测试）是决定性的**——v4 扩展批补上测试多样性后，官方均值
-   0.72 → 0.87，比任何模型侧改进都大。
-2. **测试名是语义类别真信号，不是泄漏**（坑 #32）。
-3. **LLM 当聚类/根因判别器走不通**（6 次失败，坑 #30/#35），只能当 embedding。
-4. **trace 解析是 N=3000 超时的致命瓶颈**，必须「截断 + 多进程」（坑 #37）。
+Training data (weighted): deduplicated_release_20260828_v3 (1376 cases / 118
+bugs) + large_expansion ×2 (944×2) + catalog + benchmark5/8_500 + k32_new12,
+plus the two public official dev sets (benchmark_set_1 + benchmark_set_2).
 
-## 关键文件
+Official-dev score (packaged binary, with LLM): **set1=1.000, set2=0.979, mean
+≈ 0.990**. Without LLM (fallback): set2 ≈ 0.733.
 
-| 文件 | 作用 |
-|---|---|
-| `siamese_predict.py` | 推理入口（PyInstaller 打包，NumPy 实现，无 PyTorch）|
-| `run_siamese_train.py` | 训练（SupCon + 原型损失）|
-| `run_siamese_procrustes_eval.py` | 5-seed Procrustes 集成评估 |
-| `theta_siamese_model.py` | siamese 编码器 + 损失函数 |
-| `theta_trace_features.py` | trace 特征（截断 + 多进程）|
-| `failure_signature.py` | 失败签名提取 |
-| `regr_fail_bucketing.py` | 自包含基线（源码后备）+ LLM 工具函数 |
+## Recovery (if the executable cannot start)
 
-## 环境
+The official evaluator falls back to source **only if the executable cannot
+start**. In that case it runs:
 
-- Python：`/home/lishixian/miniforge3/envs/collab-overcooked/bin/python`（有 torch）
-- LLM 配置：`LLM_MODEL_CONFIG` 环境变量（YAML 内容），本地开发用 `/home/lishixian/llm_qwen.yaml`
-- 推理只跑 CPU，无 GPU / 无网络 / 无 pip 依赖
+```bash
+python regr_fail_bucketing.py --input <input.csv> --output <output.csv> --k <k>
+```
 
-## 详细文档
+`regr_fail_bucketing.py` is a **self-contained, standard-library-only** baseline
+(Drain log templating + TF-IDF/hash features + k-means/agglomerative). It has
+zero third-party dependencies, so it runs on the evaluator even when numpy /
+sklearn / pandas are absent. It implements the same interface and always emits a
+valid `Case,bucket` CSV. It scores lower than the binary (it is a baseline), but
+guarantees a non-zero score instead of a crash.
 
-- [handoff.md](handoff.md) — 完整的交接文档（战略、数据集、模型迭代、踩坑记录）
-- [MATERIALS_INDEX.md](MATERIALS_INDEX.md) — 数据/竞赛文件导航
+To maximise the score, submit the executable and `_internal/` (primary); the
+source file is only a safety net.
